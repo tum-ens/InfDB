@@ -1,62 +1,70 @@
+
 # Changelog
 
-All notable changes to this project will be documented in this file. <br>
-For each version, important additions, changes and removals are listed here.
+All notable changes to this project will be documented in this file. 
+See below for the format and guidelines for updating the changelog.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+---
 
-## [0.2.0] Minor Release - Oh Hi Mike - 2023-08-11
+## [Unreleased]
+- Add new changes here before merging into the next official version.
 
+## [0.1.0] Initial Release - Hello ENS-Repo-Template - 2024-11-04
 ### Added
-- Add documentation version control with mike [(#47)](https://github.com/rl-institut/super-repo/pull/47)
+- Initial setup for project.
 
 ### Changed
-- Update issue templates and release procedure [(#47)](https://github.com/rl-institut/super-repo/pull/47)
+- Changed RLI template to fit our needs.
 
+---
 
-## [0.1.1] Patch Release - Emmy Hennings Day Patch - 2023-08-10
-
+# Guidelines for Updating the Changelog
+## [Version X.X.X] - YYYY-MM-DD
 ### Added
-- Add issue template for release `issue_template_release.md` [(#43)](https://github.com/rl-institut/super-repo/pull/43)
+- Description of newly implemented features or functions, with a reference to the issue or MR number if applicable (e.g., `#42`).
 
 ### Changed
-- Update the release procedure [(#43)](https://github.com/rl-institut/super-repo/pull/43)
+- Description of changes or improvements made to existing functionality, where relevant.
 
-
-## [0.1.0] Minor Release - Emmy Hennings Day - 2023-08-10
-
-### Added
-- [LICENSE.txt](https://github.com/rl-institut/super-repo/blob/main/LICENSE.txt)
-- CITATION.cff [(#2)](https://github.com/rl-institut/super-repo/pull/2)
-- CONTRIBUTING.md [(#2)](https://github.com/rl-institut/super-repo/pull/2)
-- USERS.cff [(#2)](https://github.com/rl-institut/super-repo/pull/2)
-- CODE_OF_CONDUCT.md [(#3)](https://github.com/rl-institut/super-repo/pull/3)
-- CHANGELOG.md [(#6)](https://github.com/rl-institut/super-repo/pull/6)
-- README.rst [(#10)](https://github.com/rl-institut/super-repo/pull/10)
-- Add a logo to the README [(#18)](https://github.com/rl-institut/super-repo/pull/18)
-- Add mkdocstrings [(#20)](https://github.com/rl-institut/super-repo/pull/20)
-- Add example code with google docstrings [(#20)](https://github.com/rl-institut/super-repo/pull/20)
-- Add `requirements.txt` for python environment dependencies [(#20)](https://github.com/rl-institut/super-repo/pull/20)
-- Add templates for issues and PR [(#15)](https://github.com/rl-institut/super-repo/pull/15)
-- Add a GitHub workflow to deploy documentation [(#25)](https://github.com/rl-institut/super-repo/pull/25)
-- Add permanent links for documentation sections [(#28)](https://github.com/rl-institut/super-repo/pull/28)
-- Add documentation on documentation files [(#35)](https://github.com/rl-institut/super-repo/pull/35
-- Add `RELEASE_PROCEDURE.md` [(#37)](https://github.com/rl-institut/super-repo/pull/37)
-
-### Changed
-- Update the .gitignore [(#19)](https://github.com/rl-institut/super-repo/pull/19)
-- Update the documentation file structure [(#28)](https://github.com/rl-institut/super-repo/pull/28)
+### Fixed
+- Explanation of bugs or issues that have been resolved.
+  
+### Deprecated
+- Note any features that are marked for future removal.
 
 ### Removed
-- Remove the `src` folder [(#26)](https://github.com/rl-institut/super-repo/pull/26)
+- List of any deprecated features that have been fully removed.
 
+---
 
-## [0.0.0] Initial Release - Hello Super-Repo - 2022-03-03
+## Example Entries
 
-### Added
-- GitHub repository
-- .gitignore
-- LICENSE (MIT License)
-- [GitHub Projects](https://github.com/rl-institut/super-repo/projects?type=classic) for software versioning
+- **Added**: `Added feature to analyze time-series data from smart meters. Closes #10.`
+- **Changed**: `Refined energy demand forecast model for better accuracy.`
+- **Fixed**: `Resolved error in database connection handling in simulation module.`
+- **Deprecated**: `Marked support for legacy data formats as deprecated.`
+- **Removed**: `Removed deprecated API endpoints no longer in use.`
+
+---
+
+## Versioning Guidelines
+
+This project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html):
+- **Major** (X): Significant changes, likely with breaking compatibility.
+- **Minor** (Y): New features that are backward-compatible.
+- **Patch** (Z): Bug fixes and minor improvements.
+
+**Example Versions**:
+- **[2.1.0]** for a backward-compatible new feature.
+- **[2.0.1]** for a minor fix that doesn’t break existing functionality.
+
+## Best Practices
+
+1. **One Entry per Change**: Each update, bug fix, or new feature should have its own entry.
+2. **Be Concise**: Keep descriptions brief and informative.
+3. **Link Issues or MRs**: Where possible, reference related issues or merge requests for easy tracking.
+4. **Date Each Release**: Add the release date in `YYYY-MM-DD` format for each version.
+5. **Organize Unreleased Changes**: Document ongoing changes under the `[Unreleased]` section, which can be merged into the next release version.
+
