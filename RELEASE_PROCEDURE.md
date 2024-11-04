@@ -1,11 +1,11 @@
 # Release Procedure
 
-The release procedure is a process in which different parts of the repository are involved.<br>
+This release procedure outlines the steps for managing releases in the GitLab environment.<br>
 These symbols help with orientation:
-* 🐙 GitHub
-* 💠 git (Bash)
-* 📝 File
-* 💻 Command Line (CMD)
+- 🐙 GitLab
+- 💠 git (Bash)
+- 📝 File
+- 💻 Command Line (CMD)
 
 
 ## Version Numbers
@@ -14,162 +14,135 @@ This software follows the [Semantic Versioning (SemVer)](https://semver.org/).<b
 It always has the format `MAJOR.MINOR.PATCH`, e.g. `1.5.0`.
 
 The data follows the [Calendar Versioning (CalVer)](https://calver.org/).<br>
-It always has the format `YYYY-MM-DD`, e.g. `2022-05-16`.
+It always has the format `YYYY-MM-DD`, e.g. `1992-11-07`.
 
 
-## GitHub Release
+## GitLab Release
 
-Following the Semantic Versioning, different workflows for Major, Minor, or Patch
-releases are possible. <br>
-For Major and Minor releases, follow the complete workflow.<br>
-For a **Patch Release** (Hotfix), start at [section 3](https://github.com/rl-institut/super-repo/blob/production/RELEASE_PROCEDURE.md#4--create-a-draft-github-release).
+### 1. Update the `CHANGELOG.md`
+- 📝 **File**: Open the CHANGELOG.md file and add a new entry under the `[Unreleased]` section.
+- 💠 **Commit**: Commit your changes to the changelog, noting all new features, changes, and fixes.
+- 📝 **Version Entry**: Format the new version entry as follows:
+    ```
+    ## [0.1.0] - 2022-01-01
+  
+    ### Added
+    - New feature
+    - Another new feature
+  
+    ### Changed
+    - Change to existing feature
+  
+    ### Fixed
+    - Bug fix
+    ```
+  
+### 2. Create a `Draft GitLab Release` Issue
+- 🐙 **Template**: Use the `📝Release_Checklist` template for the issue.
+- 🐙 **Issue**: Create a new issue in the repository with the title `Release - Minor Version - 0.1.0`.
+- 🐙 **Description**: Fill in the details of the release, including the name, Git tag, release manager, and date.
+- 🐙 **Workflow Checklist**: Check off the steps in the workflow checklist for the release.
+  
+### 3. Update Version in Code
+- 📝 **File**: Locate the version variable in the code (in the template it can be found in [VERSION](VERSION)).
+- 💻 **Update**: Change the version number to the new release version following SemVer.
+- 💠 **Commit**: Commit this version change with a message like:
+    ```
+    git commit -m "Bump version to 1.5.0"
+    ```
 
-### 1. 🐙 Create a `GitHub Project`
-* Create [New classic project](https://github.com/rl-institut/super-repo/projects?type=classic)
-* Use the project template *Automated kanban with reviews*
-* Named `super-repo-v0.1.0`
-* Add a meaningful description
-* Track project progress
+### 4. Create a Release Branch
+- 💠 **Branching**: Create a release branch from develop:
+    ```bash
+    git checkout develop
+    git pull
+    git checkout -b release-1.5.0
+    ```
+- 💠 **Push**: Push the release branch to GitLab:
+    ```bash
+    git push --set-upstream origin release-1.5.0
+    ```
+  
+### 5. Finalize and Merge
+- 🐙 **Merge Request**: In GitLab, open a merge request (MR) from `release-1.5.0` into `main`.
+- 🐙 **Review**: Assign reviewers to the MR and ensure all tests pass.
+- 🐙 **Merge**: Once approved, merge the MR into main and delete the release branch.
 
-▶️ It gives an overview of open and finished issues and Pull Requests!
+### 6. Tag the Release
+- 💠 **Checkout** main: Ensure you’re on the main branch.
+    ```bash
+    git checkout main
+    git pull
+    ```
+- 💠 **Tag**: Tag the new release in GitLab:
+    ```bash
+    git tag -a v1.5.0 -m "Release 1.5.0"
+    git push origin v1.5.0
+    ```
+  
+### 7. Create a GitLab Release (Optional)
+- 🐙 **GitLab Release Page**: Go to the GitLab project’s Releases section and create a new release linked to the v1.5.0 tag.
+- 📝 **Release Notes**: Add release notes using information from the changelog.
 
-### 2. 🐙 Finish all planned Developments
-* Some days before the release, inform all developers
-* Merge the open Pull Requests
-* On release day, start the release early to ensure sufficient time for reviews
-* Merge everything on the `develop` branch
+### 8. Update the Documentation
+- 📝 **Documentation**: Update the documentation to reflect the new release version.
+- 💻 **Build**: Build the documentation to ensure it’s up to date.
+- 💻 **Deploy**: Deploy the documentation to the appropriate location.
+- 💻 **Update**: Update any version references in the documentation.
+- 💻 **Commit**: Commit the documentation changes.
+- 💠 **Push**: Push the documentation changes to the repository.
+- 🐙 **Merge**: Merge the documentation changes into the main branch.
+- 🐙 **Delete Branch**: Delete the release branch after merging.
 
-▶️ Completion of the preparation of the planned release!
-
-### 3. 🐙 Create a `GitHub Issue`
-* Use `📝issue_template_release`
-* Name `Release - Minor Version - 0.1.0`
-* Complete the necessary details
-
-▶️ This issue documents the status of the release!
-
-### 4. 🐙 Create a `Draft GitHub Release`
-* Start here for a **Patch Release** (Hotfix)
-* [Draft a new release](https://github.com/rl-institut/super-repo/releases/new)
-* Enter the release version number `0.1.0` as title
-* Summarize key changes from changelog in the description
+### 9. Merge Back into `develop`
+- 💠 **Branch**: Create an MR from `main` into `develop` to merge the release changes back into the development branch.
+```bash
+git checkout develop
+git pull
+git merge main
+git push
 ```
-## [0.1.0] Minor Release - Name - Date
-### Added
-### Changed
-### Removed
-```
-* Add a link to the `📝CHANGELOG.md`
-    * `**Complete changelog:** [CHANGELOG.md](https://github.com/rl-institut/super-repo/blob/production/CHANGELOG.md)`
-* Add a link to compare versions
-    * `**Compare versions:** [0.1.0 - 0.2.0](https://github.com/rl-institut/super-repo/compare/v0.1.0...v0.2.0)`
-* **Save draft**
-
-### 5. 💠 Create a `release` branch
-* Checkout `develop` and branch with `git checkout -b release-v0.1.0`
-* Push branch with `git push --set-upstream origin release-v0.1.0`
-* Add bump2version (❗ToDo❗) 
-
-### 6. 📝 Update the version files
-* `📝CHANGELOG.md`
-    * Check that all Pull Request are included
-    * Rename `Unreleased` section with release title from issue
-    * Follow `[0.0.0] Minor Release - Name of Release - 20YY-MM-DD`
-* `📝CITATION.cff`
-    * Update `version`
-    * Update `date-released`
-* `📝setup.py`
-    * Update `version`
-    * Update `download_url` (.../v0.1.0.tar.gz)
-
-▶️ Increase version numbers!
-
-### 7. 🐙 Create a Release Pull Request
-* Merge `release` into `production` branch
-* Remove details from template
-* Assign two reviewers to check the release
-* Run all test
-* Execute the software locally
-* Wait for reviews and tests
-* Merge Pull Request and delete `release` branch
-
-▶️ Merge code on `production` branch!
-
-### 8. 💠 Set the `Git Tag`
-* Checkout `production` branch and pull
-* Check existing tags `git tag -n`
-* Create new tag: `git tag -a v0.1.0 -m "super-repo Minor Release v0.1.0"`
-* This commit will be the final version for the release, breath three times and check again
-* Push tag: `git push --tags`
-
-If you messed up, remove tags and start again
-* Delete local tag: `git tag -d v0.1.0`
-* Delete remote tag: `git push --delete origin v0.1.0`
-
-▶️ Git Tag for GitHub Release!
-
-### 9. 🐙 Publish `GitHub Release`
-* Navigate to releases and open the draft release
-* Choose the correct `Git Tag`
-* Choose the `production` branch
-* Select `Set as the latest release`
-* Select `Create a discussion for this release` in category `Announcements`
-* **Publish release**
-
-▶️ Release on GitHub! 🚀
-
-### 10. 💻 Update the documentation
-* Checkout `production` branch and pull
-* Activate environment and enter repository
-* Test version with `mike serve`
-* Publish new minor version `mike deploy --push --update-aliases 0.1 latest`
-* Set new version as latest `mike set-default --push latest`
-
-▶️ Update the documentation!
-
-### 11. 🐙 Set up new development
-* Create a Pull Request from `production` to `develop`
-* Named `Set up new development after release v0.1.0`
-* Checkout `develop` branch and pull
-* Create a new **Unreleased** section in the `📝CHANGELOG.md`
-```
-## [Unreleased]
-
-### Added
-- [(#)]()
-
-### Changed
-- [(#)]()
-
-### Removed
-- [(#)]()
-```
-
-▶️ Continue the developments 🛠
-
 
 ## PyPi Release
 
 ### 0. 💻 Check release on Test-PyPI
-* Check if the release it correctly displayed on [Test-PyPI](https://test.pypi.org/project/open-mastr/#history)
-* With each push to the release branch or the branch `test-release` the package is released on [Test-PyPI](https://test.pypi.org/project/open-mastr/#history) by GitHub workflow (test-pypi-publish.yml).
-  * Note: Pre-releases on Test-PyPI are only shown under `Release history` in the navigation bar.
-  * Note: The branch status can only be released to a version on Test-PyPI once. Thus, for every branch status that you want to see on Test-PyPI increment the build version with `bump2version build` and push afterwards.
-* Once testing on Test-PyPI is done, change the release version to the final desired version with `bump2version release`
-  * Note: The release on Test-PyPI might fail, but it will be the correct release version for the PyPI server.
-* Push commits to the `release-*` branch
+- Check if the release is correctly displayed on [Test-PyPI](https://test.pypi.org/)
+- **Automatic Deployment**: With each push to the `release-*` or `test-release` branch the package is released on [Test-PyPI](https://test.pypi.org/) by GitLab CI/CD (assuming a corresponding job like test-pypi-publish.yml is configured).
+  - Note: Pre-releases on Test-PyPI are only shown under `Release history` in the navigation bar.
+  - Note: Each unique branch state can only be released to a single version on TestPyPI. For testing multiple states on TestPyPI, increment the build version (e.g., using `bump2version build`) and push the changes.
+- When testing is complete, finalize the release version with `bump2version release`
+  - Note: The release on Test-PyPI might fail, but it will be the correct release version for the PyPI server.
+- Push commits to the `release-*` branch
 
 ### 1. 💻 Create and publish package on PyPI
-* Navigate to git folder `cd D:\git\github\GROUP\REPO\`
-* Create package using `python setup.py sdist`
-* Check that file has been created in folder `dist`
-* Activate python environment `activate release_py38`
-* Upload to PyPI using `twine upload dist/NAME_0.5.1.tar.gz`
-* Enter `name` and `password`
-* Check on PyPI if release arrived
-* Breath three times and smile
+1. **Navigate to Project Directory**:
+    ```bash
+    cd path/to/gitlab/group/repo
+    ```
+2. **Build the Package**:
+  - Use `setup.py` or `pyproject.toml` to create a package distribution:
+    ```bash
+    python setup.py sdist
+    ```
+  - Confirm that the `.tar.gz` file is generated in the `dist` folder.
+3. **Activate Release Environment**:
+  - Activate the virtual environment used for PyPI releases:
+    ```bash
+    source path/to/release_env/bin/activate
+    ```
+4. **Upload to PyPI**:
+  - Use `twine` to upload the package to PyPI:
+    ```bash
+    twine upload dist/package_name-X.X.X.tar.gz
+    ```
+  - Enter your PyPI username and password when prompted.
+5. **Verify Release**:
+    - Check the [PyPI](https://pypi.org/) website to confirm that the release has been successfully uploaded.
+6. **Celebrate**:
+    - Take a moment to confirm everything looks good and enjoy a brief celebratory break before the grind continues.
 
-▶️ Publish the Package
+### Important Notes
+- **Versioning**: Always increment the version correctly using `bump2version` before creating the final release.
+- **Publishing Reminder**: Ensure your PyPI credentials are correctly set up in GitLab CI/CD or local `.pypirc` configuration for seamless uploads.
+- **Final Check**: If issues arise post-release, refer to the [GitLab CI/CD guide](https://docs.gitlab.com/ee/development/cicd/) and [PyPI documentation](https://packaging.python.org/en/latest/) for troubleshooting.
 
-## Sources:
-* https://raw.githubusercontent.com/folio-org/stripes/master/doc/release-procedure.md
