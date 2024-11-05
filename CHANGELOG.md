@@ -16,8 +16,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Initial setup for project.
 
 ### Changed
-- Changed RLI template to fit our needs.
-
+- Changed the RLI template to fit our needs. The original template's citation metadata are as follows:
+    ```
+    authors:
+      - family-names: "Hülk"
+        given-names: "Ludwig"
+        alias: "@Ludee"
+        affiliation: "Reiner Lemoine Institut"
+        orcid: "https://orcid.org/0000-0003-4655-2321"
+    title: "Super Repo"
+    type: software
+    license: MIT
+    version: 0.2.0
+    doi: 
+    date-released: 2023-08-11
+    url: "https://github.com/rl-institut/super-repo/"
+    ```
 ---
 
 # Guidelines for Updating the Changelog
