@@ -1,0 +1,22 @@
+# Core Dependencies
+# Add additional libraries here
+# Pin versions for reproducibility, see https://pip.pypa.io/en/stable/user_guide/#pinning-packages (example: requests==2.26.0)
+
+# Testing
+pytest
+
+# Documentation
+mkdocs
+mkdocs-material
+mkdocstrings
+mkdocstrings-python-legacy
+
+# Linting and Formatting
+flake8
+black
+
+# Type Checking (Optional)
+mypy
+
+# Optional Dev Tools (Uncomment as needed)
+# pre-commit
