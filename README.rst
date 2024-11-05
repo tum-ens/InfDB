@@ -86,6 +86,7 @@ Repository Structure
 - **examples/**: Example scripts and notebooks.
 - **data/**: Data files used in the project. (optional)
 - **notebooks/**: Jupyter notebooks for data exploration and analysis. (optional)
+- **scripts/**: Utility scripts for data processing, model training, etc. (optional)
 - **code_examples/**: Code examples, demonstrating the expected coding style and documentation practices. (Can be removed after the project is set up.)
 
 Usage Guidelines
