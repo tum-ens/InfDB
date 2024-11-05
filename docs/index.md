@@ -4,11 +4,11 @@ hide:
   - toc
 ---
 
-# Welcome to the Super-Repo Documentation
+# Welcome to the Documentation
 
 A template repo to test and document elements and features for research software. <br>
 It implements the collection of repository elements and files. <br>
-The goal is to simplify and standardise the creation of software in GitHub repositories.
+The goal is to simplify and standardise the creation of software in GitLab repositories.
 
 ## Documentation Structure
 
