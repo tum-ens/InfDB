@@ -1,4 +1,4 @@
-<!-- .gitlab/merge_requests_templates/Merge_Request.md -->
+<!-- .gitlab/merge_request_templates/Merge_Request.md -->
 
 ## 🔀 Merge Request
 
