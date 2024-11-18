@@ -1,4 +1,4 @@
-<!-- .gitlab/merge_requests_templates/Release_Checklist.md -->
+<!-- .gitlab/merge_request_templates/Release_Checklist.md -->
 
 ## 🚀 Release Checklist
 
