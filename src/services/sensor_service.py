@@ -6,15 +6,6 @@ from src.core.db_config import timescale_engine
 
 class SensorService:
     def insertSensorData(self, data: SensorData):
-        """
-        Inserts sensor data into the database.
-
-        Args:
-            data (SensorData): Validated input schema for sensor data.
-
-        Returns:
-            dict: Success message and the inserted sensor reading ID.
-        """
         try:
             with Session(timescale_engine) as session:
                 # Create a new SensorReading record

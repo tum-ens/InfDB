@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from src.api.sensor_router import SensorRouter
-from src.api.city_router import CityRouter
+from .sensor_router import SensorRouter
+from .city_router import CityRouter
 
 class ApiRouter:
     def __init__(self):
