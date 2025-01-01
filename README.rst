@@ -8,6 +8,9 @@
 ENS Template Repo
 ==========
 
+
+
+
 **A template repo to kickstart your research projects with best practices in coding, version control, and documentation.**
 
 .. list-table::
@@ -187,3 +190,24 @@ License and Citation
 .. |badge_pr_closes| image:: https://img.shields.io/badge/merge_requests-closed-green
     :target: https://gitlab.lrz.de/tum-ens/super-repo/-/merge_requests
     :alt: closed merge requests
+
+
+Environment Variables for testing:
+# .env
+
+# TimescaleDB Configuration
+TIMESCALE_USER=timescale_user
+TIMESCALE_PASSWORD=secret
+TIMESCALE_HOST=127.0.0.1
+TIMESCALE_PORT=5432
+TIMESCALE_DB=timescaledb_db
+
+# CityDB Configuration
+CITYDB_USER=citydb_user
+CITYDB_PASSWORD=citydb_password
+CITYDB_HOST=127.0.0.1
+CITYDB_PORT=5433
+CITYDB_DB=citydb
+
+# General Configuration
+DEBUG=true
