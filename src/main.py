@@ -1,6 +1,6 @@
 from fastapi import FastAPI
-from src.api.routes import ApiRouter
-from src.db.connection import init_db
+from .api.routes import ApiRouter
+from .db.connection import init_db
 
 init_db()
 app = FastAPI()
