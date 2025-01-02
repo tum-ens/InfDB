@@ -1,0 +1,46 @@
+version: "3.8"
+
+services:
+  timescaledb:
+    image: timescale/timescaledb:latest-pg14
+    container_name: timescaledb
+    environment:
+      POSTGRES_DB: timescaledb_db
+      POSTGRES_USER: timescale_user
+      POSTGRES_PASSWORD: secret
+      # You can add other environment variables as needed
+    ports:
+      - "5432:5432"  # Host:Container
+    volumes:
+      - timescale_data:/var/lib/postgresql/data
+
+  citydb:
+    image: 3dcitydb/3dcitydb-pg:latest
+    container_name: citydb
+    environment:
+      POSTGRES_DB: citydb
+      POSTGRES_USER: citydb_user        
+      POSTGRES_PASSWORD: citydb_password
+      SRID: 4326
+    ports:
+      - "5433:5432"  # Host:Container
+    volumes:
+      - citydb_data:/var/lib/postgresql/data
+
+  impexp:
+    image: 3dcitydb/impexp
+    container_name: citydb_impexp
+    depends_on:
+      - citydb
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5433
+      DB_NAME: citydb
+      DB_USER: citydb_user
+      DB_PASSWORD: citydb_password
+    ports:
+      - "8080:8080"    
+
+volumes:
+  timescale_data:
+  citydb_data:
