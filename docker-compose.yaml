@@ -8,9 +8,8 @@ services:
       POSTGRES_DB: timescaledb_db
       POSTGRES_USER: timescale_user
       POSTGRES_PASSWORD: secret
-      # You can add other environment variables as needed
     ports:
-      - "5432:5432"  # Host:Container
+      - "5432:5432"
     volumes:
       - timescale_data:/var/lib/postgresql/data
 
@@ -23,23 +22,9 @@ services:
       POSTGRES_PASSWORD: citydb_password
       SRID: 4326
     ports:
-      - "5433:5432"  # Host:Container
+      - "5433:5432"
     volumes:
-      - citydb_data:/var/lib/postgresql/data
-
-  impexp:
-    image: 3dcitydb/impexp
-    container_name: citydb_impexp
-    depends_on:
-      - citydb
-    environment:
-      DB_HOST: postgres
-      DB_PORT: 5433
-      DB_NAME: citydb
-      DB_USER: citydb_user
-      DB_PASSWORD: citydb_password
-    ports:
-      - "8080:8080"    
+      - citydb_data:/var/lib/postgresql/data 
 
 volumes:
   timescale_data:

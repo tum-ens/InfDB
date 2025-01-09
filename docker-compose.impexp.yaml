@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+  impexp:
+    image: 3dcitydb/impexp
+    container_name: impexp
+    network_mode: database_default #should be same network name with our database
+    #env variables must be same with citydb config
+    environment:
+      CITYDB_TYPE: postgresql
+      CITYDB_HOST: citydb
+      CITYDB_PORT: 5432
+      CITYDB_NAME: citydb
+      CITYDB_USERNAME: citydb_user
+      CITYDB_PASSWORD: citydb_password
+    volumes:
+      - "./:/data"
+    # data/test.gml is just an example data we keep.
+    # If we need to upload another file please change the file name
+    command: ["import", "/data/test.gml", "--import-mode=import_all"] 
