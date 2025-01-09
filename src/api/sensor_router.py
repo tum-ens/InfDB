@@ -9,6 +9,7 @@ class SensorRouter:
 
     def register_routes(self):
         self.router.post("/")(self.sensor_data_service.insertSensorData)
+        self.router.get("/{gml_id}")(self.sensor_data_service.getByGmlId)
 
     def get_router(self):
         return self.router
