@@ -123,6 +123,11 @@ Build the documentation using MkDocs:
 
 The documentation will be available at http://127.0.0.1:8000/.
 
+Open Api Spesifications
+============== 
+
+Please go to following url to see our endpoints: http://127.0.0.1:8000/docs#/
+
 CI/CD Workflow
 ==============
 
@@ -211,3 +216,9 @@ CITYDB_DB=citydb
 
 # General Configuration
 DEBUG=true
+
+
+To import data to 3DCityDb through importer/exporter, please run this command on your terminal:
+docker-compose -f docker-compose.impexp.yaml up
+
+By default, test.gml file is provided in our repository. If you would like to upload different data, please see the comments on docker-compose.impexp.yaml file!
