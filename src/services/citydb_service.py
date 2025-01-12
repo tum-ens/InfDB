@@ -1,37 +1,22 @@
-from sqlalchemy import text
+from sqlalchemy import bindparam, text
 from sqlmodel import Session
 from src.core.db_config import citydb_engine
-from fastapi import HTTPException
+from fastapi import HTTPException, Path
 from src.schemas.city_object import CityObjectInput
 
-class CityDBService:
-    def insertCityObject(self, data: CityObjectInput):
+class CityDBService:       
+    def get(self, gmlId:str):
         try:
-            objectClassId = data.objectclass_id
-            gmlId = data.gmlid
-            creationDate = data.creation_date
-
-            # SQL query
-            sqlInsert = text("""
-                INSERT INTO citydb.cityobject (objectclass_id, gmlid, creation_date)
-                VALUES (:objectclass_id, :gmlid, :creation_date)
-                RETURNING id
+            sqlSelect = text("""
+                SELECT id, objectclass_id, gmlid, creation_date
+                FROM citydb.cityobject
+                WHERE gmlid = :gmlId
             """)
 
-            # Database session
             with Session(citydb_engine) as session:
-                result = session.execute(
-                    sqlInsert,
-                    {
-                        "objectclass_id": objectClassId,
-                        "gmlid": gmlId,
-                        "creation_date": creationDate
-                    }
-                )
-                newId = result.scalar()
-                session.commit()
+                result = session.execute(sqlSelect, params={"gmlId": gmlId}).mappings().fetchone()
 
-            return newId
+            return result
 
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Database insertion failed: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Database query failed: {str(e)}")

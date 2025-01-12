@@ -40,7 +40,9 @@ class SensorService:
                 statement = select(SensorReading)
 
                 for key, value in filters.items():
-                    statement = statement.where(getattr(SensorReading, key) == value)
+                    #is this correct place to check for filter params or api level is better?
+                    if(hasattr(SensorReading, key)):
+                        statement = statement.where(getattr(SensorReading, key) == value)
 
                 sensor_readings = session.exec(statement).all()
                 return sensor_readings
