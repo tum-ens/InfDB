@@ -1,3 +1,7 @@
+## this file could be run maybe automatically as we would like to update our database
+## in case of data changes occur on the db
+## so that should not include any code in the router.
+
 version: "3.8"
 
 services:
@@ -17,4 +21,8 @@ services:
       - "./:/data"
     # data/test.gml is just an example data we keep.
     # If we need to upload another file please change the file name
+    ## check if overwriting is possible. then we dont have multiple creation.
+
+    ## change some data and be sure that it can overwrite.
+    ## now import all appends
     command: ["import", "/data/test.gml", "--import-mode=import_all"] 
