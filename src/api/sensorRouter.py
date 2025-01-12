@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from src.schemas.sensor_data import SensorData
 from src.services.sensor_service import SensorService
 
@@ -21,7 +21,6 @@ class SensorRouter:
         }
         
     async def getByGmlId(self, gmlId: str):
-        print(gmlId)
         result = self.sensorService.getByGmlId(gmlId)
         if not result:
             raise HTTPException(status_code=404, detail=f"No sensor data found for gml_id: {gmlId}")
@@ -38,8 +37,9 @@ class SensorRouter:
                 ]
             }
 
-    async def get(self):
-        result = self.sensorService.get({})
+    async def get(self, request: Request):
+        query_params = dict(request.query_params)
+        result = self.sensorService.get(query_params)
         if not result:
             raise HTTPException(status_code=404, detail=f"No sensor data found")
         return {
