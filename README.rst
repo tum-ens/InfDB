@@ -70,7 +70,7 @@ Installation for local development
 
       pip install -r requirements.txt
 
-#. Our application has dependency on 3dCityDB and Timescale; that's why local environment should be set first:
+#. Our application has dependency on 3dCityDB and Timescale; that's why local environment should be set first. The next command will fetch the timescale and 3dcitydb images and run the containers on your local:
 
    .. code-block:: bash
 
@@ -122,7 +122,13 @@ Installation for docker container
 
       git clone <repository_url>
 
-#. Run docker-compose file. It will start our databases and also our database (fastapi) application. You may change the env values provided in the compose file:
+#. We need the build image of our database application. To do that please run:
+
+   .. code-block:: bash
+
+    docker-compose build
+    
+#. Run docker-compose file. The next command will fetch the timescale and 3dcitydb images and run the containers on your machine. It will then start our database (fastapi) application. You may change the env values provided in the compose file:
 
    .. code-block:: bash
 
