@@ -1,14 +1,12 @@
 ## this file could be run maybe automatically as we would like to update our database
 ## in case of data changes occur on the db
 ## so that should not include any code in the router.
-
 version: "3.8"
-
 services:
   impexp:
     image: 3dcitydb/impexp
     container_name: impexp
-    network_mode: database_default #should be same network name with our database
+    network_mode: database #should be same network name with our database
     #env variables must be same with citydb config
     environment:
       CITYDB_TYPE: postgresql
@@ -20,9 +18,8 @@ services:
     volumes:
       - "./:/data"
     # data/test.gml is just an example data we keep.
-    # If we need to upload another file please change the file name
-    ## check if overwriting is possible. then we dont have multiple creation.
-
-    ## change some data and be sure that it can overwrite.
-    ## now import all appends
-    command: ["import", "/data/test.gml", "--import-mode=import_all"] 
+    # Please refer to following link to read for import modes:
+    # https://3dcitydb-docs.readthedocs.io/en/latest/impexp/import.html
+    # but this causes really long execution times. So we would need to start this run and then wait to complete.
+    # if we do not want to delete all db and restart because we might need to delete the volume each time,
+    command: ["import", "/data/test.gml", "--import-mode=delete"] 
