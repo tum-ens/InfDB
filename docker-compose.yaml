@@ -9,8 +9,10 @@ services:
     ports:
       - "8000:8000"  # Map container port 8000 to host port 8000
     depends_on:
-      - timescaledb
-      - citydb
+      timescaledb:
+        condition: service_healthy
+      citydb:
+        condition: service_healthy
     networks:
       - networkName
     environment:
@@ -36,6 +38,11 @@ services:
       POSTGRES_DB: timescaledb_db
       POSTGRES_USER: timescale_user
       POSTGRES_PASSWORD: secret
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U timescale_user -d timescaledb_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     ports:
       - "5432:5432"
     volumes:
@@ -51,6 +58,11 @@ services:
       POSTGRES_USER: citydb_user        
       POSTGRES_PASSWORD: citydb_password
       SRID: 4326
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U citydb_user -d citydb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     ports:
       - "5433:5432"
     volumes:
