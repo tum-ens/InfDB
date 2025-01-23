@@ -12,6 +12,8 @@ services:
       - "5432:5432"
     volumes:
       - timescale_data:/var/lib/postgresql/data
+    networks:
+      - networkName
 
   citydb:
     image: 3dcitydb/3dcitydb-pg:latest
@@ -24,8 +26,14 @@ services:
     ports:
       - "5433:5432"
     volumes:
-      - citydb_data:/var/lib/postgresql/data 
+      - citydb_data:/var/lib/postgresql/data
+    networks:
+      - networkName
 
 volumes:
   timescale_data:
   citydb_data:
+
+networks:
+  networkName:
+   name: database
