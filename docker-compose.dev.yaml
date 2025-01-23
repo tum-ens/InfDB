@@ -1,34 +1,6 @@
 version: "3.8"
 
 services:
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: database-app
-    ports:
-      - "8000:8000"  # Map container port 8000 to host port 8000
-    depends_on:
-      - timescaledb
-      - citydb
-    networks:
-      - networkName
-    environment:
-        # TimescaleDB Configuration
-        # i cant use 127.0.0.1 in the container because it means local host!
-      -  TIMESCALE_USER=timescale_user
-      -  TIMESCALE_PASSWORD=secret
-      -  TIMESCALE_HOST=host.docker.internal
-      -  TIMESCALE_PORT=5432
-      -  TIMESCALE_DB=timescaledb_db
-
-        # CityDB Configuration
-      -  CITYDB_USER=citydb_user
-      -  CITYDB_PASSWORD=citydb_password
-      -  CITYDB_HOST=host.docker.internal
-      -  CITYDB_PORT=5433
-      -  CITYDB_DB=citydb
-
   timescaledb:
     image: timescale/timescaledb:latest-pg14
     container_name: timescaledb
