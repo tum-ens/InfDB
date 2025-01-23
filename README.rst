@@ -34,14 +34,6 @@ Introduction
 ============
 **ENS Repo Template** provides a standardized structure, tools, and practices to help researchers focus on development while ensuring best practices in coding, version control, and documentation. By using this template, researchers can create organized, maintainable, and collaborative projects that align with modern software engineering standards.
 
-Key Features
-------------
-- Enforced coding standards and style checks.
-
-- Automated CI/CD workflows for continuous integration.
-
-- Comprehensive documentation setup.
-
 
 Getting Started
 ===============
@@ -49,11 +41,11 @@ To get started, follow these steps:
 
 Requirements
 ------------
-- Programming language (e.g., Python, R, Julia, etc.)
+- Programming language (Python)
 - Git for version control (download from https://git-scm.com/)
 
-Installation
-------------
+Installation for local development
+----------------------------------
 #. Clone the repository to your local machine:
 
    .. code-block:: bash
@@ -78,19 +70,79 @@ Installation
 
       pip install -r requirements.txt
 
-This template is now ready to use! Follow the repository structure and guidelines below to begin your project.
+#. Our application has dependency on 3dCityDB and Timescale; that's why local environment should be set first:
+
+   .. code-block:: bash
+
+    # This will initiate both timescale and 3dcitydb containers on your local machines. 
+    docker-compose -f docker-compose.dev.yaml up -d
+
+#. For local development, we need to feed our 3DCityDb. In order to do that please use provided docker-compose file or please ru your own script (Note: If you didn't delete your previous volume, you do not need to run this command again!):
+
+   .. code-block:: bash
+
+    # This has some comments inside please check.
+    # Right now we have a simple test.gml file on our repository. We are loading this to work on our locals.
+    # Environment variables that are provided in previous step has to match with our env variables (i.e. docker-compose.yaml and docker-compose.import.yaml should have same env vars for db configs)
+    docker-compose -f docker-compose.import.yaml up -d
+
+#. While running our application locally, we need to provide environment variable. Please have the same env variables with your docker-compose.dev.yaml file. Environment variables for local development:
+
+   .. code-block:: bash
+    
+        # TimescaleDB Configuration
+        TIMESCALE_USER=
+        TIMESCALE_PASSWORD=
+        TIMESCALE_HOST=127.0.0.1
+        TIMESCALE_PORT=
+        TIMESCALE_DB=
+
+        # CityDB Configuration
+        CITYDB_USER=
+        CITYDB_PASSWORD=
+        CITYDB_HOST=127.0.0.1
+        CITYDB_PORT=
+        CITYDB_DB=
+
+        # General Configuration
+        DEBUG=true
+
+#. Now you can start the application:
+
+   .. code-block:: bash
+
+    fastapi dev src/main.py
+
+
+Installation for docker container
+---------------------------------
+#. Clone the repository to your local machine:
+
+   .. code-block:: bash
+
+      git clone <repository_url>
+
+#. Run docker-compose file. It will start our databases and also our database (fastapi) application. You may change the env values provided in the compose file:
+
+   .. code-block:: bash
+
+    docker-compose up -d
+
+#. We need to feed our 3DCityDb to test. In order to do that please use provided docker-compose file or please ru your own script (Note: If you didn't delete your previous volume, you do not need to run this command again!):
+
+   .. code-block:: bash
+
+    # Environment variables that are provided in previous step has to match with our env variables (i.e. docker-compose.yaml and docker-compose.import.yaml should have same env vars for db configs)
+    docker-compose -f docker-compose.import.yaml up -d
+
 
 Repository Structure
 ====================
 
 - **src/**: Main project code. (Rename as needed.)
-- **tests/**: Folder for tests; structured by functionality.
-- **docs/**: Documentation source files. Use MkDocs to build and update.
-- **examples/**: Example scripts and notebooks.
 - **data/**: Data files used in the project. (optional)
-- **notebooks/**: Jupyter notebooks for data exploration and analysis. (optional)
 - **scripts/**: Utility scripts for data processing, model training, etc. (optional)
-- **code_examples/**: Code examples, demonstrating the expected coding style and documentation practices. (Can be removed after the project is set up.)
+
 
 Usage Guidelines
 ================
@@ -110,23 +162,10 @@ Basic Workflow
 #. **Review the code** and **tests** in the pull request.
 #. **Merge the pull request** after approval.
 
-Documentation
-=============
-
-The documentation is created with Markdown using `MkDocs <https://www.mkdocs.org/>`_. All files are stored in the ``docs`` folder of the repository.
-
-Build the documentation using MkDocs:
-
-.. code-block:: bash
-
-   mkdocs serve
-
-The documentation will be available at http://127.0.0.1:8000/.
-
 Open Api Spesifications
 ============== 
+Fastapi provides built in openApi documentation. Please go to following url to see our endpoints: http://127.0.0.1:8000/docs#/
 
-Please go to following url to see our endpoints: http://127.0.0.1:8000/docs#/
 
 CI/CD Workflow
 ==============
@@ -197,28 +236,3 @@ License and Citation
     :alt: closed merge requests
 
 
-Environment Variables for testing:
-# .env
-
-# TimescaleDB Configuration
-TIMESCALE_USER=timescale_user
-TIMESCALE_PASSWORD=secret
-TIMESCALE_HOST=127.0.0.1
-TIMESCALE_PORT=5432
-TIMESCALE_DB=timescaledb_db
-
-# CityDB Configuration
-CITYDB_USER=citydb_user
-CITYDB_PASSWORD=citydb_password
-CITYDB_HOST=127.0.0.1
-CITYDB_PORT=5433
-CITYDB_DB=citydb
-
-# General Configuration
-DEBUG=true
-
-
-To import data to 3DCityDb through importer/exporter, please run this command on your terminal:
-docker-compose -f docker-compose.impexp.yaml up
-
-By default, test.gml file is provided in our repository. If you would like to upload different data, please see the comments on docker-compose.impexp.yaml file!
