@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
 from datetime import datetime
 
+
 class SensorData(BaseModel):
     timestamp: datetime
     gml_id: str = Field(min_length=1, description="GML ID has to be provided")

@@ -2,6 +2,7 @@ from fastapi import APIRouter
 from .sensorRouter import SensorRouter
 from .cityRouter import CityRouter
 
+
 class ApiRouter:
     def __init__(self):
         self.router = APIRouter()

@@ -1,11 +1,11 @@
-from sqlalchemy import bindparam, text
+from sqlalchemy import text
 from sqlmodel import Session
 from src.core.db_config import citydb_engine
-from fastapi import HTTPException, Path
-from src.schemas.city_object import CityObjectInput
+from fastapi import HTTPException
 
-class CityDBService:       
-    def get(self, gmlId:str):
+
+class CityDBService:
+    def get(self, gmlId: str):
         try:
             sqlSelect = text("""
                 SELECT id, objectclass_id, gmlid, creation_date
