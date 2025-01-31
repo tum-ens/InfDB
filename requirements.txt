@@ -5,3 +5,4 @@ python-dotenv==1.0.1
 SQLAlchemy==2.0.36
 sqlmodel==0.0.22
 uvicorn[standard]==0.22.0
+flake8==7.1.1
