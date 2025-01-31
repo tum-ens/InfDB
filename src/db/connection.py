@@ -1,6 +1,7 @@
 from sqlmodel import SQLModel
 from src.core.db_config import timescale_engine, citydb_engine
 
+
 def init_db():
     try:
         print("Initializing TimescaleDB...")
