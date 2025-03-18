@@ -14,16 +14,16 @@ class WeatherAPI:
     def get_weather_data(self, params):
         try:
             response = self.client.weather_api(self.url, params=params)[0]
-            hourly = response.Hourly()
+            daily = response.Daily()
 
-            hourly_data = {"date": pd.date_range(
-                start=pd.to_datetime(hourly.Time(), unit="s", utc=True),
-                end=pd.to_datetime(hourly.TimeEnd(), unit="s", utc=True),
-                freq=pd.Timedelta(seconds=hourly.Interval()),
+            daily_data = {"date": pd.date_range(
+                start=pd.to_datetime(daily.Time(), unit="s", utc=True),
+                end=pd.to_datetime(daily.TimeEnd(), unit="s", utc=True),
+                freq=pd.Timedelta(seconds=daily.Interval()),
                 inclusive="left"
             )}
-            hourly_data["temperature_2m"] = hourly.Variables(0).ValuesAsNumpy()
-            hourly_dataframe = pd.DataFrame(data=hourly_data)
-            return hourly_dataframe.to_json(orient='records', date_format='iso')
+            daily_data["temperature_2m"] = daily.Variables(0).ValuesAsNumpy()
+            daily_dataframe = pd.DataFrame(data=daily_data)
+            return daily_dataframe.to_json(orient='records', date_format='iso')
         except AttributeError:
             return []

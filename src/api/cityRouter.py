@@ -11,7 +11,7 @@ city_db_service = CityDBService()
 @cbv(router)
 class CityDbRouter:
     @router.get("/grids")
-    async def get_grid_centers():
+    async def get_grid_centers(self):
         result = city_db_service.getGridCenters()
         if not result:
             raise HTTPException(status_code=404, detail="No data found")
