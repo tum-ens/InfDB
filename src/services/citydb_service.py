@@ -15,8 +15,6 @@ class CityDBService:
 
             with Session(citydb_engine) as session:
                 result = session.execute(sqlSelect).mappings().fetchall()
-
-            
             return result
 
         except Exception as e:
