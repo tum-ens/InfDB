@@ -4,7 +4,6 @@ from datetime import date, timedelta
 from src.services.citydb_service import CityDBService
 
 
-
 class WeatherService:
     def __init__(self):
         self.api = WeatherAPI()
