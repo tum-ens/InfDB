@@ -1,9 +1,10 @@
-from sqlmodel import SQLModel, Field
+from sqlmodel import Field
 from datetime import datetime
 from typing import Optional
+from src.db.bases import TimescaleDBBase
 
 
-class SensorReading(SQLModel, table=True):
+class SensorReading(TimescaleDBBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     gml_id: str = Field(index=True)
     timestamp: datetime
