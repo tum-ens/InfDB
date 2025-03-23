@@ -10,6 +10,19 @@ city_db_service = CityDBService()
 
 @cbv(router)
 class CityDbRouter:
+    @router.post("/grids")
+    async def generate_grid_table(self, resolution: int = Query):
+        result = city_db_service.getGridCenters(resolution)
+        if result:
+            raise HTTPException(status_code=404, detail="Table was initialized before skipping")
+        
+        # these 2 should happen in transaction or atleast under 1 commit.
+        city_db_service.generateGrids(resolution)
+        city_db_service.generateBuilding2GridMappings(resolution)
+        return {
+            "message": "Grid table filled successfully",
+        }
+
     @router.get("/grids")
     async def get_grid_centers(self):
         result = city_db_service.getGridCenters()
@@ -25,9 +38,10 @@ class CityDbRouter:
             } for data in result]
         }
 
-    @router.get("/grids/building/{buildingId}")
-    async def get_grid_center(buildingId: int, resolution: int = Query):
-        result = city_db_service.getGridCenter(buildingId, resolution)
+    @router.get("/grids/building/{building_id}")
+    async def get_grid_center(self, building_id: int, resolution: int = Query):
+        print(building_id)
+        result = city_db_service.getGridCenter(building_id, resolution)
         if not result:
             raise HTTPException(status_code=404, detail="No data found")
         return {
