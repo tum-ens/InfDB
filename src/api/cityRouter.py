@@ -1,4 +1,4 @@
-from fastapi import HTTPException
+from fastapi import HTTPException, Query
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
 from src.services.citydb_service import CityDBService
@@ -26,8 +26,8 @@ class CityDbRouter:
         }
 
     @router.get("/grids/building/{buildingId}")
-    async def get_grid_center(self, buildingId: int):
-        result = city_db_service.getGridCenter(buildingId)
+    async def get_grid_center(buildingId: int, resolution: int = Query):
+        result = city_db_service.getGridCenter(buildingId, resolution)
         if not result:
             raise HTTPException(status_code=404, detail="No data found")
         return {

@@ -4,10 +4,12 @@ CREATE TABLE IF NOT EXISTS citydb.test_grid (
 	CONSTRAINT geom_unique UNIQUE (geom)
 );
 
-INSERT INTO citydb.test_grid (geom)
+INSERT INTO citydb.raster (geom, resolution)
 WITH grid AS (
     SELECT ((ST_SquareGrid(1000, ST_Transform(envelope, 4326)))).geom 
     FROM citydb.cityobject
 
 )
-SELECT DISTINCT(geom) FROM grid;
+SELECT DISTINCT(geom), 1000 FROM grid;
+
+

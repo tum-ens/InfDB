@@ -1,6 +1,7 @@
 from sqlmodel import Field
 from src.db.bases import CityDBBase
 
+
 # this is just for a reference Building2Raster
 # this is not the correct model
 # but we would like to provide a minimalistic model just for Building2Raster
