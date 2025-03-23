@@ -5,6 +5,62 @@ from fastapi import HTTPException
 
 
 class CityDBService:
+    def generateGrids(self, resolution:int):
+        try:
+            # will update the lat lon part soon. now just for testing
+            sqlSelect = text(""" 
+                INSERT INTO citydb.raster (geom, resolution)
+                WITH grid AS (
+                    SELECT ((ST_SquareGrid(:resolution, ST_Transform(envelope, 4326)))).geom 
+                    FROM citydb.cityobject
+
+                )
+                SELECT DISTINCT(geom), :resolution
+                FROM grid
+                RETURNING id, geom, resolution;
+            """)
+
+            with Session(citydb_engine) as session:
+                result = session.execute(sqlSelect, params={"resolution": resolution}).mappings().all()
+                session.commit()
+            
+            return result
+
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Database query failed: {str(e)}")
+
+    def generateBuilding2GridMappings(self, resolution: int):
+        try:
+            # will update the lat lon part soon. now just for testing
+            sqlSelect = text("""                             
+                with building_locations AS (
+                    SELECT b.id AS building_id,
+                        ST_SetSRID(ST_Centroid(c.envelope), 4326) AS geom
+                    FROM citydb.building b
+                    JOIN citydb.cityobject c ON b.id = c.id
+                )
+
+                INSERT INTO citydb.building_2_raster (building_id, grid_id)
+                SELECT p.building_id,
+                    (
+                        SELECT g.id
+                        FROM citydb.raster g
+                        WHERE ST_Within(p.geom, g.geom) AND resolution = :resolution
+                        LIMIT 1
+                    ) AS grid_id
+                FROM building_locations p
+                RETURNING building_id, grid_id;
+            """)
+
+            with Session(citydb_engine) as session:
+                result = session.execute(sqlSelect, params={"resolution": resolution}).mappings().all()
+                session.commit()
+            
+            return result
+
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Database query failed: {str(e)}")
+        
     def getGridCenters(self, resolution: int):
         try:
             # will update the lat lon part soon. now just for testing
