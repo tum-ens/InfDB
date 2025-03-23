@@ -1,6 +1,5 @@
 from src.externals.weatherApi import WeatherAPI
 from datetime import date, timedelta
-
 from src.services.citydb_service import CityDBService
 
 
@@ -9,8 +8,8 @@ class WeatherService:
         self.api = WeatherAPI()
         self.cityDbService = CityDBService()
 
-    def getHistoricalData(self):
-        centers = self.cityDbService.getGridCenters()
+    def getHistoricalData(self, resolution: int):
+        centers = self.cityDbService.getGridCenters(resolution)
         today = date.today()
         one_year_ago = today - timedelta(days=365)
 
