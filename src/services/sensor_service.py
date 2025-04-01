@@ -6,22 +6,33 @@ from src.core.db_config import timescale_engine
 
 
 class SensorService:
-    def insertSensorData(self, data: SensorData):
+    def insertSensorData(self, reading: SensorReading):
         try:
             with Session(timescale_engine) as session:
-                sensor_reading = SensorReading(
-                    timestamp=data.timestamp,
-                    gml_id=data.gml_id,
-                    sensor_name=data.sensor_name,
-                    value=data.value
-                )
-                session.add(sensor_reading)
+                session.add(reading)
                 session.commit()
-                session.refresh(sensor_reading)  # Refresh to get the new ID
-
-            return sensor_reading.id
+                session.refresh(reading)
+            return reading.id
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Database insertion failed: {str(e)}")
+            print(f"Database insertion failed: {e}")
+            return None
+
+    # def insertSensorData(self, data: SensorData):
+    #     try:
+    #         with Session(timescale_engine) as session:
+    #             sensor_reading = SensorReading(
+    #                 timestamp=data.timestamp,
+    #                 gml_id=data.gml_id,
+    #                 sensor_name=data.sensor_name,
+    #                 value=data.value
+    #             )
+    #             session.add(sensor_reading)
+    #             session.commit()
+    #             session.refresh(sensor_reading)  # Refresh to get the new ID
+
+    #         return sensor_reading.id
+    #     except Exception as e:
+    #         raise HTTPException(status_code=500, detail=f"Database insertion failed: {str(e)}")
 
     def getByGmlId(self, gml_id: str):
         try:

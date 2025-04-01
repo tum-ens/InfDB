@@ -65,7 +65,7 @@ class CityDBService:
         try:
             # will update the lat lon part soon. now just for testing
             sqlSelect = text("""
-                SELECT (ST_X(ST_Centroid(g.geom)) / 10000) AS longitude, (ST_Y(ST_Centroid(g.geom)) / 100000) AS latitude
+                SELECT g.id AS rasterId, (ST_X(ST_Centroid(g.geom)) / 10000) AS longitude, (ST_Y(ST_Centroid(g.geom)) / 100000) AS latitude
                 FROM raster g
                 WHERE g.resolution = :resolution
             """)
