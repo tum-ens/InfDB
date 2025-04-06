@@ -3,10 +3,9 @@ import json
 from fastapi import HTTPException
 from src.db.models.sensor_reading import SensorReading
 from src.externals.weatherApi import WeatherAPI
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 from src.services.citydb_service import CityDBService
 from src.services.sensor_service import SensorService
-from sqlmodel import Session, select
 
 class WeatherService:
     def __init__(self):
