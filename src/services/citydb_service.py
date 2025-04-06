@@ -80,7 +80,7 @@ class CityDBService:
     def getGridCenter(self, buildingId: int, resolution: int):
         try:
             sqlSelect = text("""
-                SELECT mapper.building_id, mapper.grid_id, ST_X((ST_Centroid(g.geom))) AS longitude, ST_Y((ST_Centroid(g.geom))) AS latitude
+                SELECT mapper.building_id, mapper.grid_id, (ST_X(ST_Centroid(g.geom)) / 10000) AS longitude, (ST_Y(ST_Centroid(g.geom)) / 100000) AS latitude
                 FROM building_2_raster mapper
                 JOIN raster g ON mapper.grid_id = g.id
                 WHERE mapper.building_id = :buildingId AND g.resolution = :resolution

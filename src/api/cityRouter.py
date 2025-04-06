@@ -10,7 +10,7 @@ city_db_service = CityDBService()
 
 @cbv(router)
 class CityDbRouter:
-    @router.post("/grids")
+    @router.post("/grids", tags=["Citydb"])
     async def generate_grid_table(self, resolution: int = Query):
         result = city_db_service.getGridCenters(resolution)
         if result:
@@ -23,7 +23,7 @@ class CityDbRouter:
             "message": "Grid table filled successfully",
         }
 
-    @router.get("/grids")
+    @router.get("/grids", tags=["Citydb"])
     async def get_grid_centers(self):
         result = city_db_service.getGridCenters()
         if not result:
@@ -38,7 +38,7 @@ class CityDbRouter:
             } for data in result]
         }
 
-    @router.get("/grids/building/{building_id}")
+    @router.get("/grids/building/{building_id}", tags=["Citydb"])
     async def get_grid_center(self, building_id: int, resolution: int = Query):
         print(building_id)
         result = city_db_service.getGridCenter(building_id, resolution)
