@@ -50,7 +50,11 @@ class SensorService:
 
                 for key, value in filters.items():
                     # is this correct place to check for filter params or api level is better?
-                    if (hasattr(SensorReading, key)):
+                    if key == "timestamp__gte":
+                        statement = statement.where(SensorReading.timestamp >= value)
+                    elif key == "timestamp__lte":
+                        statement = statement.where(SensorReading.timestamp <= value)
+                    elif (hasattr(SensorReading, key)):
                         statement = statement.where(getattr(SensorReading, key) == value)
 
                 sensor_readings = session.exec(statement).all()
