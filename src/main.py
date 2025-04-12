@@ -1,8 +1,12 @@
 from fastapi import FastAPI
-from .api.routes import ApiRouter
+from .api.cityRouter import router as city_router
+from .api.sensorRouter import router as sensor_router
+from .api.weatherRouter import router as weather_router
 from .db.connection import init_db
+
 
 init_db()
 app = FastAPI()
-api_routes = ApiRouter()
-app.include_router(api_routes.get_router())
+app.include_router(city_router)
+app.include_router(sensor_router)
+app.include_router(weather_router)
