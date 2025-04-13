@@ -15,7 +15,6 @@ class WeatherRepository:
             print(f"Database insertion failed: {e}")
             return None
 
-
     def get(self, filters: dict[str, any]):
         try:
             with Session(timescale_engine) as session:

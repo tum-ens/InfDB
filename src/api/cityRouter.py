@@ -16,7 +16,7 @@ class CityDbRouter:
         result = self.cityDbService.getRasterCenters(resolution)
         if result:
             raise HTTPException(status_code=404, detail="Table was initialized before, skipping")
-        
+
         self.cityDbService.generateRasterRelatedTables(resolution)
         return {
             "message": "Raster table filled successfully",
@@ -29,7 +29,6 @@ class CityDbRouter:
         if not result:
             raise HTTPException(status_code=404, detail="No data found")
         return result
-        
 
     @router.get("/rasters/building/{building_id}", tags=["Citydb"])
     async def getRasterCenter(self, buildingId: int, resolution: int = Query):

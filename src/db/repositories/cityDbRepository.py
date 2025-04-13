@@ -3,6 +3,7 @@ from sqlmodel import Session
 from src.core.dbConfig import citydb_engine
 from fastapi import HTTPException
 
+
 # in this repository we have to write our sqls by hand instead of using ORM tools
 # sql codes can be removed to a var in sql file and then be imported here as well.
 class CityDBRepository:
@@ -17,10 +18,10 @@ class CityDBRepository:
                 session.rollback()
                 raise HTTPException(status_code=500, detail=f"Transaction failed: {str(e)}")
 
-    ##Important information regarding our dataset:
-    ##currently we keep citydb data in 4326 SRID format. it returns us lat and lon in meters not in degrees.
-    ##to return it to degrees, we've used ST_Transform(ST_SetSRID(g.geom, 25832), 4326) which is POSTGIS method.
-    ##This can be updated in the future.
+    # Important information regarding our dataset:
+    # currently we keep citydb data in 4326 SRID format. it returns us lat and lon in meters not in degrees.
+    # to return it to degrees, we've used ST_Transform(ST_SetSRID(g.geom, 25832), 4326) which is POSTGIS method.
+    # This can be updated in the future.
     def getRasterCenters(self, resolution: int):
         try:
             # will update the lat lon part soon. now just for testing
@@ -53,12 +54,12 @@ class CityDBRepository:
 
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Database query failed: {str(e)}")
-        
+
     def _generateRasters(self, session: Session, resolution: int):
         sql = text("""
             INSERT INTO citydb.raster (geom, resolution)
             WITH grid AS (
-                SELECT ((ST_SquareGrid(:resolution, ST_Transform(envelope, 4326)))).geom 
+                SELECT ((ST_SquareGrid(:resolution, ST_Transform(envelope, 4326)))).geom
                 FROM citydb.cityobject
             )
             SELECT DISTINCT(geom), :resolution

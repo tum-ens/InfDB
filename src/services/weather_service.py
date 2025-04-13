@@ -1,11 +1,11 @@
 import json
-
 from fastapi import HTTPException
 from src.db.models.weatherReading import WeatherReading
 from src.db.repositories.weatherRepository import WeatherRepository
 from src.externals.weatherApi import WeatherAPI
 from datetime import date, datetime
 from src.services.citydb_service import CityDBService
+
 
 class WeatherService:
     def __init__(self):
@@ -26,8 +26,6 @@ class WeatherService:
             }
 
             weather_data = json.loads(self.api.getHourlyWeatherData(params))
-
-
             for entry in weather_data:
                 readings = []
                 for sensor in sensorNames:
@@ -55,4 +53,3 @@ class WeatherService:
             filters["timestamp__lte"] = end
 
         return self.repository.get(filters)
-
