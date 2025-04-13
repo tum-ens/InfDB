@@ -1,4 +1,4 @@
 from .citydb_service import CityDBService
-from .sensor_service import SensorService
+from .weather_service import WeatherService
 
-__all__ = ["CityDBService", "SensorService"]
+__all__ = ["CityDBService", "WeatherService"]
