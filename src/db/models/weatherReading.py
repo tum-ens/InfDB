@@ -4,9 +4,9 @@ from typing import Optional
 from src.db.bases import TimescaleDBBase
 
 
-class SensorReading(TimescaleDBBase, table=True):
+class WeatherReading(TimescaleDBBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     raster_id: str = Field(index=True)
     timestamp: datetime
-    sensor_name: str
+    sensor_name: str = Field(index=True)
     value: float

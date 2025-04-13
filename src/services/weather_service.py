@@ -1,20 +1,20 @@
 import json
 
 from fastapi import HTTPException
-from src.db.models.sensor_reading import SensorReading
+from src.db.models.weatherReading import WeatherReading
+from src.db.repositories.weatherRepository import WeatherRepository
 from src.externals.weatherApi import WeatherAPI
 from datetime import date, datetime
 from src.services.citydb_service import CityDBService
-from src.services.sensor_service import SensorService
 
 class WeatherService:
     def __init__(self):
         self.api = WeatherAPI()
         self.cityDbService = CityDBService()
-        self.sensorService = SensorService()
+        self.repository = WeatherRepository()
 
-    def insertHistoricalData(self, resolution: int, start_date: date, end_date: date):
-        centers = self.cityDbService.getGridCenters(resolution)
+    def insertHistoricalData(self, resolution: int, start_date: date, end_date: date, sensorNames: list[str]):
+        centers = self.cityDbService.getRasterCenters(resolution)
 
         for center in centers:
             params = {
@@ -22,28 +22,31 @@ class WeatherService:
                 "longitude": center.longitude,
                 "start_date": start_date.strftime("%Y-%m-%d"),
                 "end_date": end_date.strftime("%Y-%m-%d"),
-                "daily": "temperature_2m_max"
+                "hourly": sensorNames
             }
 
-            weather_data = json.loads(self.api.get_weather_data(params))
+            weather_data = json.loads(self.api.getHourlyWeatherData(params))
 
-            readings = []
+
             for entry in weather_data:
-                reading = SensorReading(
-                    raster_id=str(center.rasterid),
-                    timestamp=datetime.strptime(entry["date"], "%Y-%m-%dT%H:%M:%S.%fZ"),
-                    sensor_name="temperature_2m_max",
-                    value=entry["temperature_2m"],
-                )
-                self.sensorService.insertSensorData(reading)
-                readings.append(reading)
+                readings = []
+                for sensor in sensorNames:
+                    reading = WeatherReading(
+                        raster_id=str(center.rasterid),
+                        timestamp=datetime.strptime(entry["date"], "%Y-%m-%dT%H:%M:%S.%fZ"),
+                        sensor_name=sensor,
+                        value=entry[sensor],
+                    )
+                    readings.append(reading)
 
-    def get_weather_data(self, resolution: int, building_id: str, start: datetime | None, end: datetime | None):
-        center = self.cityDbService.getGridCenter(building_id, resolution)
+                self.repository.insertSensorData(readings)
+
+    def getData(self, resolution: int, building_id: str, start: datetime | None, end: datetime | None):
+        center = self.cityDbService.getRasterCenter(building_id, resolution)
         if not center:
-            raise HTTPException(status_code=404, detail="Grid center not found")
+            raise HTTPException(status_code=404, detail="Raster center not found")
 
-        raster_id = str(center["grid_id"])
+        raster_id = str(center["raster_id"])
         filters = {"raster_id": raster_id}
 
         if start is not None:
@@ -51,5 +54,5 @@ class WeatherService:
         if end is not None:
             filters["timestamp__lte"] = end
 
-        return self.sensorService.get(filters)
+        return self.repository.get(filters)
 
