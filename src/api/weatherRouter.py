@@ -1,5 +1,5 @@
 from typing import Optional
-from fastapi import Query, status
+from fastapi import Query
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
 from src.exceptions.weatherException import InvalidWeatherParameterError
@@ -8,11 +8,14 @@ from src.services.weather_service import WeatherService
 from pydantic import BaseModel
 from datetime import date, datetime
 
+
 class DateRange(BaseModel):
     startDate: date
     endDate: date
 
+
 router = InferringRouter(prefix="/weather")
+
 
 @cbv(router)
 class WeatherRouter:

@@ -5,9 +5,9 @@ class CityDBService:
     def __init__(self):
         self.repository = CityDBRepository()
 
-    def generateRasterRelatedTables(self, resolution:int):
+    def generateRasterRelatedTables(self, resolution: int):
         self.repository.generateRasterRelatedTables(resolution)
-       
+
     def getRasterCenters(self, resolution: int):
         return self.repository.getRasterCenters(resolution)
 
