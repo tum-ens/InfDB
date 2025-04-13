@@ -2,33 +2,39 @@ from typing import Optional
 from fastapi import Query, status
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
+from src.exceptions.weatherException import InvalidWeatherParameterError
 from src.services.weather_service import WeatherService
-
 
 from pydantic import BaseModel
 from datetime import date, datetime
 
 class DateRange(BaseModel):
-    start_date: date
-    end_date: date
+    startDate: date
+    endDate: date
 
 router = InferringRouter(prefix="/weather")
-sensor_service = WeatherService()
 
 @cbv(router)
 class WeatherRouter:
-    @router.post("/weather-data/{resolution}", tags=["Weather Data"])
-    async def post_weather_data(self, resolution: int, date_range: DateRange):
-        sensor_service.insertHistoricalData(resolution, date_range.start_date, date_range.end_date)
-        return {"message": "Data processed"}
+    weatherService = WeatherService()
 
+    @router.post("/weather-data/{resolution}", tags=["Weather Data"])
+    async def postWeatherData(self, resolution: int, dateRange: DateRange, sensorNames: list[str]):
+        try:
+            self.weatherService.insertHistoricalData(resolution, dateRange.startDate, dateRange.endDate, sensorNames)
+            return {"message": "Data processed"}
+        except InvalidWeatherParameterError as e:
+            return {
+                "error": str(e),
+                "details": e.details
+            }
 
     @router.get("/weather-data/{resolution}", tags=["Weather Data"])
-    async def get_building_data(
+    async def getBuildingData(
         self,
         resolution: int,
-        building_id: Optional[str] = Query(None),
-        start_time: Optional[datetime] = Query(None),
-        end_time: Optional[datetime] = Query(None)
+        buildingId: Optional[str] = Query(None),
+        startTime: Optional[datetime] = Query(None),
+        endTime: Optional[datetime] = Query(None)
     ):
-        return sensor_service.get_weather_data(resolution, building_id, start_time, end_time)
+        return self.weatherService.getData(resolution, buildingId, startTime, endTime)
