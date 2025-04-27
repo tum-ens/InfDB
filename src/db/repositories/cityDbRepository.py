@@ -7,14 +7,15 @@ from fastapi import HTTPException
 # in this repository we have to write our sqls by hand instead of using ORM tools
 # sql codes can be removed to a var in sql file and then be imported here as well.
 class CityDBRepository:
-    def generateRasterRelatedTables(self, resolution: int):
+    def generateRasterRelatedTables(self, resolution: int, idPrefix: str, idSuffixLength: int):
         with Session(citydb_engine) as session:
             try:
-                rasters = self._generateRasters(session, resolution)
+                rasters = self._generateRasters(session, resolution, idPrefix, idSuffixLength)
                 mappings = self._generateBuilding2RasterMappings(session, resolution)
                 session.commit()
                 return {"rasters": rasters, "mappings": mappings}
             except Exception as e:
+                print(e)
                 session.rollback()
                 raise HTTPException(status_code=500, detail=f"Transaction failed: {str(e)}")
 
@@ -55,36 +56,47 @@ class CityDBRepository:
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Database query failed: {str(e)}")
 
-    def _generateRasters(self, session: Session, resolution: int):
+    def _generateRasters(self, session: Session, resolution: int, idPrefix: str, idSuffixLength: int):
         sql = text("""
-            INSERT INTO citydb.raster (geom, resolution)
-            WITH grid AS (
-                SELECT ((ST_SquareGrid(:resolution, ST_Transform(envelope, 4326)))).geom
-                FROM citydb.cityobject
-            )
-            SELECT DISTINCT(geom), :resolution
-            FROM grid
-            RETURNING id, geom, resolution;
+                    INSERT INTO citydb.raster
+                    SELECT
+                        :idPrefix || lpad((y / :resolution)::text, :idSuffixLength, '0') || 'E' || lpad((x / :resolution)::text, :idSuffixLength, '0') AS id,
+                        :resolution as resolution,
+                        ST_SetSRID(
+                            ST_MakePolygon(
+                            ST_MakeLine(ARRAY[
+                                ST_MakePoint(x, y),
+                                ST_MakePoint(x + :resolution, y),
+                                ST_MakePoint(x + :resolution, y + :resolution),
+                                ST_MakePoint(x, y + :resolution),
+                                ST_MakePoint(x, y)
+                            ])
+                            ), 3035
+                        ) AS geom
+                    FROM generate_series(4000000, 4600000, :resolution) AS x,
+                        generate_series(2600000, 3500000, :resolution) AS y
+                    RETURNING id;
         """)
-        return session.execute(sql, {"resolution": resolution}).mappings().all()
+        return session.execute(sql, {"resolution": resolution, "idPrefix": idPrefix, "idSuffixLength": idSuffixLength}).mappings().all()
 
     def _generateBuilding2RasterMappings(self, session: Session, resolution: int):
+        ## v 5 does not have cityobject table, we have to update this script.
         sql = text("""
             WITH building_locations AS (
                 SELECT b.id AS building_id,
-                       ST_SetSRID(ST_Centroid(c.envelope), 4326) AS geom
+                       ST_SetSRID(ST_Centroid(c.geometry), 4326) AS geom
                 FROM citydb.building b
-                JOIN citydb.cityobject c ON b.id = c.id
+	            JOIN citydb.geometry_data c ON b.id = c.id
             )
-            INSERT INTO citydb.building_2_raster (building_id, grid_id)
+            INSERT INTO citydb.building_2_raster (building_id, raster_id)
             SELECT p.building_id,
                    (
                        SELECT g.id
                        FROM citydb.raster g
                        WHERE ST_Within(p.geom, g.geom) AND resolution = :resolution
                        LIMIT 1
-                   ) AS grid_id
+                   ) AS raster_id
             FROM building_locations p
-            RETURNING building_id, grid_id;
+            RETURNING building_id, raster_id;
         """)
         return session.execute(sql, {"resolution": resolution}).mappings().all()
