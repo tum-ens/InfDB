@@ -14,6 +14,6 @@ class Building2Raster(CityDBBase, table=True):
     __tablename__ = "building_2_raster"
 
     building_id: int = Field(foreign_key="building.id", nullable=False, primary_key=True)
-    raster_id: int = Field(foreign_key="raster.id", nullable=False, primary_key=True)
+    raster_id: str = Field(foreign_key="raster.id", nullable=False, primary_key=True)
 
 # when querying i have to join by reaster and filter by resolution column on raster table
