@@ -82,21 +82,21 @@ class CityDBRepository:
     def _generateBuilding2RasterMappings(self, session: Session, resolution: int):
         ## v 5 does not have cityobject table, we have to update this script.
         sql = text("""
-            WITH building_locations AS (
-                SELECT b.id AS building_id,
-                       ST_SetSRID(ST_Centroid(c.geometry), 4326) AS geom
-                FROM citydb.building b
-	            JOIN citydb.geometry_data c ON b.id = c.id
-            )
-            INSERT INTO citydb.building_2_raster (building_id, raster_id)
-            SELECT p.building_id,
-                   (
+                    WITH building_locations AS (
+                        SELECT b.id AS building_id,
+                        ST_SetSRID(ST_Centroid(c.geometry), 4326) AS geom
+                        FROM citydb.building b
+                        JOIN citydb.geometry_data c ON b.id = c.id
+                    )
+                    INSERT INTO citydb.building_2_raster (building_id, raster_id)
+                    SELECT p.building_id,
+                    (
                        SELECT g.id
                        FROM citydb.raster g
                        WHERE ST_Within(p.geom, g.geom) AND resolution = :resolution
                        LIMIT 1
-                   ) AS raster_id
-            FROM building_locations p
-            RETURNING building_id, raster_id;
+                    ) AS raster_id
+                    FROM building_locations p
+                    RETURNING building_id, raster_id;
         """)
         return session.execute(sql, {"resolution": resolution}).mappings().all()
