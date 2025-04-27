@@ -1,8 +1,8 @@
 from fastapi import HTTPException, Query
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
+from src.schemas.resolution import ResolutionEnum
 from src.services.citydb_service import CityDBService
-
 
 router = InferringRouter(prefix="/city")
 
@@ -12,7 +12,7 @@ class CityDbRouter:
     cityDbService = CityDBService()
 
     @router.post("/rasters", tags=["Citydb"])
-    async def generateRasterTable(self, resolution: int = Query):
+    async def generateRasterTable(self, resolution: ResolutionEnum = Query):
         result = self.cityDbService.getRasterCenters(resolution)
         if result:
             raise HTTPException(status_code=404, detail="Table was initialized before, skipping")

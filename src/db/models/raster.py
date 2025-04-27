@@ -10,8 +10,8 @@ class Raster(CityDBBase, table=True):
         UniqueConstraint("geom", name="geom_unique"),
     )
 
-    id: int | None = Field(default=None, primary_key=True)
-    resolution: int = Field(default=None)
+    id: str | None = Field(default=None, primary_key=True)
+    resolution: int = Field(default=None, index=True)
     geom: str = Field(
-        sa_column=Column(Geometry(geometry_type="POLYGON", srid=4326), unique=True)
+        sa_column=Column(Geometry(geometry_type="POLYGON", srid=3035), unique=True)
     )
