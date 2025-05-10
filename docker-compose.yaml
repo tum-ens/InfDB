@@ -51,7 +51,7 @@ services:
       - networkName
 
   citydb:
-    image: 3dcitydb/3dcitydb-pg:latest
+    image: 3dcitydb/3dcitydb-pg:5.0.0
     container_name: citydb
     environment:
       POSTGRES_DB: citydb

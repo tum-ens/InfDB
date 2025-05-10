@@ -1,0 +1,31 @@
+# Sphinx build directory
+build/
+
+# Generated documentation
+*.doctree
+*.pickle
+.doctrees/
+html/
+.buildinfo
+objects.inv
+searchindex.js
+_sources/
+_static/
+
+# Environment
+.env
+.venv
+env/
+venv/
+ENV/
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class

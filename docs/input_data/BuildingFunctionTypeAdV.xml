@@ -1,0 +1,2166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+External Code List enumerating the values for the attribute BuildingFuctionType.
+City GML Version No. 1.0.0, January 14th, 2008.
+Version:
+- Compiled by Sandra Schlueter, Ulrich Gruber, 20.02.2010
+- Updated by AdV 16.03.2020:
+		Deleted: 31001_2465 Tiefgarage, 11_* (AKL)
+		Added: 	51002_1251, 51002_1340, 51006_1470, 51007_1100, 51007_1110, 51007_1410, 51009_1700, 
+				52003_1010, 52003_1020, 
+				53001_1800, 53001_1806, 53001_1807, 53001_1808, 53001_1830, 53001_1880, 53001_1890, 53009_2030, 53009_2050, 53009_2060, 53009_2070, 53009_2080, 53009_2090
+- Updated by AdV 24.11.2021:
+		Supplemented for ATKIS 51001_1010, 51001_1012, 51001_9998, 51001_9999
+- Updated by AdV 21.03.2023:
+		Deleted: 51002_1340, 51007_1100, 51007_1410, 53001_1880
+		Added (caused bei GeoInfoDoc 7.1):	
+				31001_2095, 31001_3054,
+				51006_1441, 51006_1442 
+		Supplemented for ATKIS: 51007_1500	
+- Updated by AdV 09.04.2024:
+		Correction of version 21.03.2023:
+			Deleted: 	51007_1100 (Historische Wasserleitung)
+			Re-added:	51007_1110 (Aquädukt)
+			
+Note:
+gml:description shows, if a object is derive from ALKIS or ATKIS
+-->
+<!-- Schluesselwerte aus ALKIS hier Gebaeude -->
+<gml:Dictionary xmlns="http://www.opengis.net/gml" xmlns:gml="http://www.opengis.net/gml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/profiles/SimpleDictionary/1.0.0/gmlSimpleDictionaryProfile.xsd" gml:id="BuildingFunctionType">
+<name>BuildingFunctionType</name>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid1">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_1000</gml:name>
+      <gml:name>Wohngebäude</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid2">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_1010</gml:name>
+      <gml:name>Wohnhaus</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid3">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_1020</gml:name>
+      <gml:name>Wohnheim</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid4">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_1021</gml:name>
+      <gml:name>Kinderheim</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid5">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_1022</gml:name>
+      <gml:name>Seniorenheim</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid6">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_1023</gml:name>
+      <gml:name>Schwesternwohnheim</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid7">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_1024</gml:name>
+      <gml:name>Studenten-, Schülerwohnheim</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid8">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_1025</gml:name>
+      <gml:name>Schullandheim</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <!-- Platzhalter gml:id bis 10 -->
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid10">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_1100</gml:name>
+      <gml:name>Gemischt genutztes Gebäude mit Wohnen</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid11">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_1110</gml:name>
+      <gml:name>Wohngebäude mit Gemeinbedarf</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid12">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_1120</gml:name>
+      <gml:name>Wohngebäude mit Handel und Dienstleistungen</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid13">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_1121</gml:name>
+      <gml:name>Wohn- und Verwaltungsgebäude</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid14">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_1122</gml:name>
+      <gml:name>Wohn- und Bürogebäude</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid15">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_1123</gml:name>
+      <gml:name>Wohn- und Geschäftsgebäude</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid16">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_1130</gml:name>
+      <gml:name>Wohngebäude mit Gewerbe und Industrie</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid17">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_1131</gml:name>
+      <gml:name>Wohn- und Betriebsgebäude</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <!-- Platzhalter gml:id bis 20-->
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid20">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_1210</gml:name>
+      <gml:name>Land- und forstwirtschaftliches Wohngebäude</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid21">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_1220</gml:name>
+      <gml:name>Land- und forstwirtschaftliches Wohn- und Betriebsgebäude</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid22">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_1221</gml:name>
+      <gml:name>Bauernhaus</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid23">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_1222</gml:name>
+      <gml:name>Wohn- und Wirtschaftsgebäude</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid24">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_1223</gml:name>
+      <gml:name>Forsthaus</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid25">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_1310</gml:name>
+      <gml:name>Gebäude zur Freizeitgestaltung</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid26">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_1311</gml:name>
+      <gml:name>Ferienhaus</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid27">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_1312</gml:name>
+      <gml:name>Wochenendhaus</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid28">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_1313</gml:name>
+      <gml:name>Gartenhaus</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <!-- Platzhalter gml:id bis 30-->
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid30">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2000</gml:name>
+      <gml:name>Gebäude für Wirtschaft oder Gewerbe</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid31">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2010</gml:name>
+      <gml:name>Gebäude für Handel und Dienstleistungen</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid32">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2020</gml:name>
+      <gml:name>Bürogebäude</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid33">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2030</gml:name>
+      <gml:name>Kreditinstitut</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid34">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2040</gml:name>
+      <gml:name>Versicherung</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid35">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2050</gml:name>
+      <gml:name>Geschäftsgebäude</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid36">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2051</gml:name>
+      <gml:name>Kaufhaus</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid37">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2052</gml:name>
+      <gml:name>Einkaufszentrum</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid38">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2053</gml:name>
+      <gml:name>Markthalle</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid39">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2054</gml:name>
+      <gml:name>Laden</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid40">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2055</gml:name>
+      <gml:name>Kiosk</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid41">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2056</gml:name>
+      <gml:name>Apotheke</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid42">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2060</gml:name>
+      <gml:name>Messehalle</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid43">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2070</gml:name>
+      <gml:name>Gebäude für Beherbergung</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid44">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2071</gml:name>
+      <gml:name>Hotel, Motel, Pension</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid45">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2072</gml:name>
+      <gml:name>Jugendherberge</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid46">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2073</gml:name>
+      <gml:name>Hütte (mit Übernachtungsmöglichkeit)</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid47">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2074</gml:name>
+      <gml:name>Campingplatzgebäude</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid48">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2080</gml:name>
+      <gml:name>Gebäude für Bewirtung</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid49">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2081</gml:name>
+      <gml:name>Gaststätte, Restaurant</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid50">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2082</gml:name>
+      <gml:name>Hütte (ohne Übernachtungsmöglichkeit)</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid51">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2083</gml:name>
+      <gml:name>Kantine</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid52">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2090</gml:name>
+      <gml:name>Freizeit- und Vergnügungsstätte</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid53">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2091</gml:name>
+      <gml:name>Festsaal</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid54">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2092</gml:name>
+      <gml:name>Kino</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid55">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2093</gml:name>
+      <gml:name>Kegel-, Bowlinghalle</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid56">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2094</gml:name>
+      <gml:name>Spielkasino</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid57">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2095</gml:name>
+      <gml:name>Spielhalle</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid58">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2100</gml:name>
+      <gml:name>Gebäude für Gewerbe und Industrie</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid59">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2110</gml:name>
+      <gml:name>Produktionsgebäude</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid60">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2111</gml:name>
+      <gml:name>Fabrik</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid61">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2112</gml:name>
+      <gml:name>Betriebsgebäude</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid62">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2113</gml:name>
+      <gml:name>Brauerei</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid63">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2114</gml:name>
+      <gml:name>Brennerei</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid64">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2120</gml:name>
+      <gml:name>Werkstatt</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid65">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2121</gml:name>
+      <gml:name>Sägewerk</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid66">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2130</gml:name>
+      <gml:name>Tankstelle</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid67">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2131</gml:name>
+      <gml:name>Waschstraße, Waschanlage, Waschhalle</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid68">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2140</gml:name>
+      <gml:name>Gebäude für Vorratshaltung</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid69">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2141</gml:name>
+      <gml:name>Kühlhaus</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid70">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2142</gml:name>
+      <gml:name>Speichergebäude</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid71">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2143</gml:name>
+      <gml:name>Lagerhalle, Lagerschuppen, Lagerhaus</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid72">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2150</gml:name>
+      <gml:name>Speditionsgebäude</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid73">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2160</gml:name>
+      <gml:name>Gebäude für Forschungszwecke</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid74">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2170</gml:name>
+      <gml:name>Gebäude für Grundstoffgewinnung</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid75">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2171</gml:name>
+      <gml:name>Bergwerk</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid76">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2172</gml:name>
+      <gml:name>Saline</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid77">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2180</gml:name>
+      <gml:name>Gebäude für betriebliche Sozialeinrichtung</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <!-- Platzhalter gml:id bis 80 -->
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid80">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2200</gml:name>
+      <gml:name>Sonstiges Gebäude für Gewerbe und Industrie</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid81">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2210</gml:name>
+      <gml:name>Mühle</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid82">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2211</gml:name>
+      <gml:name>Windmühle</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid83">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2212</gml:name>
+      <gml:name>Wassermühle</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid84">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2213</gml:name>
+      <gml:name>Schöpfwerk</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid85">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2220</gml:name>
+      <gml:name>Wetterstation</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid86">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2310</gml:name>
+      <gml:name>Gebäude für Handel und Dienstleistung mit Wohnen</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid87">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2320</gml:name>
+      <gml:name>Gebäude für Gewerbe und Industrie mit Wohnen</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid88">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2400</gml:name>
+      <gml:name>Betriebsgebäude zu Verkehrsanlagen (allgemein)</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid89">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2410</gml:name>
+      <gml:name>Betriebsgebäude für Straßenverkehr</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid90">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2411</gml:name>
+      <gml:name>Straßenmeisterei</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid91">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2412</gml:name>
+      <gml:name>Wartehalle</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid92">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2420</gml:name>
+      <gml:name>Betriebsgebäude für Schienenverkehr</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid93">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2421</gml:name>
+      <gml:name>Bahnwärterhaus</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid94">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2422</gml:name>
+      <gml:name>Lokschuppen, Wagenhalle</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid95">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2423</gml:name>
+      <gml:name>Stellwerk, Blockstelle</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid96">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2424</gml:name>
+      <gml:name>Betriebsgebäude des Güterbahnhofs</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid97">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2430</gml:name>
+      <gml:name>Betriebsgebäude für Flugverkehr</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid98">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2431</gml:name>
+      <gml:name>Flugzeughalle</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid99">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2440</gml:name>
+      <gml:name>Betriebsgebäude für Schiffsverkehr</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid100">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2441</gml:name>
+      <gml:name>Werft (Halle)</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid101">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2442</gml:name>
+      <gml:name>Dock (Halle)</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid102">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2443</gml:name>
+      <gml:name>Betriebsgebäude zur Schleuse</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid103">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2444</gml:name>
+      <gml:name>Bootshaus</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid104">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2450</gml:name>
+      <gml:name>Betriebsgebäude zur Seilbahn</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid105">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2451</gml:name>
+      <gml:name>Spannwerk zur Drahtseilbahn</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid106">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2460</gml:name>
+      <gml:name>Gebäude zum Parken</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid107">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2461</gml:name>
+      <gml:name>Parkhaus</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid108">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2462</gml:name>
+      <gml:name>Parkdeck</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid109">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2463</gml:name>
+      <gml:name>Garage</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid110">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2464</gml:name>
+      <gml:name>Fahrzeughalle</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+   <!-- Platzhalter gml:id bis 120 -->
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid120">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2500</gml:name>
+      <gml:name>Gebäude zur Versorgung</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid121">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2501</gml:name>
+      <gml:name>Gebäude zur Energieversorgung</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid122">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2510</gml:name>
+      <gml:name>Gebäude zur Wasserversorgung</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid123">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2511</gml:name>
+      <gml:name>Wasserwerk</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid124">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2512</gml:name>
+      <gml:name>Pumpstation</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid125">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2513</gml:name>
+      <gml:name>Wasserbehälter</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid126">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2520</gml:name>
+      <gml:name>Gebäude zur Elektrizitätsversorgung</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid127">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2521</gml:name>
+      <gml:name>Elektrizitätswerk</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+	<gml:Definition gml:id="AdVid128">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2522</gml:name>
+      <gml:name>Umspannwerk</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid129">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2523</gml:name>
+      <gml:name>Umformer</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid130">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2527</gml:name>
+      <gml:name>Reaktorgebäude</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid131">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2528</gml:name>
+      <gml:name>Turbinenhaus</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid132">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2529</gml:name>
+      <gml:name>Kesselhaus</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid133">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2540</gml:name>
+      <gml:name>Gebäude für Fernmeldewesen</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid134">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2560</gml:name>
+      <gml:name>Gebäude an unterirdischen Leitungen</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid135">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2570</gml:name>
+      <gml:name>Gebäude zur Gasversorgung</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid136">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2571</gml:name>
+      <gml:name>Gaswerk</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid137">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2580</gml:name>
+      <gml:name>Heizwerk</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid138">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2590</gml:name>
+      <gml:name>Gebäude zur Versorgungsanlage</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid139">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2591</gml:name>
+      <gml:name>Pumpwerk (nicht für Wasserversorgung)</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid140">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2600</gml:name>
+      <gml:name>Gebäude zur Entsorgung</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid141">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2610</gml:name>
+      <gml:name>Gebäude zur Abwasserbeseitigung</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid142">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2611</gml:name>
+      <gml:name>Gebäude der Kläranlage</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid143">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2612</gml:name>
+      <gml:name>Toilette</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid144">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2620</gml:name>
+      <gml:name>Gebäude zur Abfallbehandlung</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid145">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2621</gml:name>
+      <gml:name>Müllbunker</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid146">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2622</gml:name>
+      <gml:name>Gebäude zur Müllverbrennung</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid147">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2623</gml:name>
+      <gml:name>Gebäude der Abfalldeponie</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+   <!-- Platzhalter gml:id bis 150 -->
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid150">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2700</gml:name>
+      <gml:name>Gebäude für Land- und Forstwirtschaft</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid151">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2720</gml:name>
+      <gml:name>Land- und forstwirtschaftliches Betriebsgebäude</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid152">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2721</gml:name>
+      <gml:name>Scheune</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid153">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2723</gml:name>
+      <gml:name>Schuppen</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid154">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2724</gml:name>
+      <gml:name>Stall</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid155">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2726</gml:name>
+      <gml:name>Scheune und Stall</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid156">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2727</gml:name>
+      <gml:name>Stall für Tiergroßhaltung</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid157">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2728</gml:name>
+      <gml:name>Reithalle</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid158">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2729</gml:name>
+      <gml:name>Wirtschaftsgebäude</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid159">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2732</gml:name>
+      <gml:name>Almhütte</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid160">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2735</gml:name>
+      <gml:name>Jagdhaus, Jagdhütte</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid161">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2740</gml:name>
+      <gml:name>Treibhaus, Gewächshaus</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid162">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2741</gml:name>
+      <gml:name>Treibhaus</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid163">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_2742</gml:name>
+      <gml:name>Gewächshaus, verschiebbar</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+   <!-- Platzhalter gml:id bis 170 -->
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid170">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3000</gml:name>
+      <gml:name>Gebäude für öffentliche Zwecke</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid171">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3010</gml:name>
+      <gml:name>Verwaltungsgebäude</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid172">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3011</gml:name>
+      <gml:name>Parlament</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid173">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3012</gml:name>
+      <gml:name>Rathaus</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid174">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3013</gml:name>
+      <gml:name>Post</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid175">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3014</gml:name>
+      <gml:name>Zollamt</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid176">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3015</gml:name>
+      <gml:name>Gericht</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid177">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3016</gml:name>
+      <gml:name>Botschaft, Konsulat</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid178">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3017</gml:name>
+      <gml:name>Kreisverwaltung</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid179">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3018</gml:name>
+      <gml:name>Bezirksregierung</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid180">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3019</gml:name>
+      <gml:name>Finanzamt</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid181">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3020</gml:name>
+      <gml:name>Gebäude für Bildung und Forschung</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid182">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3021</gml:name>
+      <gml:name>Allgemein bildende Schule</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid183">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3022</gml:name>
+      <gml:name>Berufsbildende Schule</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid184">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3023</gml:name>
+      <gml:name>Hochschulgebäude (Fachhochschule, Universität)</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid185">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3024</gml:name>
+      <gml:name>Forschungsinstitut</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid186">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3030</gml:name>
+      <gml:name>Gebäude für kulturelle Zwecke</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid187">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3031</gml:name>
+      <gml:name>Schloss</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid188">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3032</gml:name>
+      <gml:name>Theater, Oper</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid189">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3033</gml:name>
+      <gml:name>Konzertgebäude</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid190">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3034</gml:name>
+      <gml:name>Museum</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid191">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3035</gml:name>
+      <gml:name>Rundfunk, Fernsehen</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid192">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3036</gml:name>
+      <gml:name>Veranstaltungsgebäude</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid193">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3037</gml:name>
+      <gml:name>Bibliothek, Bücherei</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid194">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3038</gml:name>
+      <gml:name>Burg, Festung</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid195">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3040</gml:name>
+      <gml:name>Gebäude für religiöse Zwecke</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid173">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3041</gml:name>
+      <gml:name>Kirche</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid196">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3042</gml:name>
+      <gml:name>Synagoge</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid197">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3043</gml:name>
+      <gml:name>Kapelle</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid198">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3044</gml:name>
+      <gml:name>Gemeindehaus</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid199">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3045</gml:name>
+      <gml:name>Gotteshaus</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid200">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3046</gml:name>
+      <gml:name>Moschee</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid201">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3047</gml:name>
+      <gml:name>Tempel</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid202">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3048</gml:name>
+      <gml:name>Kloster</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid203">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3050</gml:name>
+      <gml:name>Gebäude für Gesundheitswesen</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid204">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3051</gml:name>
+      <gml:name>Krankenhaus</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid205">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3052</gml:name>
+      <gml:name>Heilanstalt, Pflegeanstalt, Pflegestation</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid206">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3053</gml:name>
+      <gml:name>Ärztehaus, Poliklinik</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid207">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3054</gml:name>
+      <gml:name>Rettungswache</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+<!-- Platzhalter gml:id bis 209 -->  
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid209">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3060</gml:name>
+      <gml:name>Gebäude für soziale Zwecke</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid210">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3061</gml:name>
+      <gml:name>Jugendfreizeitheim</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid211">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3062</gml:name>
+      <gml:name>Freizeit-, Vereinsheim, Dorfgemeinschafts-, Bürgerhaus</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid212">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3063</gml:name>
+      <gml:name>Seniorenfreizeitstätte</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid213">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3064</gml:name>
+      <gml:name>Obdachlosenheim</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid214">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3065</gml:name>
+      <gml:name>Kinderkrippe, Kindergarten, Kindertagesstätte</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid215">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3066</gml:name>
+      <gml:name>Asylbewerberheim</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid216">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3070</gml:name>
+      <gml:name>Gebäude für Sicherheit und Ordnung</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid217">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3071</gml:name>
+      <gml:name>Polizei</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid218">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3072</gml:name>
+      <gml:name>Feuerwehr</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid219">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3073</gml:name>
+      <gml:name>Kaserne</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid220">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3074</gml:name>
+      <gml:name>Schutzbunker</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid221">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3075</gml:name>
+      <gml:name>Justizvollzugsanstalt</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid222">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3080</gml:name>
+      <gml:name>Friedhofsgebäude</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid223">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3081</gml:name>
+      <gml:name>Trauerhalle</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid224">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3082</gml:name>
+      <gml:name>Krematorium</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid225">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3090</gml:name>
+      <gml:name>Empfangsgebäude</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid226">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3091</gml:name>
+      <gml:name>Bahnhofsgebäude</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid227">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3092</gml:name>
+      <gml:name>Flughafengebäude</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid228">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3094</gml:name>
+      <gml:name>Gebäude zum U-Bahnhof</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid229">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3095</gml:name>
+      <gml:name>Gebäude zum S-Bahnhof</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid230">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3097</gml:name>
+      <gml:name>Gebäude zum Busbahnhof</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid231">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3098</gml:name>
+      <gml:name>Empfangsgebäude Schifffahrt</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+<!-- Platzhalter gml:id bis 240 -->
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid240">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3100</gml:name>
+      <gml:name>Gebäude für öffentliche Zwecke mit Wohnen</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid241">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3200</gml:name>
+      <gml:name>Gebäude für Erholungszwecke</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid242">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3210</gml:name>
+      <gml:name>Gebäude für Sportzwecke</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid243">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3211</gml:name>
+      <gml:name>Sport-, Turnhalle</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid244">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3212</gml:name>
+      <gml:name>Gebäude zum Sportplatz</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid245">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3220</gml:name>
+      <gml:name>Badegebäude</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid246">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3221</gml:name>
+      <gml:name>Hallenbad</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid247">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3222</gml:name>
+      <gml:name>Gebäude im Freibad</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid248">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3230</gml:name>
+      <gml:name>Gebäude im Stadion</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid249">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3240</gml:name>
+      <gml:name>Gebäude für Kurbetrieb</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid250">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3241</gml:name>
+      <gml:name>Badegebäude für medizinische Zwecke</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid251">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3242</gml:name>
+      <gml:name>Sanatorium</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid252">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3260</gml:name>
+      <gml:name>Gebäude im Zoo</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid253">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3261</gml:name>
+      <gml:name>Empfangsgebäude des Zoos</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid254">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3262</gml:name>
+      <gml:name>Aquarium, Terrarium, Voliere</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid255">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3263</gml:name>
+      <gml:name>Tierschauhaus</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid256">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3264</gml:name>
+      <gml:name>Stall im Zoo</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid257">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3270</gml:name>
+      <gml:name>Gebäude im botanischen Garten</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid258">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3271</gml:name>
+      <gml:name>Empfangsgebäude des botanischen Gartens</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid259">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3272</gml:name>
+      <gml:name>Gewächshaus (Botanik)</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid260">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3273</gml:name>
+      <gml:name>Pflanzenschauhaus</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid261">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3280</gml:name>
+      <gml:name>Gebäude für andere Erholungseinrichtung</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid262">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3281</gml:name>
+      <gml:name>Schutzhütte</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid263">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_3290</gml:name>
+      <gml:name>Touristisches Informationszentrum</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid264">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">31001_9998</gml:name>
+      <gml:name>Nach Quellenlage nicht zu spezifizieren</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+ <!-- Platzhalter gml:id bis 270 -->
+<!--  Schluesselwerte aus AX_Turm  -->
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid270">
+      <gml:description>ALKIS-ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51001_1001</gml:name>
+      <gml:name>Wasserturm</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid271"> 
+      <gml:description>ALKIS-ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51001_1002</gml:name>
+      <gml:name>Kirchturm</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid272"> 
+      <gml:description>ALKIS-ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51001_1003</gml:name>
+      <gml:name>Aussichtsturm</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid273"> 
+      <gml:description>ALKIS-ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51001_1004</gml:name>
+      <gml:name>Kontrollturm</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid274"> 
+      <gml:description>ALKIS-ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51001_1005</gml:name>
+      <gml:name>Kühlturm</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid275"> 
+      <gml:description>ALKIS-ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51001_1006</gml:name>
+      <gml:name>Leuchtturm</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid276"> 
+      <gml:description>ALKIS-ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51001_1007</gml:name>
+      <gml:name>Feuerwachturm</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid277"> 
+      <gml:description>ALKIS-ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51001_1008</gml:name>
+      <gml:name>Sende-,Funkturm</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid278"> 
+      <gml:description>ALKIS-ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51001_1009</gml:name>
+      <gml:name>Stadt-,Torturm</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid279">
+      <gml:description>ALKIS-ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51001_1010</gml:name>
+      <gml:name>Förderturm</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid280">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51001_1011</gml:name>
+      <gml:name>Bohrturm</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid281">
+      <gml:description>ALKIS-ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51001_1012</gml:name>
+      <gml:name>Schloss-, Burgturm</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid282">
+      <gml:description>ALKIS-ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51001_9998</gml:name>
+      <gml:name>Nach Quellenlage nicht zu spezifizieren</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid283">
+      <gml:description>ALKIS-ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51001_9999</gml:name>
+      <gml:name>Sonstiges</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+<!-- Platzhalter gml:id bis 290 -->
+<!--  Schluesselwerte aus AX_BauwerkOderAnlageFuerIndustrieUndGewerbe  --> 
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid290">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51002_1215</gml:name>
+      <gml:name>Biogasanlage</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid291"> 
+      <gml:description>ALKIS-ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51002_1220</gml:name>
+      <gml:name>Windrad</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid292">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51002_1230</gml:name>
+      <gml:name>Solarzellen</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid293">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51002_1250</gml:name>
+      <gml:name>Mast</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid294">
+      <gml:description>ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51002_1251</gml:name>
+      <gml:name>Freileitungsmast</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid295"> 
+      <gml:description>ALKIS-ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51002_1260</gml:name>
+      <gml:name>Funkmast</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid296"> 
+      <gml:description>ALKIS-ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51002_1280</gml:name>
+      <gml:name>Radioteleskop</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid297"> 
+      <gml:description>ALKIS-ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51002_1290</gml:name>
+      <gml:name>Schornstein</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid298">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51002_1330</gml:name>
+      <gml:name>Kran</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid299">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51002_1331</gml:name>
+      <gml:name>Drehkran</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid300">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51002_1332</gml:name>
+      <gml:name>Portalkran</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid301">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51002_1333</gml:name>
+      <gml:name>Laufkran</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid302">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51002_1350</gml:name>
+      <gml:name>Hochofen</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid303">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51002_1400</gml:name>
+      <gml:name>Umformer</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid304">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51002_9999</gml:name>
+      <gml:name>Sonstiges</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+<!-- Platzhalter gml:id bis 310 -->  
+<!--  Schluesselwerte aus AX_VoratsbehälterSpeicherbauwerk  --> 
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid310">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51003_1201</gml:name>
+      <gml:name>Silo</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid311">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51003_1205</gml:name>
+      <gml:name>Tank</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid312">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51003_1206</gml:name>
+      <gml:name>Gasometer</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid313">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51003_9999</gml:name>
+      <gml:name>Sonstiges</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+ <!-- Platzhalter gml:id bis 320 -->  
+<!--  Schluesselwerte aus AX_BauwerkOderAnlageFürSportFreizeitUndErholung  -->
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid320">
+      <gml:description>ALKIS-ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51006_1430</gml:name>
+      <gml:name>Zuschauertribüne</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid321">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51006_1431</gml:name>
+      <gml:name>Zuschauertribüne, überdacht</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid322">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51006_1432</gml:name>
+      <gml:name>Zuschauertribüne, nicht überdacht</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid323"> 
+      <gml:description>ALKIS-ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51006_1440</gml:name>
+      <gml:name>Stadion</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid324"> 
+      <gml:description>ALKIS-ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51006_1441</gml:name>
+      <gml:name>Stadion, überdacht</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid325"> 
+      <gml:description>ALKIS-ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51006_1442</gml:name>
+      <gml:name>Stadion, nicht überdacht</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid326">
+      <gml:description>ALKIS-ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51006_1470</gml:name>
+      <gml:name>Sprungschanze (Anlauf)</gml:name> <!-- 'Anlauf' fehlt bei ATKIS-->
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid327">
+      <gml:description>ALKIS-ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51006_1490</gml:name>
+      <gml:name>Gradierwerk</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid328">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51006_9999</gml:name>
+      <gml:name>Sonstiges</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+<!-- Platzhalter gml:id bis 330 -->  
+<!--  Schluesselwerte aus AX_HistorischesBauwerkOderHistorischeEinrichtung  -->
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid330">
+      <gml:description>ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51007_1110</gml:name>
+      <gml:name>Aquädukt</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid331">
+      <gml:description>ALKIS-ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51007_1210</gml:name>
+      <gml:name>Wachturm</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid332">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51007_1400</gml:name>
+      <gml:name>Befestigung (Burgruine)</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+ <!-- Platzhalter gml:id bis 334 -->  
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid334">
+      <gml:description>ALKIS-ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51007_1500</gml:name>
+      <gml:name>Historische Mauer</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid335">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51007_1510</gml:name>
+      <gml:name>Stadtmauer</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid336">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51007_1520</gml:name>
+      <gml:name>Sonstige historische Mauer</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid337">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51007_9999</gml:name>
+      <gml:name>Sonstiges</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+ <!-- Platzhalter gml:id bis 340 -->  
+<!--  Schluesselwerte aus AX_SonstigesBauwerkOderSonstigeEinrichtung  -->
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid340">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51009_1610</gml:name>
+      <gml:name>Überdachung</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid341">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51009_1611</gml:name>
+      <gml:name>Carport</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid342">
+      <gml:description>ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51009_1700</gml:name>
+      <gml:name>Mauer</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid343">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51009_1750</gml:name>
+      <gml:name>Denkmal</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid344">
+      <gml:description>ALKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">51009_9999</gml:name>
+      <gml:name>Sonstiges</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+ <!-- Platzhalter gml:id bis 350 -->  
+<!--  Schluesselwerte aus AX_Schleuse  -->
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid350">
+      <gml:description>ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">52003_1010</gml:name>
+      <gml:name>Schiffshebewerk</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid351">
+      <gml:description>ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">52003_1020</gml:name>
+      <gml:name>Kammerschleuse</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+ <!-- Platzhalter gml:id bis 360 -->  
+<!--  Schluesselwerte aus AX_BauwerkImVerkehrsbereich  -->
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid360">
+      <gml:description>ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">53001_1800</gml:name>
+      <gml:name>Brücke</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid361">
+      <gml:description>ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">53001_1806</gml:name>
+      <gml:name>Drehbrücke</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid362">
+      <gml:description>ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">53001_1807</gml:name>
+      <gml:name>Hebebrücke</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid363">
+      <gml:description>ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">53001_1808</gml:name>
+      <gml:name>Zugbrücke</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid364">
+      <gml:description>ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">53001_1830</gml:name>
+      <gml:name>Hochbahn, Hochstraße</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid365">
+      <gml:description>ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">53001_1890</gml:name>
+      <gml:name>Schleusenkammer</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+ <!-- Platzhalter gml:id bis 370 -->  
+<!--  Schluesselwerte aus AX_BauwerkImGewaesserbereich  -->
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid370">
+      <gml:description>ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">53009_2030</gml:name>
+      <gml:name>Staumauer</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid371">
+      <gml:description>ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">53009_2050</gml:name>
+      <gml:name>Wehr</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid372">
+      <gml:description>ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">53009_2060</gml:name>
+      <gml:name>Sicherheitstor</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid373">
+      <gml:description>ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">53009_2070</gml:name>
+      <gml:name>Siel</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid374">
+      <gml:description>ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">53009_2080</gml:name>
+      <gml:name>Sperrwerk</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+  <dictionaryEntry>
+    <gml:Definition gml:id="AdVid375">
+      <gml:description>ATKIS</gml:description>
+      <gml:name codeSpace="http://www.adv-online.de/codespaces">53009_2090</gml:name>
+      <gml:name>Schöpfwerk</gml:name>
+    </gml:Definition>
+  </dictionaryEntry>
+</gml:Dictionary>
