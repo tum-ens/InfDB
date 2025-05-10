@@ -81,7 +81,9 @@ def get_engine():
     password = config.get_value(["database", "password"])
     host = config.get_value(["database", "host"])
     port = config.get_value(["database", "port"])
-    db_connection_url = f"postgresql://{user}:{password}@{host}:{port}/postgres"
+    dbname = "citydb"  # Match with psycopg2.connect
+
+    db_connection_url = f"postgresql://{user}:{password}@{host}:{port}/{dbname}"
     engine = create_engine(db_connection_url)
 
     return engine
