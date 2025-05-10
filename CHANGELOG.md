@@ -4,34 +4,18 @@
 All notable changes to this project will be documented in this file. 
 See below for the format and guidelines for updating the changelog.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
 ## [Unreleased]
 - Add new changes here before merging into the next official version.
-
-## [0.1.0] Initial Release - Hello ENS-Repo-Template - 2024-11-04
 ### Added
-- Initial setup for project.
+- Initial documentation of the repo (#21, !22)
 
 ### Changed
-- Changed the RLI template to fit our needs. The original template's citation metadata are as follows:
-    ```
-    authors:
-      - family-names: "Hülk"
-        given-names: "Ludwig"
-        alias: "@Ludee"
-        affiliation: "Reiner Lemoine Institut"
-        orcid: "https://orcid.org/0000-0003-4655-2321"
-    title: "Super Repo"
-    type: software
-    license: MIT
-    version: 0.2.0
-    doi: 
-    date-released: 2023-08-11
-    url: "https://github.com/rl-institut/super-repo/"
-    ```
+-
+
 ---
 
 # Guidelines for Updating the Changelog
