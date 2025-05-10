@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  lod2:
+    build:
+      context: .
+      dockerfile: Dockerfile.data_import
+    container_name: data-lod2-importer
+    networks:
+      - database
+    working_dir: /app
+    command: >
+      bash -c "
+        python -m data_import.imp.imp_lod2
+      "
+  plz:
+    build:
+      context: .
+      dockerfile: Dockerfile.data_import
+    container_name: data-plz-importer
+    networks:
+      - database
+    working_dir: /app
+    command: >
+      bash -c "
+        python -m data_import.imp.imp_plz
+      "
+  census2022:
+    build:
+      context: .
+      dockerfile: Dockerfile.data_import
+    container_name: data-census2022-importer
+    networks:
+      - database
+    working_dir: /app
+    command: >
+      bash -c "
+        python -m data_import.imp.imp_census2022
+      "
+  bkg:
+    build:
+      context: .
+      dockerfile: Dockerfile.data_import
+    container_name: data-bkg-importer
+    networks:
+      - database
+    working_dir: /app
+    command: >
+      bash -c "
+        python -m data_import.imp.imp_bkg
+      "
+  basemap:
+    build:
+      context: .
+      dockerfile: Dockerfile.data_import
+    container_name: data-basemap-importer
+    networks:
+      - database
+    working_dir: /app
+    command: >
+      bash -c "
+        python -m data_import.imp.imp_basemap
+      "
+
+networks:
+  database:
+    external: true
