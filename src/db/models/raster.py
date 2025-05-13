@@ -8,6 +8,8 @@ class Raster(CityDBBase, table=True):
     __tablename__ = "raster"
     __table_args__ = (
         UniqueConstraint("geom", name="geom_unique"),
+        {"schema": "general"},
+
     )
 
     id: str | None = Field(default=None, primary_key=True)
