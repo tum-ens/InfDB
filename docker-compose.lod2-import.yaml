@@ -15,15 +15,21 @@ services:
 
   citydb-tool:
     image: 3dcitydb/citydb-tool
-    command: >
-      import
-      citygml
-      -H citydb
-      -d citydb
-      -u citydb_user
-      -p citydb_password
-      -P 5432
-      /data/*.gml
+    environment:
+      - CITYDB_HOST_DATA_IMPORT
+      - CITYDB_DB        
+      - CITYDB_USER
+      - CITYDB_PASSWORD
+      - CITYDB_PORT_DATA_IMPORT
+    command: [
+      "import", "citygml",
+      "-H", "${CITYDB_HOST_DATA_IMPORT}",
+      "-d", "${CITYDB_DB}",
+      "-u", "${CITYDB_USER}",
+      "-p", "${CITYDB_PASSWORD}",
+      "-P", "${CITYDB_PORT_DATA_IMPORT}",
+      "/data/*.gml"
+    ]
     volumes:
       - gml-data:/data
     networks:

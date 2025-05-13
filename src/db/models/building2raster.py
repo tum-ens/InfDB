@@ -5,6 +5,9 @@ from src.db.bases import CityDBBase
 # this is just for a reference Building2Raster
 # this is not the correct model
 # but we would like to provide a minimalistic model just for Building2Raster
+
+## THIS MODEL MIGHT BE REMOVED DEPENDING ON LATES CHANGES FROM PATRICK WITH V5
+## FOR NOW KEEP FOR REFERENCE
 class Building(CityDBBase, table=True):
     __tablename__ = "building"
     __table_args__ = {"schema": "general"}

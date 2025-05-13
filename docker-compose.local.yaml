@@ -5,9 +5,9 @@ services:
     image: timescale/timescaledb:latest-pg14
     container_name: timescaledb
     environment:
-      POSTGRES_DB: timescaledb_db
-      POSTGRES_USER: timescale_user
-      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: ${TIMESCALE_DB}
+      POSTGRES_USER: ${TIMESCALE_USER}
+      POSTGRES_PASSWORD: ${TIMESCALE_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
@@ -19,10 +19,10 @@ services:
     image: 3dcitydb/3dcitydb-pg:5.0.0
     container_name: citydb
     environment:
-      POSTGRES_DB: citydb
-      POSTGRES_USER: citydb_user        
-      POSTGRES_PASSWORD: citydb_password
-      SRID: 4326
+      POSTGRES_DB: ${CITYDB_DB}
+      POSTGRES_USER: ${CITYDB_USER}
+      POSTGRES_PASSWORD: ${CITYDB_PASSWORD}
+      SRID: ${SRID}
     ports:
       - "5433:5432"
     volumes:
@@ -34,8 +34,8 @@ services:
     image: dpage/pgadmin4
     container_name: pgadmin
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
+      - PGADMIN_DEFAULT_EMAIL
+      - PGADMIN_DEFAULT_PASSWORD
     ports:
       - "8080:80"
     volumes:

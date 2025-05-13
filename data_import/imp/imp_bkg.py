@@ -51,7 +51,7 @@ def import_bkg():
             print(f"Importing layer: {layer} into {schema}")
             gdf = gpd.read_file(input_file, layer=layer, bbox=gdf_envelope)
 
-            epsg = config.get_value(["database", "epsg"])
+            epsg = config.get_value(["database-data-import-container", "epsg"])
             gdf.to_crs(epsg=epsg, inplace=True)
 
             gdf.to_file(output_file, layer=layer, driver="GPKG")
@@ -59,7 +59,7 @@ def import_bkg():
 
             # subprocess.run([
             #     "ogr2ogr", "-f", "PostgreSQL", pg_conn,
-            #     "-t_srs", f"epsg:{config.get_value(["database", "epsg"])}", "-overwrite", "-clipsrclayer", layer,
+            #     "-t_srs", f"epsg:{config.get_value(["database-data-import-container", "epsg"])}", "-overwrite", "-clipsrclayer", layer,
             #     processed_file, layer
             # ])
 
