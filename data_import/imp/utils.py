@@ -54,13 +54,13 @@ def download_files(urls, base_path):
 
 def sql_query(query):
     try:
-        # Connect to the PostgreSQL database
+        # Connect to the PostgreSQL database-data-import-container
         connection = psycopg2.connect(
             dbname="citydb",
-            user=config.get_value(["database", "user"]),
-            password=config.get_value(["database", "password"]),
-            host=config.get_value(["database", "host"]),
-            port=config.get_value(["database", "port"])
+            user=config.get_value(["database-data-import-container", "user"]),
+            password=config.get_value(["database-data-import-container", "password"]),
+            host=config.get_value(["database-data-import-container", "host"]),
+            port=config.get_value(["database-data-import-container", "port"])
         )
         cursor = connection.cursor()
         # # Create the users table
@@ -76,11 +76,11 @@ def sql_query(query):
         print(f"ProgrammingError: {error}")
 
 def get_engine():
-    # Create a database connection
-    user = config.get_value(["database", "user"])
-    password = config.get_value(["database", "password"])
-    host = config.get_value(["database", "host"])
-    port = config.get_value(["database", "port"])
+    # Create a database-data-import-container connection
+    user = config.get_value(["database-data-import-container", "user"])
+    password = config.get_value(["database-data-import-container", "password"])
+    host = config.get_value(["database-data-import-container", "host"])
+    port = config.get_value(["database-data-import-container", "port"])
     dbname = "citydb"  # Match with psycopg2.connect
 
     db_connection_url = f"postgresql://{user}:{password}@{host}:{port}/{dbname}"

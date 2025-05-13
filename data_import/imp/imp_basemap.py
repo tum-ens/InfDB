@@ -6,7 +6,7 @@ from data_import.imp import config, utils
 
 def import_basemap():
 
-    # Create a database connection
+    # Create a database-data-import-container connection
     engine = utils.get_engine()
 
     # Get envelope
@@ -36,7 +36,7 @@ def import_basemap():
             print(f"Importing layer: {layer} into {schema}")
             gdf = gpd.read_file(file, layer=layer, bbox=gdf_envelope)
 
-            epsg = config.get_value(["database", "epsg"])
+            epsg = config.get_value(["database-data-import-container", "epsg"])
             gdf.to_crs(epsg=epsg, inplace=True)
 
             name = layer.replace("_bdlm", "")
