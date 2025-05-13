@@ -7,5 +7,3 @@ COPY ./data_import/requirements.data_import.txt ./requirements.data_import.txt
 RUN pip install --no-cache-dir -r requirements.data_import.txt
 
 COPY ./data_import /app/data_import
-
-# CMD python -m data_import.imp.imp_lod2

@@ -13,7 +13,7 @@
         "epsg": "25832",
         "db_dir": "{base_dir}/3dcdb/"
     },
-    "database2": {
+    "database-local": {
         "host": "localhost",
         "port": "5433",
         "user": "citydb_user",

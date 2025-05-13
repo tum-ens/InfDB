@@ -4,7 +4,7 @@ from data_import.imp import config, utils
 def import_schemas():
     ## Extract general information like envelope
     schema = config.get_value(["general", "schema"])
-    epsg = config.get_value(["database", "epsg"])
+    epsg = config.get_value(["database-data-import-container", "epsg"])
     sql = f"""
             DROP SCHEMA IF EXISTS {schema} CASCADE;
             CREATE SCHEMA IF NOT EXISTS {schema};

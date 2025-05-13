@@ -18,26 +18,26 @@ services:
     environment:
         # TimescaleDB Configuration
         # i cant use 127.0.0.1 in the container because it means local host!
-      -  TIMESCALE_USER=timescale_user
-      -  TIMESCALE_PASSWORD=secret
+      -  TIMESCALE_USER
+      -  TIMESCALE_PASSWORD
       -  TIMESCALE_HOST=host.docker.internal
-      -  TIMESCALE_PORT=5432
-      -  TIMESCALE_DB=timescaledb_db
+      -  TIMESCALE_PORT
+      -  TIMESCALE_DB
 
         # CityDB Configuration
-      -  CITYDB_USER=citydb_user
-      -  CITYDB_PASSWORD=citydb_password
+      -  CITYDB_USER
+      -  CITYDB_PASSWORD
       -  CITYDB_HOST=host.docker.internal
-      -  CITYDB_PORT=5433
-      -  CITYDB_DB=citydb
+      -  CITYDB_PORT
+      -  CITYDB_DB
 
   timescaledb:
     image: timescale/timescaledb:latest-pg14
     container_name: timescaledb
     environment:
-      POSTGRES_DB: timescaledb_db
-      POSTGRES_USER: timescale_user
-      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: ${TIMESCALE_DB}
+      POSTGRES_USER: ${TIMESCALE_USER}
+      POSTGRES_PASSWORD: ${TIMESCALE_PASSWORD}
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U timescale_user -d timescaledb_db"]
       interval: 10s
@@ -54,12 +54,12 @@ services:
     image: 3dcitydb/3dcitydb-pg:5.0.0
     container_name: citydb
     environment:
-      POSTGRES_DB: citydb
-      POSTGRES_USER: citydb_user        
-      POSTGRES_PASSWORD: citydb_password
-      SRID: 4326
+      POSTGRES_DB: ${CITYDB_DB}
+      POSTGRES_USER: ${CITYDB_USER}
+      POSTGRES_PASSWORD: ${CITYDB_PASSWORD}
+      SRID: ${SRID}
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U citydb_user -d citydb"]
+      test: ["CMD-SHELL", "pg_isready -U ${CITYDB_USER} -d ${CITYDB_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
