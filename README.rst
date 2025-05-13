@@ -5,13 +5,12 @@
     :alt: Repo logo
 
 ==========
-ENS Template Repo
+InfDB - Infrastructure and Energy Digital Twin Database
 ==========
 
 
 
-
-**A template repo to kickstart your research projects with best practices in coding, version control, and documentation.**
+**A comprehensive database system for creating digital twins of energy infrastructure with integrated geospatial and time-series capabilities.**
 
 .. list-table::
    :widths: auto
@@ -30,9 +29,49 @@ ENS Template Repo
     :local:
     :backlinks: top
 
-Introduction
+Purpose
 ============
-**ENS Repo Template** provides a standardized structure, tools, and practices to help researchers focus on development while ensuring best practices in coding, version control, and documentation. By using this template, researchers can create organized, maintainable, and collaborative projects that align with modern software engineering standards.
+**InfDB (Infrastructure Database)** is designed to create comprehensive digital twins of energy infrastructure systems, enabling advanced modeling, analysis, and planning of energy networks. This database system integrates geospatial data with time-series information to provide a complete representation of energy systems.
+
+What is InfDB For?
+-----------------
+InfDB serves as a foundation for:
+
+- **Energy System Modeling**: Create detailed digital representations of electrical grids, heating networks, and gas infrastructure.
+- **Infrastructure Planning**: Support decision-making for future energy infrastructure development and optimization.
+- **Scenario Analysis**: Model and compare different energy system configurations and their impacts.
+- **Time-Series Integration**: Combine static infrastructure data with dynamic measurements like weather conditions and energy consumption.
+- **Geospatial Analysis**: Analyze spatial relationships between energy infrastructure components and their environment.
+
+How It Works
+-----------
+InfDB is built on a modern technology stack:
+
+- **Database Layer**: PostgreSQL with specialized extensions:
+  - TimescaleDB for efficient time-series data storage and querying
+  - PostGIS for geospatial data handling
+  - 3DCityDB for urban modeling
+
+- **API Layer**: FastAPI-based RESTful interface with two main routes:
+  - /city - For accessing 3D city model data, including buildings and spatial attributes
+  - /weather - For accessing time-series weather data linked to spatial regions
+
+- **Data Model**: Supports comprehensive infrastructure modeling:
+  - Energy network components (transformers, substations, power lines)
+  - Technical parameters for energy assets
+  - Time-series data for various measurements
+  - Geospatial relationships between components
+
+Goal
+----
+The ultimate goal of InfDB is to provide a robust foundation for energy system digital twins that can:
+
+1. Support complex energy planning scenarios and "what-if" analyses
+2. Enable integration of various data sources (weather, market prices, consumption patterns)
+3. Facilitate interoperability with simulation and optimization tools
+4. Provide insights for more efficient, resilient, and sustainable energy infrastructure
+
+By combining geospatial capabilities with time-series data management, InfDB aims to be a comprehensive solution for researchers, utilities, and planners working on the future of energy systems.
 
 
 Getting Started
@@ -41,8 +80,13 @@ To get started, follow these steps:
 
 Requirements
 ------------
-- Programming language (Python)
+- Python 3.10 or higher
+- Docker and Docker Compose for containerization
 - Git for version control (download from https://git-scm.com/)
+- PostgreSQL with the following extensions:
+  - TimescaleDB for time-series data
+  - PostGIS for geospatial data
+  - 3DCityDB for urban modeling
 
 Installation for local development
 ----------------------------------
@@ -89,7 +133,7 @@ Installation for local development
 #. While running our application locally, we need to provide environment variable. Please have the same env variables with your docker-compose.dev.yaml file. Environment variables for local development:
 
    .. code-block:: bash
-    
+
         # TimescaleDB Configuration
         TIMESCALE_USER=
         TIMESCALE_PASSWORD=
@@ -127,7 +171,7 @@ Installation for docker container
    .. code-block:: bash
 
     docker-compose build
-    
+
 #. Run docker-compose file. The next command will fetch the timescale and 3dcitydb images and run the containers on your machine. It will then start our database (fastapi) application. You may change the env values provided in the compose file:
 
    .. code-block:: bash
@@ -145,32 +189,86 @@ Installation for docker container
 Repository Structure
 ====================
 
-- **src/**: Main project code. (Rename as needed.)
-- **data/**: Data files used in the project. (optional)
-- **scripts/**: Utility scripts for data processing, model training, etc. (optional)
+- **src/**: Main application package
+  - **api/**: API endpoints (cityRouter.py, weatherRouter.py)
+  - **core/**: Core application code (dbConfig.py, etc.)
+  - **db/**: Database models and repositories
+    - **models/**: SQLModel classes for database entities
+    - **repositories/**: Data access layer for database operations
+  - **exceptions/**: Custom exception classes
+  - **externals/**: External API integrations (e.g., weather API)
+  - **schemas/**: Data schemas and validation
+  - **services/**: Business logic services
+  - **main.py**: Application entry point
+- **docs/**: Documentation
+  - **guidelines/**: Project guidelines and standards
+  - **source/**: Source files for documentation
+  - **img/**: Images used in documentation
+- **docker/**: Docker configuration files
+- **tests/**: Test suite (unit tests, integration tests)
 
 
 Usage Guidelines
 ================
 
-Basic Usage
------------
-
-Use this template to start new research projects by forking or cloning it. Customize the repository structure and documentation to fit your project's needs.
-
-Basic Workflow
+Basic API Usage
 --------------
+
+InfDB provides a RESTful API for interacting with energy infrastructure data:
+
+#. **City Data API**: Access 3D city model data and raster information
+
+   .. code-block:: bash
+
+      # Generate rasters at a specific resolution
+      curl -X POST "http://localhost:8000/city/rasters?resolution=100"
+
+      # Get all raster centers at a specific resolution
+      curl -X GET "http://localhost:8000/city/rasters?resolution=100"
+
+      # Get the raster center for a specific building
+      curl -X GET "http://localhost:8000/city/rasters/building/123?resolution=100"
+
+#. **Weather Data API**: Access time-series weather data linked to spatial regions
+
+   .. code-block:: bash
+
+      # Insert historical weather data
+      curl -X POST "http://localhost:8000/weather/weather-data/100" \
+         -H "Content-Type: application/json" \
+         -d '{"dateRange": {"startDate": "2023-01-01", "endDate": "2023-01-31"}, "sensorNames": ["temperature", "humidity"]}'
+
+      # Get weather data for a specific building and time range
+      curl -X GET "http://localhost:8000/weather/weather-data/100?buildingId=123&startTime=2023-01-01T00:00:00&endTime=2023-01-31T23:59:59"
+
+Development Workflow
+-------------------
+#. **Set up the environment** following the installation instructions.
 #. **Open an issue** to discuss new features, bugs, or changes.
 #. **Create a new branch** for each feature or bug fix based on an issue.
-#. **Write code** and **tests** for the new feature or bug fix.
+#. **Implement the changes** following the coding guidelines.
+#. **Write tests** for new functionality or bug fixes.
 #. **Run tests** to ensure the code works as expected.
-#. **Create a pull request** to merge the new feature or bug fix into the main branch.
-#. **Review the code** and **tests** in the pull request.
-#. **Merge the pull request** after approval.
+#. **Create a merge request** to integrate your changes.
+#. **Address review comments** and update your code as needed.
+#. **Merge the changes** after approval.
 
-Open Api Spesifications
-============== 
-Fastapi provides built in openApi documentation. Please go to following url to see our endpoints: http://127.0.0.1:8000/docs#/
+API Documentation
+===============
+FastAPI provides built-in OpenAPI documentation for exploring and testing the API:
+
+- **Swagger UI**: Access interactive API documentation at http://127.0.0.1:8000/docs
+- **ReDoc**: View alternative API documentation at http://127.0.0.1:8000/redoc
+
+The documentation includes:
+
+- Detailed endpoint descriptions
+- Request and response schemas
+- Authentication requirements
+- Example requests
+- Try-it-out functionality for testing endpoints directly
+
+You can also download the OpenAPI specification in JSON format at http://127.0.0.1:8000/openapi.json
 
 
 CI/CD Workflow
@@ -204,7 +302,7 @@ License and Citation
 | The code of this repository is licensed under the **MIT License** (MIT).
 | See `LICENSE <LICENSE>`_ for rights and obligations.
 | See the *Cite this repository* function or `CITATION.cff <CITATION.cff>`_ for citation of this repository.
-| Copyright: `ens-repo-template <https://gitlab.lrz.de/tum-ens/super-repo>`_ © `TU Munich - ENS <https://www.epe.ed.tum.de/en/ens/homepage/>`_ | `MIT <LICENSE>`_
+| Copyright: `TU Munich - ENS <https://www.epe.ed.tum.de/en/ens/homepage/>`_ | `MIT <LICENSE>`_
 
 
 .. |badge_license| image:: https://img.shields.io/badge/license-MIT-blue
@@ -212,7 +310,7 @@ License and Citation
     :alt: License
 
 .. |badge_documentation| image:: https://img.shields.io/badge/docs-available-brightgreen
-    :target: https://gitlab.lrz.de/tum-ens/super-repo
+    :target: https://gitlab.lrz.de/tum-ens/need/database
     :alt: Documentation
 
 .. |badge_contributing| image:: https://img.shields.io/badge/contributions-welcome-brightgreen
@@ -226,19 +324,17 @@ License and Citation
     :alt: repository counter
 
 .. |badge_issue_open| image:: https://img.shields.io/badge/issues-open-blue
-    :target: https://gitlab.lrz.de/tum-ens/super-repo/-/issues
+    :target: https://gitlab.lrz.de/tum-ens/need/database/-/issues
     :alt: open issues
 
 .. |badge_issue_closes| image:: https://img.shields.io/badge/issues-closed-green
-    :target: https://gitlab.lrz.de/tum-ens/super-repo/-/issues
+    :target: https://gitlab.lrz.de/tum-ens/need/database/-/issues
     :alt: closed issues
 
 .. |badge_pr_open| image:: https://img.shields.io/badge/merge_requests-open-blue
-    :target: https://gitlab.lrz.de/tum-ens/super-repo/-/merge_requests
+    :target: https://gitlab.lrz.de/tum-ens/need/database/-/merge_requests
     :alt: open merge requests
 
 .. |badge_pr_closes| image:: https://img.shields.io/badge/merge_requests-closed-green
-    :target: https://gitlab.lrz.de/tum-ens/super-repo/-/merge_requests
+    :target: https://gitlab.lrz.de/tum-ens/need/database/-/merge_requests
     :alt: closed merge requests
-
-
