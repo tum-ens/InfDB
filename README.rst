@@ -201,11 +201,17 @@ Repository Structure
   - **services/**: Business logic services
   - **main.py**: Application entry point
 - **docs/**: Documentation
+  - **architecture/**: System architecture documentation
+  - **development/**: Developer guides and workflows
   - **guidelines/**: Project guidelines and standards
   - **source/**: Source files for documentation
   - **img/**: Images used in documentation
 - **docker/**: Docker configuration files
-- **tests/**: Test suite (unit tests, integration tests)
+- **tests/**: Test suite
+  - **unit/**: Unit tests for individual components
+  - **integration/**: Tests for component interactions
+  - **e2e/**: End-to-end tests for the application
+  - **conftest.py**: Pytest configuration and fixtures
 
 
 Usage Guidelines
@@ -278,6 +284,25 @@ The CI/CD workflow is set up using GitLab CI/CD.
 The workflow runs tests, checks code style, and builds the documentation on every push to the repository.
 You can view workflow results directly in the repository's CI/CD section.
 
+Development Resources
+===================
+The following resources are available to help developers understand and contribute to the project:
+
+Architecture Documentation
+-------------------------
+The `Architecture Documentation <docs/architecture/index.rst>`_ provides an overview of the system architecture, including the database schema, components, and integration points.
+
+Developer Guides
+---------------
+- `Development Setup Guide <docs/development/setup.md>`_: Comprehensive instructions for setting up a development environment
+- `Contribution Workflow <docs/development/workflow.md>`_: Step-by-step process for contributing to the project
+- `API Development Guide <docs/development/api_guide.md>`_: Information for developers who want to use or extend the API
+- `Database Schema Documentation <docs/development/database_schema.md>`_: Detailed information about the database schema
+
+Coding Guidelines
+----------------
+The `Coding Guidelines <docs/guidelines/coding_guidelines.md>`_ document outlines the coding standards and best practices for the project.
+
 Contribution and Code Quality
 =============================
 Everyone is invited to develop this repository with good intentions.
@@ -285,7 +310,7 @@ Please follow the workflow described in the `CONTRIBUTING.md <CONTRIBUTING.md>`_
 
 Coding Standards
 ----------------
-This repository follows consistent coding styles. Refer to `CONTRIBUTING.md <CONTRIBUTING.md>`_ for detailed standards.
+This repository follows consistent coding styles. Refer to `CONTRIBUTING.md <CONTRIBUTING.md>`_ and the `Coding Guidelines <docs/guidelines/coding_guidelines.md>`_ for detailed standards.
 
 Pre-commit Hooks
 ----------------
