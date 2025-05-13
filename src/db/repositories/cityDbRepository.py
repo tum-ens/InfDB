@@ -28,7 +28,7 @@ class CityDBRepository:
             # will update the lat lon part soon. now just for testing
             sqlSelect = text("""
                 SELECT g.id AS rasterId, ST_X(ST_Centroid(ST_Transform(ST_SetSRID(g.geom, 25832), 4326))) AS longitude, ST_Y(ST_Centroid(ST_Transform(ST_SetSRID(g.geom, 25832), 4326))) AS latitude
-                FROM raster g
+                FROM general.raster g
                 WHERE g.resolution = :resolution
             """)
 
@@ -43,8 +43,8 @@ class CityDBRepository:
         try:
             sqlSelect = text("""
                 SELECT mapper.building_id, mapper.raster_id, ST_X(ST_Centroid(ST_Transform(ST_SetSRID(g.geom, 25832), 4326))) AS longitude, ST_Y(ST_Centroid(ST_Transform(ST_SetSRID(g.geom, 25832), 4326))) AS latitude
-                FROM building_2_raster mapper
-                JOIN raster g ON mapper.raster_id = g.id
+                FROM general.building_2_raster mapper
+                JOIN general.raster g ON mapper.raster_id = g.id
                 WHERE mapper.building_id = :buildingId AND g.resolution = :resolution
             """)
 
@@ -58,7 +58,7 @@ class CityDBRepository:
 
     def _generateRasters(self, session: Session, resolution: int, idPrefix: str, idSuffixLength: int):
         sql = text("""
-                    INSERT INTO citydb.raster
+                    INSERT INTO general.raster
                     SELECT
                         :idPrefix || lpad((y / :resolution)::text, :idSuffixLength, '0') || 'E' || lpad((x / :resolution)::text, :idSuffixLength, '0') AS id,
                         :resolution as resolution,
@@ -88,7 +88,7 @@ class CityDBRepository:
                         FROM citydb.building b
                         JOIN citydb.geometry_data c ON b.id = c.id
                     )
-                    INSERT INTO citydb.building_2_raster (building_id, raster_id)
+                    INSERT INTO general.building_2_raster (building_id, raster_id)
                     SELECT p.building_id,
                     (
                        SELECT g.id
