@@ -1,0 +1,201 @@
+
+= System Requirements Document
+:toc:
+:sectnums:
+
+== Overview
+
+This document defines the foundational needs for the database and its associated software system, classified using the MoSCoW prioritization framework.
+
+== Must-Have Requirements
+
+1. The database must support comprehensive infrastructure and energy network topology modeling to extend the 3DCityDB:
+   - Electrical grid components (transformers, substations, power lines, switches)
+   - Heating networks (pipes, heat exchangers, district heating plants)
+   - Gas networks (pipelines, compressor stations, storage facilities)
+   - Cross-domain connection points where different networks interact
+   - Network connectivity models with node-edge relationships
+
+2. The database schema must be extensible to accommodate new infrastructure types, characteristics, and data fields without disrupting existing structures:
+   - Require a clear and unique ID for each dataset.
+   - Establish a consistent column naming convention across all database tables to enhance clarity, reduce ambiguity, and facilitate automated integration.
+   - Annotate column names using standardized taxonomies, such as those defined in the NEED project, to ensure semantic consistency and support interoperability across systems.
+
+3. The database must store detailed technical parameters for energy assets:
+   - Transformer capacity, impedance, and voltage levels
+   - Generation unit specifications (capacity, ramp rates, efficiency curves)
+   - Storage system characteristics (capacity, charge/discharge rates, efficiency)
+   - Thermal properties of buildings relevant for energy consumption
+   - Equipment operational constraints and limitations
+
+4. Implement a clear and systematic versioning approach to track changes in data and their associated metadata
+    - Define and enforce a naming convention for version identifiers to ensure clarity and traceability.
+    - Include a dedicated version metadata table that describes version names, creation dates, purposes, and associated changes.
+
+5. The database must integrate geospatial data formats compatible with OpenStreetMap (e.g., GeoJSON) and **CityGML** for urban modeling.
+
+6. The database must support storing and querying timeseries data with irregular intervals, including:
+   - Energy powerflows and load profiles for different consumer types (residential, commercial, industrial)
+   - Generation profiles for renewable energy sources
+   - Voltage and frequency measurements at critical grid points
+   - Temperature profiles for heating systems and buildings
+   - Pressure measurements for gas networks
+   - Weather data (e.g., wind speed, temperature, solar irradiance)
+   - Equipment performance metrics (e.g., PV efficiency, battery state-of-charge, EV charging patterns)
+   - Minimum interval: one minute; no maximum interval is defined
+   - Metadata for timeseries, such as the source of measurement and quality flags
+
+7. The database must include a unified ID system:
+    - Each dataset must be assigned a globally unique ID (e.g., UUID) to ensure consistency and interoperability across different systems.
+    - An additional column must store the original user-provided ID to maintain compatibility with user-specific formats.
+    - APIs must support querying by both the unified ID and the user-provided ID.
+
+8. The database must incorporate energy market data:
+    - Electricity prices (day-ahead, intraday, balancing markets)
+    - Fuel prices and carbon emission costs
+    (- Tariff structures and demand response program parameters)
+    (- Regulatory constraints and grid codes)
+    (- Market participant information and roles)
+
+9. The database must allow flexible georeferencing:
+   - Support for basic latitude/longitude coordinates and different coordinate systems, such as WGS, UTM, Gauss-Krüger.
+   - Enable real-time transformation between coordinate systems using industry-standard libraries (e.g., EPSG codes).
+   - Ability to store polygons or 3D shapes for detailed spatial data, with validation for issues like self-intersections or boundary overlaps during entry.
+
+10. The database must implement a scenario management system for energy planning:
+    - Create and compare multiple future scenarios (e.g., high renewable penetration vs. conventional)
+    - Model infrastructure changes over time (new assets, decommissioning)
+    - Support "what-if" analysis for grid planning and resilience testing
+    - Track interdependencies between scenario elements
+    - Enable comparison of scenario outcomes using key performance indicators
+
+11. The software must expose the database through a modern API, preferably implemented using **FastAPI** for asynchronous support and OpenAPI documentation.
+
+12. The database must support basic energy balance and flow calculations:
+    - Power flow calculations for electrical networks
+    - Heat flow calculations for thermal networks
+    - Supply-demand matching at different spatial and temporal resolutions
+    - Loss calculations along transmission and distribution paths
+    - Validation of physical constraints and operational limits
+
+13. The system must export data in the following formats:
+   - **GeoJSON**: For lightweight geospatial mapping and integration with web visualization tools (e.g., Mapbox, Leaflet).
+   - **CSV**: For tabular data interchange with spreadsheets or analysis tools (e.g., Excel, Python libraries).
+   - **JSON**: For lightweight API communication and integration with other services.
+   - **XML**: For structured data exchange, particularly for legacy systems and simulation tools.
+   - **SHP** (Shapefile): For compatibility with older GIS software (e.g., ArcGIS, QGIS).
+   - **CityGML**: For compliance with UtilityNetwork and Energy ADEs, enabling urban and infrastructure modeling.
+   - **KML**: For visualization in tools like Google Earth and Google Maps, including 3D geospatial data.
+   - **NetCDF**: For scientific simulations, particularly weather, climate, or time-varying grid datasets.
+   - **HDF5**: For hierarchical and multidimensional scientific data storage, especially in energy simulation use cases.
+   - **CIM**: For interoperability with utility systems and grid modeling tools, with energy-specific profiles.
+   - **CGMES**: For Common Grid Model Exchange Standard used in European transmission system operations.
+   - **UCTE**: For compatibility with European grid data exchange formats.
+   - **IEC 61850**: For substation automation data exchange.
+   - **SQLite/GeoPackage**: For transferring geospatial datasets as a self-contained, portable format.
+   - **Energy Performance Certificate (EPC)**: For building energy performance data.
+
+14. Additional timeseries types (e.g., maintenance schedules, energy tariffs, occupancy patterns) must be stored in separate datasets:
+    - Include metadata for these timeseries, such as frequency, time zone, and responsible entity.
+
+15. Ensure system response times for spatial queries, timeseries retrieval, and export tasks are less than 5 seconds, even under concurrent usage of up to 100 users.
+
+16. The database must support data validation rules to ensure:
+   - Geospatial data (e.g., polygons) is valid and non-overlapping.
+   - Timeseries data is free of gaps or duplicates, with automated detection and flagging.
+   - Energy data has specific validation checks (e.g., power balance, voltage limits)
+   - Physical constraints of energy systems are not violated
+
+17. The database must allow versioning of infrastructure data:
+   - Support for creating and querying multiple versions of infrastructure, including partial regions.
+   - Allow users to define regions via custom polygons or standardized areas (e.g., cities, administrative regions).
+   - Enable temporal queries for historical snapshots.
+
+18. The database must handle large-scale datasets at the national or continental level efficiently, leveraging relational database management systems with geospatial support (e.g., PostgreSQL with PostGIS).
+
+19. Real-time querying and updating of timeseries data must be supported for tasks like simulations and monitoring.
+
+20. The system must include a user roles and permissions model:
+   - Roles for read-only access (e.g., researchers).
+   - Administrative roles for full control.
+   - Granular permissions to restrict access to specific datasets, regions, or timeseries types.
+
+21. The system must include robust security measures:
+    - API security via OAuth2 or API key authentication.
+    - Data encryption for sensitive information.
+
+22. Enable integrations with additional tools for grid operators, such as simulation or forecasting platforms, with batch-based file exports initially and real-time APIs as a future enhancement.
+
+23. The system must comply with **GDPR**, including:
+    - Data minimization principles.
+    - User rights for data access and deletion.
+    - Secure storage and encryption of sensitive information.
+
+24. The system must support localization, including:
+    - Multiple language support for API responses or metadata fields.
+    - Region-specific data formats (e.g., decimal separators, date formats).
+
+25. The system must include a backup mechanism to ensure data safety, with:
+    - Periodic automated database backups.
+    - A disaster recovery plan for restoring service in case of critical failures.
+
+== Should-Have Requirements
+
+1. The system should include support for projecting infrastructure data onto external maps (e.g., OpenStreetMap, 3DCityDB, CESIUMJS).
+2. The system should support real-time data updates and visualization in tools like CesiumJS as a future capability.
+3. The database should be interoperable with simulation tools such as pandapower, PowerFactory, OpenDSS, MATPOWER, or other energy grid tools.
+4. The system should use modular deployment with containerization (e.g., Docker) to allow scalable and independent scaling of the API, database, and visualization modules.
+5. Introduce a simple and intuitive quality assessment workflow for users who upload data to ensure consistency and transparency across project phases
+    - Provide categorization options for datasets (e.g., "dummy," "test," "final") during upload or initial processing.
+    - Define automatic dependency rules based on these categories (e.g., restricting backups to "final" datasets or tagging "dummy" data for exclusion from production systems).
+6. Implement a data validation mechanism to check the consistency of uploaded data with predefined rules and standards, providing feedback to users on potential issues.
+7. The system should support advanced energy system optimization capabilities:
+    - Multi-objective optimization for cost, emissions, and reliability
+    - Constraint-based optimization for operational and planning scenarios
+    - Integration with external optimization solvers and frameworks
+8. The system should provide energy system state estimation capabilities:
+    - Estimation of unmeasured system states from available measurements
+    - Detection and handling of bad data in measurements
+    - Confidence metrics for estimated values
+9. The system should support storage and comparison of energy forecasts:
+    - Short-term load and generation forecasts (hours to days)
+    - Medium-term forecasts for operational planning (days to weeks)
+    - Long-term projections for infrastructure planning (years to decades)
+    - Forecast accuracy metrics and historical performance tracking
+    - Integration with external forecasting tools and models
+10. The database should define and calculate key performance indicators for energy systems:
+   - Reliability metrics (SAIDI, SAIFI, CAIDI)
+   - Renewable energy penetration rates
+   - Carbon intensity of energy supply
+   - System efficiency metrics
+   - Cost indicators (LCOE, CAPEX, OPEX)
+   - Resilience metrics for extreme events
+11. The system should manage regulatory compliance data for energy systems:
+   - Emissions monitoring and reporting
+   - Renewable energy certificates and guarantees of origin
+   - Grid code compliance documentation
+   - Safety and reliability compliance records
+   - Regulatory filing history and outcomes
+
+== Could-Have Requirements
+
+1. Include advanced visualization tools integrated into the API for timeseries and geospatial data.
+2. Querying the database with other programming languages beyond Python (e.g., R, SQL).
+3. Native support for non-relational database backends like MongoDB.
+4. Monitoring and logging mechanisms for API performance and database health as a future enhancement.
+5. Support for energy system co-simulation with multiple domain-specific tools:
+   - Co-simulation frameworks like mosaik or FMI
+   - Real-time hardware-in-the-loop simulation capabilities
+   - Multi-physics simulation for coupled energy domains
+6. Advanced energy market simulation capabilities:
+   - Agent-based modeling of market participants
+   - Game-theoretic approaches for strategic behavior
+   - Market clearing and settlement processes
+
+== Won't-Have Requirements
+
+1. User feedback mechanisms will not be part of the database or backend but may be included in the frontend.
+2. Data access logs and auditing for API calls will not be implemented initially but should be planned as a future enhancement.
+3. Real-time integration with external simulation tools will not be prioritized for the initial phase but can be added later.
+4. Detailed physical modeling of energy system components (e.g., transformer magnetic circuits, generator dynamics) will not be included as this is better handled by specialized simulation tools.
+5. Direct control interfaces to physical energy assets will not be implemented, as the system focuses on data management rather than operational control.
