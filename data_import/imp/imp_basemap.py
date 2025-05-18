@@ -36,7 +36,7 @@ def import_basemap():
             print(f"Importing layer: {layer} into {schema}")
             gdf = gpd.read_file(file, layer=layer, bbox=gdf_envelope)
 
-            epsg = config.get_value(["database-data-import-container", "epsg"])
+            epsg = config.epsg
             gdf.to_crs(epsg=epsg, inplace=True)
 
             name = layer.replace("_bdlm", "")
