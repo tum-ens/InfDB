@@ -98,7 +98,13 @@ If you want to import different sources of data other than LOD2 via `data_import
       docker-compose -f docker-compose.lod2-import.yaml run --rm downloader
       docker-compose -f docker-compose.lod2-import.yaml run --rm citydb-tool
 
-#. After importing LOD2 data, you can use the `data_import` to upload different types of data, depending on the available services. Please check for `config.json` under `data_import`. It provides env variables for the `data_import` but those values might be different depending on how you initialized your databases:
+#. After importing LOD2 data, we should create a shared image for data_import services for the next step. You can also just use docker build command and give a proper name according to your needs, but then you have to use the correct image name in the docker-compose.data_import.yaml for each service!. This could be easier to track which image name we had.
+   
+   .. code-block:: bash
+      docker-compose -f docker-compose.data_import.yaml run --rm _myimage_build
+
+
+#. Now you can use the `data_import` to upload different types of data, depending on the available services. Please check for `.env` file in the main directory and `open-data-config` file under `data_import`. It provides env variables for the `data_import` but those values might be different depending on how you initialized your databases:
 
    .. code-block:: bash
 

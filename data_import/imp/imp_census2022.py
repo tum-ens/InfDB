@@ -103,7 +103,7 @@ def process_census():
         grid_file = os.path.join(processed_path, f"DE_Grid_ETRS89-LAEA_{resolution}.gpkg")
         gdf_grid = gpd.read_file(grid_file, bbox=gdf_envelope)
 
-        epsg = config.get_value(["database-data-import-container", "epsg"])
+        epsg = config.epsg
         gdf_grid.to_crs(epsg=epsg, inplace=True)
 
         # gdf_grid.to_file("grid-box.gpkg")

@@ -5,22 +5,6 @@
         "scope": "DE27E",
         "schema": "general"
     },
-    "database": {
-        "host": "citydb",
-        "port": "5432",
-        "user": "citydb_user",
-        "password": "citydb_password",
-        "epsg": "25832",
-        "db_dir": "{base_dir}/3dcdb/"
-    },
-    "database-local": {
-        "host": "localhost",
-        "port": "5433",
-        "user": "citydb_user",
-        "password": "citydb_password",
-        "epsg": "25832",
-        "db_dir": "{base_dir}/3dcdb/"
-    },
     "opendata": {
         "opendata_dir": "{base_dir}/opendata",
         "zensus_2022": {
