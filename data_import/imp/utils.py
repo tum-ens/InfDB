@@ -5,7 +5,7 @@ import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 
-from data_import.imp import config
+from data_import.imp.config import citydb_user, citydb_password, citydb_host, citydb_port, citydb_db
 
 
 def any_element_in_string(target_string, elements):
@@ -56,11 +56,11 @@ def sql_query(query):
     try:
         # Connect to the PostgreSQL database-data-import-container
         connection = psycopg2.connect(
-            dbname="citydb",
-            user=config.get_value(["database-data-import-container", "user"]),
-            password=config.get_value(["database-data-import-container", "password"]),
-            host=config.get_value(["database-data-import-container", "host"]),
-            port=config.get_value(["database-data-import-container", "port"])
+            dbname=citydb_db,
+            user=citydb_user,
+            password=citydb_password,
+            host=citydb_host,
+            port=citydb_port
         )
         cursor = connection.cursor()
         # # Create the users table
@@ -77,11 +77,11 @@ def sql_query(query):
 
 def get_engine():
     # Create a database-data-import-container connection
-    user = config.get_value(["database-data-import-container", "user"])
-    password = config.get_value(["database-data-import-container", "password"])
-    host = config.get_value(["database-data-import-container", "host"])
-    port = config.get_value(["database-data-import-container", "port"])
-    dbname = "citydb"  # Match with psycopg2.connect
+    user = citydb_user
+    password = citydb_password
+    host = citydb_host
+    port = citydb_port
+    dbname = citydb_db
 
     db_connection_url = f"postgresql://{user}:{password}@{host}:{port}/{dbname}"
     engine = create_engine(db_connection_url)
