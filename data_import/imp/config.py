@@ -1,6 +1,18 @@
 import re
 import json
 import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env
+load_dotenv()
+
+# CityDB Configuration
+citydb_user = os.getenv("CITYDB_USER")
+citydb_password = os.getenv("CITYDB_PASSWORD")
+citydb_host = os.getenv("CITYDB_HOST_DATA_IMPORT")  # change this to CITYDB_HOST if you want to run locally not in the container
+citydb_port = os.getenv("CITYDB_PORT_DATA_IMPORT")  # change this to CITYDB_PORT if you want to run locally not in the container
+citydb_db = os.getenv("CITYDB_DB")
+epsg = os.getenv("EPSG")
 
 
 def get_root_path():
@@ -11,7 +23,7 @@ def get_root_path():
 
 def __get_config():
     # Load JSON
-    with open(os.path.join(get_root_path(), "config.json"), "r") as file:
+    with open(os.path.join(get_root_path(), "open-data-config.json"), "r") as file:
         config = json.load(file)
     return config
 
