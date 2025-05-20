@@ -30,6 +30,21 @@ services:
     networks:
       - networkName
 
+  citydbv4:
+    image: 3dcitydb/3dcitydb-pg:13-3.2-4.4.0
+    container_name: citydbV4
+    environment:
+      POSTGRES_DB: ${CITYDB_DB}
+      POSTGRES_USER: ${CITYDB_USER}
+      POSTGRES_PASSWORD: ${CITYDB_PASSWORD}
+      SRID: ${SRID}
+    ports:
+      - "5434:5432"
+    volumes:
+      - citydb_data_v4:/var/lib/postgresql/data
+    networks:
+      - networkName
+
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin
@@ -59,6 +74,7 @@ services:
 volumes:
   timescale_data:
   citydb_data:
+  citydb_data_v4:
   pgadmin_data:
 
 networks:
