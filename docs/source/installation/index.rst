@@ -39,7 +39,7 @@ Installation for Local Development
 
       pip install -r requirements.txt
 
-#. InfDB depends on 3DCityDB and TimescaleDB. Use the following command to start both services locally using Docker:
+#. InfDB depends on 3DCityDB and TimescaleDB. Use the following command to start both services locally using Docker. Please only run the services you would need!:
 
    .. code-block:: bash
 
@@ -54,7 +54,7 @@ Installation for Local Development
       docker-compose -f docker-compose.lod2-import.yaml run --rm downloader
       docker-compose -f docker-compose.lod2-import.yaml run --rm citydb-tool
 
-#. Create a new `.env` file or use already existing one in yhe repository. If you have given different environment variables during database initializations, please also update the env file. Use the same values defined in `docker-compose.local.yaml`:
+#. Use already existing `.env` file in the repository. If you have given different environment variables during database initializations, please also update the env file. Use the same values defined in `docker-compose.local.yaml`:
 
    .. code-block:: bash
 
@@ -119,6 +119,28 @@ If you want to import different sources of data other than LOD2 via `data_import
 .. image:: ../../img/data_import_architecture.png
    :alt: InfDB Data Import Architecture
    :align: center
+
+
+Sunsetting CityDB V4 and migrating solarpotantial to V5 via `data_import`
+---------------------------------------------------------------------------------
+
+#. You should have cityDB v4 running on your system.
+
+#. You should pull the image from gitlab repository, please check the `readme` file under `data_import\sunpot`
+
+#. You should run the solar potential calculation services under `docker-compose.sunset.yaml`.
+
+   .. code-block:: bash
+
+      docker-compose -f docker-compose.sunset.yaml run --rm sunpot-core
+      docker-compose -f docker-compose.sunset.yaml run --rm sunpot-texture
+
+#. You should run next 2 services under `docker-compose.sunset.yaml` 1 by 1. It will export `gml` data under `data_import/sunpot/data`. And then via `import-sunset-to-v5` service you can import your data to citydb v5 database. Please check for the sercie configurations if you want to see where the data is written and how it's configured.
+
+   .. code-block:: bash
+
+      docker-compose -f docker-compose.sunset.yaml run --rm export
+      docker-compose -f docker-compose.sunset.yaml run --rm import-sunset-to-v5
 
 
 Running the Application with Docker Compose (FastAPI + Databases)
