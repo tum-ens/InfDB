@@ -9,7 +9,7 @@ services:
         aria2c --continue=true --allow-overwrite=false --auto-file-renaming=false https://geodaten.bayern.de/odd/a/lod2/citygml/meta/metalink/09780139.meta4 -d /data
       "
     volumes:
-      - gml-data:/data
+      - ./data_import/data:/data
     networks:
       - database
 
@@ -31,12 +31,9 @@ services:
       "/data/*.gml"
     ]
     volumes:
-      - gml-data:/data
+      - ./data_import/data:/data
     networks:
       - database
-
-volumes:
-  gml-data:
 
 networks:
   database:
