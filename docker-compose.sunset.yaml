@@ -1,0 +1,101 @@
+version: "3.8"
+
+services:
+  sunpot-core:
+    image: gitlab.lrz.de:5005/sunpot/sunpot-core
+    container_name: sunpot-core
+    network_mode: database #should be same network name with our database
+    volumes:
+      - ./data_import/sunpot/sunpotConfig.xml:/config/sunpotConfig.xml
+    environment:
+      - CITYDB_DB        
+      - CITYDB_USER
+      - CITYDB_PASSWORD
+      - CITYDB_PORT_DATA_IMPORT
+    command: [
+      "-r",
+      "-h", "citydbV4",
+      "-p", "${CITYDB_PORT_DATA_IMPORT}",
+      "-d", "${CITYDB_DB}",
+      "-u", "${CITYDB_USER}",
+      "-pw", "${CITYDB_PASSWORD}",
+      "/config/sunpotConfig.xml"
+    ]
+    stdin_open: true
+    tty: true
+    restart: "no"
+
+  sunpot-texture:
+    image: gitlab.lrz.de:5005/sunpot/sunpot-texture
+    container_name: sunpot-tex
+    network_mode: database #should be same network name with our database
+    environment:
+      - CITYDB_DB        
+      - CITYDB_USER
+      - CITYDB_PASSWORD
+      - CITYDB_PORT_DATA_IMPORT
+    command: [
+      "-h", "citydbV4",
+      "-p", "${CITYDB_PORT_DATA_IMPORT}",
+      "-d", "${CITYDB_DB}",
+      "-u", "${CITYDB_USER}",
+      "-pw", "${CITYDB_PASSWORD}",
+      "-y"
+    ]
+    stdin_open: true
+    tty: true
+    restart: "no"
+  
+  ## in case you want to import some data to v4 for testing purposes uncomment.
+  # import:
+  #   image: 3dcitydb/impexp
+  #   container_name: import
+  #   network_mode: database #should be same network name with our database
+  #   environment:
+  #     CITYDB_TYPE: postgresql
+  #     CITYDB_HOST: citydbV4
+  #     CITYDB_PORT: ${CITYDB_PORT_DATA_IMPORT}
+  #     CITYDB_NAME: ${CITYDB_DB}
+  #     CITYDB_USERNAME: ${CITYDB_USER}
+  #     CITYDB_PASSWORD: ${CITYDB_PASSWORD}
+  #   volumes:
+  #     - ./data_import/data:/data
+  #   command: ["import", "/data/*.gml", "--import-mode=delete"] 
+
+  export:
+    user: root
+    image: 3dcitydb/impexp
+    container_name: export
+    network_mode: database # should match the network used by your database
+    environment:
+      CITYDB_TYPE: postgresql
+      CITYDB_HOST: citydbV4
+      CITYDB_PORT: ${CITYDB_PORT_DATA_IMPORT}
+      CITYDB_NAME: ${CITYDB_DB}
+      CITYDB_USERNAME: ${CITYDB_USER}
+      CITYDB_PASSWORD: ${CITYDB_PASSWORD}
+    volumes:
+      - ./data_import/sunpot/data:/data
+    command: ["export", "-o", "/data/output.gml"]
+
+  import-sunset-to-v5:
+    image: 3dcitydb/citydb-tool
+    network_mode: database # should match the network used by your database
+    environment:
+      - CITYDB_HOST_DATA_IMPORT
+      - CITYDB_DB        
+      - CITYDB_USER
+      - CITYDB_PASSWORD
+      - CITYDB_PORT_DATA_IMPORT
+    command: [
+      "import", "citygml",
+      "-H", "${CITYDB_HOST_DATA_IMPORT}",
+      "-d", "${CITYDB_DB}",
+      "-u", "${CITYDB_USER}",
+      "-p", "${CITYDB_PASSWORD}",
+      "-P", "${CITYDB_PORT_DATA_IMPORT}",
+      "/data/*.gml"
+    ]
+    volumes:
+      - ./data_import/sunpot/data:/data
+
