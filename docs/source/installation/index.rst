@@ -43,7 +43,9 @@ Installation for Local Development
 
    .. code-block:: bash
 
-      docker-compose -f docker-compose.local.yaml up -d
+      docker-compose -f docker-compose.local.yaml run --rm timescaledb
+      docker-compose -f docker-compose.local.yaml run --rm citydb
+
 
 #. To use 3DCityDB, you need to import demo data. Use the following commands with the provided Docker Compose file:
    (Note: If you haven’t deleted the volume previously created for 3DCityDB, you don’t need to run this again.)

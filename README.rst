@@ -119,37 +119,21 @@ Installation for local development
    .. code-block:: bash
 
     # This will initiate both timescale and 3dcitydb containers on your local machines. 
-    docker-compose -f docker-compose.dev.yaml up -d
+      docker-compose -f docker-compose.local.yaml run --rm timescaledb
+      docker-compose -f docker-compose.local.yaml run --rm citydb
 
-#. For local development, we need to feed our 3DCityDb. In order to do that please use provided docker-compose file or please ru your own script (Note: If you didn't delete your previous volume, you do not need to run this command again!):
+    #but if you want to run everything related with local including jupyter
+      docker-compose -f docker-compose.local.yaml up -d
 
-   .. code-block:: bash
 
-    # This has some comments inside please check.
-    # Right now we have a simple test.gml file on our repository. We are loading this to work on our locals.
-    # Environment variables that are provided in previous step has to match with our env variables (i.e. docker-compose.yaml and docker-compose.import.yaml should have same env vars for db configs)
-    docker-compose -f docker-compose.import.yaml up -d
-
-#. While running our application locally, we need to provide environment variable. Please have the same env variables with your docker-compose.dev.yaml file. Environment variables for local development:
+#. To use 3DCityDB, you need to import demo data. Use the following commands with the provided Docker Compose file:
+   (Note: If you haven’t deleted the volume previously created for 3DCityDB, you don’t need to run this again.)
 
    .. code-block:: bash
 
-        # TimescaleDB Configuration
-        TIMESCALE_USER=
-        TIMESCALE_PASSWORD=
-        TIMESCALE_HOST=127.0.0.1
-        TIMESCALE_PORT=
-        TIMESCALE_DB=
-
-        # CityDB Configuration
-        CITYDB_USER=
-        CITYDB_PASSWORD=
-        CITYDB_HOST=127.0.0.1
-        CITYDB_PORT=
-        CITYDB_DB=
-
-        # General Configuration
-        DEBUG=true
+      # This will download LOD2 data and import it into 3DCityDB
+      docker-compose -f docker-compose.lod2-import.yaml run --rm downloader
+      docker-compose -f docker-compose.lod2-import.yaml run --rm citydb-tool
 
 #. Now you can start the application:
 
@@ -177,13 +161,6 @@ Installation for docker container
    .. code-block:: bash
 
     docker-compose up -d
-
-#. We need to feed our 3DCityDb to test. In order to do that please use provided docker-compose file or please ru your own script (Note: If you didn't delete your previous volume, you do not need to run this command again!):
-
-   .. code-block:: bash
-
-    # Environment variables that are provided in previous step has to match with our env variables (i.e. docker-compose.yaml and docker-compose.import.yaml should have same env vars for db configs)
-    docker-compose -f docker-compose.import.yaml up -d
 
 
 Repository Structure
