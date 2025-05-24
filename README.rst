@@ -119,8 +119,8 @@ Installation for local development
    .. code-block:: bash
 
     # This will initiate both timescale and 3dcitydb containers on your local machines. 
-      docker-compose -f docker-compose.local.yaml run --rm timescaledb
-      docker-compose -f docker-compose.local.yaml run --rm citydb
+      docker-compose -f docker-compose.local.yaml up -d --build timescaledb
+      docker-compose -f docker-compose.local.yaml up -d --build citydb
 
     #but if you want to run everything related with local including jupyter
       docker-compose -f docker-compose.local.yaml up -d
@@ -132,8 +132,8 @@ Installation for local development
    .. code-block:: bash
 
       # This will download LOD2 data and import it into 3DCityDB
-      docker-compose -f docker-compose.lod2-import.yaml run --rm downloader
-      docker-compose -f docker-compose.lod2-import.yaml run --rm citydb-tool
+      docker-compose -f docker-compose.lod2-import.yaml up --build downloader
+      docker-compose -f docker-compose.lod2-import.yaml up --build citydb-tool
 
 #. Now you can start the application:
 
