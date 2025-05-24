@@ -76,4 +76,4 @@ volumes:
 
 networks:
   networkName:
-   name: database
+   name: database-prod

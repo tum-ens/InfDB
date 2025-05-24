@@ -4,7 +4,7 @@ services:
   sunpot-core:
     image: gitlab.lrz.de:5005/sunpot/sunpot-core
     container_name: sunpot-core
-    network_mode: database #should be same network name with our database
+    network_mode: database_network #should be same network name with our database_network
     volumes:
       - ./data_import/sunpot/sunpotConfig.xml:/config/sunpotConfig.xml
     environment:
@@ -28,7 +28,7 @@ services:
   sunpot-texture:
     image: gitlab.lrz.de:5005/sunpot/sunpot-texture
     container_name: sunpot-tex
-    network_mode: database #should be same network name with our database
+    network_mode: database_network #should be same network name with our database_network
     environment:
       - CITYDB_DB        
       - CITYDB_USER
@@ -50,7 +50,7 @@ services:
   # import:
   #   image: 3dcitydb/impexp
   #   container_name: import
-  #   network_mode: database #should be same network name with our database
+  #   network_mode: database_network #should be same network name with our database_network
   #   environment:
   #     CITYDB_TYPE: postgresql
   #     CITYDB_HOST: citydbV4
@@ -66,7 +66,7 @@ services:
     user: root
     image: 3dcitydb/impexp
     container_name: export
-    network_mode: database # should match the network used by your database
+    network_mode: database_network # should match the network used by your network name defined in the initial service
     environment:
       CITYDB_TYPE: postgresql
       CITYDB_HOST: citydbV4
@@ -80,7 +80,7 @@ services:
 
   import-sunset-to-v5:
     image: 3dcitydb/citydb-tool
-    network_mode: database # should match the network used by your database
+    network_mode: database_network # should match the network used by your network name defined in the initial service
     environment:
       - CITYDB_HOST_DATA_IMPORT
       - CITYDB_DB        
