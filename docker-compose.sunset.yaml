@@ -14,7 +14,7 @@ services:
       - CITYDB_PORT_DATA_IMPORT
     command: [
       "-r",
-      "-h", "citydbV4",
+      "-h", "citydbv4",
       "-p", "${CITYDB_PORT_DATA_IMPORT}",
       "-d", "${CITYDB_DB}",
       "-u", "${CITYDB_USER}",
@@ -35,7 +35,7 @@ services:
       - CITYDB_PASSWORD
       - CITYDB_PORT_DATA_IMPORT
     command: [
-      "-h", "citydbV4",
+      "-h", "citydbv4",
       "-p", "${CITYDB_PORT_DATA_IMPORT}",
       "-d", "${CITYDB_DB}",
       "-u", "${CITYDB_USER}",
@@ -46,21 +46,21 @@ services:
     tty: true
     restart: "no"
   
-  ## in case you want to import some data to v4 for testing purposes uncomment.
-  # import:
-  #   image: 3dcitydb/impexp
-  #   container_name: import
-  #   network_mode: database_network #should be same network name with our database_network
-  #   environment:
-  #     CITYDB_TYPE: postgresql
-  #     CITYDB_HOST: citydbV4
-  #     CITYDB_PORT: ${CITYDB_PORT_DATA_IMPORT}
-  #     CITYDB_NAME: ${CITYDB_DB}
-  #     CITYDB_USERNAME: ${CITYDB_USER}
-  #     CITYDB_PASSWORD: ${CITYDB_PASSWORD}
-  #   volumes:
-  #     - ./data_import/data:/data
-  #   command: ["import", "/data/*.gml", "--import-mode=delete"] 
+  # in case you want to import some data to v4 for testing purposes uncomment.
+  import:
+    image: 3dcitydb/impexp
+    container_name: import
+    network_mode: database_network #should be same network name with our database_network
+    environment:
+      CITYDB_TYPE: postgresql
+      CITYDB_HOST: citydbv4
+      CITYDB_PORT: ${CITYDB_PORT_DATA_IMPORT}
+      CITYDB_NAME: ${CITYDB_DB}
+      CITYDB_USERNAME: ${CITYDB_USER}
+      CITYDB_PASSWORD: ${CITYDB_PASSWORD}
+    volumes:
+      - ./data_import/data:/data
+    command: ["import", "/data/*.gml", "--import-mode=delete"] 
 
   export:
     user: root
@@ -69,7 +69,7 @@ services:
     network_mode: database_network # should match the network used by your network name defined in the initial service
     environment:
       CITYDB_TYPE: postgresql
-      CITYDB_HOST: citydbV4
+      CITYDB_HOST: citydbv4
       CITYDB_PORT: ${CITYDB_PORT_DATA_IMPORT}
       CITYDB_NAME: ${CITYDB_DB}
       CITYDB_USERNAME: ${CITYDB_USER}
