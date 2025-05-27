@@ -1,5 +1,5 @@
-from CONFIG import config
-from data_loader import utils
+from src.services.loader import utils
+from src.core.config import config
 import os
 
 
@@ -8,7 +8,7 @@ def imp_lod2():
     if status != "active":
         print("imp_lod skips, status not active")
         return
-    
+
     base_path = config["opendata"]["lod2"]["lod2_dir"]
     os.makedirs(base_path, exist_ok=True)
 
@@ -56,11 +56,10 @@ def imp_lod2():
                    ST_XMax(ST_Extent(geometry)),
                    ST_YMax(ST_Extent(geometry)),
                -- Optionally, specify the SRID of your geometries
-               -- For example, 4326 for WGS 84 
+               -- For example, 4326 for WGS 84
                {epsg}
            ) as bounding_polygon
     FROM {schema}.buildings;
     """
 
     utils.sql_query(sql)
-

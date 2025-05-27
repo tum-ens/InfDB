@@ -40,7 +40,7 @@ pgadmin:
   default_email: admin@admin.com
   default_password: admin
   port: 8080
-  status: not-active
+  status: active
 
 
 jupyter:
@@ -60,7 +60,7 @@ opendata:
     schema: census2022
 
   lod2:
-    status: active
+    status: not-active
     url:
       - "https://geodaten.bayern.de/odd/a/lod2/citygml/meta/metalink/09780139.meta4"
     lod2_dir: "{{ opendata.opendata_dir }}/lod2"

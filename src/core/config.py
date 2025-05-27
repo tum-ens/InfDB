@@ -1,3 +1,4 @@
+import os
 import yaml
 from jinja2 import Environment, StrictUndefined
 
@@ -37,5 +38,6 @@ def load_config_with_recursive_context(filename):
     return recursive_resolve(initial)
 
 
-config = load_config_with_recursive_context("CONFIG.yaml")
-
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
+config_path = os.path.join(BASE_DIR, "configs", "config.yaml")
+config = load_config_with_recursive_context(config_path)

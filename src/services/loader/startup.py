@@ -1,5 +1,5 @@
 # Load LOD2 (building data)
-from data_loader import imp_basemap, imp_bkg, imp_census2022, imp_lod2, imp_plz
+from src.services.loader import imp_basemap, imp_bkg, imp_census2022, imp_lod2, imp_plz
 
 imp_lod2.imp_lod2()
 

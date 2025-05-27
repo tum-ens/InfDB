@@ -1,6 +1,5 @@
 FROM python:3.11-alpine
 
-
 RUN apk add --no-cache \
     gdal \
     gdal-dev \
@@ -25,12 +24,12 @@ ENV PATH="$PATH:/opt/citydb-tool"
 
 
 WORKDIR /app
-COPY ./data_loader/requirements.data_loader.txt ./requirements.data_loader.txt
-COPY ./CONFIG.py /app/CONFIG.py
-COPY ./CONFIG.yaml /app/CONFIG.yaml
-COPY ./data_loader /app/data_loader
+COPY ./requirements.loader.txt ./requirements.loader.txt
+COPY /src/core/config.py /app/src/core/config.py
+COPY /configs/config.yaml /app/configs/config.yaml
+COPY /src/services/loader /app/src/services/loader
 
 RUN pip install --upgrade pip
-RUN pip install --no-cache-dir -r requirements.data_loader.txt
+RUN pip install --no-cache-dir -r requirements.loader.txt
 
-CMD ["python", "-m", "data_loader.startup"]
+CMD ["python", "-m", "src.services.loader.startup"]

@@ -1,23 +1,20 @@
-import os
-from dotenv import load_dotenv
 from sqlmodel import create_engine
-
-# Load environment variables from .env
-load_dotenv()
+from .config import config
 
 # TimescaleDB Configuration
-timescale_user = os.getenv("TIMESCALE_USER")
-timescale_password = os.getenv("TIMESCALE_PASSWORD")
-timescale_host = os.getenv("TIMESCALE_HOST")
-timescale_port = os.getenv("TIMESCALE_PORT")
-timescale_db = os.getenv("TIMESCALE_DB")
+timescale_user = config["timescaledb"]["user"]
+timescale_password = config["timescaledb"]["password"]
+timescale_host = config["timescaledb"]["host"]
+timescale_port = config["timescaledb"]["port"]
+timescale_db = config["timescaledb"]["db"]
 
 # CityDB Configuration
-citydb_user = os.getenv("CITYDB_USER")
-citydb_password = os.getenv("CITYDB_PASSWORD")
-citydb_host = os.getenv("CITYDB_HOST")
-citydb_port = os.getenv("CITYDB_PORT")
-citydb_db = os.getenv("CITYDB_DB")
+citydb_user = config["citydb"]["user"]
+citydb_password = config["citydb"]["password"]
+citydb_host = config["citydb"]["host"]
+citydb_port = config["citydb"]["port"]
+citydb_db = config["citydb"]["db"]
+
 
 # Build connection URLs
 timescale_url = f"postgresql://{timescale_user}:{timescale_password}@{timescale_host}:{timescale_port}/{timescale_db}"

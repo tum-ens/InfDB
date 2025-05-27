@@ -1,7 +1,7 @@
 import os
 import geopandas as gpd
-from data_loader import utils
-from CONFIG import config
+from src.services.loader import utils
+from src.core.config import config
 
 
 def import_basemap():
@@ -9,7 +9,7 @@ def import_basemap():
     if status != "active":
         print("basemap skips, status not active")
         return
-    
+
     engine = utils.get_engine()
 
     # Get envelope
@@ -45,5 +45,3 @@ def import_basemap():
             name = layer.replace("_bdlm", "")
             gdf.to_postgis(name, engine, if_exists='append', schema=schema, index=False)
             gdf.to_file(os.path.join(processed_path, os.path.basename(file)), layer=name, driver="GPKG")
-
-

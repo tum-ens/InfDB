@@ -1,8 +1,8 @@
 import yaml
 import os
-from CONFIG import config
+from src.core.config import config
 
-def write_env_file(config, file_path=".env"):
+def write_env_file(file_path=".env"):
     def flatten(d, parent_key=""):
         items = []
         for k, v in d.items():
@@ -22,7 +22,7 @@ def write_env_file(config, file_path=".env"):
 
 def write_compose_file():
     base_dir = os.path.dirname(__file__)
-    config_path = os.path.join(base_dir, "..", "CONFIG.yaml")
+    config_path = os.path.join(base_dir, "..", "configs/config.yaml")
     output_path = os.path.join(base_dir, "docker-compose.yaml")
 
     with open(config_path) as f:
@@ -54,8 +54,7 @@ def write_compose_file():
         yaml.dump(output, f, default_flow_style=False, sort_keys=False)
 
 
-write_env_file(config, ".env")
-write_env_file(config, "./dockers/.env")
+write_env_file("./dockers/.env")
 write_compose_file()
 
 

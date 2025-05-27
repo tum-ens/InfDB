@@ -28,6 +28,8 @@ geopandas
 #mapclassify
 bs4
 geoalchemy2
+requests
+beautifulsoup4
 
 # Ali
 fastapi==0.115.7
