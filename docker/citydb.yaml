@@ -1,0 +1,15 @@
+services:
+  citydb:
+    image: 3dcitydb/3dcitydb-pg:5.0.0
+    container_name: citydb
+    environment:
+      POSTGRES_DB: ${CITYDB_DB}
+      POSTGRES_USER: ${CITYDB_USER}
+      POSTGRES_PASSWORD: ${CITYDB_PASSWORD}
+      SRID: ${CITYDB_SRID}
+    ports:
+      - "5433:5432"
+    volumes:
+      - citydb_data:/var/lib/postgresql/data
+    networks:
+      - database
