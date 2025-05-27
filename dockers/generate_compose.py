@@ -55,7 +55,7 @@ def write_compose_file():
 
 
 write_env_file(config, ".env")
-write_env_file(config, "./docker/.env")
+write_env_file(config, "./dockers/.env")
 write_compose_file()
 
 
