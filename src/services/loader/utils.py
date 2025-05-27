@@ -4,15 +4,16 @@ from sqlalchemy import create_engine
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
-from CONFIG import config
-
+from src.core.config import config
 
 # CityDB Configuration
 citydb_user = config["citydb"]["user"]
 citydb_password = config["citydb"]["password"]
-citydb_host = config["citydb"]["host_container"]  # change this to CITYDB_HOST if you want to run locally not in the container
-citydb_port = 5432
-# citydb_port = config["citydb"]["port"] # uncomment this while working on local because for the container we should use default 5432 which postgres works with
+# citydb_host = config["citydb"]["host_container"]
+citydb_host = config["citydb"]["host"]  # uncomment this while working on local because for the container we should use default 5432 which postgres works with
+citydb_db = config["citydb"]["db"]
+# citydb_port = 5432
+citydb_port = config["citydb"]["port"]  # uncomment this while working on local because for the container we should use default 5432 which postgres works with
 citydb_db = config["citydb"]["db"]
 epsg = config["citydb"]["epsg"]
 
@@ -74,7 +75,6 @@ def sql_query(query):
             host=citydb_host,
             port=citydb_port
         )
-        print("here")
         cursor = connection.cursor()
         # # Create the users table
         cursor.execute(query)

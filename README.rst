@@ -114,15 +114,40 @@ Installation for local development
 
       pip install -r requirements.txt
 
-#. Our application has dependency on 3dCityDB and Timescale; that's why local environment should be set first. In the Central CONFIG.yaml, you should set up the service `status: active` for the ones you would like to user.
-  I suggest also lod2 status should be set to active because it would be nice to have some test data. 
-  docker.generate_compose will automatically create a docker-compoe file depending on service statuses.
+#. Our application has dependency on 3dCityDB and Timescale; that's why local environment should be set first. 
+Under `configs` folder we have a central `config.yaml` that keeps service related inputs.
+If, a service should be included during your tests, you should set `status: active`.
+   
+   .. code-block:: bash
+
+    # example for timescaledb
+      timescaledb:
+        user: timescale_user
+        password:
+        db: timescaledb_db
+        host: 127.0.0.1 
+        port: 5432
+        status: active
+
+#. To run our databases and feed them with data, we should first run the code below. This will auto generate the `docker-compose.yaml` depending on our needs. Please check.
 
    .. code-block:: bash
 
-    # This will initiate both timescale and 3dcitydb containers on your local machines. 
-      python3 -m docker.generate_compose
-      docker-compose -f ./docker/docker-compose.yaml up
+    # example for timescaledb
+      python3 -m  dockers.generate_compose 
+
+#. As a last step we would need to 
+
+   .. code-block:: bash
+
+      docker-compose -f ./dockers/docker-compose.yaml up
+
+#. If you would like to rebuild only loader image, do:
+
+   .. code-block:: bash
+
+      docker compose  -f ./dockers/docker-compose.yaml  build
+      docker-compose -f ./dockers/docker-compose.yaml up
 
 #. Now you can start the application:
 
@@ -172,7 +197,7 @@ Repository Structure
   - **guidelines/**: Project guidelines and standards
   - **source/**: Source files for documentation
   - **img/**: Images used in documentation
-- **docker/**: Docker configuration files
+- **dockers/**: Docker configuration files
 - **tests/**: Test suite
   - **unit/**: Unit tests for individual components
   - **integration/**: Tests for component interactions

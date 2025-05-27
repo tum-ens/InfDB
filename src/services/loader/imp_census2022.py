@@ -4,8 +4,8 @@ import os
 from zipfile import ZipFile
 import geopandas as gpd
 import pandas as pd
-from data_loader import utils
-from CONFIG import config
+from src.services.loader import utils
+from src.core.config import config
 
 
 def get_zensus_links():

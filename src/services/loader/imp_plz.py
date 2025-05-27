@@ -1,8 +1,8 @@
 import os
 import geopandas as gpd
 import requests
-from data_loader import utils
-from CONFIG import config
+from src.services.loader import utils
+from src.core.config import config
 
 
 def import_plz():
@@ -10,7 +10,7 @@ def import_plz():
     if status != "active":
         print("imp_plz skips, status not active")
         return
-    # Create a database-data-import-container connection
+
     engine = utils.get_engine()
 
     # Get envelope
@@ -49,8 +49,7 @@ def import_plz():
         print(f"Importing layer: {layer} into {schema}")
         gdf = gpd.read_file(path_file, layer=layer, bbox=gdf_envelope)
 
-        epsg = config.epsg
-        gdf.to_crs(epsg=epsg, inplace=True)
+        gdf.to_crs(epsg=utils.epsg, inplace=True)
 
         name = layer
         gdf.to_postgis(name, engine, if_exists='replace', schema=schema, index=False)

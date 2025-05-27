@@ -2,8 +2,8 @@ import os
 import requests
 from zipfile import ZipFile
 import geopandas as gpd
-from data_loader import utils
-from CONFIG import config
+from src.services.loader import utils
+from src.core.config import config
 
 
 def import_bkg():
@@ -54,9 +54,10 @@ def import_bkg():
 
         for layer in layers:
             print(f"Importing layer: {layer} into {schema}")
+            # !!next line returns UserWarning: More than one layer found in 'DE_VG5000.gpkg': error
             gdf = gpd.read_file(input_file, layer=layer, bbox=gdf_envelope)
 
-            epsg = config.epsg
+            epsg = utils.epsg
             gdf.to_crs(epsg=epsg, inplace=True)
 
             gdf.to_file(output_file, layer=layer, driver="GPKG")
@@ -119,4 +120,3 @@ def import_bkg():
     import_layers(geogitter_100m_gpkg, geogitter_100m_layers)
 
     # ToDo: Remove temporary files
-
