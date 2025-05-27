@@ -1,0 +1,11 @@
+services:
+  loader:
+    build:
+      context: ..
+      dockerfile: Dockerfile.data_loader
+    container_name: loader
+    networks:
+      - database
+    depends_on:
+      - timescaledb
+      - citydb

@@ -2,22 +2,27 @@ import os
 import requests
 from zipfile import ZipFile
 import geopandas as gpd
-
-# Import configuration
-from data_import.imp import config, utils
+from data_loader import utils
+from CONFIG import config
 
 
 def import_bkg():
+    status = config["opendata"]["bkg"]["status"]
+    if status != "active":
+        print("imp_bkg skips, status not active")
+        return
+
     # Get locations
-    zip_path = config.get_path(["opendata", "bkg", "bkg_zip_dir"])
-    unzip_path = config.get_path(["opendata", "bkg", "bkg_unzip_dir"])
-    processed_path = config.get_path(["opendata", "bkg", "bkg_processed_dir"])
+    zip_path = config["opendata"]["bkg"]["bkg_zip_dir"]
+    unzip_path = config["opendata"]["bkg"]["bkg_unzip_dir"]
+    processed_path = config["opendata"]["bkg"]["bkg_processed_dir"]
+
     os.makedirs(zip_path, exist_ok=True)
     os.makedirs(unzip_path, exist_ok=True)
     os.makedirs(processed_path, exist_ok=True)
 
     # Create schema if it doesn't exist
-    schema = config.get_value(["opendata", "bkg", "schema"])
+    schema = config["opendata"]["bkg"]["schema"]
     sql = f"CREATE SCHEMA IF NOT EXISTS {schema};"
     utils.sql_query(sql)
 
@@ -114,3 +119,4 @@ def import_bkg():
     import_layers(geogitter_100m_gpkg, geogitter_100m_layers)
 
     # ToDo: Remove temporary files
+

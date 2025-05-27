@@ -1,10 +1,38 @@
-from data_import.imp import config, utils
+from CONFIG import config
+from data_loader import utils
+import os
 
 
-def import_schemas():
+def imp_lod2():
+    status = config["opendata"]["lod2"]["status"]
+    if status != "active":
+        print("imp_lod skips, status not active")
+        return
+    base_path = config["opendata"]["lod2"]["lod2_dir"]
+    os.makedirs(base_path, exist_ok=True)
+
+    # Run aria2c to download the file (equivalent to `aria2c <url>`)
+    url = config["opendata"]["lod2"]["url"]
+    if isinstance(url, list):
+        url = (" ").join(url)
+
+    gml_path = config["opendata"]["lod2"]["gml_dir"]
+    cmd = f"aria2c --continue=true --allow-overwrite=false --auto-file-renaming=false {url} -d {gml_path}"
+    os.system(cmd)
+
+    ## Import *gml files into 3D-CDB
+    user = config["citydb"]["user"]
+    password = config["citydb"]["password"]
+    port = config["citydb"]["port_data_import"]
+    host = config["citydb"]["host_data_import"]
+    database = config["citydb"]["db"]
+
+    cmd = f"citydb import citygml -H {host} -P {port} -d {database} -u {user} -p {password} {gml_path}/*.gml"
+    utils.do_cmd(cmd)
+
     ## Extract general information like envelope
-    schema = config.get_value(["general", "schema"])
-    epsg = config.epsg
+    schema = config["general"]["schema"]
+    epsg = config["citydb"]["epsg"]
     sql = f"""
             DROP SCHEMA IF EXISTS {schema} CASCADE;
             CREATE SCHEMA IF NOT EXISTS {schema};
@@ -35,5 +63,3 @@ def import_schemas():
 
     utils.sql_query(sql)
 
-
-import_schemas()

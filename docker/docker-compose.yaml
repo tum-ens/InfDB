@@ -1,0 +1,15 @@
+name: infdb
+include:
+- ./loader.yaml
+- ./citydb.yaml
+- ./citydbv4.yaml
+- ./timescaledb.yaml
+volumes:
+  timescale_data: null
+  citydb_data: null
+  citydb_data_v4: null
+  pgadmin_data: null
+networks:
+  database:
+    name: database_network
+    driver: bridge

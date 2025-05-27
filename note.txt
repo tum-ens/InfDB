@@ -1,0 +1,4 @@
+python3 -m docker.generate_compose
+## now our services up
+docker-compose -f ./docker/docker-compose.yaml up
+

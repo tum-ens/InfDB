@@ -4,12 +4,21 @@ from sqlalchemy import create_engine
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
+from CONFIG import config
 
-from data_import.imp.config import citydb_user, citydb_password, citydb_host, citydb_port, citydb_db
+
+# CityDB Configuration
+citydb_user = config["citydb"]["user"]
+citydb_password = config["citydb"]["password"]
+citydb_host = config["citydb"]["host_data_import"]  # change this to CITYDB_HOST if you want to run locally not in the container
+citydb_port = config["citydb"]["port_data_import"]  # change this to CITYDB_PORT if you want to run locally not in the container
+citydb_db = config["citydb"]["db"]
+epsg = config["citydb"]["epsg"]
 
 
 def any_element_in_string(target_string, elements):
     return any(element in target_string for element in elements)
+
 
 def get_links(url, ending, filter):
     response = requests.get(url)
@@ -35,6 +44,7 @@ def get_links(url, ending, filter):
 
     return zip_links
 
+
 def download_files(urls, base_path):
     files = []
     for url in urls:
@@ -52,6 +62,7 @@ def download_files(urls, base_path):
         files.append(path_file)
     return files
 
+
 def sql_query(query):
     try:
         # Connect to the PostgreSQL database-data-import-container
@@ -62,6 +73,7 @@ def sql_query(query):
             host=citydb_host,
             port=citydb_port
         )
+        print("here")
         cursor = connection.cursor()
         # # Create the users table
         cursor.execute(query)
@@ -75,8 +87,8 @@ def sql_query(query):
     except Exception as error:
         print(f"ProgrammingError: {error}")
 
+
 def get_engine():
-    # Create a database-data-import-container connection
     user = citydb_user
     password = citydb_password
     host = citydb_host
@@ -87,6 +99,7 @@ def get_engine():
     engine = create_engine(db_connection_url)
 
     return engine
+
 
 def do_cmd(cmd):
     os.system(cmd)
