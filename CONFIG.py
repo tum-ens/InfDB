@@ -37,23 +37,5 @@ def load_config_with_recursive_context(filename):
     return recursive_resolve(initial)
 
 
-def write_env_file(config, file_path=".env"):
-    def flatten(d, parent_key=""):
-        items = []
-        for k, v in d.items():
-            new_key = f"{parent_key}_{k}".upper() if parent_key else k.upper()
-            if isinstance(v, dict):
-                items.extend(flatten(v, new_key))
-            else:
-                items.append((new_key, v))
-        return items
-
-    flat_config = flatten(config)
-
-    with open(file_path, "w") as f:
-        for key, value in flat_config:
-            f.write(f"{key}={value}\n")
-
-
 config = load_config_with_recursive_context("CONFIG.yaml")
 

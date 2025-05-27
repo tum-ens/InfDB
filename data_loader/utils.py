@@ -10,8 +10,9 @@ from CONFIG import config
 # CityDB Configuration
 citydb_user = config["citydb"]["user"]
 citydb_password = config["citydb"]["password"]
-citydb_host = config["citydb"]["host_data_import"]  # change this to CITYDB_HOST if you want to run locally not in the container
-citydb_port = config["citydb"]["port_data_import"]  # change this to CITYDB_PORT if you want to run locally not in the container
+citydb_host = config["citydb"]["host_container"]  # change this to CITYDB_HOST if you want to run locally not in the container
+citydb_port = 5432
+# citydb_port = config["citydb"]["port"] # uncomment this while working on local because for the container we should use default 5432 which postgres works with
 citydb_db = config["citydb"]["db"]
 epsg = config["citydb"]["epsg"]
 

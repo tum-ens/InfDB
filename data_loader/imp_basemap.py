@@ -10,7 +10,6 @@ def import_basemap():
         print("basemap skips, status not active")
         return
     
-    # Create a database-data-import-container connection
     engine = utils.get_engine()
 
     # Get envelope

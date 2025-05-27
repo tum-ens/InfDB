@@ -8,6 +8,7 @@ def imp_lod2():
     if status != "active":
         print("imp_lod skips, status not active")
         return
+    
     base_path = config["opendata"]["lod2"]["lod2_dir"]
     os.makedirs(base_path, exist_ok=True)
 
@@ -21,11 +22,11 @@ def imp_lod2():
     os.system(cmd)
 
     ## Import *gml files into 3D-CDB
-    user = config["citydb"]["user"]
-    password = config["citydb"]["password"]
-    port = config["citydb"]["port_data_import"]
-    host = config["citydb"]["host_data_import"]
-    database = config["citydb"]["db"]
+    user = utils.citydb_user
+    password = utils.citydb_password
+    port = utils.citydb_port
+    host = utils.citydb_host
+    database = utils.citydb_db
 
     cmd = f"citydb import citygml -H {host} -P {port} -d {database} -u {user} -p {password} {gml_path}/*.gml"
     utils.do_cmd(cmd)
