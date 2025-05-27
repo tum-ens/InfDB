@@ -2,7 +2,6 @@ name: infdb
 include:
 - ./loader.yaml
 - ./citydb.yaml
-- ./citydbv4.yaml
 - ./timescaledb.yaml
 volumes:
   timescale_data: null

@@ -9,9 +9,8 @@ citydb:
   password: citydb_password
   db: citydb
   host: 127.0.0.1
-  host_data_import: citydb
+  host_container: citydb
   port: 5433
-  port_data_import: 5432
   epsg: "25832"
   srid: 4326
   db_dir: "{{ general.base_dir }}"
@@ -22,13 +21,12 @@ citydbv4:
   password: citydb_password
   db: citydb
   host: 127.0.0.1
-  host_data_import: citydbv4
+  host_container: citydbv4
   port: 5434
-  port_data_import: 5432
   epsg: "25832"
   srid: 4326
   db_dir: "{{ general.base_dir }}"
-  status: active
+  status: not-active
 
 timescaledb:
   user: timescale_user
@@ -41,6 +39,9 @@ timescaledb:
 pgadmin:
   default_email: admin@admin.com
   default_password: admin
+  port: 8080
+  status: not-active
+
 
 jupyter:
   status: not-active

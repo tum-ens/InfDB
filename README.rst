@@ -114,26 +114,15 @@ Installation for local development
 
       pip install -r requirements.txt
 
-#. Our application has dependency on 3dCityDB and Timescale; that's why local environment should be set first. The next command will fetch the timescale and 3dcitydb images and run the containers on your local:
+#. Our application has dependency on 3dCityDB and Timescale; that's why local environment should be set first. In the Central CONFIG.yaml, you should set up the service `status: active` for the ones you would like to user.
+  I suggest also lod2 status should be set to active because it would be nice to have some test data. 
+  docker.generate_compose will automatically create a docker-compoe file depending on service statuses.
 
    .. code-block:: bash
 
     # This will initiate both timescale and 3dcitydb containers on your local machines. 
-      docker-compose -f docker-compose.local.yaml up -d --build timescaledb
-      docker-compose -f docker-compose.local.yaml up -d --build citydb
-
-    #but if you want to run everything related with local including jupyter
-      docker-compose -f docker-compose.local.yaml up -d
-
-
-#. To use 3DCityDB, you need to import demo data. Use the following commands with the provided Docker Compose file:
-   (Note: If you haven’t deleted the volume previously created for 3DCityDB, you don’t need to run this again.)
-
-   .. code-block:: bash
-
-      # This will download LOD2 data and import it into 3DCityDB
-      docker-compose -f docker-compose.lod2-import.yaml up --build downloader
-      docker-compose -f docker-compose.lod2-import.yaml up --build citydb-tool
+      python3 -m docker.generate_compose
+      docker-compose -f ./docker/docker-compose.yaml up
 
 #. Now you can start the application:
 
