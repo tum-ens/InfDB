@@ -15,7 +15,7 @@ services:
     container_name: data-init-tables
     env_file: .env
     networks:
-      - database
+      - database_network:
     working_dir: /app
     command: >
       bash -c "
@@ -26,7 +26,7 @@ services:
     container_name: data-plz-importer
     env_file: .env
     networks:
-      - database
+      - database_network:
     working_dir: /app
     command: >
       bash -c "
@@ -37,7 +37,7 @@ services:
     container_name: data-census2022-importer
     env_file: .env
     networks:
-      - database
+      - database_network:
     working_dir: /app
     command: >
       bash -c "
@@ -48,7 +48,7 @@ services:
     container_name: data-bkg-importer
     env_file: .env
     networks:
-      - database
+      - database_network:
     working_dir: /app
     command: >
       bash -c "
@@ -59,7 +59,7 @@ services:
     container_name: data-basemap-importer
     env_file: .env
     networks:
-      - database
+      - database_network:
     working_dir: /app
     command: >
       bash -c "
@@ -67,5 +67,5 @@ services:
       "
 
 networks:
-  database:
+  database_network::
     external: true
