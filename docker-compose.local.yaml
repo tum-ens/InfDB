@@ -13,7 +13,8 @@ services:
     volumes:
       - timescale_data:/var/lib/postgresql/data
     networks:
-      - networkName
+      - database
+
 
   citydb:
     image: 3dcitydb/3dcitydb-pg:5.0.0
@@ -28,7 +29,7 @@ services:
     volumes:
       - citydb_data:/var/lib/postgresql/data
     networks:
-      - networkName
+      - database
 
   citydbv4:
     image: 3dcitydb/3dcitydb-pg:13-3.2-4.4.0
@@ -43,7 +44,7 @@ services:
     volumes:
       - citydb_data_v4:/var/lib/postgresql/data
     networks:
-      - networkName
+      - database
 
   pgadmin:
     image: dpage/pgadmin4
@@ -56,7 +57,7 @@ services:
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     networks:
-      - networkName
+      - database
     depends_on:
       - timescaledb
       - citydb
@@ -77,6 +78,8 @@ volumes:
   citydb_data_v4:
   pgadmin_data:
 
+
 networks:
-  networkName:
-    name: database
+  database:
+    name: database_network
+    driver: bridge
