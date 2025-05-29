@@ -2,13 +2,13 @@ import os
 import geopandas as gpd
 import requests
 from src.services.loader import utils
-from src.core.config import config
+from src.core import config, config_db
 
 
 def import_plz():
-    status = config["opendata"]["plz"]["status"]
+    status = config.get_value(["opendata", "plz", "status"])
     if status != "active":
-        print("imp_plz skips, status not active")
+        print("plz skips, status not active")
         return
 
     engine = utils.get_engine()
@@ -17,8 +17,8 @@ def import_plz():
     sql = "SELECT geometry as geom FROM general.envelope"
     gdf_envelope = gpd.read_postgis(sql, engine, geom_col="geom")
 
-    base_path = config["opendata"]["plz"]["plz_dir"]
-    processed_path = config["opendata"]["plz"]["plz_processed_dir"]
+    base_path = config.get_path(["opendata", "plz", "plz_dir"])
+    processed_path = config.get_path(["opendata", "plz", "plz_processed_dir"])
 
     os.makedirs(base_path, exist_ok=True)
     os.makedirs(processed_path, exist_ok=True)
@@ -31,7 +31,7 @@ def import_plz():
         print(f"File {filename} already exists.")
     else:
         # Datei herunterladen
-        url = config["opendata"]["plz"]["url"]
+        url = config.get_value(["opendata", "plz", "url"])
         print(f"File {filename} will be downloaded from {url}")
 
         response = requests.get(url)
@@ -39,7 +39,7 @@ def import_plz():
             file.write(response.content)
         print(f"{path_file} downloaded.")
 
-    schema = config["opendata"]["plz"]["schema"]
+    schema = config.get_value(["opendata", "plz", "schema"])
 
     # Create schema if it doesn't exist
     sql = f"CREATE SCHEMA IF NOT EXISTS {schema};"
@@ -49,7 +49,8 @@ def import_plz():
         print(f"Importing layer: {layer} into {schema}")
         gdf = gpd.read_file(path_file, layer=layer, bbox=gdf_envelope)
 
-        gdf.to_crs(epsg=utils.epsg, inplace=True)
+        epsg = config_db.epsg
+        gdf.to_crs(epsg=epsg, inplace=True)
 
         name = layer
         gdf.to_postgis(name, engine, if_exists='replace', schema=schema, index=False)

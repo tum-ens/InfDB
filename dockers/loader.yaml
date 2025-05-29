@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile.loader
     container_name: loader
     networks:
-      - database
+      - ${NETWORK_EXTERNAL_NAME}
     depends_on:
       citydb:
         condition: service_healthy

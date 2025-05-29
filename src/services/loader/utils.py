@@ -1,21 +1,10 @@
 import os
 import psycopg2
-from sqlalchemy import create_engine
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
-from src.core.config import config
-
-# CityDB Configuration
-citydb_user = config["citydb"]["user"]
-citydb_password = config["citydb"]["password"]
-# citydb_host = config["citydb"]["host_container"]
-citydb_host = config["citydb"]["host"]  # uncomment this while working on local because for the container we should use default 5432 which postgres works with
-citydb_db = config["citydb"]["db"]
-# citydb_port = 5432
-citydb_port = config["citydb"]["port"]  # uncomment this while working on local because for the container we should use default 5432 which postgres works with
-citydb_db = config["citydb"]["db"]
-epsg = config["citydb"]["epsg"]
+from src.core import config_db
+from src.core.config_db import citydb_engine
 
 
 def any_element_in_string(target_string, elements):
@@ -69,11 +58,11 @@ def sql_query(query):
     try:
         # Connect to the PostgreSQL database-data-import-container
         connection = psycopg2.connect(
-            dbname=citydb_db,
-            user=citydb_user,
-            password=citydb_password,
-            host=citydb_host,
-            port=citydb_port
+            dbname=config_db.citydb_db,
+            user=config_db.citydb_user,
+            password=config_db.citydb_password,
+            host=config_db.citydb_host,
+            port=config_db.citydb_port
         )
         cursor = connection.cursor()
         # # Create the users table
@@ -90,16 +79,7 @@ def sql_query(query):
 
 
 def get_engine():
-    user = citydb_user
-    password = citydb_password
-    host = citydb_host
-    port = citydb_port
-    dbname = citydb_db
-
-    db_connection_url = f"postgresql://{user}:{password}@{host}:{port}/{dbname}"
-    engine = create_engine(db_connection_url)
-
-    return engine
+    return citydb_engine
 
 
 def do_cmd(cmd):

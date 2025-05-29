@@ -114,9 +114,9 @@ Installation for local development
 
       pip install -r requirements.txt
 
-#. Our application has dependency on 3dCityDB and Timescale; that's why local environment should be set first. 
-Under `configs` folder we have a central `config.yaml` that keeps service related inputs.
-If, a service should be included during your tests, you should set `status: active`.
+#. Our application has dependency on 3dCityDB and Timescale; that's why environment should be set first. 
+Under `configs` folder we have multiple `config` files that keeps service related inputs.
+Information related configuration is explained under `configs/Readme.md`
    
    .. code-block:: bash
 
@@ -129,24 +129,25 @@ If, a service should be included during your tests, you should set `status: acti
         port: 5432
         status: active
 
-#. To run our databases and feed them with data, we should first run the code below. This will auto generate the `docker-compose.yaml` depending on our needs. Please check.
+#. To run our databases and feed them with data, we should first run the code below. This will auto generate the `docker-compose.yaml` depending on our needs. 
+Information related docker-compose generations is explained under `configs/Readme.md`
 
    .. code-block:: bash
 
     # example for timescaledb
       python3 -m  dockers.generate_compose 
 
-#. As a last step we would need to 
+#. As a last step we would need to start our services.
 
    .. code-block:: bash
 
       docker-compose -f ./dockers/docker-compose.yaml up
 
-#. If you would like to rebuild only loader image, do:
+#. If you had any changes related with loader, you should create the image again if you have an existing image. Then you should do:
 
    .. code-block:: bash
 
-      docker compose  -f ./dockers/docker-compose.yaml  build
+      docker compose -f ./dockers/docker-compose.yaml build
       docker-compose -f ./dockers/docker-compose.yaml up
 
 #. Now you can start the application:

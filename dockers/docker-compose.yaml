@@ -3,12 +3,14 @@ include:
 - ./loader.yaml
 - ./citydb.yaml
 - ./timescaledb.yaml
+- ./pgadmin.yaml
+- ./jupyter.yaml
 volumes:
   timescale_data: null
   citydb_data: null
   citydb_data_v4: null
   pgadmin_data: null
 networks:
-  database:
-    name: database_network
+  infdb_external_network:
+    name: infdb_network
     driver: bridge
