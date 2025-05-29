@@ -2,9 +2,9 @@ name: infdb
 include:
 - ./loader.yaml
 - ./citydb.yaml
+- ./citydbv4.yaml
 - ./timescaledb.yaml
 - ./pgadmin.yaml
-- ./jupyter.yaml
 volumes:
   timescale_data: null
   citydb_data: null
