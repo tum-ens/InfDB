@@ -48,7 +48,6 @@ def get_path(keys):
     if not os.path.isabs(path):
         path = os.path.join(get_root_path(), path)
     path = os.path.abspath(path)
-    print(path)
     return path
 
 

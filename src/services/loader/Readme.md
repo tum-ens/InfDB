@@ -48,7 +48,7 @@ The following data folders are at `base_dir/$name/*`:
 | Service                     | Port |
 |-----------------------------|------|
 | 3D City DB                  | 5433 |
-| pgAdmin                     | 8080 |
+| pgAdmin                     | 81   |
 | jupyter                     | 8888 |
 
 These are exposed values. You can check under dockers/<service_name>.yaml files to see what is exposed port for that service.
