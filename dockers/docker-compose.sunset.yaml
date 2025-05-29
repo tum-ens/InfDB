@@ -1,0 +1,135 @@
+name: sunset
+
+services:
+  # export-v5-data-to-gml:
+  #   image: 3dcitydb/citydb-tool
+  #   user: 0:0
+  #   network_mode: infdb_network
+  #   environment:
+  #     - CITYDB_DB        
+  #     - CITYDB_USER
+  #     - CITYDB_PASSWORD
+  #     - CITYDB_HOST
+  #   command: [
+  #     "export", "citygml",
+  #     "-H", "${CITYDB_HOST}",
+  #     "-d", "${CITYDB_DB}",
+  #     "-u", "${CITYDB_USER}",
+  #     "-p", "${CITYDB_PASSWORD}",
+  #     "-P", "5432",
+  #     "--output", "/data/export.gml",
+  #   ]
+  #   volumes:
+  #   - ./output:/data/
+   
+  import-to-v4:
+    image: 3dcitydb/impexp
+    user: 0:0
+    network_mode: infdb_network
+    environment:
+      CITYDB_TYPE: postgresql
+      CITYDB_HOST: ${CITYDBV4_HOST}
+      CITYDB_PORT: 5432
+      CITYDB_NAME: ${CITYDB_DB}
+      CITYDB_USERNAME: ${CITYDB_USER}
+      CITYDB_PASSWORD: ${CITYDB_PASSWORD}
+    volumes:
+      - ../data/sonthofen/opendata/lod2/gml/:/data # I will keep this hardcoded until we decide if directly import lod2 data to v4 or export from v5 to v5.
+    command: ["import", "/data/596_5256.gml"]
+
+  # sunpot-core:
+  #   image: gitlab.lrz.de:5005/sunpot/sunpot-core
+  #   network_mode: infdb_network
+  #   volumes:
+  #     - ../src/services/sunpot/sunpotConfig.xml:/sunpotConfig.xml
+  #   environment:
+  #     - CITYDB_DB        
+  #     - CITYDB_USER
+  #     - CITYDB_PASSWORD
+  #     - CITYDBV4_HOST
+  #   command: [
+  #     "-r",
+  #     "-h", "${CITYDBV4_HOST}",
+  #     "-p", "5432",
+  #     "-d", "${CITYDB_DB}",
+  #     "-u", "${CITYDB_USER}",
+  #     "-pw", "${CITYDB_PASSWORD}",
+  #     "/sunpotConfig.xml"
+  #   ]
+  #   stdin_open: true
+  #   tty: true
+  #   depends_on:
+  #     import-to-v4:
+  #       condition: service_completed_successfully
+  #       restart: false
+
+
+  # sunpot-texture:
+  #   image: gitlab.lrz.de:5005/sunpot/sunpot-texture
+  #   network_mode: infdb_network
+  #   environment:
+  #     - CITYDB_DB        
+  #     - CITYDB_USER
+  #     - CITYDB_PASSWORD
+  #     - CITYDBV4_HOST
+  #   command: [
+  #     "-h", "${CITYDBV4_HOST}",
+  #     "-p", "5432",
+  #     "-d", "${CITYDB_DB}",
+  #     "-u", "${CITYDB_USER}",
+  #     "-pw", "${CITYDB_PASSWORD}",
+  #     "-y"
+  #   ]
+  #   stdin_open: true
+  #   tty: true
+  #   depends_on:
+  #     sunpot-core:
+  #       condition: service_completed_successfully
+  #       restart: false
+
+
+  export-from-v4:
+    user: 0:0
+    image: 3dcitydb/impexp
+    network_mode: infdb_network
+    environment:
+      CITYDB_TYPE: postgresql
+      CITYDB_HOST: ${CITYDBV4_HOST}
+      CITYDB_PORT: 5432
+      CITYDB_NAME: ${CITYDB_DB}
+      CITYDB_USERNAME: ${CITYDB_USER}
+      CITYDB_PASSWORD: ${CITYDB_PASSWORD}
+    volumes:
+      - "${SUNSET_DIR}:/data"
+    command: ["export", "-o", "/data/v4_output.gml"]    
+    depends_on:
+      import-to-v4:
+        condition: service_completed_successfully
+        restart: false
+
+  
+  import-v4-exported-gml-to-v5:
+    image: 3dcitydb/citydb-tool
+    network_mode: infdb_network
+    environment:
+      - CITYDB_DB        
+      - CITYDB_USER
+      - CITYDB_PASSWORD
+      - CITYDB_HOST
+    command: [
+      "import", "citygml",
+      "-H", "${CITYDB_HOST}",
+      "-d", "${CITYDB_DB}",
+      "-u", "${CITYDB_USER}",
+      "-p", "${CITYDB_PASSWORD}",
+      "-P", "5432",
+      "/data/*.gml"
+    ]
+    volumes:
+      - "${SUNSET_DIR}:/data"
+    depends_on:
+      export-from-v4:
+        condition: service_completed_successfully
+        restart: false
+
+

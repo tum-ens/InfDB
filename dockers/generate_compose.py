@@ -15,8 +15,8 @@ def write_env_file(file_path=".env"):
             if isinstance(props, dict) and props.get("status") == "active":
                 for key, _value in props.items():
                     f.write(f"{(service_name + '_' + key).upper()}={get_value([service_name, key])}\n")
-        network_ext_name=get_value(["base", "network_external_name"])
-        f.write(f"NETWORK_EXTERNAL_NAME={network_ext_name}\n")
+        f.write(f"NETWORK_EXTERNAL_NAME={get_value(['base', 'network_external_name'])}\n")
+        f.write(f"SUNSET_DIR={get_value(['base', 'base_sunset_dir'])}\n")
 
 #This function auto generates the docker compose file for us.
 def write_compose_file():
