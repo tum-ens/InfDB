@@ -8,11 +8,11 @@ services:
       POSTGRES_PASSWORD: ${CITYDB_PASSWORD}
       SRID: ${CITYDBV4_SRID}
     ports:
-      - "${CITYDBV4_PORT}:5432"
+      - ${CITYDBV4_PORT}:5432
     volumes:
       - citydb_data_v4:/var/lib/postgresql/data
     networks:
-      - database
+      - ${NETWORK_EXTERNAL_NAME}
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${CITYDB_USER} -d ${CITYDB_DB}"]
       interval: 10s

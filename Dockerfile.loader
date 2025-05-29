@@ -24,12 +24,12 @@ ENV PATH="$PATH:/opt/citydb-tool"
 
 
 WORKDIR /app
-COPY ./requirements.loader.txt ./requirements.loader.txt
-COPY /src/core/config.py /app/src/core/config.py
-COPY /configs/config.yaml /app/configs/config.yaml
+COPY ./requirements_loader.txt ./requirements_loader.txt
+COPY /src/core/ /app/src/core/
+COPY /configs/ /app/configs/
 COPY /src/services/loader /app/src/services/loader
 
 RUN pip install --upgrade pip
-RUN pip install --no-cache-dir -r requirements.loader.txt
+RUN pip install --no-cache-dir -r requirements_loader.txt
 
 CMD ["python", "-m", "src.services.loader.startup"]

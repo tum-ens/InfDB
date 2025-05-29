@@ -1,11 +1,11 @@
 import os
 import geopandas as gpd
 from src.services.loader import utils
-from src.core.config import config
+from src.core import config, config_db
 
 
 def import_basemap():
-    status = config["opendata"]["basemap"]["status"]
+    status = config.get_value(["opendata", "basemap", "status"])
     if status != "active":
         print("basemap skips, status not active")
         return
@@ -16,19 +16,19 @@ def import_basemap():
     sql = "SELECT geometry as geom FROM general.envelope"
     gdf_envelope = gpd.read_postgis(sql, engine)
 
-    base_path = config["opendata"]["basemap"]["basemap_dir"]
-    processed_path = config["opendata"]["basemap"]["basemap_processed_dir"]
+    base_path = config.get_path(["opendata", "basemap", "basemap_dir"])
+    processed_path = config.get_path(["opendata", "basemap", "basemap_processed_dir"])
     os.makedirs(base_path, exist_ok=True)
     os.makedirs(processed_path, exist_ok=True)
 
-    site_url = config["opendata"]["basemap"]["url"]
-    ending = config["opendata"]["basemap"]["ending"]
-    filter = config["opendata"]["basemap"]["filter"]
+    site_url = config.get_value(["opendata", "basemap", "url"])
+    ending = config.get_value(["opendata", "basemap", "ending"])
+    filter = config.get_value(["opendata", "basemap", "filter"])
     urls = utils.get_links(site_url, ending, filter)
 
     download_files = utils.download_files(urls, base_path)
 
-    schema = config["opendata"]["basemap"]["schema"]
+    schema = config.get_value(["opendata", "basemap", "schema"])
     # Create schema if it doesn't exist
     sql = f"CREATE SCHEMA IF NOT EXISTS {schema};"
     utils.sql_query(sql)
@@ -39,7 +39,7 @@ def import_basemap():
             print(f"Importing layer: {layer} into {schema}")
             gdf = gpd.read_file(file, layer=layer, bbox=gdf_envelope)
 
-            epsg = config.epsg
+            epsg = config_db.epsg
             gdf.to_crs(epsg=epsg, inplace=True)
 
             name = layer.replace("_bdlm", "")
