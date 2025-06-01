@@ -5,13 +5,13 @@ from zipfile import ZipFile
 import geopandas as gpd
 import pandas as pd
 from src.services.loader import utils
-from src.core import config, config_db
+from src.core import config
 
 
 def get_zensus_links():
     # HTML-Seite herunterladen
 
-    url = config.get_value(["opendata", "zensus_2022", "url"])
+    url = config.get_value(["loader", "zensus_2022", "url"])
 
     response = requests.get(url)
     html_content = response.content
@@ -34,7 +34,7 @@ def get_zensus_links():
 
 
 def download_zensus(zip_links):
-    zip_path = config.get_path(["opendata", "zensus_2022", "zensus_2022_zip_dir"])
+    zip_path = config.get_path(["loader", "zensus_2022", "zensus_2022_zip_dir"])
     os.makedirs(zip_path, exist_ok=True)
 
     # Dateien herunterladen und entpacken
@@ -56,8 +56,8 @@ def download_zensus(zip_links):
 
 
 def unzip_zensus():
-    zip_path = config.get_path(["opendata", "zensus_2022", "zensus_2022_zip_dir"])
-    unzip_path = config.get_path(["opendata", "zensus_2022", "zensus_2022_unzip_dir"])
+    zip_path = config.get_path(["loader", "zensus_2022", "zensus_2022_zip_dir"])
+    unzip_path = config.get_path(["loader", "zensus_2022", "zensus_2022_unzip_dir"])
     os.makedirs(unzip_path, exist_ok=True)
 
     # Unzip downloaded files
@@ -72,16 +72,16 @@ def unzip_zensus():
 
 
 def process_census():
-    input_path = config.get_path(["opendata", "zensus_2022", "zensus_2022_unzip_dir"])
-    output_path = config.get_path(["opendata", "zensus_2022", "zensus_2022_processed_dir"])
-    processed_path = config.get_path(["opendata", "bkg", "bkg_processed_dir"])
+    input_path = config.get_path(["loader", "zensus_2022", "zensus_2022_unzip_dir"])
+    output_path = config.get_path(["loader", "zensus_2022", "zensus_2022_processed_dir"])
+    processed_path = config.get_path(["loader", "bkg", "bkg_processed_dir"])
 
     # path_root = "../../"
 
     os.makedirs(output_path, exist_ok=True)
 
     # Create schema if it doesn't exist
-    schema = config.get_value(["opendata", "zensus_2022", "schema"])
+    schema = config.get_value(["loader", "zensus_2022", "schema"])
     sql = f"""
         drop schema if exists {schema} cascade;
         CREATE SCHEMA IF NOT EXISTS {schema};"""
@@ -94,14 +94,14 @@ def process_census():
     sql = "SELECT geometry as geom FROM general.envelope"
     gdf_envelope = gpd.read_postgis(sql, engine)
 
-    resolutions = config.get_value(["opendata", "zensus_2022", "resolutions"])
+    resolutions = config.get_value(["loader", "zensus_2022", "resolutions"])
     for resolution in resolutions:
 
         # Get grid within envelope
         grid_file = os.path.join(processed_path, f"DE_Grid_ETRS89-LAEA_{resolution}.gpkg")
         gdf_grid = gpd.read_file(grid_file, bbox=gdf_envelope)
 
-        epsg = config_db.epsg
+        epsg = config.epsg
         gdf_grid.to_crs(epsg=epsg, inplace=True)
 
         # gdf_grid.to_file("grid-box.gpkg")
@@ -136,7 +136,7 @@ def process_census():
 
 
 def import_census2022():
-    status = config.get_value(["opendata", "zensus_2022", "status"])
+    status = config.get_value(["loader", "zensus_2022", "status"])
     if status != "active":
         print("zensus_2022 skips, status not active")
         return
