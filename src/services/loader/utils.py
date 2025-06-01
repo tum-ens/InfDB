@@ -3,8 +3,8 @@ import psycopg2
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
-from src.core import config_db
-from src.core.config_db import citydb_engine
+from src.core import config
+from src.core.config import citydb_engine
 
 
 def any_element_in_string(target_string, elements):
@@ -58,11 +58,11 @@ def sql_query(query):
     try:
         # Connect to the PostgreSQL database-data-import-container
         connection = psycopg2.connect(
-            dbname=config_db.citydb_db,
-            user=config_db.citydb_user,
-            password=config_db.citydb_password,
-            host=config_db.citydb_host,
-            port=config_db.citydb_port
+            dbname=config.citydb_db,
+            user=config.citydb_user,
+            password=config.citydb_password,
+            host=config.citydb_host,
+            port=config.citydb_port
         )
         cursor = connection.cursor()
         # # Create the users table

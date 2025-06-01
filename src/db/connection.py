@@ -1,4 +1,4 @@
-from src.core.config_db import timescale_engine, citydb_engine
+from src.core.config import timescale_engine, citydb_engine
 from src.db.bases import CityDBBase, TimescaleDBBase
 
 

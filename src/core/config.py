@@ -2,6 +2,7 @@ import re
 import yaml
 import glob
 import os
+from sqlalchemy import create_engine
 
 
 def get_root_path():
@@ -10,21 +11,33 @@ def get_root_path():
     return root_path
 
 
-def __load_configs():
-    # Merges config files as they might have placeholder dependencies in between at this step.
-    # for example having general.base_dir
+def __load_configs(key: str):
+    # Merge main config yaml and the config for the given key.
+    # Key could be "services" or "loader"
     configs = {}
     for path in glob.glob("./configs/*.yaml"):
-        with open(path, "r") as file:
-            config_part = yaml.safe_load(file) or {}
-            configs.update(config_part)
+        filename = os.path.basename(path)
+        if filename == "config.yaml":
+            with open(path, "r") as file:
+                configs.update(yaml.safe_load(file) or {})
+        elif filename == f"config_{key}.yaml":
+            with open(path, "r") as file:
+                configs.update(yaml.safe_load(file) or {})
+        else:
+            continue
 
     return configs
 
 
 def get_value(keys):
-    config = __load_configs()
+    if not keys:
+        raise ValueError("keys must be a non-empty list")
+
+    # we pass keys[0] because we wrapped our configs as
+    # config["base"], config["services"] and config["loader"]
+    config = __load_configs(keys[0])
     # Get nested element along keys
+
     element = config
     for key in keys:
         if key not in element:
@@ -91,3 +104,33 @@ def replace_placeholders(path, config):
 
     # Normalize the final path to remove redundant separators and up-level references
     return path
+
+
+environment = get_value(["base", "environment"])
+# this check is important because in the network with docker containers we cannot use
+# exposed ports and we have to provide the service name
+is_local = (environment == "localhost")
+# CityDB Configuration
+citydb_host = "127.0.0.1" if is_local else get_value(["services", "citydb", "host"])
+citydb_port = get_value(["services", "citydb", "port"]) if is_local else 5432
+citydb_db = get_value(["services", "citydb", "db"])
+citydb_user = get_value(["services", "citydb", "user"])
+citydb_password = get_value(["services", "citydb", "password"])
+epsg = get_value(["services", "citydb", "epsg"])
+
+
+# TimescaleDB Configuration
+timescale_host = get_value(["services", "timescaledb", "host"])
+timescale_port = get_value(["services", "timescaledb", "port"])
+timescale_user = get_value(["services", "timescaledb", "user"])
+timescale_password = get_value(["services", "timescaledb", "password"])
+timescale_db = get_value(["services", "timescaledb", "db"])
+
+
+# Build connection URLs
+timescale_url = f"postgresql://{timescale_user}:{timescale_password}@{timescale_host}:{timescale_port}/{timescale_db}"
+citydb_url = f"postgresql://{citydb_user}:{citydb_password}@{citydb_host}:{citydb_port}/{citydb_db}"
+
+# Create engines
+timescale_engine = create_engine(timescale_url)
+citydb_engine = create_engine(citydb_url)
