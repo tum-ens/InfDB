@@ -137,7 +137,7 @@ https://docs.qgis.org/3.34/en/docs/user_manual/managing_data_source/opening_data
 **Add path to service configuration file to environment variable
 PGSERVICEFILE:**
 
-.. image:: embedded_images/image1.png
+.. image:: ../img/add_environment_variable.png
    :width: 4.23333in
    :height: 3.42113in
 
