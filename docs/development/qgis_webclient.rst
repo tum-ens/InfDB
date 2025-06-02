@@ -83,11 +83,10 @@ see https://qwc-services.github.io/master/QuickStart/
 
 | docker compose up –d
 | docker compose down
-| *(do not use „docker compose restart“, it may result in server
-  errors)*
+| *(do not use „docker compose restart“, it may result in server errors)*
 
-**Modify pg_service.conf (connect to 3DCity-DB):**\ *
-(or copy sample file)*
+**Modify pg_service.conf (connect to 3DCity-DB):**
+*(or copy sample file)*
 
 | [qwc_geodb]
 | host=10.162.28.86
@@ -97,27 +96,24 @@ see https://qwc-services.github.io/master/QuickStart/
 | password=need
 | sslmode=disable
 
-**Replace /volumes/config-in/default/themesConfig.json:**\ *(see sample file)*
+**Replace /volumes/config-in/default/themesConfig.json:**
+*(see sample file)*
 
 scp .\\themesConfig.json
 student@10.162.28.86:~/qwc-docker/volumes/config-in/default/themesConfig.json
 
 **Comment out lines in docker-compose.yml (deactivate default theme):**
 
-| #-
-  ./volumes/demo-data/setup-demo-data.sh:/docker-entrypoint-initdb.d/2_setup-demo-data.sh
-| #-
-  ./volumes/demo-data/setup-demo-data-permissions.sh:/tmp/extra-init.d/setup-demo-data-permissions.sh
+| #- ./volumes/demo-data/setup-demo-data.sh:/docker-entrypoint-initdb.d/2_setup-demo-data.sh
+| #- ./volumes/demo-data/setup-demo-data-permissions.sh:/tmp/extra-init.d/setup-demo-data-permissions.sh
 
-**Add to docker-compose.yml (change project file format from .qgs to
-.qgz):
-**\ *(in the environment section of the qwc-qgis-server service)*
+**Add to docker-compose.yml (change project file format from .qgs to .qgz):**
+*(in the environment section of the qwc-qgis-server service)*
 
 QGIS_PROJECT_SUFFIX: 'qgz'
 
-**Add to /volumes/config-in/default/tenantConfig.json (change project
-file format from .qgs to .qgz):
-**\ *(in the toplevel config section)*
+**Add to /volumes/config-in/default/tenantConfig.json (change project file format from .qgs to .qgz):**
+*(in the toplevel config section)*
 
 "qgis_project_extension": ".qgz"
 
@@ -127,11 +123,10 @@ Local configurations:
 
 *(shown for Windows)*
 
-**Add service configuration file pg_service.conf:
-**\ *(e.g. under "C:\\Users\\JohnDoe\\pg_service.conf")
-(save the file in UNIX format regarding EOL delimiter / use sample file)
-(see*
-https://docs.qgis.org/3.34/en/docs/user_manual/managing_data_source/opening_data.html#postgresql-service-connection-file\ *)*
+| **Add service configuration file pg_service.conf:**
+| *(e.g. under "C:\\Users\\JohnDoe\\pg_service.conf")*
+| *(save the file in UNIX format regarding EOL delimiter / use sample file)*
+| *(see* https://docs.qgis.org/3.34/en/docs/user_manual/managing_data_source/opening_data.html#postgresql-service-connection-file\ *)*
 
 | [qwc_geodb]
 | host=10.162.28.86
@@ -141,14 +136,12 @@ https://docs.qgis.org/3.34/en/docs/user_manual/managing_data_source/opening_data
 | password=need
 | sslmode=disable
 
-**Add path to service configuration file to environment variable
-PGSERVICEFILE:**
+**Add path to service configuration file to environment variable PGSERVICEFILE:**
 
 .. image:: ../img/add_environment_variable.png
 
-**Connect to the database via service configuration:
-**\ *(use LTS QGIS version 3.34.15 to be compatible with the QGIS server
-image; see* https://download.qgis.org/downloads/\ *)*
+**Connect to the database via service configuration:**
+*(use LTS QGIS version 3.34.15 to be compatible with the QGIS server image; see* https://download.qgis.org/downloads/\ *)*
 
 |image1|\ |image2|
 
@@ -157,18 +150,16 @@ Publish project:
 ----------------
 
 | **Create QGIS project and save it**
-| *(Note: QWC uses .qgs files by default. We changed this setting to
-  .qgz files because that is the default saving format of QGIS
-  Desktop.)*
+| *(Note: QWC uses .qgs files by default. We changed this setting to .qgz files because that is the default saving format of QGIS Desktop.)*
 
 **Upload the project:**
 
 scp .\\project.qgz
 student@10.162.28.86:~/qwc-docker/volumes/qgs-resources/scan/project.qgz
 
-**Open admin webinterface and log in:
-**\ *(address: http://10.162.28.86:8088/qwc_admin/)
-(username: admin, password: qgis-admin)*
+| **Open admin webinterface and log in:**
+| *(address: http://10.162.28.86:8088/qwc_admin/)*
+| *(username: admin, password: qgis-admin)*
 
 .. image:: ../img/login_qwc_admin.png
 
