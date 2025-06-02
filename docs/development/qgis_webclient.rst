@@ -1,4 +1,6 @@
-**QGIS Web Client Documentation for ENS:**
+--------------------------------------
+QGIS Web Client Documentation for ENS:
+--------------------------------------
 
 We use the docker images of the QGIS Web Client (QWC) and qwc-services
 for visualization of geodata from the 3DCityDB. Once QWC is set up on
@@ -19,7 +21,9 @@ makes it visible on a web interface.
 | And the admin interface can be reached via
 | http://10.162.28.86:8088/qwc_admin/
 
-**Useful Files:**
+-------------
+Useful Files:
+-------------
 
 In the folder of this documentation, two additional files can be found.
 These are sample config files.
@@ -67,7 +71,9 @@ A complete manual to configure themes including a table with all
 possible config parameters can be found at
 `https://qwc-services.github.io/master/configuration/ThemesConfiguration/#configuring-the-themes-in-themesconfigjson <https://qwc-services.github.io/master/configuration/ThemesConfiguration/%23configuring-the-themes-in-themesconfigjson>`__.
 
-**Server configurations:**
+----------------------
+Server configurations:
+----------------------
 
 **Install the QWC docker images:**
 
@@ -91,8 +97,7 @@ see https://qwc-services.github.io/master/QuickStart/
 | password=need
 | sslmode=disable
 
-**Replace /volumes/config-in/default/themesConfig.json:
-**\ *(see sample file)*
+**Replace /volumes/config-in/default/themesConfig.json:**\ *(see sample file)*
 
 scp .\\themesConfig.json
 student@10.162.28.86:~/qwc-docker/volumes/config-in/default/themesConfig.json
@@ -116,7 +121,9 @@ file format from .qgs to .qgz):
 
 "qgis_project_extension": ".qgz"
 
-**Local configurations:**
+---------------------
+Local configurations:
+---------------------
 
 *(shown for Windows)*
 
@@ -145,7 +152,9 @@ image; see* https://download.qgis.org/downloads/\ *)*
 
 |image1|\ |image2|
 
-**Publish project:**
+----------------
+Publish project:
+----------------
 
 | **Create QGIS project and save it**
 | *(Note: QWC uses .qgs files by default. We changed this setting to
@@ -167,7 +176,9 @@ student@10.162.28.86:~/qwc-docker/volumes/qgs-resources/scan/project.qgz
 
 .. image:: ../img/generate_service_configuration.png
 
-**Tips for working with QGIS projects:**
+------------------------------------
+Tips for working with QGIS projects:
+------------------------------------
 
 We recommend some methods to make the maintenance of QGIS projects
 easier. For pylovo, there already exist two template project files in
