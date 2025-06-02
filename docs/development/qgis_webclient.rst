@@ -81,20 +81,20 @@ see https://qwc-services.github.io/master/QuickStart/
 
 **Start/stop QWC with:**
 
-| docker compose up –d
-| docker compose down
-| *(do not use „docker compose restart“, it may result in server errors)*
+   | docker compose up –d
+   | docker compose down
+*(do not use „docker compose restart“, it may result in server errors)*
 
 **Modify pg_service.conf (connect to 3DCity-DB):**
 *(or copy sample file)*
 
-| [qwc_geodb]
-| host=10.162.28.86
-| port=1230
-| dbname=postgres
-| user=postgres
-| password=need
-| sslmode=disable
+   | [qwc_geodb]
+   | host=10.162.28.86
+   | port=1230
+   | dbname=postgres
+   | user=postgres
+   | password=need
+   | sslmode=disable
 
 **Replace /volumes/config-in/default/themesConfig.json:**
 *(see sample file)*
@@ -104,18 +104,18 @@ student@10.162.28.86:~/qwc-docker/volumes/config-in/default/themesConfig.json
 
 **Comment out lines in docker-compose.yml (deactivate default theme):**
 
-| #- ./volumes/demo-data/setup-demo-data.sh:/docker-entrypoint-initdb.d/2_setup-demo-data.sh
-| #- ./volumes/demo-data/setup-demo-data-permissions.sh:/tmp/extra-init.d/setup-demo-data-permissions.sh
+   | #- ./volumes/demo-data/setup-demo-data.sh:/docker-entrypoint-initdb.d/2_setup-demo-data.sh
+   | #- ./volumes/demo-data/setup-demo-data-permissions.sh:/tmp/extra-init.d/setup-demo-data-permissions.sh
 
 **Add to docker-compose.yml (change project file format from .qgs to .qgz):**
 *(in the environment section of the qwc-qgis-server service)*
 
-QGIS_PROJECT_SUFFIX: 'qgz'
+   QGIS_PROJECT_SUFFIX: 'qgz'
 
 **Add to /volumes/config-in/default/tenantConfig.json (change project file format from .qgs to .qgz):**
 *(in the toplevel config section)*
 
-"qgis_project_extension": ".qgz"
+   "qgis_project_extension": ".qgz"
 
 ---------------------
 Local configurations:
@@ -128,13 +128,13 @@ Local configurations:
 | *(save the file in UNIX format regarding EOL delimiter / use sample file)*
 | *(see* https://docs.qgis.org/3.34/en/docs/user_manual/managing_data_source/opening_data.html#postgresql-service-connection-file\ *)*
 
-| [qwc_geodb]
-| host=10.162.28.86
-| port=1230
-| dbname=postgres
-| user=postgres
-| password=need
-| sslmode=disable
+   | [qwc_geodb]
+   | host=10.162.28.86
+   | port=1230
+   | dbname=postgres
+   | user=postgres
+   | password=need
+   | sslmode=disable
 
 **Add path to service configuration file to environment variable PGSERVICEFILE:**
 
@@ -154,8 +154,8 @@ Publish project:
 
 **Upload the project:**
 
-scp .\\project.qgz
-student@10.162.28.86:~/qwc-docker/volumes/qgs-resources/scan/project.qgz
+   scp .\\project.qgz
+   student@10.162.28.86:~/qwc-docker/volumes/qgs-resources/scan/project.qgz
 
 | **Open admin webinterface and log in:**
 | *(address: http://10.162.28.86:8088/qwc_admin/)*
