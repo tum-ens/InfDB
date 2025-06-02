@@ -179,57 +179,50 @@ general maintenance techniques are described now:
 
 1. **Dynamic styling with project variables**
 
-..
+When the styles of multiple layers use the same values (e.g. for
+thickness of lines), it can make sense to define the value in a
+project variable (*Project > Properties > Variables*) and then
+reference the variable in the respective layers instead of hardcoding
+the value in every layer. That makes it easier to change such style
+values.
 
-   When the styles of multiple layers use the same values (e.g. for
-   thickness of lines), it can make sense to define the value in a
-   project variable (*Project > Properties > Variables*) and then
-   reference the variable in the respective layers instead of hardcoding
-   the value in every layer. That makes it easier to change such style
-   values.
+More on project variables can be found under
+`https://docs.qgis.org/3.34/en/docs/user_manual/introduction/general_tools.html#storing-values-in-variables <https://docs.qgis.org/3.34/en/docs/user_manual/introduction/general_tools.html%23storing-values-in-variables>`__.
 
-   More on project variables can be found under
-   `https://docs.qgis.org/3.34/en/docs/user_manual/introduction/general_tools.html#storing-values-in-variables <https://docs.qgis.org/3.34/en/docs/user_manual/introduction/general_tools.html%23storing-values-in-variables>`__.
+2. **Dynamic version filtering with project variables and virtual layers**
 
-2. **Dynamic version filtering with project variables and virtual
-   layers**
-
-..
-
-   In pylovo, the database can contain data that was created with
-   different parameter sets, where each parameter set is identified by a
-   version_id. In the visualization, usually only one version of the
-   data shall be shown. To do so, one can again define a project
-   variable that contains the version_id of the data version that shall
-   currently be shown. The layers, whose source table contain different
-   versions, are then created as virtual layers. Virtual layers are
-   layers that are created by SQL queries based on existing layers or
-   database tables. These queries can also reference project variables
-   by *var(‘variable_name’).* A virtual layer is created via *Layer >
-   Create Layer > New Virtual Layer*. A query filtering for version_id
-   could look like this:
+In pylovo, the database can contain data that was created with
+different parameter sets, where each parameter set is identified by a
+version_id. In the visualization, usually only one version of the
+data shall be shown. To do so, one can again define a project
+variable that contains the version_id of the data version that shall
+currently be shown. The layers, whose source table contain different
+versions, are then created as virtual layers. Virtual layers are
+layers that are created by SQL queries based on existing layers or
+database tables. These queries can also reference project variables
+by *var(‘variable_name’).* A virtual layer is created via *Layer >
+Create Layer > New Virtual Layer*. A query filtering for version_id
+could look like this:
 
    SELECT \* FROM table_name WHERE version_id = var(‘version_id’)
 
-   More about virtual layers can be found under
-   `https://docs.qgis.org/3.40/en/docs/user_manual/managing_data_source/create_layers.html#creating-virtual-layers <https://docs.qgis.org/3.40/en/docs/user_manual/managing_data_source/create_layers.html%23creating-virtual-layers>`__.
+More about virtual layers can be found under
+`https://docs.qgis.org/3.40/en/docs/user_manual/managing_data_source/create_layers.html#creating-virtual-layers <https://docs.qgis.org/3.40/en/docs/user_manual/managing_data_source/create_layers.html%23creating-virtual-layers>`__.
 
 3. **Dynamic data sources with service definitions**
 
-..
+By using a service definition file that contains a datasource (host,
+port, database, user, password…) and referencing only the defined
+service name instead of all connection details, changing data sources
+becomes a lot easier, because only the service definition file has to
+be changed. It is also useful because QWC also uses this service
+definition approach and when you add the same service definition file
+to your local machine as on the QWC server, you can upload and add
+projects to QWC without changing data sources.
 
-   By using a service definition file that contains a datasource (host,
-   port, database, user, password…) and referencing only the defined
-   service name instead of all connection details, changing data sources
-   becomes a lot easier, because only the service definition file has to
-   be changed. It is also useful because QWC also uses this service
-   definition approach and when you add the same service definition file
-   to your local machine as on the QWC server, you can upload and add
-   projects to QWC without changing data sources.
-
-   The service config file is described above under *Useful Files >
-   pg_service.conf* and the setup of the file and the layer data sources
-   on Windows are described above under *Local Configurations*.
+The service config file is described above under *Useful Files >
+pg_service.conf* and the setup of the file and the layer data sources
+on Windows are described above under *Local Configurations*.
 
 .. |image1| image:: ../img/add_postgres_layer.png
 .. |image2| image:: ../img/add_service_name.png
