@@ -138,8 +138,7 @@ https://docs.qgis.org/3.34/en/docs/user_manual/managing_data_source/opening_data
 PGSERVICEFILE:**
 
 .. image:: ../img/add_environment_variable.png
-   :width: 4.23333in
-   :height: 3.42113in
+   :height: 50mm
 
 **Connect to the database via service configuration:
 **\ *(use LTS QGIS version 3.34.15 to be compatible with the QGIS server
