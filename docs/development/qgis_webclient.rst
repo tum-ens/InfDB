@@ -169,7 +169,7 @@ student@10.162.28.86:~/qwc-docker/volumes/qgs-resources/scan/project.qgz
 
 **Generate service configuration:**
 
-.. image:: ../img/igenerate_service_configuration.png
+.. image:: ../img/generate_service_configuration.png
    :width: 4.96077in
    :height: 3.31667in
 
