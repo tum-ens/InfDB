@@ -163,13 +163,13 @@ student@10.162.28.86:~/qwc-docker/volumes/qgs-resources/scan/project.qgz
 **\ *(address: http://10.162.28.86:8088/qwc_admin/)
 (username: admin, password: qgis-admin)*
 
-.. image:: embedded_images/image4.png
+.. image:: ../img/login_qwc_admin.png
    :width: 5.06723in
    :height: 3.09167in
 
 **Generate service configuration:**
 
-.. image:: embedded_images/image5.png
+.. image:: ../img/igenerate_service_configuration.png
    :width: 4.96077in
    :height: 3.31667in
 
@@ -237,9 +237,9 @@ general maintenance techniques are described now:
    pg_service.conf* and the setup of the file and the layer data sources
    on Windows are described above under *Local Configurations*.
 
-.. |image1| image:: embedded_images/image2.png
+.. |image1| image:: ../img/add_postgres_layer.png
    :width: 3.45784in
    :height: 4.89861in
-.. |image2| image:: embedded_images/image3.png
+.. |image2| image:: ../img/add_service_name.png
    :width: 3.24167in
    :height: 5.49193in
