@@ -138,7 +138,6 @@ https://docs.qgis.org/3.34/en/docs/user_manual/managing_data_source/opening_data
 PGSERVICEFILE:**
 
 .. image:: ../img/add_environment_variable.png
-   :height: 1.0in
 
 **Connect to the database via service configuration:
 **\ *(use LTS QGIS version 3.34.15 to be compatible with the QGIS server
@@ -163,14 +162,10 @@ student@10.162.28.86:~/qwc-docker/volumes/qgs-resources/scan/project.qgz
 (username: admin, password: qgis-admin)*
 
 .. image:: ../img/login_qwc_admin.png
-   :width: 5.06723in
-   :height: 3.09167in
 
 **Generate service configuration:**
 
 .. image:: ../img/generate_service_configuration.png
-   :width: 4.96077in
-   :height: 3.31667in
 
 **Tips for working with QGIS projects:**
 
@@ -237,8 +232,4 @@ general maintenance techniques are described now:
    on Windows are described above under *Local Configurations*.
 
 .. |image1| image:: ../img/add_postgres_layer.png
-   :width: 3.45784in
-   :height: 4.89861in
 .. |image2| image:: ../img/add_service_name.png
-   :width: 3.24167in
-   :height: 5.49193in
