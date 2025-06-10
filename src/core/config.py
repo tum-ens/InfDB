@@ -1,44 +1,45 @@
 import re
 import yaml
-import glob
 import os
 from sqlalchemy import create_engine
 
 
-def get_root_path():
-    # Get project root path
-    root_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    return root_path
+def __load_config(path: str):
+    config = {}
+
+    if os.path.exists(path):
+        with open(path, "r") as file:
+            return yaml.safe_load(file) or {}
+
+    return config
 
 
-def __load_configs(key: str):
-    # Merge main config yaml and the config for the given key.
-    # Key could be "services" or "loader"
+def __load_configs():
     configs = {}
-    for path in glob.glob("./configs/*.yaml"):
-        filename = os.path.basename(path)
-        if filename == "config.yaml":
-            with open(path, "r") as file:
-                configs.update(yaml.safe_load(file) or {})
-        elif filename == f"config_{key}.yaml":
-            with open(path, "r") as file:
-                configs.update(yaml.safe_load(file) or {})
-        else:
-            continue
+    base_path = os.path.join("configs", "config.yaml")
+
+    if os.path.exists(base_path):
+        with open(base_path, "r") as file:
+            configs.update(yaml.safe_load(file) or {})
+
+    # Load sub configs defined under config.yaml configs field
+    for config_path in configs.get("configs", []):
+        full_path = os.path.join("configs", config_path)
+        configs.update(__load_config(full_path))
 
     return configs
+
+
+# We can load config once and then use,
+# otherwise we would need to do I/O operations multiple times
+CONFIG = __load_configs()
 
 
 def get_value(keys):
     if not keys:
         raise ValueError("keys must be a non-empty list")
 
-    # we pass keys[0] because we wrapped our configs as
-    # config["base"], config["services"] and config["loader"]
-    config = __load_configs(keys[0])
-    # Get nested element along keys
-
-    element = config
+    element = CONFIG
     for key in keys:
         if key not in element:
             raise KeyError(f"Key '{key}' not found in configuration.")
@@ -47,9 +48,9 @@ def get_value(keys):
 
     # Check if element is list
     if isinstance(element, str):
-        value = replace_placeholders(element, config)
+        value = replace_placeholders(element, CONFIG)
     elif isinstance(element, list):
-        value = [replace_placeholders(value, config) for value in element]
+        value = [replace_placeholders(value, CONFIG) for value in element]
     else:
         value = element
 
@@ -62,6 +63,12 @@ def get_path(keys):
         path = os.path.join(get_root_path(), path)
     path = os.path.abspath(path)
     return path
+
+
+def get_root_path():
+    # Get project root path
+    root_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    return root_path
 
 
 # Function to flatten json configuration to single level dict
