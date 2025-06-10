@@ -6,3 +6,7 @@ base:
   network_external_name: infdb_external_network
   network_internal_name: infdb_internal_network
   environment: container
+
+configs:
+  - config_loader.yaml
+  - config_services.yaml
