@@ -25,7 +25,6 @@ class CityDbRouter:
     @router.get("/rasters", tags=["Citydb"])
     async def getRasterCenters(self, resolution: int = Query):
         result = self.cityDbService.getRasterCenters(resolution)
-        print(result)
         if not result:
             raise HTTPException(status_code=404, detail="No data found")
         return result

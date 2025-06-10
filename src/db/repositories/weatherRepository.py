@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from src.db.models import WeatherReading
 from sqlmodel import Session, select
-from src.core.config_db import timescale_engine
+from src.core.config import timescale_engine
 
 
 class WeatherRepository:

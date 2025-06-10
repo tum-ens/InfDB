@@ -12,5 +12,5 @@ volumes:
   pgadmin_data: null
 networks:
   infdb_external_network:
-    name: infdb_network
+    name: infdb_internal_network
     driver: bridge
