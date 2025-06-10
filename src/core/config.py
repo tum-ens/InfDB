@@ -1,31 +1,45 @@
 import re
 import yaml
-import glob
 import os
+from sqlalchemy import create_engine
 
 
-def get_root_path():
-    # Get project root path
-    root_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    return root_path
+def __load_config(path: str):
+    config = {}
+
+    if os.path.exists(path):
+        with open(path, "r") as file:
+            return yaml.safe_load(file) or {}
+
+    return config
 
 
 def __load_configs():
-    # Merges config files as they might have placeholder dependencies in between at this step.
-    # for example having general.base_dir
     configs = {}
-    for path in glob.glob("./configs/*.yaml"):
-        with open(path, "r") as file:
-            config_part = yaml.safe_load(file) or {}
-            configs.update(config_part)
+    base_path = os.path.join("configs", "config.yaml")
+
+    if os.path.exists(base_path):
+        with open(base_path, "r") as file:
+            configs.update(yaml.safe_load(file) or {})
+
+    # Load sub configs defined under config.yaml configs field
+    for config_path in configs.get("configs", []):
+        full_path = os.path.join("configs", config_path)
+        configs.update(__load_config(full_path))
 
     return configs
 
 
+# We can load config once and then use,
+# otherwise we would need to do I/O operations multiple times
+CONFIG = __load_configs()
+
+
 def get_value(keys):
-    config = __load_configs()
-    # Get nested element along keys
-    element = config
+    if not keys:
+        raise ValueError("keys must be a non-empty list")
+
+    element = CONFIG
     for key in keys:
         if key not in element:
             raise KeyError(f"Key '{key}' not found in configuration.")
@@ -34,9 +48,9 @@ def get_value(keys):
 
     # Check if element is list
     if isinstance(element, str):
-        value = replace_placeholders(element, config)
+        value = replace_placeholders(element, CONFIG)
     elif isinstance(element, list):
-        value = [replace_placeholders(value, config) for value in element]
+        value = [replace_placeholders(value, CONFIG) for value in element]
     else:
         value = element
 
@@ -49,6 +63,12 @@ def get_path(keys):
         path = os.path.join(get_root_path(), path)
     path = os.path.abspath(path)
     return path
+
+
+def get_root_path():
+    # Get project root path
+    root_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    return root_path
 
 
 # Function to flatten json configuration to single level dict
@@ -91,3 +111,33 @@ def replace_placeholders(path, config):
 
     # Normalize the final path to remove redundant separators and up-level references
     return path
+
+
+environment = get_value(["base", "environment"])
+# this check is important because in the network with docker containers we cannot use
+# exposed ports and we have to provide the service name
+is_local = (environment == "localhost")
+# CityDB Configuration
+citydb_host = "127.0.0.1" if is_local else get_value(["services", "citydb", "host"])
+citydb_port = get_value(["services", "citydb", "port"]) if is_local else 5432
+citydb_db = get_value(["services", "citydb", "db"])
+citydb_user = get_value(["services", "citydb", "user"])
+citydb_password = get_value(["services", "citydb", "password"])
+epsg = get_value(["services", "citydb", "epsg"])
+
+
+# TimescaleDB Configuration
+timescale_host = get_value(["services", "timescaledb", "host"])
+timescale_port = get_value(["services", "timescaledb", "port"])
+timescale_user = get_value(["services", "timescaledb", "user"])
+timescale_password = get_value(["services", "timescaledb", "password"])
+timescale_db = get_value(["services", "timescaledb", "db"])
+
+
+# Build connection URLs
+timescale_url = f"postgresql://{timescale_user}:{timescale_password}@{timescale_host}:{timescale_port}/{timescale_db}"
+citydb_url = f"postgresql://{citydb_user}:{citydb_password}@{citydb_host}:{citydb_port}/{citydb_db}"
+
+# Create engines
+timescale_engine = create_engine(timescale_url)
+citydb_engine = create_engine(citydb_url)

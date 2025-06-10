@@ -11,7 +11,7 @@ def write_env_file(file_path=".env"):
         config = yaml.safe_load(f)
 
     with open(file_path, "w") as f:
-        for service_name, props in config.items():
+        for service_name, props in config["services"].items():
             if isinstance(props, dict) and props.get("status") == "active":
                 for key, _value in props.items():
                     f.write(f"{(service_name + '_' + key).upper()}={get_value([service_name, key])}\n")
@@ -42,7 +42,7 @@ def write_compose_file():
         }
     }
 
-    for service_name, props in config.items():
+    for service_name, props in config["services"].items():
         if props.get("status") == "active":
             output["include"].append(f"./{service_name}.yaml")
 

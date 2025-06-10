@@ -16,5 +16,6 @@ For reference you can check under `src/services/loader/`.
 
 Example:
 ```bash
-    status = config.get_value(["opendata", "bkg", "status"])
+    status = config.get_value(["loader", "bkg", "status"])
+    citydb_db = config.get_value(["services", "citydb", "db"])
 ```

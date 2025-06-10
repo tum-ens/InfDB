@@ -1,41 +1,42 @@
-citydb:
-  user: citydb_user
-  password: citydb_password
-  db: citydb
-  host: citydb
-  port: 5433
-  epsg: 25832
-  srid: 4326
-  db_dir: "{base_dir}/3dcdb/"
-  status: active
+services:
+  citydb:
+    user: citydb_user
+    password: citydb_password
+    db: citydb
+    host: citydb
+    port: 5433
+    epsg: 25832
+    srid: 4326
+    db_dir: "{base_dir}/3dcdb/"
+    status: active
 
-citydbv4:
-  user: citydb_user
-  password: citydb_password
-  db: citydb
-  host: citydbv4
-  port: 5434
-  epsg: 25832
-  srid: 4326
-  db_dir: "{base_dir}/3dcdbv4/"
-  status: active
+  citydbv4:
+    user: citydb_user
+    password: citydb_password
+    db: citydb
+    host: citydbv4
+    port: 5434
+    epsg: 25832
+    srid: 4326
+    db_dir: "{base_dir}/3dcdbv4/"
+    status: not-active
 
-timescaledb:
-  user: timescale_user
-  password: secret
-  db: timescaledb_db
-  host: 127.0.0.1 
-  port: 5432
-  status: active
+  timescaledb:
+    user: timescale_user
+    password: secret
+    db: timescaledb_db
+    host: 127.0.0.1 
+    port: 5432
+    status: active
 
-pgadmin:
-  default_email: admin@admin.com
-  default_password: admin
-  port: 81
-  status: active
+  pgadmin:
+    default_email: admin@admin.com
+    default_password: admin
+    port: 81
+    status: active
 
-jupyter:
-  port: 8888
-  enable_lab: yes
-  status: not-active
+  jupyter:
+    port: 8888
+    enable_lab: yes
+    status: not-active
 

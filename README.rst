@@ -134,7 +134,6 @@ Information related docker-compose generations is explained under `configs/Readm
 
    .. code-block:: bash
 
-    # example for timescaledb
       python3 -m  dockers.generate_compose 
 
 #. As a last step we would need to start our services.
@@ -155,27 +154,6 @@ Information related docker-compose generations is explained under `configs/Readm
    .. code-block:: bash
 
     fastapi dev src/main.py
-
-
-Installation for docker container
----------------------------------
-#. Clone the repository to your local machine:
-
-   .. code-block:: bash
-
-      git clone <repository_url>
-
-#. We need the build image of our database application. To do that please run:
-
-   .. code-block:: bash
-
-    docker-compose build
-
-#. Run docker-compose file. The next command will fetch the timescale and 3dcitydb images and run the containers on your machine. It will then start our database (fastapi) application. You may change the env values provided in the compose file:
-
-   .. code-block:: bash
-
-    docker-compose up -d
 
 
 Repository Structure
