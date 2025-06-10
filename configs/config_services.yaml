@@ -19,7 +19,7 @@ services:
     epsg: 25832
     srid: 4326
     db_dir: "{base_dir}/3dcdbv4/"
-    status: not-active
+    status: active
 
   timescaledb:
     user: timescale_user
