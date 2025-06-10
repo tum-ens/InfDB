@@ -30,14 +30,13 @@ services:
         aria2c --continue=true --allow-overwrite=false --auto-file-renaming=false https://geodaten.bayern.de/odd/a/lod2/citygml/meta/metalink/09780139.meta4 -d /data
       "
     volumes:
-      - ./data_import/data:/data
-    networks:
-      - database_network
+      - ../data/sonthofen/opendata/lod2/gml/:/data
+    network_mode: infdb_internal_network
 
   import-to-v4:
     image: 3dcitydb/impexp
     user: 0:0
-    network_mode: infdb_network
+    network_mode: infdb_internal_network
     environment:
       CITYDB_TYPE: postgresql
       CITYDB_HOST: ${CITYDBV4_HOST}
@@ -106,48 +105,48 @@ services:
   #       restart: false
 
 
-  # export-from-v4:
-  #   user: 0:0
-  #   image: 3dcitydb/impexp
-  #   network_mode: infdb_network
-  #   environment:
-  #     CITYDB_TYPE: postgresql
-  #     CITYDB_HOST: ${CITYDBV4_HOST}
-  #     CITYDB_PORT: 5432
-  #     CITYDB_NAME: ${CITYDB_DB}
-  #     CITYDB_USERNAME: ${CITYDB_USER}
-  #     CITYDB_PASSWORD: ${CITYDB_PASSWORD}
-  #   volumes:
-  #     - "${SUNSET_DIR}:/data"
-  #   command: ["export", "-o", "/data/v4_output.gml"]    
-  #   depends_on:
-  #     import-to-v4:
-  #       condition: service_completed_successfully
-  #       restart: false
+  export-from-v4:
+    user: 0:0
+    image: 3dcitydb/impexp
+    network_mode: infdb_internal_network
+    environment:
+      CITYDB_TYPE: postgresql
+      CITYDB_HOST: ${CITYDBV4_HOST}
+      CITYDB_PORT: 5432
+      CITYDB_NAME: ${CITYDB_DB}
+      CITYDB_USERNAME: ${CITYDB_USER}
+      CITYDB_PASSWORD: ${CITYDB_PASSWORD}
+    volumes:
+      - "${SUNSET_DIR}:/data"
+    command: ["export", "-o", "/data/v4_output.gml"]    
+    depends_on:
+      import-to-v4:
+        condition: service_completed_successfully
+        restart: false
 
   
-  # import-v4-exported-gml-to-v5:
-  #   image: 3dcitydb/citydb-tool
-  #   network_mode: infdb_network
-  #   environment:
-  #     - CITYDB_DB        
-  #     - CITYDB_USER
-  #     - CITYDB_PASSWORD
-  #     - CITYDB_HOST
-  #   command: [
-  #     "import", "citygml",
-  #     "-H", "${CITYDB_HOST}",
-  #     "-d", "${CITYDB_DB}",
-  #     "-u", "${CITYDB_USER}",
-  #     "-p", "${CITYDB_PASSWORD}",
-  #     "-P", "5432",
-  #     "/data/*.gml"
-  #   ]
-  #   volumes:
-  #     - "${SUNSET_DIR}:/data"
-  #   depends_on:
-  #     export-from-v4:
-  #       condition: service_completed_successfully
-  #       restart: false
+  import-v4-exported-gml-to-v5:
+    image: 3dcitydb/citydb-tool
+    network_mode: infdb_internal_network
+    environment:
+      - CITYDB_DB        
+      - CITYDB_USER
+      - CITYDB_PASSWORD
+      - CITYDB_HOST
+    command: [
+      "import", "citygml",
+      "-H", "${CITYDB_HOST}",
+      "-d", "${CITYDB_DB}",
+      "-u", "${CITYDB_USER}",
+      "-p", "${CITYDB_PASSWORD}",
+      "-P", "5432",
+      "/data/*.gml"
+    ]
+    volumes:
+      - "${SUNSET_DIR}:/data"
+    depends_on:
+      export-from-v4:
+        condition: service_completed_successfully
+        restart: false
 
 
