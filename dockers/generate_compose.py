@@ -14,7 +14,7 @@ def write_env_file(file_path=".env"):
         for service_name, props in config["services"].items():
             if isinstance(props, dict) and props.get("status") == "active":
                 for key, _value in props.items():
-                    f.write(f"{(service_name + '_' + key).upper()}={get_value([service_name, key])}\n")
+                    f.write(f"{(service_name + '_' + key).upper()}={get_value(['services', service_name, key])}\n")
         f.write(f"NETWORK_EXTERNAL_NAME={get_value(['base', 'network_external_name'])}\n")
         f.write(f"SUNSET_DIR={get_value(['base', 'base_sunset_dir'])}\n")
 
