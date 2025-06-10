@@ -3,7 +3,7 @@ loader:
   zensus_2022:
     status: not-active
     resolutions:
-      - 100m
+      - 10km
     zensus_2022_dir: "{loader_dir}/zensus_2022/"
     zensus_2022_zip_dir: "{zensus_2022_dir}/zip/"
     zensus_2022_unzip_dir: "{zensus_2022_dir}/unzip/"

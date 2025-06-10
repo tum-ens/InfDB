@@ -54,8 +54,7 @@ def import_bkg():
 
         for layer in layers:
             print(f"Importing layer: {layer} into {schema}")
-            # !!next line returns UserWarning: More than one layer found in 'DE_VG5000.gpkg': error
-            gdf = gpd.read_file(input_file, layer=layer, bbox=gdf_envelope)
+            gdf = gpd.read_file(input_file, layer=layer, bbox=(minX, minY, maxX, maxY))
 
             epsg = config.epsg
             gdf.to_crs(epsg=epsg, inplace=True)
