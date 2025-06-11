@@ -1,0 +1,3 @@
+[submodule "tools/QWC"]
+	path = tools/QWC
+	url = https://github.com/qwc-services/qwc-docker.git
