@@ -1,0 +1,85 @@
+version: "3.8"
+
+services:
+  timescaledb:
+    image: timescale/timescaledb:latest-pg14
+    container_name: timescaledb
+    environment:
+      POSTGRES_DB: ${TIMESCALE_DB}
+      POSTGRES_USER: ${TIMESCALE_USER}
+      POSTGRES_PASSWORD: ${TIMESCALE_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - timescale_data:/var/lib/postgresql/data
+    networks:
+      - database
+
+
+  citydb:
+    image: 3dcitydb/3dcitydb-pg:5.0.0
+    container_name: citydb
+    environment:
+      POSTGRES_DB: ${CITYDB_DB}
+      POSTGRES_USER: ${CITYDB_USER}
+      POSTGRES_PASSWORD: ${CITYDB_PASSWORD}
+      SRID: ${SRID}
+    ports:
+      - "5433:5432"
+    volumes:
+      - citydb_data:/var/lib/postgresql/data
+    networks:
+      - database
+
+  citydbv4:
+    image: 3dcitydb/3dcitydb-pg:13-3.2-4.4.0
+    container_name: citydbV4
+    environment:
+      POSTGRES_DB: ${CITYDB_DB}
+      POSTGRES_USER: ${CITYDB_USER}
+      POSTGRES_PASSWORD: ${CITYDB_PASSWORD}
+      SRID: ${SRID}
+    ports:
+      - "5434:5432"
+    volumes:
+      - citydb_data_v4:/var/lib/postgresql/data
+    networks:
+      - database
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL
+      - PGADMIN_DEFAULT_PASSWORD
+    ports:
+      - "8080:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - database
+    depends_on:
+      - timescaledb
+      - citydb
+
+  jupyter:
+    image: jupyter/scipy-notebook:latest
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./notebooks:/home/jovyan/work
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+
+
+volumes:
+  timescale_data:
+  citydb_data:
+  citydb_data_v4:
+  pgadmin_data:
+
+
+networks:
+  database:
+    name: database_network
+    driver: bridge
