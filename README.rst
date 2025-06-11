@@ -146,7 +146,7 @@ Information related docker-compose generations is explained under `configs/Readm
 
    .. code-block:: bash
 
-      docker compose -f ./dockers/docker-compose.yml build
+      docker-compose -f ./dockers/docker-compose.yml build
       docker-compose -f ./dockers/docker-compose.yml up
 
 #. Now you can start the application:
