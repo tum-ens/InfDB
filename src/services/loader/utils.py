@@ -1,15 +1,15 @@
 import os
 import psycopg2
-from sqlalchemy import create_engine
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
-
-from data_import.imp.config import citydb_user, citydb_password, citydb_host, citydb_port, citydb_db
+from src.core import config
+from src.core.config import citydb_engine
 
 
 def any_element_in_string(target_string, elements):
     return any(element in target_string for element in elements)
+
 
 def get_links(url, ending, filter):
     response = requests.get(url)
@@ -35,6 +35,7 @@ def get_links(url, ending, filter):
 
     return zip_links
 
+
 def download_files(urls, base_path):
     files = []
     for url in urls:
@@ -52,15 +53,17 @@ def download_files(urls, base_path):
         files.append(path_file)
     return files
 
+
 def sql_query(query):
     try:
         # Connect to the PostgreSQL database-data-import-container
+        host, port, user, password, db = config.get_db_config("citydb")
         connection = psycopg2.connect(
-            dbname=citydb_db,
-            user=citydb_user,
-            password=citydb_password,
-            host=citydb_host,
-            port=citydb_port
+            dbname=db,
+            user=user,
+            password=password,
+            host=host,
+            port=port
         )
         cursor = connection.cursor()
         # # Create the users table
@@ -75,18 +78,10 @@ def sql_query(query):
     except Exception as error:
         print(f"ProgrammingError: {error}")
 
+
 def get_engine():
-    # Create a database-data-import-container connection
-    user = citydb_user
-    password = citydb_password
-    host = citydb_host
-    port = citydb_port
-    dbname = citydb_db
+    return citydb_engine
 
-    db_connection_url = f"postgresql://{user}:{password}@{host}:{port}/{dbname}"
-    engine = create_engine(db_connection_url)
-
-    return engine
 
 def do_cmd(cmd):
     os.system(cmd)
