@@ -1,0 +1,11 @@
+services:
+  loader:
+    build:
+      context: ..
+      dockerfile: Dockerfile.loader
+    container_name: loader
+    networks:
+      - ${NETWORK_EXTERNAL_NAME}
+    depends_on:
+      citydb:
+        condition: service_healthy

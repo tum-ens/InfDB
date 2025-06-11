@@ -36,6 +36,5 @@ Env variables are auto generated via  `configs/config-service.yml`.
 Note:
     For our services to communicate between them, they have to be under the same network.
     For this reason we should use the same network name for all of the services.
-
     
     
