@@ -1,6 +1,6 @@
 from sqlalchemy import text
 from sqlmodel import Session
-from src.core.dbConfig import citydb_engine
+from src.core.config import citydb_engine
 from fastapi import HTTPException
 
 

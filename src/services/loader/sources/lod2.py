@@ -1,10 +1,35 @@
-from data_import.imp import config, utils
+from src.services.loader import utils
+from src.core import config
+import os
 
 
-def import_schemas():
+def imp_lod2():
+    status = config.get_value(["loader", "lod2", "status"])
+    if status != "active":
+        print("lod skips, status not active")
+        return
+
+    base_path = config.get_path(["loader", "lod2", "lod2_dir"])
+    os.makedirs(base_path, exist_ok=True)
+
+    # Run aria2c to download the file (equivalent to `aria2c <url>`)
+    url = config.get_value(["loader", "lod2", "url"])
+    if isinstance(url, list):
+        url = (" ").join(url)
+
+    gml_path = config.get_path(["loader", "lod2", "gml_dir"])
+    cmd = f"aria2c --continue=true --allow-overwrite=false --auto-file-renaming=false {url} -d {gml_path}"
+    os.system(cmd)
+
+    ## Import *gml files into 3D-CDB
+    host, port, user, password, db = config.get_db_config("citydb")
+    epsg = config.get_value(["services", "citydb", "epsg"])
+
+    cmd = f"citydb import citygml -H {host} -P {port} -d {db} -u {user} -p {password} {gml_path}/*.gml"
+    utils.do_cmd(cmd)
+
     ## Extract general information like envelope
-    schema = config.get_value(["general", "schema"])
-    epsg = config.epsg
+    schema = config.get_value(["base", "schema"])
     sql = f"""
             DROP SCHEMA IF EXISTS {schema} CASCADE;
             CREATE SCHEMA IF NOT EXISTS {schema};
@@ -27,13 +52,10 @@ def import_schemas():
                    ST_XMax(ST_Extent(geometry)),
                    ST_YMax(ST_Extent(geometry)),
                -- Optionally, specify the SRID of your geometries
-               -- For example, 4326 for WGS 84 
+               -- For example, 4326 for WGS 84
                {epsg}
            ) as bounding_polygon
     FROM {schema}.buildings;
     """
 
     utils.sql_query(sql)
-
-
-import_schemas()

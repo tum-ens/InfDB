@@ -1,0 +1,18 @@
+services:
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL
+      - PGADMIN_DEFAULT_PASSWORD
+    ports:
+      - ${PGADMIN_EXPOSED_PORT}:${PGADMIN_PORT}
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - ${NETWORK_NAME}
+    depends_on:
+      citydb:
+        condition: service_healthy
+      timescaledb:
+        condition: service_healthy

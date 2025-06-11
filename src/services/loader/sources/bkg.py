@@ -2,22 +2,27 @@ import os
 import requests
 from zipfile import ZipFile
 import geopandas as gpd
-
-# Import configuration
-from data_import.imp import config, utils
+from src.services.loader import utils
+from src.core import config
 
 
 def import_bkg():
+    status = config.get_value(["loader", "bkg", "status"])
+    if status != "active":
+        print("bkg skips, status not active")
+        return
+
     # Get locations
-    zip_path = config.get_path(["opendata", "bkg", "bkg_zip_dir"])
-    unzip_path = config.get_path(["opendata", "bkg", "bkg_unzip_dir"])
-    processed_path = config.get_path(["opendata", "bkg", "bkg_processed_dir"])
+    zip_path = config.get_path(["loader", "bkg", "bkg_zip_dir"])
+    unzip_path = config.get_path(["loader", "bkg", "bkg_unzip_dir"])
+    processed_path = config.get_path(["loader", "bkg", "bkg_processed_dir"])
+
     os.makedirs(zip_path, exist_ok=True)
     os.makedirs(unzip_path, exist_ok=True)
     os.makedirs(processed_path, exist_ok=True)
 
     # Create schema if it doesn't exist
-    schema = config.get_value(["opendata", "bkg", "schema"])
+    schema = config.get_value(["loader", "bkg", "schema"])
     sql = f"CREATE SCHEMA IF NOT EXISTS {schema};"
     utils.sql_query(sql)
 
@@ -49,9 +54,9 @@ def import_bkg():
 
         for layer in layers:
             print(f"Importing layer: {layer} into {schema}")
-            gdf = gpd.read_file(input_file, layer=layer, bbox=gdf_envelope)
+            gdf = gpd.read_file(input_file, layer=layer, bbox=(minX, minY, maxX, maxY))
 
-            epsg = config.epsg
+            epsg = config.get_value(["services", "citydb", "epsg"])
             gdf.to_crs(epsg=epsg, inplace=True)
 
             gdf.to_file(output_file, layer=layer, driver="GPKG")
@@ -105,12 +110,12 @@ def import_bkg():
     import_layers(geogitter_10km_gpkg, geogitter_10km_layers)
 
     # 100m
-    geogitter_zip = os.path.join(zip_path, "DE_Grid_ETRS89-LAEA_100m.gpkg.zip")
-    download_and_unzip("https://daten.gdz.bkg.bund.de/produkte/sonstige/geogitter/aktuell/DE_Grid_ETRS89-LAEA_100m.gpkg.zip",
-                       geogitter_zip, unzip_path)
+    # geogitter_zip = os.path.join(zip_path, "DE_Grid_ETRS89-LAEA_100m.gpkg.zip")
+    # download_and_unzip("https://daten.gdz.bkg.bund.de/produkte/sonstige/geogitter/aktuell/DE_Grid_ETRS89-LAEA_100m.gpkg.zip",
+    #                    geogitter_zip, unzip_path)
 
-    geogitter_100m_gpkg = os.path.join(unzip_path, "DE_Grid_ETRS89-LAEA_100m/geogitter/DE_Grid_ETRS89-LAEA_100m.gpkg")
-    geogitter_100m_layers = ["de_grid_laea_100m"]
-    import_layers(geogitter_100m_gpkg, geogitter_100m_layers)
+    # geogitter_100m_gpkg = os.path.join(unzip_path, "DE_Grid_ETRS89-LAEA_100m/geogitter/DE_Grid_ETRS89-LAEA_100m.gpkg")
+    # geogitter_100m_layers = ["de_grid_laea_100m"]
+    # import_layers(geogitter_100m_gpkg, geogitter_100m_layers)
 
     # ToDo: Remove temporary files
