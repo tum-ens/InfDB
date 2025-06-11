@@ -48,13 +48,12 @@ def import_bkg():
 
         input_file = gpkg_file
         output_file = processed_file
-        minX, minY, maxX, maxY = gdf_envelope.total_bounds
         # cmd = f"ogr2ogr -f \"GPKG\" {output_file} {input_file} -spat {minX} {minY} {maxX} {maxY}"
         # utils.do_cmd(cmd)
 
         for layer in layers:
             print(f"Importing layer: {layer} into {schema}")
-            gdf = gpd.read_file(input_file, layer=layer, bbox=(minX, minY, maxX, maxY))
+            gdf = gpd.read_file(input_file, layer=layer, bbox=gdf_envelope)
 
             epsg = config.get_value(["services", "citydb", "epsg"])
             gdf.to_crs(epsg=epsg, inplace=True)

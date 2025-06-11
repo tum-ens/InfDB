@@ -93,14 +93,13 @@ def process_census():
     # Get envelope
     sql = "SELECT geometry as geom FROM general.envelope"
     gdf_envelope = gpd.read_postgis(sql, engine)
-    minX, minY, maxX, maxY = gdf_envelope.total_bounds
 
     resolutions = config.get_value(["loader", "zensus_2022", "resolutions"])
     for resolution in resolutions:
 
         # Get grid within envelope
         grid_file = os.path.join(processed_path, f"DE_Grid_ETRS89-LAEA_{resolution}.gpkg")
-        gdf_grid = gpd.read_file(grid_file, bbox=(minX, minY, maxX, maxY))
+        gdf_grid = gpd.read_file(grid_file, bbox=gdf_envelope)
 
         epsg = config.get_value(["services", "citydb", "epsg"])
         gdf_grid.to_crs(epsg=epsg, inplace=True)
