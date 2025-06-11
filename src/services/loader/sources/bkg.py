@@ -110,12 +110,12 @@ def import_bkg():
     import_layers(geogitter_10km_gpkg, geogitter_10km_layers)
 
     # 100m
-    # geogitter_zip = os.path.join(zip_path, "DE_Grid_ETRS89-LAEA_100m.gpkg.zip")
-    # download_and_unzip("https://daten.gdz.bkg.bund.de/produkte/sonstige/geogitter/aktuell/DE_Grid_ETRS89-LAEA_100m.gpkg.zip",
-    #                    geogitter_zip, unzip_path)
+    geogitter_zip = os.path.join(zip_path, "DE_Grid_ETRS89-LAEA_100m.gpkg.zip")
+    download_and_unzip("https://daten.gdz.bkg.bund.de/produkte/sonstige/geogitter/aktuell/DE_Grid_ETRS89-LAEA_100m.gpkg.zip",
+                       geogitter_zip, unzip_path)
 
-    # geogitter_100m_gpkg = os.path.join(unzip_path, "DE_Grid_ETRS89-LAEA_100m/geogitter/DE_Grid_ETRS89-LAEA_100m.gpkg")
-    # geogitter_100m_layers = ["de_grid_laea_100m"]
-    # import_layers(geogitter_100m_gpkg, geogitter_100m_layers)
+    geogitter_100m_gpkg = os.path.join(unzip_path, "DE_Grid_ETRS89-LAEA_100m/geogitter/DE_Grid_ETRS89-LAEA_100m.gpkg")
+    geogitter_100m_layers = ["de_grid_laea_100m"]
+    import_layers(geogitter_100m_gpkg, geogitter_100m_layers)
 
     # ToDo: Remove temporary files
