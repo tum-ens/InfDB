@@ -1,7 +1,7 @@
 services:
   loader:
     build:
-      context: ..
+      context: ../..
       dockerfile: src/services/loader/Dockerfile
     container_name: loader
     networks:
@@ -10,5 +10,5 @@ services:
       citydb:
         condition: service_healthy
     volumes:
-      - ../configs/:/app/configs
-      - ../${LOADER_DIR}/:/app/${LOADER_DIR}
+      - ../../configs/:/app/configs
+      - ../../${LOADER_DIR}/:/app/${LOADER_DIR}

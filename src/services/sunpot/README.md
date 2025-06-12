@@ -37,7 +37,7 @@ You should have CityDB v5 already running on your machine via `loader`.
 
 Then you can run:
 ```bash
-  docker-compose -f src/services/sunpot/docker-compose.yml up --build
+  docker-compose -f./dockers/sunpot/docker-compose.yml up --build
 ```
 
 Services would run sequentially once CityDB v4 is ready.

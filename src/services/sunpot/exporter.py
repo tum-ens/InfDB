@@ -5,11 +5,12 @@ from sqlalchemy import create_engine, inspect, text
 from src.core import config
 
 load_dotenv()
-CITYDBV4_DB = os.getenv("CITYDBV4_DB")
-CITYDBV4_USER = os.getenv("CITYDBV4_USER")
-CITYDBV4_PASSWORD = os.getenv("CITYDBV4_PASSWORD")
-CITYDBV4_HOST = os.getenv("CITYDBV4_HOST")
-CITYDBV4_PORT = os.getenv("CITYDBV4_PORT", "5432")
+CITYDBV4_DB="citydb"
+CITYDBV4_USER="citydb_user"
+CITYDBV4_PASSWORD="citydb_password"
+CITYDBV4_EPSG=25832
+CITYDBV4_HOST="citydbv4"
+CITYDBV4_PORT="5432"
 
 SCHEMA = "sunpot"
 OUTPUT_DIR = config.get_value(["base", "base_sunset_dir"])
