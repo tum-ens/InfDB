@@ -156,6 +156,19 @@ Information related docker-compose generations is explained under `configs/Readm
     fastapi dev src/main.py
 
 
+Calculating Solar Potantials and Saving Into CityDB v5:
+-------------------------------------------------------
+
+#. In the steps above, we went over how to feed InfDB with different data sources which includes LOD2.
+
+#. Assuming CityDB v5 is running on your host machine, now we can start `sunpot` service. It will generate calculations on Citydb v4 and then import those data into CityDB v5. Please run the following command:
+   
+   .. code-block:: bash
+
+      docker-compose -f src/services/sunpot/docker-compose.yml up --build
+  
+#. Services should be running sequentially once CityDB v4 is ready.
+
 Repository Structure
 ====================
 

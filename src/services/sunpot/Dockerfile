@@ -10,4 +10,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY src/core/ /app/src/core/
 COPY src/services/sunpot /app/src/services/sunpot
 
-CMD ["python", "-u", "-m", "src.services.sunpot.expor_and_import"]
+CMD ["python", "-u", "-m", "src.services.sunpot.export_and_import"]
