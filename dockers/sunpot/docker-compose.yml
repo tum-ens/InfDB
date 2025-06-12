@@ -31,12 +31,13 @@ services:
     volumes:
       - ../../${GML_DIR}:/data
     command: ["import", "/data/*.gml"]
+    # helps for the first time to wait citydb is ready
+    restart: on-failure
     stdin_open: true
     tty: true
     depends_on:
       citydbv4:
         condition: service_healthy
-        restart: false
     networks:
       - infdb_network
 
