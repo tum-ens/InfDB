@@ -30,7 +30,7 @@ services:
       CITYDB_PASSWORD: ${CITYDBV4_PASSWORD}
     volumes:
       - ../../${GML_DIR}:/data
-    command: ["import", "/data/596_5256.gml"]
+    command: ["import", "/data/*.gml"]
     stdin_open: true
     tty: true
     depends_on:

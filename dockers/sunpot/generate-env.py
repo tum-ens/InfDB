@@ -7,9 +7,6 @@ input_path = os.path.join(base_dir, "../../configs/config-sunpot.yml")
 file_path = os.path.join(base_dir, ".env")
 
 def generate_env():
-    """
-    Writes all uppercase keys and loader/sunset directories from the config YAML into a .env file.
-    """
     with open(input_path, "r") as f:
         config = yaml.safe_load(f)
 
