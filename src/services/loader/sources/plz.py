@@ -49,7 +49,7 @@ def import_plz():
         print(f"Importing layer: {layer} into {schema}")
         gdf = gpd.read_file(path_file, layer=layer, bbox=gdf_envelope)
 
-        epsg = config.epsg
+        epsg = config.get_value(["services", "citydb", "epsg"])
         gdf.to_crs(epsg=epsg, inplace=True)
 
         name = layer

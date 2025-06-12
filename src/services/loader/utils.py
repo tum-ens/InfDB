@@ -57,12 +57,13 @@ def download_files(urls, base_path):
 def sql_query(query):
     try:
         # Connect to the PostgreSQL database-data-import-container
+        host, port, user, password, db = config.get_db_config("citydb")
         connection = psycopg2.connect(
-            dbname=config.citydb_db,
-            user=config.citydb_user,
-            password=config.citydb_password,
-            host=config.citydb_host,
-            port=config.citydb_port
+            dbname=db,
+            user=user,
+            password=password,
+            host=host,
+            port=port
         )
         cursor = connection.cursor()
         # # Create the users table

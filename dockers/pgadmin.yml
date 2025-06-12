@@ -6,11 +6,11 @@ services:
       - PGADMIN_DEFAULT_EMAIL
       - PGADMIN_DEFAULT_PASSWORD
     ports:
-      - ${PGADMIN_PORT}:80
+      - ${PGADMIN_EXPOSED_PORT}:80
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     networks:
-      - ${NETWORK_EXTERNAL_NAME}
+      - ${NETWORK_NAME}
     depends_on:
       citydb:
         condition: service_healthy

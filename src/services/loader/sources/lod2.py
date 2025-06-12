@@ -22,14 +22,10 @@ def imp_lod2():
     os.system(cmd)
 
     ## Import *gml files into 3D-CDB
-    database = config.citydb_db
-    user = config.citydb_user
-    password = config.citydb_password
-    port = config.citydb_port
-    host = config.citydb_host
-    epsg = config.epsg
+    host, port, user, password, db = config.get_db_config("citydb")
+    epsg = config.get_value(["services", "citydb", "epsg"])
 
-    cmd = f"citydb import citygml -H {host} -P {port} -d {database} -u {user} -p {password} {gml_path}/*.gml"
+    cmd = f"citydb import citygml -H {host} -P {port} -d {db} -u {user} -p {password} {gml_path}/*.gml"
     utils.do_cmd(cmd)
 
     ## Extract general information like envelope
