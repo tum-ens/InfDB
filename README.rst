@@ -114,53 +114,46 @@ Installation for local development
 
       pip install -r requirements.txt
 
-#. Our application has dependency on 3dCityDB and Timescale; that's why local environment should be set first. The next command will fetch the timescale and 3dcitydb images and run the containers on your local:
+#. Our application has dependency on 3dCityDB and Timescale; that's why environment should be set first. 
+Under `configs` folder we have multiple `config` files that keeps service related inputs.
+Information related configuration is explained under `configs/Readme.md`
+   
+   .. code-block:: bash
+
+    # example for timescaledb
+      timescaledb:
+        user: timescale_user
+        password:
+        db: timescaledb_db
+        host: 127.0.0.1 
+        port: 5432
+        status: active
+
+#. To run our databases and feed them with data, we should first run the code below. This will auto generate the `docker-compose.yaml` depending on our needs. 
+Information related docker-compose generations is explained under `configs/Readme.md`
 
    .. code-block:: bash
 
-    # This will initiate both timescale and 3dcitydb containers on your local machines. 
-      docker-compose -f docker-compose.local.yaml up -d --build timescaledb
-      docker-compose -f docker-compose.local.yaml up -d --build citydb
+      python3 -m  dockers.generate-compose 
 
-    #but if you want to run everything related with local including jupyter
-      docker-compose -f docker-compose.local.yaml up -d
-
-
-#. To use 3DCityDB, you need to import demo data. Use the following commands with the provided Docker Compose file:
-   (Note: If you haven’t deleted the volume previously created for 3DCityDB, you don’t need to run this again.)
+#. As a last step we would need to start our services.
 
    .. code-block:: bash
 
-      # This will download LOD2 data and import it into 3DCityDB
-      docker-compose -f docker-compose.lod2-import.yaml up --build downloader
-      docker-compose -f docker-compose.lod2-import.yaml up --build citydb-tool
+      docker-compose -f ./dockers/docker-compose.yml up
+
+#. If you had any changes related with loader, you should create the image again if you have an existing image. Then you should do:
+
+   .. code-block:: bash
+
+      docker-compose -f ./dockers/docker-compose.yml build
+      docker-compose -f ./dockers/docker-compose.yml up
 
 #. Now you can start the application:
 
    .. code-block:: bash
 
     fastapi dev src/main.py
-
-
-Installation for docker container
----------------------------------
-#. Clone the repository to your local machine:
-
-   .. code-block:: bash
-
-      git clone <repository_url>
-
-#. We need the build image of our database application. To do that please run:
-
-   .. code-block:: bash
-
-    docker-compose build
-
-#. Run docker-compose file. The next command will fetch the timescale and 3dcitydb images and run the containers on your machine. It will then start our database (fastapi) application. You may change the env values provided in the compose file:
-
-   .. code-block:: bash
-
-    docker-compose up -d
 
 
 Repository Structure
@@ -183,7 +176,7 @@ Repository Structure
   - **guidelines/**: Project guidelines and standards
   - **source/**: Source files for documentation
   - **img/**: Images used in documentation
-- **docker/**: Docker configuration files
+- **dockers/**: Docker configuration files
 - **tests/**: Test suite
   - **unit/**: Unit tests for individual components
   - **integration/**: Tests for component interactions
