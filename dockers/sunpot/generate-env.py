@@ -20,8 +20,8 @@ def generate_env():
                 f.write(f"{key}={value}\n")
         
         # Write loader dir
-        loader_dir = get_value(["loader", "loader_dir"])
-        f.write(f"LOADER_DIR={loader_dir}\n")
+        gml_dir = get_value(["loader", "lod2", "gml_dir"])
+        f.write(f"GML_DIR={gml_dir}\n")
 
         # Write sunset dir
         sunset_dir = get_value(["base", "base_sunset_dir"])
