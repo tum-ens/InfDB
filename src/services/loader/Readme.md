@@ -29,8 +29,8 @@ sudo apt install aria2c # Download-Manager LOD2-Data (Building)
 - The folder contains source code to import the data
 
 ### (Open) Data
-- The placeholder `name` is also defined in `config_services.yaml`.
-- The placeholder `base_dir` - as default `data/` in root project folder - is defined in `config_services.yaml`.
+- The placeholder `name` is also defined in `config-services.yml`.
+- The placeholder `base_dir` - as default `data/` in root project folder - is defined in `config-services.yml`.
 
 The following data folders are at `base_dir/$name/*`:
 
@@ -41,8 +41,8 @@ The following data folders are at `base_dir/$name/*`:
 
 
 ## Configuration
- The standard configruation for the services is stored in `configs/config_services.yaml` file.
- The configuration for loader sources is stored in `configs.config_loader.yaml` file.
+ The standard configruation for the services is stored in `configs/config-services.yml` file.
+ The configuration for loader sources is stored in `configs/config-loader.yml` file.
 
 ### Services and Ports
 | Service                     | Port |
@@ -53,7 +53,7 @@ The following data folders are at `base_dir/$name/*`:
 
 These are exposed values. You can check under dockers/<service_name>.yaml files to see what is exposed port for that service.
 You can also update them there depending on your needs.
-Yaml files read the values `.env` file in the same path which is auto-generated via `config_services`.yaml.
+Yaml files read the values `.env` file in the same path which is auto-generated via `config-services`.yaml.
 
 ### Startup
 From the root project folder you can start the import by executing these commands via bash:

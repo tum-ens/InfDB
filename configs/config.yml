@@ -1,0 +1,12 @@
+base:
+  name: sonthofen
+  base_dir: "data/{name}/"
+  scope: DE27E
+  schema: general
+  network_name: infdb_network
+  environment: container
+  base_sunset_dir: "data/sunset/"
+
+configs:
+  - config-loader.yml
+  - config-services.yml
