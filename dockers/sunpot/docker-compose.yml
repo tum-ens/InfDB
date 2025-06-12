@@ -29,7 +29,7 @@ services:
       CITYDB_USERNAME: ${CITYDBV4_USER}
       CITYDB_PASSWORD: ${CITYDBV4_PASSWORD}
     volumes:
-      - ../../${LOADER_DIR}/lod2/gml:/data
+      - ../../${GML_DIR}:/data
     command: ["import", "/data/596_5256.gml"]
     stdin_open: true
     tty: true
