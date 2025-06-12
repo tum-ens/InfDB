@@ -4,7 +4,6 @@ services:
     password: citydb_password
     db: citydb
     host: citydb
-    port: 5432
     exposed_port: 5433
     epsg: 25832
     db_dir: "{base_dir}/3dcdb/"
@@ -15,20 +14,17 @@ services:
     password: secret
     db: timescaledb_db
     host: timescaledb
-    port: 5432
     exposed_port: 5432
     status: active
 
   pgadmin:
     default_email: admin@admin.com
     default_password: admin
-    port: 80
     exposed_port: 81
     status: active
 
   jupyter:
-    port: 8888
     exposed_port: 8888
     enable_lab: yes
-    status: active
+    status: not-active
 

@@ -8,7 +8,7 @@ services:
       POSTGRES_PASSWORD: ${CITYDB_PASSWORD}
       SRID: ${CITYDB_EPSG}
     ports:
-      - ${CITYDB_EXPOSED_PORT}:${CITYDB_PORT}
+      - ${CITYDB_EXPOSED_PORT}:5432
     volumes:
       - citydb_data:/var/lib/postgresql/data
     networks:

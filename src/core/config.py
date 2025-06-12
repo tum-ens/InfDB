@@ -1,7 +1,7 @@
 import re
 import yaml
 import os
-from sqlalchemy import create_engine
+import sqlalchemy
 
 
 def __load_config(path: str):
@@ -15,12 +15,10 @@ def __load_config(path: str):
 
 
 def __load_configs():
-    configs = {}
     base_path = os.path.join("configs", "config.yml")
 
-    if os.path.exists(base_path):
-        with open(base_path, "r") as file:
-            configs.update(yaml.safe_load(file) or {})
+    #first get the base config
+    configs = __load_config(base_path)
 
     # Load sub configs defined under config.yaml configs field
     for config_path in configs.get("configs", []):
@@ -28,11 +26,6 @@ def __load_configs():
         configs.update(__load_config(full_path))
 
     return configs
-
-
-# We can load config once and then use,
-# otherwise we would need to do I/O operations multiple times
-CONFIG = __load_configs()
 
 
 def get_value(keys):
@@ -118,7 +111,7 @@ def get_db_config(service_name: str):
         raise ValueError(f"Unsupported service: {service_name}")
 
     host = get_value(["services", service_name, "host"])
-    port = get_value(["services", service_name, "port"])
+    port = 5432
     user = get_value(["services", service_name, "user"])
     password = get_value(["services", service_name, "password"])
     db = get_value(["services", service_name, "db"])
@@ -129,8 +122,11 @@ def get_db_config(service_name: str):
 def get_db_engine(service_name: str):
     host, port, user, password, db = get_db_config(service_name)
     db_url = f"postgresql://{user}:{password}@{host}:{port}/{db}"
-    return create_engine(db_url)
+    return sqlalchemy.create_engine(db_url)
 
+# We can load config once and then use,
+# otherwise we would need to do I/O operations multiple times
+CONFIG = __load_configs()
 
 # Create engines
 citydb_engine = get_db_engine("citydb")
