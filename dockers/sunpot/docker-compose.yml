@@ -16,7 +16,7 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - dockers_infdb_network
+      - infdb_network
 
   import-to-v4:
     image: 3dcitydb/impexp
@@ -29,8 +29,7 @@ services:
       CITYDB_USERNAME: ${CITYDBV4_USER}
       CITYDB_PASSWORD: ${CITYDBV4_PASSWORD}
     volumes:
-    # not 100% sure how we can make this dynamic like we did for loader
-      - ../../../data/sonthofen/opendata/lod2/gml/:/data
+      - ../../${LOADER_DIR}/lod2/gml:/data
     command: ["import", "/data/596_5256.gml"]
     stdin_open: true
     tty: true
@@ -39,12 +38,12 @@ services:
         condition: service_healthy
         restart: false
     networks:
-      - dockers_infdb_network
+      - infdb_network
 
   sunpot-core:
     image: gitlab.lrz.de:5005/sunpot/sunpot-core
     volumes:
-      - ./sunpotConfig.xml:/sunpotConfig.xml
+      - ../../src/services/sunpot/sunpotConfig.xml:/sunpotConfig.xml
     environment:
       - CITYDBV4_DB        
       - CITYDBV4_USER
@@ -69,7 +68,7 @@ services:
         condition: service_completed_successfully
         restart: false
     networks:
-      - dockers_infdb_network
+      - infdb_network
 
   sunpot-texture:
     image: gitlab.lrz.de:5005/sunpot/sunpot-texture
@@ -93,26 +92,25 @@ services:
         condition: service_completed_successfully
         restart: false
     networks:
-      - dockers_infdb_network
+      - infdb_network
 
   export-and-import:
     build:
-      #context needs to be like this because,the file is located under services/sunpot
-      context: ../../..
+      context: ../..
       dockerfile: src/services/sunpot/Dockerfile
     container_name: solarpotential-export-and-import
     networks:
-      - dockers_infdb_network
+      - infdb_network
     depends_on:
       sunpot-texture:
         condition: service_completed_successfully
         restart: false
     volumes:
-      - ../../../configs/:/app/configs
-      - ../../../${SUNSET_DIR}/:/app/${SUNSET_DIR}
+      - ../../configs/:/app/configs
+      - ../../${SUNSET_DIR}/:/app/${SUNSET_DIR}
 
 networks:
-  dockers_infdb_network:
+  infdb_network:
     external: true
 
 volumes:

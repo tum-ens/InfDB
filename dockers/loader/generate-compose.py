@@ -26,11 +26,11 @@ def write_compose_file():
     output_path = os.path.join(base_dir, "docker-compose.yml")
 
     output = {
+        "name": "infdb",
         "include": ["./loader.yml"],  # loader by default should exist
         "volumes": {
             "timescale_data": None,
             "citydb_data": None,
-            "citydb_data_v4": None,
             "pgadmin_data": None
         },
         "networks": {
@@ -49,7 +49,7 @@ def write_compose_file():
         yaml.dump(output, f, default_flow_style=False, sort_keys=False)
 
 
-write_env_file("./dockers/.env")
+write_env_file("./dockers/loader/.env")
 write_compose_file()
 
 

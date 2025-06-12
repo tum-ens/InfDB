@@ -1,5 +1,5 @@
 # Docker Compose Generation
-Auto generates docker-compose file wrt `configs/config-service.aml`.
+Auto generates docker-compose file wrt `configs/config-service.yml`.
 
 # Services
 Each service has their own independent service definition under their respective <service_name>.yml files.
