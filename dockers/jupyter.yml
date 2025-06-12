@@ -2,7 +2,7 @@ services:
   jupyter:
     image: jupyter/scipy-notebook:latest
     ports:
-      - ${JUPYTER_EXPOSED_PORT}:${JUPYTER_PORT}
+      - ${JUPYTER_EXPOSED_PORT}:8888
     volumes:
       - /notebooks:/home/jovyan/work
     environment:

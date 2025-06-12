@@ -6,7 +6,7 @@ services:
       - PGADMIN_DEFAULT_EMAIL
       - PGADMIN_DEFAULT_PASSWORD
     ports:
-      - ${PGADMIN_EXPOSED_PORT}:${PGADMIN_PORT}
+      - ${PGADMIN_EXPOSED_PORT}:80
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     networks:

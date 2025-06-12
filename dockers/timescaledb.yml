@@ -7,7 +7,7 @@ services:
       POSTGRES_USER: ${TIMESCALEDB_USER}
       POSTGRES_PASSWORD: ${TIMESCALEDB_PASSWORD}
     ports:
-      - ${TIMESCALEDB_EXPOSED_PORT}:${TIMESCALEDB_PORT}
+      - ${TIMESCALEDB_EXPOSED_PORT}:5432
     volumes:
       - timescale_data:/var/lib/postgresql/data
     networks:
