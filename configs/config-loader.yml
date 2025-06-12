@@ -1,7 +1,7 @@
 loader:
   loader_dir: "{base_dir}/opendata"
   zensus_2022:
-    status: not-active
+    status: active
     resolutions:
       - 10km
     zensus_2022_dir: "{loader_dir}/zensus_2022/"
@@ -27,7 +27,7 @@ loader:
     schema: bkg
 
   basemap:
-    status: not-active
+    status: active
     url: "https://basemap.de/dienste/opendata/basisviews/"
     ending: ".gpkg"
     filter:
@@ -37,7 +37,7 @@ loader:
     schema: basemap
 
   plz:
-    status: not-active
+    status: active
     url: "https://downloads.suche-postleitzahl.org/v2/public/plz-5stellig.geojson"
     plz_dir: "{loader_dir}/plz/"
     plz_processed_dir: "{basemap_dir}/processed/"

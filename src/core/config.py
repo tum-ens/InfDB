@@ -1,7 +1,7 @@
 import re
 import yaml
 import os
-from sqlalchemy import create_engine
+import sqlalchemy
 
 
 def __load_config(path: str):
@@ -15,12 +15,10 @@ def __load_config(path: str):
 
 
 def __load_configs():
-    configs = {}
-    base_path = os.path.join("configs", "config.yaml")
+    base_path = os.path.join("configs", "config.yml")
 
-    if os.path.exists(base_path):
-        with open(base_path, "r") as file:
-            configs.update(yaml.safe_load(file) or {})
+    # first get the base config
+    configs = __load_config(base_path)
 
     # Load sub configs defined under config.yaml configs field
     for config_path in configs.get("configs", []):
@@ -28,11 +26,6 @@ def __load_configs():
         configs.update(__load_config(full_path))
 
     return configs
-
-
-# We can load config once and then use,
-# otherwise we would need to do I/O operations multiple times
-CONFIG = __load_configs()
 
 
 def get_value(keys):
@@ -113,31 +106,29 @@ def replace_placeholders(path, config):
     return path
 
 
-environment = get_value(["base", "environment"])
-# this check is important because in the network with docker containers we cannot use
-# exposed ports and we have to provide the service name
-is_local = (environment == "localhost")
-# CityDB Configuration
-citydb_host = "127.0.0.1" if is_local else get_value(["services", "citydb", "host"])
-citydb_port = get_value(["services", "citydb", "port"]) if is_local else 5432
-citydb_db = get_value(["services", "citydb", "db"])
-citydb_user = get_value(["services", "citydb", "user"])
-citydb_password = get_value(["services", "citydb", "password"])
-epsg = get_value(["services", "citydb", "epsg"])
+def get_db_config(service_name: str):
+    if service_name not in ["citydb", "timescaledb"]:
+        raise ValueError(f"Unsupported service: {service_name}")
+
+    host = get_value(["services", service_name, "host"])
+    port = 5432
+    user = get_value(["services", service_name, "user"])
+    password = get_value(["services", service_name, "password"])
+    db = get_value(["services", service_name, "db"])
+
+    return host, port, user, password, db
 
 
-# TimescaleDB Configuration
-timescale_host = get_value(["services", "timescaledb", "host"])
-timescale_port = get_value(["services", "timescaledb", "port"])
-timescale_user = get_value(["services", "timescaledb", "user"])
-timescale_password = get_value(["services", "timescaledb", "password"])
-timescale_db = get_value(["services", "timescaledb", "db"])
+def get_db_engine(service_name: str):
+    host, port, user, password, db = get_db_config(service_name)
+    db_url = f"postgresql://{user}:{password}@{host}:{port}/{db}"
+    return sqlalchemy.create_engine(db_url)
 
 
-# Build connection URLs
-timescale_url = f"postgresql://{timescale_user}:{timescale_password}@{timescale_host}:{timescale_port}/{timescale_db}"
-citydb_url = f"postgresql://{citydb_user}:{citydb_password}@{citydb_host}:{citydb_port}/{citydb_db}"
+# We can load config once and then use,
+# otherwise we would need to do I/O operations multiple times
+CONFIG = __load_configs()
 
 # Create engines
-timescale_engine = create_engine(timescale_url)
-citydb_engine = create_engine(citydb_url)
+citydb_engine = get_db_engine("citydb")
+timescale_engine = get_db_engine("timescaledb")
