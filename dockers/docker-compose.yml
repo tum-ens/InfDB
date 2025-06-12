@@ -4,7 +4,6 @@ include:
 - ./citydb.yml
 - ./timescaledb.yml
 - ./pgadmin.yml
-- ./jupyter.yml
 volumes:
   timescale_data: null
   citydb_data: null
