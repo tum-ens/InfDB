@@ -27,7 +27,7 @@ def write_compose_file():
 
     output = {
         "name": "infdb",
-        "include": ["./loader.yml"],  # default loader
+        "include": ["./loader.yml"],  # loader by default should exist
         "volumes": {
             "timescale_data": None,
             "citydb_data": None,

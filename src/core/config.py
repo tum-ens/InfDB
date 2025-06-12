@@ -17,7 +17,7 @@ def __load_config(path: str):
 def __load_configs():
     base_path = os.path.join("configs", "config.yml")
 
-    #first get the base config
+    # first get the base config
     configs = __load_config(base_path)
 
     # Load sub configs defined under config.yaml configs field
@@ -123,6 +123,7 @@ def get_db_engine(service_name: str):
     host, port, user, password, db = get_db_config(service_name)
     db_url = f"postgresql://{user}:{password}@{host}:{port}/{db}"
     return sqlalchemy.create_engine(db_url)
+
 
 # We can load config once and then use,
 # otherwise we would need to do I/O operations multiple times
