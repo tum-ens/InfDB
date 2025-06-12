@@ -134,20 +134,20 @@ Information related docker-compose generations is explained under `configs/Readm
 
    .. code-block:: bash
 
-      python3 -m  dockers.generate_compose 
+      python3 -m  dockers.generate-compose 
 
 #. As a last step we would need to start our services.
 
    .. code-block:: bash
 
-      docker-compose -f ./dockers/docker-compose.yaml up
+      docker-compose -f ./dockers/docker-compose.yml up
 
 #. If you had any changes related with loader, you should create the image again if you have an existing image. Then you should do:
 
    .. code-block:: bash
 
-      docker compose -f ./dockers/docker-compose.yaml build
-      docker-compose -f ./dockers/docker-compose.yaml up
+      docker-compose -f ./dockers/docker-compose.yml build
+      docker-compose -f ./dockers/docker-compose.yml up
 
 #. Now you can start the application:
 

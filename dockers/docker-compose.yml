@@ -1,15 +1,14 @@
 name: infdb
 include:
-- ./loader.yaml
-- ./citydb.yaml
-- ./timescaledb.yaml
-- ./pgadmin.yaml
+- ./loader.yml
+- ./citydb.yml
+- ./timescaledb.yml
+- ./pgadmin.yml
 volumes:
   timescale_data: null
   citydb_data: null
   citydb_data_v4: null
   pgadmin_data: null
 networks:
-  infdb_external_network:
-    name: infdb_internal_network
+  infdb_network:
     driver: bridge
