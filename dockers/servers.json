@@ -1,0 +1,22 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "Citydb",
+      "Group": "Servers",
+      "Host": "citydb",
+      "Port": 5432,
+      "MaintenanceDB": "citydb",
+      "Username": "citydb_user",
+      "SSLMode": "prefer"
+    },
+    "2": {
+      "Name": "Timescaledb",
+      "Group": "Servers",
+      "Host": "timescaledb",
+      "Port": 5432,
+      "MaintenanceDB": "timescaledb_db",
+      "Username": "timescale_user",
+      "SSLMode": "prefer"
+    }
+  }
+}
