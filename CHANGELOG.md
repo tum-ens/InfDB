@@ -9,7 +9,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ---
 
 ## [Unreleased]
-- Add new changes here before merging into the next official version.
+- Dockerized solar potential calculations on 3DCityDB v4 and migrated the workflow to 3DCityDB v5 using the Sunset service.
+- Automated geospatial data ingestion via CityDB v5 Loader service.
+- Developed a dynamic docker-compose generation flow to allow users to spin up local environments based on configuration.
+- Initialized documentation setup using Read the Docs.
+- Created raster table and integrated with automated weather data fetching.
+- Implemented an API endpoint for retrieving historical weather data based on sensor names, matching with API specifications.
+- Set up initial CI pipeline steps, including dependency installation and lint checks.
+- Established the initial API structure, connecting TimescaleDB and 3DCityDB.
 ### Added
 - Initial documentation of the repo (#21, !22)
 
