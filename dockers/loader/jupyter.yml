@@ -4,6 +4,6 @@ services:
     ports:
       - ${JUPYTER_EXPOSED_PORT}:8888
     volumes:
-      - ./{JUPYTER_VOLUME_DIR}:/home/jovyan/work
+      - ../../${JUPYTER_VOLUME_DIR}:/home/jovyan/work
     environment:
       -  ${JUPYTER_ENABLE_LAB}
