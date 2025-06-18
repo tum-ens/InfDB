@@ -78,5 +78,5 @@ def setup_pgadmin_servers(output_path):
 
 write_env_file("./dockers/loader/.env")
 write_compose_file()
-setup_pgadmin_servers("./dockers/servers.json")
+setup_pgadmin_servers("./dockers/loader/servers.json")
 
