@@ -176,7 +176,7 @@ Calculating Solar Potantials and Saving Into CityDB v5:
 
    .. code-block:: bash
 
-      docker-compose -f./dockers/sunpot/docker-compose.yml up --build
+      docker-compose -f ./dockers/sunpot/docker-compose.yml up --build
 
 #. Services should be running sequentially once CityDB v4 is ready.
 
