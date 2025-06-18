@@ -1,6 +1,7 @@
 import yaml
 import os
 from src.core.config import get_value, CONFIG
+import json
 
 base_dir = os.path.dirname(__file__)
 
@@ -49,8 +50,34 @@ def write_compose_file():
     with open(output_path, "w") as f:
         yaml.dump(output, f, default_flow_style=False, sort_keys=False)
 
+def setup_pgadmin_servers(output_path):
+    services = CONFIG.get("services", {})
+
+    servers = {
+        "Servers": {}
+    }
+
+    server_id = 1
+
+    for name, service in services.items():
+        if name.lower() not in ["citydb", "timescaledb"]:
+            continue
+
+        servers["Servers"][str(server_id)] = {
+            "Name": name.capitalize(),
+            "Group": "Servers",
+            "Host": get_value(["services", name, "host"]),
+            "Port": 5432,
+            "MaintenanceDB": get_value(["services", name, "db"]),
+            "Username": get_value(["services", name, "user"]),
+            "SSLMode": "prefer"
+        }
+        server_id += 1
+    
+    with open(output_path, "w") as f:
+        json.dump(servers, f, indent=2)
 
 write_env_file("./dockers/.env")
 write_compose_file()
-
+setup_pgadmin_servers("./dockers/servers.json")
 
