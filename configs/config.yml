@@ -5,7 +5,7 @@ base:
   schema: general
   network_name: network
   environment: container
-  base_sunset_dir: "data/sunset/"
+  base_sunset_dir: "{base_dir}/sunset/"
 
 configs:
   - config-loader.yml
