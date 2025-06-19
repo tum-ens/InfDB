@@ -11,31 +11,33 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 ### Added
 - Dockerized solar potential calculations on 3DCityDB v4 and migrated the workflow to 3DCityDB v5 using the Sunset service.
+- Preconfigure PGAdmin in automatic startup (#78, !35)
+- Developed a dynamic docker-compose generation flow to allow users to spin up local environments based on configuration. (#23, #25, #26, @27, !29)
 - Automated geospatial data ingestion via CityDB v5 Loader service. (!29)
-- Developed a dynamic docker-compose generation flow to allow users to spin up local environments based on configuration. (!!29)
 - Initialize CityDB v4 sunset (!27)
 - Use single env file to share accros docker-compose files. (!25)
 - Initial documentation of the repo (#21, !22)
-- Implemented an API endpoint for retrieving historical weather data based on sensor names, matching with API specifications. Created raster table and integrated with automated weather data fetching. (!19)
-- Set up initial CI pipeline steps, including dependency installation and lint checks.(!16, !17, !18)
+- Implemented an API endpoint for retrieving historical weather data based on sensor names, matching with API specifications. Created raster table and integrated with automated weather data fetching. (#12, #13, !19)
+- Set up initial CI pipeline steps, including dependency installation and lint checks. (!16, !17, !18)
 - Creates initial docker file for deployment and requirement file (!12)
 - Established the initial API structure, connecting TimescaleDB and 3DCityDB. (!7, !8, !9)
 
 ### Fixed
-- Convert post to get endpoint for citydb (!11)
+- Fix/ci resource size by updating artifact expiration date (#69, !34)
 - Add healthchecks for databases in docker compose (!15)
-- Fix/ci resource size by updating artifact expiration date (!34)
+- Convert post to get endpoint for citydb (!11)
+- Get jupyter notebook volume path from config.yaml (#78, !35)
 
 ### Changed
-- Added comments on Imp/exp docker compose file and updated folder structure in the api (!11)
-- Update readme after initializing Imp/Exp (!13)
-- add image build step to readme (!14)
-- Update raster table generation with a given lat and long in meters (!21)
+- Optimize initial general config merge request !29 (!32)
 - Fix/update db connection setup for data import (!24)
-- Optimize initial general config merge request !29 (!31)
+- Update raster table generation with a given lat and long in meters (#12, !21)
+- add image build step to readme (!14)
+- Update readme after initializing Imp/Exp (!13)
+- Added comments on Imp/exp docker compose file and updated folder structure in the api (!11)
 
 ### Removed
-- Cleanup unused queries and endpoints (!20)
+- Cleanup unused queries and endpoints (#24, !20)
 
 ---
 
