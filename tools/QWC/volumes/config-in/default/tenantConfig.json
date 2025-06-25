@@ -13,7 +13,8 @@
     "strip_scan_prefix_from_theme_names": true,
     "tenant": "default",
     "validate_schema": true,
-    "use_default_map_thumbnail": true
+    "use_default_map_thumbnail": true,
+    "qgis_project_extension": ".qgz"
   },
   "themesConfig": "./themesConfig.json",
   "services": [
