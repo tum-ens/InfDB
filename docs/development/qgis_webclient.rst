@@ -2,24 +2,66 @@
 QGIS Web Client Documentation for ENS:
 --------------------------------------
 
-We use the docker images of the QGIS Web Client (QWC) and qwc-services
-for visualization of geodata from the 3DCityDB. Once QWC is set up on
-the server, one can (after some local configurations) create QGIS
-projects on a local machine with QGIS Desktop and upload them to the
-server. The server generates a “theme” from every added project and
-makes it visible on a web interface.
+We use the docker images of the QGIS Web Client (QWC) and qwc-services for visualization of geodata from the 3DCityDB.
+Once QWC is set up onthe server, one can create QGIS projects on a local machine with QGIS Desktop and upload them to the server.
+The server generates a “theme” from every added project and makes it visible on a web interface.
+There is an official GitHub repo for the QWC docker containers, but we use a slightly adjusted version of it with some configuration changes.
 
 | The official documentation for QWC can be found at
 | https://qwc-services.github.io/master/
 
-| The respective GitHub repo can be found at
+| The official GitHub repo can be found at
 | https://github.com/qwc-services/qwc-docker
 
+| Our adjusted version can be found at
+| https://gitlab.lrz.de/tum-ens/need/database/-/tree/main/tools/QWC
+
 | After installation, the QWC interface can be reached via
-| http://10.162.28.86:8088/
+| http://[ip_address]:8088/
 
 | And the admin interface can be reached via
-| http://10.162.28.86:8088/qwc_admin/
+| http://[ip_address]:8088/qwc_admin/
+
+-------------
+Server Setup:
+-------------
+
+If not already installed, you have to install docker (https://docs.docker.com/engine/install/) and docker-compose (https://docs.docker.com/compose/install/) first.
+
+Get config files from repo:
+git clone https://gitlab.lrz.de/tum-ens/need/database.git
+cp -r database/tools/QWC/ QWC
+rm -r database
+
+Change the connection details of the geodatabase (qwc_geodb) in QWC/pg_service.conf:
+
+[qwc_geodb]
+host=10.162.28.86
+port=1230
+dbname=postgres
+user=postgres
+password=need
+sslmode=disable
+
+Change the database password in QWC/docker-compose.yml:
+
+services:
+  qwc-postgis:
+    image: sourcepole/qwc-base-db:16 # 16 refers to the Postgres major version
+    environment:
+      POSTGRES_PASSWORD: 'need' # TODO: Set your postgres password here!
+
+Change user and group id in QWC/docker-compose.yml according to the user that owns the config files:
+
+x-qwc-service-variables: &qwc-service-variables
+  [...]
+  SERVICE_UID: 1000
+  SERVICE_GID: 1000
+
+Start docker containers:
+docker compose up -d
+
+Generate service configuration: see section "Publish Project" (initial username & password: admin)
 
 -------------
 Useful Files:
