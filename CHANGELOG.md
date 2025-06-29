@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 ### Added
-- Dockerized solar potential calculations on 3DCityDB v4 and migrated the workflow to 3DCityDB v5 using the Sunset service.
+- Dockerized solar potential calculations on 3DCityDB v4 and migrated the workflow to 3DCityDB v5 using the Sunset service. (#25, !30)
 - Preconfigure PGAdmin in automatic startup (#78, !35)
 - Developed a dynamic docker-compose generation flow to allow users to spin up local environments based on configuration. (#23, #25, #26, @27, !29)
 - Automated geospatial data ingestion via CityDB v5 Loader service. (!29)
