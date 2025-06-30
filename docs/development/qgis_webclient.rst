@@ -51,6 +51,9 @@ services:
     environment:
       POSTGRES_PASSWORD: 'need' # TODO: Set your postgres password here!
 
+Create a secret key:
+python3 -c 'import secrets; print("JWT_SECRET_KEY=\"%s\"" % secrets.token_hex(48))' >.env
+
 Change user and group id in qwc/docker-compose.yml according to the user that owns the config files:
 
 x-qwc-service-variables: &qwc-service-variables
@@ -61,7 +64,7 @@ x-qwc-service-variables: &qwc-service-variables
 Initialize & start docker containers:
 docker compose up -d
 
-Generate service configuration: see section "Publish Project" (initial username & password: admin)
+Generate service configuration: see section "Publish/Update Project" (initial username & password: admin)
 
 **Start/stop QWC with:**
 
@@ -78,7 +81,7 @@ Local Configurations:
 | **Add service configuration file pg_service.conf:**
 | *(e.g. under "C:\\Users\\JohnDoe\\pg_service.conf")*
 | *(save the file in UNIX format regarding EOL delimiter / use sample file)*
-| *(see* https://docs.qgis.org/3.34/en/docs/user_manual/managing_data_source/opening_data.html#postgresql-service-connection-file\ *)*
+| *(see* https://docs.qgis.org/3.40/en/docs/user_manual/managing_data_source/opening_data.html#postgresql-service-connection-file\ *)*
 
    | [qwc_geodb]
    | host=10.162.28.86
@@ -139,7 +142,7 @@ the value in every layer. That makes it easier to change such style
 values.
 
 More on project variables can be found under
-`https://docs.qgis.org/3.34/en/docs/user_manual/introduction/general_tools.html#storing-values-in-variables <https://docs.qgis.org/3.34/en/docs/user_manual/introduction/general_tools.html%23storing-values-in-variables>`__.
+https://docs.qgis.org/3.40/en/docs/user_manual/introduction/general_tools.html#general-tools-variables
 
 2. **Dynamic version filtering with project variables and styles**
 
@@ -174,8 +177,8 @@ on Windows are described above under *Local Configurations*.
 Useful Files & Other Changes:
 -----------------------------
 
-In the folder of this documentation, two additional files can be found.
-These are sample config files.
+In the following, all files that were changed or added in comparison to the original QWC services repo are described.
+The path is always given relative to the /qwc/ directory.
 
 1. **pg_service.conf:**
 
@@ -189,20 +192,16 @@ The service name can also be seen as proxy for the connection details,
 as it allows to change the connection details by editing the
 pg_service.conf without having to edit the layers. The concept of
 service files is also described here:
-`https://docs.qgis.org/3.34/en/docs/user_manual/managing_data_source/opening_data.html#postgresql-service-connection-file <https://docs.qgis.org/3.34/en/docs/user_manual/managing_data_source/opening_data.html%23postgresql-service-connection-file>`__
+https://docs.qgis.org/3.40/en/docs/user_manual/managing_data_source/opening_data.html#postgresql-service-connection-file
 
-The sample file is a modified version of the config file in the GitHub repo
-(https://github.com/qwc-services/qwc-docker/blob/master/pg_service.conf).
-It contains one service definition for the config database
+The file contains one service definition for the config database
 (qwc_configdb) that contains internal values of QWC. This definition is
-unchanged from the repo.
-
-The other service definition is for the geodatabase that contains
+unchanged from the repo. The other service definition is for the geodatabase that contains
 spatial data (qwc_geodb). This definition was adjusted in comparison to
 the repo. When connection details of the geodatabase change (e.g. by
 moving to another server), this definition must be updated.
 
-2. **themesConfig.json**
+2. **volumes/config-in/default/themesConfig.json**
 
 This file contains config parameters that define how QWC generates
 themes from the uploaded QGIS project files. A theme is a visualization
@@ -212,9 +211,48 @@ Config parameters can be settings for specific themes (project files) or
 default values for all themes (project files). They include for example
 the background layer of a theme.
 
-The sample file is a modified version of the config file in the GitHub
-repo
-(https://github.com/qwc-services/qwc-docker/blob/master/volumes/config-in/default/themesConfig.json).
-A complete manual to configure themes including a table with all
-possible config parameters can be found at
+The file was largely reworked in comparison to that from the original repo.
+A complete manual to configure themes including a table with all possible config parameters can be found at
 `https://qwc-services.github.io/master/configuration/ThemesConfiguration/#configuring-the-themes-in-themesconfigjson <https://qwc-services.github.io/master/configuration/ThemesConfiguration/%23configuring-the-themes-in-themesconfigjson>`__.
+
+3. **volumes/config-in/default/tenantConfig.json**
+
+This file is similar to the themesConfig.json, but it contains more general settings for the config generation.
+The only config parameter added is *"qgis_project_extension": ".qgz"*, so that QWC accepts .qgz-projects instead of .qgs-projects.
+There are two types of QGIS-projects, .qgs, which are basically normal XML files and .qgz, which are zipped .qgs files.
+As QGIS Desktop by default saves projects as .qgz, we also rely on that for production purposes, but it may be useful to save a project as .qgs to see the XML tags in plain text.
+
+4. **docker-compose.yml**
+
+This file is an adjusted copy of *docker-compose-example.yml*.
+The following lines were changed:
+  SERVICE_UID: 1000
+  SERVICE_GID: 1000
+These lines were uncommented. They should be set to the UID & GID of the UNIX user that owns the /qwc/ directory.
+   POSTGRES_PASSWORD: 'need' # TODO: Set your postgres password here!
+The database password should be entered here.
+   #- ./volumes/demo-data/setup-demo-data.sh:/docker-entrypoint-initdb.d/2_setup-demo-data.sh
+   [...]
+   #- ./volumes/demo-data/setup-demo-data-permissions.sh:/tmp/extra-init.d/setup-demo-data-permissions.sh
+These lines were commented out to remove the demo theme.
+   QGIS_PROJECT_SUFFIX: 'qgz'
+This line was added to set the QGIS project file extension (see above: 3. volumes/config-in/default/tenantConfig.json).
+   QGIS_SERVER_PARALLEL_RENDERING: 1
+This line was added to enable multithread rendering of the map viewer for increased performance.
+
+5. **api-gateway/nginx.conf**
+
+This file is an exact copy of *api-gateway/nginx-example.conf*.
+
+6. **volumes/qgs-resources/scan/pylovo.qgz**
+
+This is a prepared QGIS project file for visualization of data belonging to the pylovo tool.
+More project files can be created in QGIS Desktop and then added to the /scan/ folder for other projects/purposes.
+The files are automatically scanned and respective themes within QWC are generated when the the service configuration is generated over the admin interface (see section "Publish/Update Project").
+
+7. **volumes/qwc2/assets/img/mapthumbs/pylovo.png**
+
+This is the thumbnail picture for the pylovo theme.
+For other themes, thumbnails can also be added to the /mapthumbs/ folder.
+The file name of the thumbnail picture must always equal the name of the project file from which the theme is generated.
+
