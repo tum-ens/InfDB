@@ -9,16 +9,16 @@ There is an official GitHub repo for the QWC docker containers, but we use a sli
 
 | The official documentation for QWC can be found at
 | https://qwc-services.github.io/master/
-
+|
 | The official GitHub repo can be found at
 | https://github.com/qwc-services/qwc-docker
-
+|
 | Our adjusted version can be found at
 | https://gitlab.lrz.de/tum-ens/need/database/-/tree/main/tools/qgis_webclient
-
+|
 | After installation, the QWC interface can be reached via
 | http://[ip_address]:8088/
-
+|
 | And the admin interface can be reached via
 | http://[ip_address]:8088/qwc_admin/
 
@@ -28,49 +28,47 @@ Server Setup:
 
 If not already installed, you have to install docker (https://docs.docker.com/engine/install/) and docker-compose (https://docs.docker.com/compose/install/) first.
 
-Get config files from repo:
-git clone https://gitlab.lrz.de/tum-ens/need/database.git
-cp -r database/tools/qgis_webclient/ qwc
-rm -r database
+**Get config files from repo:**
+::
+   git clone https://gitlab.lrz.de/tum-ens/need/database.git
+   cp -r database/tools/qgis_webclient/ qwc
+   rm -r database``
 
-Change the connection details of the geodatabase (qwc_geodb) in qwc/pg_service.conf:
+**Change the connection details of the geodatabase (qwc_geodb) in qwc/pg_service.conf:**
+::
+   [qwc_geodb]
+   host=10.162.28.86
+   port=1230
+   dbname=postgres
+   user=postgres
+   password=need
+   sslmode=disable
 
-[qwc_geodb]
-host=10.162.28.86
-port=1230
-dbname=postgres
-user=postgres
-password=need
-sslmode=disable
+**Change the database password in qwc/docker-compose.yml:**
+::
+   services:
+      qwc-postgis:
+         image: sourcepole/qwc-base-db:16 # 16 refers to the Postgres major version
+         environment:
+            POSTGRES_PASSWORD: 'need' # TODO: Set your postgres password here!
 
-Change the database password in qwc/docker-compose.yml:
+**Create a secret key:**
+::
+   python3 -c 'import secrets; print("JWT_SECRET_KEY=\"%s\"" % secrets.token_hex(48))' >.env
 
-services:
-  qwc-postgis:
-    image: sourcepole/qwc-base-db:16 # 16 refers to the Postgres major version
-    environment:
-      POSTGRES_PASSWORD: 'need' # TODO: Set your postgres password here!
+**Change user and group id in qwc/docker-compose.yml according to the user that owns the config files:**
+::
+   x-qwc-service-variables: &qwc-service-variables
+      [...]
+      SERVICE_UID: 1000
+      SERVICE_GID: 1000
 
-Create a secret key:
-python3 -c 'import secrets; print("JWT_SECRET_KEY=\"%s\"" % secrets.token_hex(48))' >.env
+**Initialize & start docker containers:** ``docker compose up -d``
 
-Change user and group id in qwc/docker-compose.yml according to the user that owns the config files:
+**Generate service configuration:** see section "Publish/Update Project" (initial username & password: admin)
 
-x-qwc-service-variables: &qwc-service-variables
-  [...]
-  SERVICE_UID: 1000
-  SERVICE_GID: 1000
-
-Initialize & start docker containers:
-docker compose up -d
-
-Generate service configuration: see section "Publish/Update Project" (initial username & password: admin)
-
-**Start/stop QWC with:**
-
-   | docker compose up –d
-   | docker compose down
-*(do not use „docker compose restart“, it may result in server errors)*
+| Start/stop QWC with ``docker compose up –d`` and ``docker compose down``
+| *(do not use „docker compose restart“, it may result in server errors)*
 
 ---------------------
 Local Configurations:
@@ -82,21 +80,25 @@ Local Configurations:
 | *(e.g. under "C:\\Users\\JohnDoe\\pg_service.conf")*
 | *(save the file in UNIX format regarding EOL delimiter / use sample file)*
 | *(see* https://docs.qgis.org/3.40/en/docs/user_manual/managing_data_source/opening_data.html#postgresql-service-connection-file\ *)*
+|
+::
 
-   | [qwc_geodb]
-   | host=10.162.28.86
-   | port=1230
-   | dbname=postgres
-   | user=postgres
-   | password=need
-   | sslmode=disable
+   [qwc_geodb]
+   host=10.162.28.86
+   port=1230
+   dbname=postgres
+   user=postgres
+   password=need
+   sslmode=disable
 
 **Add path to service configuration file to environment variable PGSERVICEFILE:**
 
 .. image:: ../img/add_environment_variable.png
 
-**Connect to the database via service configuration:**
-*(use LTS QGIS version 3.40.8 to be compatible with the QGIS server image; see* https://download.qgis.org/downloads/\ *)*
+|
+| **Connect to the database via service configuration:**
+| *(use LTS QGIS version 3.40.8 to be compatible with the QGIS server image; see* https://download.qgis.org/downloads/\ *)*
+|
 
 |image1|\ |image2|
 
@@ -106,16 +108,19 @@ Publish/Update Project:
 
 | **Create QGIS project and save it**
 | *(Note: QWC uses .qgs files by default. We changed this setting to .qgz files because that is the default saving format of QGIS Desktop.)*
-
+|
 **Upload the project:**
+::
 
    scp .\\project.qgz [username]@[ip_address]:~/qwc/volumes/qgs-resources/scan/project.qgz
 
 | **Open admin webinterface and log in:**
 | *(address: http://[ip_address]:8088/qwc_admin/)*
+|
 
 .. image:: ../img/login_qwc_admin.png
 
+|
 **Generate service configuration:**
 
 .. image:: ../img/generate_service_configuration.png
@@ -173,9 +178,9 @@ on Windows are described above under *Local Configurations*.
 .. |image1| image:: ../img/add_postgres_layer.png
 .. |image2| image:: ../img/add_service_name.png
 
------------------------------
-Useful Files & Other Changes:
------------------------------
+--------------
+Changed Files:
+--------------
 
 In the following, all files that were changed or added in comparison to the original QWC services repo are described.
 The path is always given relative to the /qwc/ directory.
@@ -190,14 +195,14 @@ layer definitions, a database can be addressed by a service name,
 erasing the need to add all connection details to every single layer.
 The service name can also be seen as proxy for the connection details,
 as it allows to change the connection details by editing the
-pg_service.conf without having to edit the layers. The concept of
+``pg_service.conf`` without having to edit the layers. The concept of
 service files is also described here:
 https://docs.qgis.org/3.40/en/docs/user_manual/managing_data_source/opening_data.html#postgresql-service-connection-file
 
 The file contains one service definition for the config database
-(qwc_configdb) that contains internal values of QWC. This definition is
+(``qwc_configdb``) that contains internal values of QWC. This definition is
 unchanged from the repo. The other service definition is for the geodatabase that contains
-spatial data (qwc_geodb). This definition was adjusted in comparison to
+spatial data (``qwc_geodb``). This definition was adjusted in comparison to
 the repo. When connection details of the geodatabase change (e.g. by
 moving to another server), this definition must be updated.
 
@@ -218,41 +223,56 @@ A complete manual to configure themes including a table with all possible config
 3. **volumes/config-in/default/tenantConfig.json**
 
 This file is similar to the themesConfig.json, but it contains more general settings for the config generation.
-The only config parameter added is *"qgis_project_extension": ".qgz"*, so that QWC accepts .qgz-projects instead of .qgs-projects.
-There are two types of QGIS-projects, .qgs, which are basically normal XML files and .qgz, which are zipped .qgs files.
-As QGIS Desktop by default saves projects as .qgz, we also rely on that for production purposes, but it may be useful to save a project as .qgs to see the XML tags in plain text.
+The only config parameter added is ``"qgis_project_extension": ".qgz"``, so that QWC accepts ``.qgz``-projects instead of ``.qgs``-projects.
+There are two types of QGIS-projects, ``.qgs``, which are basically normal XML files and ``.qgz``, which are zipped ``.qgs`` files.
+As QGIS Desktop by default saves projects as ``.qgz``, we also rely on that for production purposes, but it may be useful to save a project as ``.qgs`` to see the XML tags in plain text.
 
 4. **docker-compose.yml**
 
-This file is an adjusted copy of *docker-compose-example.yml*.
+This file is an adjusted copy of ``docker-compose-example.yml``.
 The following lines were changed:
-  SERVICE_UID: 1000
-  SERVICE_GID: 1000
+
 These lines were uncommented. They should be set to the UID & GID of the UNIX user that owns the /qwc/ directory.
+::
+
+   SERVICE_UID: 1000
+   SERVICE_GID: 1000
+
+The database password should be entered here:
+::
+
    POSTGRES_PASSWORD: 'need' # TODO: Set your postgres password here!
-The database password should be entered here.
+
+These lines were commented out to remove the demo theme:
+::
+
    #- ./volumes/demo-data/setup-demo-data.sh:/docker-entrypoint-initdb.d/2_setup-demo-data.sh
    [...]
    #- ./volumes/demo-data/setup-demo-data-permissions.sh:/tmp/extra-init.d/setup-demo-data-permissions.sh
-These lines were commented out to remove the demo theme.
+
+This line was added to set the QGIS project file extension (see above: 3. volumes/config-in/default/tenantConfig.json):
+::
+
    QGIS_PROJECT_SUFFIX: 'qgz'
-This line was added to set the QGIS project file extension (see above: 3. volumes/config-in/default/tenantConfig.json).
+
+This line was added to enable multithread rendering of the map viewer for increased performance:
+::
+
    QGIS_SERVER_PARALLEL_RENDERING: 1
-This line was added to enable multithread rendering of the map viewer for increased performance.
 
 5. **api-gateway/nginx.conf**
 
-This file is an exact copy of *api-gateway/nginx-example.conf*.
+This file is an exact copy of ``api-gateway/nginx-example.conf``.
 
 6. **volumes/qgs-resources/scan/pylovo.qgz**
 
 This is a prepared QGIS project file for visualization of data belonging to the pylovo tool.
-More project files can be created in QGIS Desktop and then added to the /scan/ folder for other projects/purposes.
+More project files can be created in QGIS Desktop and then added to the ``/scan/`` folder for other projects/purposes.
 The files are automatically scanned and respective themes within QWC are generated when the the service configuration is generated over the admin interface (see section "Publish/Update Project").
 
 7. **volumes/qwc2/assets/img/mapthumbs/pylovo.png**
 
 This is the thumbnail picture for the pylovo theme.
-For other themes, thumbnails can also be added to the /mapthumbs/ folder.
+For other themes, thumbnails can also be added to the ``/mapthumbs/`` folder.
 The file name of the thumbnail picture must always equal the name of the project file from which the theme is generated.
 
