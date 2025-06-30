@@ -14,7 +14,7 @@ There is an official GitHub repo for the QWC docker containers, but we use a sli
 | https://github.com/qwc-services/qwc-docker
 
 | Our adjusted version can be found at
-| https://gitlab.lrz.de/tum-ens/need/database/-/tree/main/tools/qwc
+| https://gitlab.lrz.de/tum-ens/need/database/-/tree/main/tools/qgis_webclient
 
 | After installation, the QWC interface can be reached via
 | http://[ip_address]:8088/
@@ -30,7 +30,7 @@ If not already installed, you have to install docker (https://docs.docker.com/en
 
 Get config files from repo:
 git clone https://gitlab.lrz.de/tum-ens/need/database.git
-cp -r database/tools/qwc/ qwc
+cp -r database/tools/qgis_webclient/ qwc
 rm -r database
 
 Change the connection details of the geodatabase (qwc_geodb) in qwc/pg_service.conf:
