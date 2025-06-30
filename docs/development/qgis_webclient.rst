@@ -171,8 +171,7 @@ definition approach and when you add the same service definition file
 to your local machine as on the QWC server, you can upload and add
 projects to QWC without changing data sources.
 
-The service config file is described above under *Useful Files >
-pg_service.conf* and the setup of the file and the layer data sources
+The service config file is described below under *Changed Files > 1. pg_service.conf* and the setup of the file and the layer data sources
 on Windows are described above under *Local Configurations*.
 
 .. |image1| image:: ../img/add_postgres_layer.png
