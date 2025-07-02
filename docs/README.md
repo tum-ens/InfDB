@@ -23,9 +23,6 @@ Resources for developers working on the project, including:
 - API documentation
 - Database schema information
 
-### [examples/](examples/)
-Code examples and tutorials demonstrating how to use the InfDB system, including installation guides and code snippets.
-
 ### [guidelines/](guidelines/)
 Project guidelines and standards, including:
 - Coding guidelines
@@ -51,7 +48,7 @@ Generated documentation output (not tracked in version control).
 
 When contributing to the documentation:
 
-1. Use Markdown for all documentation files except where specific formats are required.
+1. Use Markdown for all internal documentation files except where specific formats are required, e.g. [source](source/) folder for readthedocs.
 2. Include a clear title and description at the top of each document.
 3. Use relative links when referencing other documentation files.
 4. Place images in the `img/` directory and reference them using relative paths.
