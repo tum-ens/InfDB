@@ -4,11 +4,11 @@ include:
 - ./citydb.yml
 - ./timescaledb.yml
 - ./pgadmin.yml
+- ./jupyter.yml
 volumes:
   timescale_data: null
   citydb_data: null
-  citydb_data_v4: null
   pgadmin_data: null
 networks:
-  infdb_network:
+  network:
     driver: bridge

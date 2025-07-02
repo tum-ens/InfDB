@@ -3,8 +3,9 @@ base:
   base_dir: "data/{name}/"
   scope: DE27E
   schema: general
-  network_name: infdb_network
+  network_name: network
   environment: container
+  base_sunset_dir: "{base_dir}/sunset/"
 
 configs:
   - config-loader.yml
