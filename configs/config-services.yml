@@ -6,7 +6,8 @@ services:
     host: citydb
     exposed_port: 5433
     epsg: 25832
-    db_dir: "{base_dir}/3dcdb/"
+    path:
+      db: "{base/path/base}/3dcdb/"
     status: active
 
   timescaledb:
@@ -15,7 +16,7 @@ services:
     db: timescaledb_db
     host: timescaledb
     exposed_port: 5432
-    status: active
+    status: not-active
 
   pgadmin:
     default_email: admin@admin.com
@@ -26,5 +27,4 @@ services:
   jupyter:
     exposed_port: 8888
     enable_lab: yes
-    status: active
-
+    status: not-active
