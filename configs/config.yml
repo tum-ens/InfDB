@@ -1,6 +1,7 @@
 base:
   name: sonthofen
-  base_dir: "data/{name}/"
+  path:
+    base: "infdb-data/"
   scope: DE27E
   schema: general
   network_name: infdb_network
