@@ -145,6 +145,9 @@ cython_debug/
 # Desktop
 *.DS_Store
 
-**/dockers/.env
-**/dockers/docker-compose.yaml
+**/dockers/loader/.env
+**/dockers/sunpot/.env
+**/dockers/loader/docker-compose.yaml
+
+# Local development tools
 **/citydb-tool/*
