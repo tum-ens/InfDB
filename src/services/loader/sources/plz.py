@@ -1,57 +1,62 @@
 import os
 import geopandas as gpd
 import requests
-from src.services.loader import utils
 from src.core import config
 
+from src.services.loader import utils, logger
 
-def import_plz():
-    status = config.get_value(["loader", "plz", "status"])
-    if status != "active":
-        print("plz skips, status not active")
+log = logger.get_logger("infdb-loader")
+
+
+def load():
+    if not utils.if_active("plz"):
+        log.info("bkg skips, status not active")
         return
 
-    engine = utils.get_engine()
+    log.info("Loading BKG data...")
 
-    # Get envelope
-    sql = "SELECT geometry as geom FROM general.envelope"
-    gdf_envelope = gpd.read_postgis(sql, engine, geom_col="geom")
-
-    base_path = config.get_path(["loader", "plz", "plz_dir"])
-    processed_path = config.get_path(["loader", "plz", "plz_processed_dir"])
-
+    base_path = config.get_path(["loader", "sources", "plz", "path", "base"])
     os.makedirs(base_path, exist_ok=True)
+
+    processed_path = config.get_path(["loader", "sources", "plz", "path", "processed"])
     os.makedirs(processed_path, exist_ok=True)
 
     filename = "plz-5stellig.geojson"
     path_file = os.path.join(base_path, filename)
-    print(path_file)
+    # print(path_file)
 
     if os.path.exists(path_file):
-        print(f"File {filename} already exists.")
+        log.info(f"File {filename} already exists.")
     else:
         # Datei herunterladen
-        url = config.get_value(["loader", "plz", "url"])
-        print(f"File {filename} will be downloaded from {url}")
+        url = config.get_value(["loader", "sources", "plz", "url"])
+        log.info(f"File {filename} will be downloaded from {url}")
 
         response = requests.get(url)
         with open(path_file, "wb") as file:
             file.write(response.content)
-        print(f"{path_file} downloaded.")
+        log.info(f"{path_file} downloaded.")
 
-    schema = config.get_value(["loader", "plz", "schema"])
+    schema = config.get_value(["loader", "sources", "plz", "schema"])
 
     # Create schema if it doesn't exist
     sql = f"CREATE SCHEMA IF NOT EXISTS {schema};"
     utils.sql_query(sql)
 
-    for layer in gpd.list_layers(path_file)["name"]:
-        print(f"Importing layer: {layer} into {schema}")
-        gdf = gpd.read_file(path_file, layer=layer, bbox=gdf_envelope)
+    prefix = config.get_value(["loader", "sources", "plz", "prefix"])
+    layers = config.get_value(["loader", "sources", "plz", "layer"])
 
-        epsg = config.get_value(["services", "citydb", "epsg"])
-        gdf.to_crs(epsg=epsg, inplace=True)
+    print(gpd.list_layers(path_file)["name"])
 
-        name = layer
-        gdf.to_postgis(name, engine, if_exists='replace', schema=schema, index=False)
-        gdf.to_file(os.path.join(processed_path, filename), layer=name, driver="GPKG")
+    utils.import_layers(path_file, layers, schema, prefix=prefix)
+
+    # for layer in gpd.list_layers(path_file)["name"]:
+    #     print(f"Importing layer: {layer} into {schema}")
+    #     gdf = gpd.read_file(path_file, layer=layer, bbox=gdf_envelope)
+    #
+    #     epsg = config.get_value(["services", "citydb", "epsg"])
+    #     gdf.to_crs(epsg=epsg, inplace=True)
+    #
+    #     name = layer
+    #     gdf.to_postgis(name, engine, if_exists='replace', schema=schema, index=False)
+    #     gdf.to_file(os.path.join(processed_path, filename), layer=name, driver="GPKG")
