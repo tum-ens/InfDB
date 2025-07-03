@@ -27,4 +27,6 @@ services:
   jupyter:
     exposed_port: 8888
     enable_lab: yes
-    status: not-active
+    status: active
+    volume_dir: "{base/path/base}/{base/name}/notebooks/"
+

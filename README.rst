@@ -134,20 +134,26 @@ Information related docker-compose generations is explained under `configs/Readm
 
    .. code-block:: bash
 
-      python3 -m  dockers.generate-compose 
+      # On Linux/macOS
+      python3 -m dockers.loader.generate-compose
+
+   .. code-block:: bash
+
+      # On Windows (if python3 doesn't work)
+      python -m dockers.loader.generate-compose
 
 #. As a last step we would need to start our services.
 
    .. code-block:: bash
 
-      docker-compose -f ./dockers/docker-compose.yml up
+      docker-compose -f ./dockers/loader/docker-compose.yml up
 
 #. If you had any changes related with loader, you should create the image again if you have an existing image. Then you should do:
 
    .. code-block:: bash
 
-      docker-compose -f ./dockers/docker-compose.yml build
-      docker-compose -f ./dockers/docker-compose.yml up
+      docker-compose -f ./dockers/loader/docker-compose.yml build
+      docker-compose -f ./dockers/loader/docker-compose.yml up
 
 #. Now you can start the application:
 
@@ -155,6 +161,37 @@ Information related docker-compose generations is explained under `configs/Readm
 
     fastapi dev src/main.py
 
+
+Calculating Solar Potantials and Saving Into CityDB v5:
+-------------------------------------------------------
+
+#. In the steps above, we went over how to feed InfDB with different data sources which includes LOD2.
+
+#. To run solar potential calculations, we need to first generate and .env file as we have dependencies on dynamic values from dockers/loader.
+
+   .. code-block:: bash
+
+      # On Linux/macOS
+      python3 -m  dockers.sunpot.generate-env
+
+   .. code-block:: bash
+
+      # On Windows (if python3 doesn't work)
+      python -m  dockers.sunpot.generate-env
+
+#. Assuming CityDB v5 is running on your host machine, now we can start `sunpot` service. It will generate calculations on Citydb v4 and then import those data into CityDB v5. Please run the following command:
+   
+   .. code-block:: bash
+
+      docker-compose -f ./dockers/sunpot/docker-compose.yml up
+
+#. If you had any changes in the codes under `src/services/sunpot/`, please build the image again and run the compose project.
+
+   .. code-block:: bash
+
+      docker-compose -f ./dockers/sunpot/docker-compose.yml up --build
+
+#. Services should be running sequentially once CityDB v4 is ready.
 
 Repository Structure
 ====================
@@ -172,8 +209,10 @@ Repository Structure
   - **main.py**: Application entry point
 - **docs/**: Documentation
   - **architecture/**: System architecture documentation
+  - **contributing/**: Contribution guidelines and code of conduct
   - **development/**: Developer guides and workflows
   - **guidelines/**: Project guidelines and standards
+  - **operations/**: Operational guides and CI/CD documentation
   - **source/**: Source files for documentation
   - **img/**: Images used in documentation
 - **dockers/**: Docker configuration files
@@ -253,34 +292,46 @@ CI/CD Workflow
 The CI/CD workflow is set up using GitLab CI/CD.
 The workflow runs tests, checks code style, and builds the documentation on every push to the repository.
 You can view workflow results directly in the repository's CI/CD section.
+For detailed information about the CI/CD workflow, see the `CI/CD Guide <docs/operations/CI_CD_Guide.md>`_.
 
 Development Resources
-===================
+=====================
 The following resources are available to help developers understand and contribute to the project:
 
+Coding Guidelines
+-----------------
+The `Coding Guidelines <docs/guidelines/coding_guidelines.md>`_ document outlines the coding standards and best practices for the project.
+Start here when trying to understand the project as a developer.
+
 Architecture Documentation
--------------------------
+--------------------------
 The `Architecture Documentation <docs/architecture/index.rst>`_ provides an overview of the system architecture, including the database schema, components, and integration points.
 
 Developer Guides
----------------
+----------------
 - `Development Setup Guide <docs/development/setup.md>`_: Comprehensive instructions for setting up a development environment
 - `Contribution Workflow <docs/development/workflow.md>`_: Step-by-step process for contributing to the project
 - `API Development Guide <docs/development/api_guide.md>`_: Information for developers who want to use or extend the API
 - `Database Schema Documentation <docs/development/database_schema.md>`_: Detailed information about the database schema
 
-Coding Guidelines
-----------------
-The `Coding Guidelines <docs/guidelines/coding_guidelines.md>`_ document outlines the coding standards and best practices for the project.
+Contribution Guidelines
+-----------------------
+- `Contributing Guide <docs/contributing/CONTRIBUTING.md>`_: Guidelines for contributing to the project
+- `Code of Conduct <docs/contributing/CODE_OF_CONDUCT.md>`_: Community standards and expectations
+- `Release Procedure <docs/contributing/RELEASE_PROCEDURE.md>`_: Process for creating new releases
+
+Operations Documentation
+------------------------
+- `CI/CD Guide <docs/operations/CI_CD_Guide.md>`_: Detailed information about the CI/CD workflow
 
 Contribution and Code Quality
 =============================
 Everyone is invited to develop this repository with good intentions.
-Please follow the workflow described in the `CONTRIBUTING.md <CONTRIBUTING.md>`_.
+Please follow the workflow described in the `CONTRIBUTING.md <docs/contributing/CONTRIBUTING.md>`_.
 
 Coding Standards
 ----------------
-This repository follows consistent coding styles. Refer to `CONTRIBUTING.md <CONTRIBUTING.md>`_ and the `Coding Guidelines <docs/guidelines/coding_guidelines.md>`_ for detailed standards.
+This repository follows consistent coding styles. Refer to `CONTRIBUTING.md <docs/contributing/CONTRIBUTING.md>`_ and the `Coding Guidelines <docs/guidelines/coding_guidelines.md>`_ for detailed standards.
 
 Pre-commit Hooks
 ----------------
@@ -309,7 +360,7 @@ License and Citation
     :alt: Documentation
 
 .. |badge_contributing| image:: https://img.shields.io/badge/contributions-welcome-brightgreen
-    :target: CONTRIBUTING.md
+    :target: docs/contributing/CONTRIBUTING.md
     :alt: contributions
 
 .. |badge_contributors| image:: https://img.shields.io/badge/contributors-0-orange
