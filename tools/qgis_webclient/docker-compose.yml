@@ -18,7 +18,7 @@ services:
   qwc-postgis:
     image: sourcepole/qwc-base-db:16 # 16 refers to the Postgres major version
     environment:
-      POSTGRES_PASSWORD: 'need' # TODO: Set your postgres password here!
+      POSTGRES_PASSWORD: '' # TODO: Set your postgres password here!
     volumes:
       - ./volumes/db:/var/lib/postgresql/docker
       # NOTE: Remove this line if you don't want/need the demo data
