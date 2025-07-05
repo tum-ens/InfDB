@@ -23,8 +23,8 @@ Each dataset is stored in its own subfolder (e.g., `zip/`, `unzip/`, `processed/
 
     .. code-block:: bash
 
-        git clone https://gitlab.lrz.de/tum-ens/need/database.git
-        cd database
+        git clone https://gitlab.lrz.de/tum-ens/need/infdb.git
+        cd infdb
 
 #. **Set Up a Virtual Environment**
 

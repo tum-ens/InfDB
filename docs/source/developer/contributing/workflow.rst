@@ -27,8 +27,8 @@ Before you can contribute to the InfDB project, you need to set up your developm
 
    .. code-block:: bash
 
-      git clone https://gitlab.lrz.de/tum-ens/need/database.git
-      cd database
+      git clone https://gitlab.lrz.de/tum-ens/need/infdb.git
+      cd infdb
 
 2. **Set up your development environment** following the instructions in the :doc:`../development/index`.
 
@@ -117,7 +117,7 @@ Follow these guidelines when making changes to the codebase.
 Coding Standards
 ^^^^^^^^^^^^^^^^
 
-- Follow the :doc:`../guidelines/coding_guidelines`
+- Follow the :doc:`../guidelinescoding_guidelines`
 - Use consistent code style and formatting
 - Write clear, descriptive comments and docstrings
 - Follow the domain-specific guidelines for energy system modeling

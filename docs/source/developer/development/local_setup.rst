@@ -5,8 +5,8 @@ Local Development Setup
 
    .. code-block:: bash
 
-      git clone https://gitlab.lrz.de/tum-ens/need/database.git
-      cd database
+      git clone https://gitlab.lrz.de/tum-ens/need/infdb.git
+      cd infdb
 
 #. **Set up a virtual environment**
 
