@@ -1,200 +1,124 @@
+API Development Guide
+=====================
 
-.. figure:: docs/img/logo_TUM.png
-    :width: 200px
-    :target: https://gitlab.lrz.de/tum-ens/super-repo
-    :alt: Repo logo
+This guide provides information for developers who want to use or extend the InfDB API.
 
-==========
-InfDB - Infrastructure and Energy Digital Twin Database
-==========
-
-
-
-**A comprehensive database system for creating digital twins of energy infrastructure with integrated geospatial and time-series capabilities.**
-
-.. list-table::
-   :widths: auto
-
-   * - License
-     - |badge_license|
-   * - Documentation
-     - |badge_documentation|
-   * - Development
-     - |badge_issue_open| |badge_issue_closes| |badge_pr_open| |badge_pr_closes|
-   * - Community
-     - |badge_contributing| |badge_contributors| |badge_repo_counts|
-
-.. contents::
-    :depth: 2
-    :local:
-    :backlinks: top
-
-Purpose
-============
-**InfDB (Infrastructure Database)** is designed to create comprehensive digital twins of energy infrastructure systems, enabling advanced modeling, analysis, and planning of energy networks. This database system integrates geospatial data with time-series information to provide a complete representation of energy systems.
-
-What is InfDB For?
------------------
-InfDB serves as a foundation for:
-
-- **Energy System Modeling**: Create detailed digital representations of electrical grids, heating networks, and gas infrastructure.
-- **Infrastructure Planning**: Support decision-making for future energy infrastructure development and optimization.
-- **Scenario Analysis**: Model and compare different energy system configurations and their impacts.
-- **Time-Series Integration**: Combine static infrastructure data with dynamic measurements like weather conditions and energy consumption.
-- **Geospatial Analysis**: Analyze spatial relationships between energy infrastructure components and their environment.
-
-How It Works
------------
-InfDB is built on a modern technology stack:
-
-- **Database Layer**: PostgreSQL with specialized extensions:
-  - TimescaleDB for efficient time-series data storage and querying
-  - PostGIS for geospatial data handling
-  - 3DCityDB for urban modeling
-
-- **API Layer**: FastAPI-based RESTful interface with two main routes:
-  - /city - For accessing 3D city model data, including buildings and spatial attributes
-  - /weather - For accessing time-series weather data linked to spatial regions
-
-- **Data Model**: Supports comprehensive infrastructure modeling:
-  - Energy network components (transformers, substations, power lines)
-  - Technical parameters for energy assets
-  - Time-series data for various measurements
-  - Geospatial relationships between components
-
-Goal
-----
-The ultimate goal of InfDB is to provide a robust foundation for energy system digital twins that can:
-
-1. Support complex energy planning scenarios and "what-if" analyses
-2. Enable integration of various data sources (weather, market prices, consumption patterns)
-3. Facilitate interoperability with simulation and optimization tools
-4. Provide insights for more efficient, resilient, and sustainable energy infrastructure
-
-By combining geospatial capabilities with time-series data management, InfDB aims to be a comprehensive solution for researchers, utilities, and planners working on the future of energy systems.
-
-
-Getting Started
-===============
-To get started, follow these steps:
-
-Requirements
+API Overview
 ------------
-- Python 3.10 or higher
-- Docker and Docker Compose for containerization
-- Git for version control (download from https://git-scm.com/)
-- PostgreSQL with the following extensions:
-  - TimescaleDB for time-series data
-  - PostGIS for geospatial data
-  - 3DCityDB for urban modeling
 
-Installation for local development
-----------------------------------
-#. Clone the repository to your local machine:
+InfDB provides a RESTful API built with FastAPI that exposes two main routes:
 
-   .. code-block:: bash
+- ``/city`` — For accessing 3D city model data, including buildings and their spatial attributes  
+- ``/weather`` — For accessing time-series weather data linked to spatial regions
 
-      git clone <repository_url>
+The API is:
 
-#. Set up the virtual environment:
+- **RESTful**: Follows REST principles  
+- **JSON-based**: Uses JSON in request/response bodies  
+- **Auto-documented**: OpenAPI docs via FastAPI  
+- **Type-safe**: Enforced with Python type hints and Pydantic
 
-   .. code-block:: bash
+Docs available at:
 
-      python -m venv venv
-      # For Windows
-      source venv\Scripts\activate
+- Swagger UI: http://localhost:8000/docs  
+- ReDoc: http://localhost:8000/redoc  
 
-      # For Linux/MacOS
-      source venv/bin/activate
+Endpoints
+---------
 
+City Raster Endpoints
+^^^^^^^^^^^^^^^^^^^^^
 
-#. Install dependencies:
+- ``POST /city/rasters?resolution={resolution}``  
+  Generate rasters at the given resolution.
 
-   .. code-block:: bash
+- ``GET /city/rasters?resolution={resolution}``  
+  List all rasters of that resolution.
 
-      pip install -r requirements.txt
+- ``GET /city/rasters/building/{building_id}?resolution={resolution}``  
+  Return the raster cell(s) a building belongs to.
 
-#. Our application has dependency on 3dCityDB and Timescale; that's why environment should be set first. 
-Under `configs` folder we have multiple `config` files that keeps service related inputs.
-Information related configuration is explained under `configs/Readme.md`
-   
-   .. code-block:: bash
+Weather Data Endpoints
+^^^^^^^^^^^^^^^^^^^^^^
 
-    # example for timescaledb
-      timescaledb:
-        user: timescale_user
-        password:
-        db: timescaledb_db
-        host: 127.0.0.1 
-        port: 5432
-        status: active
+- ``POST /weather-data/{resolution}``  
+  Insert weather data for a given resolution.  
 
-#. To run our databases and feed them with data, we should first run the code below. This will auto generate the `docker-compose.yaml` depending on our needs. 
-Information related docker-compose generations is explained under `configs/Readme.md`
+  **Request Body:**
 
-   .. code-block:: bash
+  - ``dateRange`` — object with ``startDate``, ``endDate``  
+  - ``sensorNames`` — list of sensor types
 
-      # On Linux/macOS
-      python3 -m dockers.loader.generate-compose
+- ``GET /weather-data/{resolution}``  
+  Query weather data by resolution.  
 
-   .. code-block:: bash
+  **Optional Query Parameters:**
 
-      # On Windows (if python3 doesn't work)
-      python -m dockers.loader.generate-compose
+  - ``buildingId``  
+  - ``startTime``  
+  - ``endTime``  
 
-#. As a last step we would need to start our services.
+Using the API
+-------------
 
-   .. code-block:: bash
+**With curl**
 
-      docker-compose -f ./dockers/loader/docker-compose.yml up
+.. code-block:: bash
 
-#. If you had any changes related with loader, you should create the image again if you have an existing image. Then you should do:
+   curl -X GET "http://localhost:8000/city/rasters?resolution=100"
 
-   .. code-block:: bash
+   curl -X POST "http://localhost:8000/weather/weather-data/100" \
+     -H "Content-Type: application/json" \
+     -d '{"dateRange": {"startDate": "2023-01-01", "endDate": "2023-01-31"}, "sensorNames": ["temperature", "humidity"]}'
 
-      docker-compose -f ./dockers/loader/docker-compose.yml build
-      docker-compose -f ./dockers/loader/docker-compose.yml up
+**With Python requests**
 
-#. Now you can start the application:
+.. code-block:: python
 
-   .. code-block:: bash
+   import requests
 
-    fastapi dev src/main.py
+   response = requests.get("http://localhost:8000/city/rasters", params={"resolution": 100})
+   rasters = response.json()
 
+   weather_data = {
+       "dateRange": {"startDate": "2023-01-01", "endDate": "2023-01-31"},
+       "sensorNames": ["temperature", "humidity"]
+   }
+   response = requests.post("http://localhost:8000/weather/weather-data/100", json=weather_data)
+   result = response.json()
 
-Calculating Solar Potantials and Saving Into CityDB v5:
--------------------------------------------------------
+Extending the API
+-----------------
 
-#. In the steps above, we went over how to feed InfDB with different data sources which includes LOD2.
+1. **Add router in ``src/api``**:
 
-#. To run solar potential calculations, we need to first generate and .env file as we have dependencies on dynamic values from dockers/loader.
+.. code-block:: python
 
-   .. code-block:: bash
+   @router.post("/")
+   async def create_item(item: YourSchema):
+       return YourService().create_item(item)
 
-      # On Linux/macOS
-      python3 -m  dockers.sunpot.generate-env
+2. **Register router in ``src/main.py``**:
 
-   .. code-block:: bash
+.. code-block:: python
 
-      # On Windows (if python3 doesn't work)
-      python -m  dockers.sunpot.generate-env
+   app.include_router(your_router)
 
-#. Assuming CityDB v5 is running on your host machine, now we can start `sunpot` service. It will generate calculations on Citydb v4 and then import those data into CityDB v5. Please run the following command:
-   
-   .. code-block:: bash
+3. **Create Pydantic schema in ``src/schemas``**
 
-      docker-compose -f ./dockers/sunpot/docker-compose.yml up
+.. code-block:: python
 
-#. If you had any changes in the codes under `src/services/sunpot/`, please build the image again and run the compose project.
+   class YourSchema(BaseModel):
+       name: str
+       value: float
 
-   .. code-block:: bash
+4. **Service layer in ``src/services``**:
 
-      docker-compose -f ./dockers/sunpot/docker-compose.yml up --build
+.. code-block:: python
 
-#. Services should be running sequentially once CityDB v4 is ready.
+   def create_item(self, item): return self.repo.create_item(item)
 
-Repository Structure
-====================
+5. **Repository layer in ``src/db/repositories``**:
 
 - **src/**: Main application package
   - **api/**: API endpoints (cityRouter.py, weatherRouter.py)
@@ -222,69 +146,79 @@ Repository Structure
   - **e2e/**: End-to-end tests for the application
   - **conftest.py**: Pytest configuration and fixtures
 
+   def create_item(self, item): session.add(...); session.commit()
 
-Usage Guidelines
-================
+6. **Model in ``src/db/models``**:
 
-Basic API Usage
+.. code-block:: python
+
+   class YourModel(SQLModel, table=True): id: Optional[int] = Field(...)
+
+API Design Best Practices
+-------------------------
+
+- Use correct HTTP methods  
+- Prefer query params for filters  
+- Add type hints and docstrings  
+- Paginate and filter where needed  
+- Keep endpoints meaningful and consistent
+
+Error Handling
 --------------
 
-InfDB provides a RESTful API for interacting with energy infrastructure data:
+- **200 OK** – Success  
+- **201 Created** – Resource created  
+- **400 Bad Request** – Invalid input  
+- **404 Not Found** – Resource missing  
+- **422 Unprocessable Entity** – Validation error  
+- **500 Internal Server Error** – Unexpected failure
 
-#. **City Data API**: Access 3D city model data and raster information
+**Custom Exceptions Example:**
 
-   .. code-block:: bash
+.. code-block:: python
 
-      # Generate rasters at a specific resolution
-      curl -X POST "http://localhost:8000/city/rasters?resolution=100"
+   raise HTTPException(status_code=404, detail="Item not found")
 
-      # Get all raster centers at a specific resolution
-      curl -X GET "http://localhost:8000/city/rasters?resolution=100"
+Authentication
+--------------
 
-      # Get the raster center for a specific building
-      curl -X GET "http://localhost:8000/city/rasters/building/123?resolution=100"
+Not yet implemented. Future support may include:
 
-#. **Weather Data API**: Access time-series weather data linked to spatial regions
+- API keys or OAuth2  
+- Scoped tokens and roles  
 
-   .. code-block:: bash
+Rate Limiting
+-------------
 
-      # Insert historical weather data
-      curl -X POST "http://localhost:8000/weather/weather-data/100" \
-         -H "Content-Type: application/json" \
-         -d '{"dateRange": {"startDate": "2023-01-01", "endDate": "2023-01-31"}, "sensorNames": ["temperature", "humidity"]}'
+Planned but not implemented.
 
-      # Get weather data for a specific building and time range
-      curl -X GET "http://localhost:8000/weather/weather-data/100?buildingId=123&startTime=2023-01-01T00:00:00&endTime=2023-01-31T23:59:59"
+Best Practices
+--------------
 
-Development Workflow
--------------------
-#. **Set up the environment** following the installation instructions.
-#. **Open an issue** to discuss new features, bugs, or changes.
-#. **Create a new branch** for each feature or bug fix based on an issue.
-#. **Implement the changes** following the coding guidelines.
-#. **Write tests** for new functionality or bug fixes.
-#. **Run tests** to ensure the code works as expected.
-#. **Create a merge request** to integrate your changes.
-#. **Address review comments** and update your code as needed.
-#. **Merge the changes** after approval.
+Performance
+^^^^^^^^^^^
 
-API Documentation
-===============
-FastAPI provides built-in OpenAPI documentation for exploring and testing the API:
+- Use ``async`` for endpoints  
+- Index time and raster ID columns  
+- Paginate long results  
+- Use Redis or in-memory cache if needed
 
-- **Swagger UI**: Access interactive API documentation at http://127.0.0.1:8000/docs
-- **ReDoc**: View alternative API documentation at http://127.0.0.1:8000/redoc
+Documentation
+^^^^^^^^^^^^^
 
-The documentation includes:
+- Use clear names and descriptions  
+- Provide OpenAPI examples  
+- Keep ``/docs`` and ``/redoc`` clean
 
-- Detailed endpoint descriptions
-- Request and response schemas
-- Authentication requirements
-- Example requests
-- Try-it-out functionality for testing endpoints directly
+Testing
+^^^^^^^
 
-You can also download the OpenAPI specification in JSON format at http://127.0.0.1:8000/openapi.json
+- Use ``TestClient`` from FastAPI  
+- Mock DB access where needed  
+- Cover edge cases and invalid input
 
+Security
+^^^^^^^^
 
 CI/CD Workflow
 ==============
