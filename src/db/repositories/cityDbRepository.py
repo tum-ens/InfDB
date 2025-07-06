@@ -22,10 +22,8 @@ class CityDBRepository:
     # Important information regarding our dataset:
     # currently we keep citydb data in 4326 SRID format. it returns us lat and lon in meters not in degrees.
     # to return it to degrees, we've used ST_Transform(ST_SetSRID(g.geom, 25832), 4326) which is POSTGIS method.
-    # This can be updated in the future.
     def getRasterCenters(self, resolution: int):
         try:
-            # will update the lat lon part soon. now just for testing
             sqlSelect = text("""
                 SELECT g.id AS rasterId, ST_X(ST_Centroid(ST_Transform(ST_SetSRID(g.geom, 25832), 4326))) AS longitude, ST_Y(ST_Centroid(ST_Transform(ST_SetSRID(g.geom, 25832), 4326))) AS latitude
                 FROM general.raster g
@@ -80,23 +78,27 @@ class CityDBRepository:
         return session.execute(sql, {"resolution": resolution, "idPrefix": idPrefix, "idSuffixLength": idSuffixLength}).mappings().all()
 
     def _generateBuilding2RasterMappings(self, session: Session, resolution: int):
-        ## v 5 does not have cityobject table, we have to update this script.
         sql = text("""
-                    WITH building_locations AS (
-                        SELECT b.id AS building_id,
-                        ST_SetSRID(ST_Centroid(c.geometry), 4326) AS geom
-                        FROM citydb.building b
-                        JOIN citydb.geometry_data c ON b.id = c.id
-                    )
-                    INSERT INTO general.building_2_raster (building_id, raster_id)
-                    SELECT p.building_id,
+            WITH building_locations AS (
+                SELECT DISTINCT b.feature_id AS building_id,
+                    ST_Transform(ST_Centroid((ST_Dump(c.geometry)).geom), 3035) AS geom
+                FROM general.buildings b
+                JOIN citydb.geometry_data c ON b.feature_id = c.id
+            ),
+            building_raster_match AS (
+                SELECT DISTINCT p.building_id,
                     (
-                       SELECT g.id
-                       FROM citydb.raster g
-                       WHERE ST_Within(p.geom, g.geom) AND resolution = :resolution
-                       LIMIT 1
+                        SELECT g.id
+                        FROM general.raster g
+                        WHERE ST_Within(p.geom, g.geom)
+                            AND resolution = :resolution
+                        LIMIT 1
                     ) AS raster_id
-                    FROM building_locations p
-                    RETURNING building_id, raster_id;
+                FROM building_locations p
+            )
+            INSERT INTO general.building_2_raster (building_id, raster_id)
+            SELECT * FROM building_raster_match
+            WHERE raster_id IS NOT NULL
+            RETURNING building_id, raster_id;
         """)
         return session.execute(sql, {"resolution": resolution}).mappings().all()
