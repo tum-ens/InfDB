@@ -28,7 +28,7 @@ class CityDbRouter:
         if not result:
             raise HTTPException(status_code=404, detail="No data found")
         return result
-    
+
     @router.get("/rasters/building/{building_id}", tags=["Citydb"])
     async def getRasterCenter(self, building_id: int, resolution: int = Query(...)):
         result = self.cityDbService.getRasterCenter(building_id, resolution)
