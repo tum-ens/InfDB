@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: infdb-app
+    ports:
+      - "8000:8000"
+    networks:
+      - infdb_network
+networks:
+  infdb_network:
+    external: true

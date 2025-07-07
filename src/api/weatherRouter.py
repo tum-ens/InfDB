@@ -36,7 +36,7 @@ class WeatherRouter:
     async def getBuildingData(
         self,
         resolution: int,
-        buildingId: Optional[str] = Query(None),
+        buildingId: str = Query(...),
         startTime: Optional[datetime] = Query(None),
         endTime: Optional[datetime] = Query(None)
     ):
