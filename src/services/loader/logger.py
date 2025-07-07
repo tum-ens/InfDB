@@ -1,6 +1,7 @@
 import logging
 import sys
 
+
 def init_logger(name, filename):
     logger = logging.getLogger(name)
     # logger.setLevel(logging.DEBUG)
@@ -16,6 +17,7 @@ def init_logger(name, filename):
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setFormatter(formatter)
     logger.addHandler(console_handler)
+
 
 def get_logger(name):
     logger = logging.getLogger(name)

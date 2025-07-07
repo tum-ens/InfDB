@@ -1,5 +1,4 @@
 import os
-import src.core.utils as utils
 import re
 import yaml
 from copy import deepcopy
@@ -76,6 +75,7 @@ def flatten_dict(d, parent_key=''):
             items[new_key] = v
     return items
 
+
 def replace_placeholders(data, flat_map):
     """Recursively replace placeholders like {a/b} using flat_map."""
     if isinstance(data, dict):
@@ -97,12 +97,12 @@ def replace_placeholders(data, flat_map):
     else:
         return data
 
+
 def resolve_yaml_placeholders(yaml_data: dict) -> dict:
     """Resolve {a/b} placeholders in a YAML dictionary."""
     flat_map = flatten_dict(yaml_data)
     resolved = replace_placeholders(deepcopy(yaml_data), flat_map)
     return resolved
-
 
 
 def get_config():
