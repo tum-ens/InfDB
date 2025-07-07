@@ -19,6 +19,7 @@ def if_active(service):
     else:
         return False
 
+
 def any_element_in_string(target_string, elements):
     return any(element in target_string for element in elements)
 
@@ -70,6 +71,7 @@ def download_files(urls, base_path):
         files.append(path_file)
     return files
 
+
 def unzip(zip_files, unzip_dir):
     os.makedirs(unzip_dir, exist_ok=True)
 
@@ -112,13 +114,10 @@ def sql_query(query):
         log.info(f"ProgrammingError: {error}")
 
 
-#def get_engine():
-#    return src.core.utils.get_db_engine()
-
-
 def do_cmd(cmd):
     os.system(cmd)
     print(f"{cmd} executed successfully.")
+
 
 def import_layers(input_file, layers, schema, prefix="", layer_names=None):
 
@@ -155,6 +154,7 @@ def get_envelop():
     gdf_scope = gdf[gdf["NUTS_CODE"].str.startswith(scope)]
 
     return gdf_scope
+
 
 def get_db_config(service_name: str):
     parameters = config.get_value(["loader", "hosts", service_name])
