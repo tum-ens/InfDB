@@ -9,11 +9,11 @@ if __name__ == "__main__":
     log.info("Starting loader...")
 
     # Load NUTS Regions beforehand as basis
-    #bkg.load()
-    #basemap.load()
-    #plz.load()
-    #census2022.load()
-    #lod2.load()
+    # bkg.load()
+    # basemap.load()
+    # plz.load()
+    # census2022.load()
+    # lod2.load()
 
     # Load remaining data in parallel
     mp.freeze_support()
