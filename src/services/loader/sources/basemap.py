@@ -6,6 +6,7 @@ from src.services.loader import logger
 
 log = logger.get_logger("infdb-loader")
 
+
 def load():
     logger.init_logger("infdb-loader", "infdb-loader.log")
     log = logger.get_logger("infdb-loader")

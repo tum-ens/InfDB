@@ -4,6 +4,7 @@ from src.core import config
 
 log = logger.get_logger("infdb-loader")
 
+
 def load():
     logger.init_logger("infdb-loader", "infdb-loader.log")
     log = logger.get_logger("infdb-loader")
@@ -123,4 +124,3 @@ def create_geogitter(resolution):
     """
     utils.sql_query(sql)
 
-    # ToDo: Remove temporary files

@@ -1,5 +1,3 @@
-from sys import prefix
-
 import requests
 from bs4 import BeautifulSoup
 import os
@@ -9,6 +7,7 @@ from src.services.loader import utils, logger
 from src.core import config
 
 log = logger.get_logger("infdb-loader")
+
 
 def get_zensus_links():
     url = config.get_value(["loader", "sources", "zensus_2022", "url"])
@@ -32,6 +31,7 @@ def get_zensus_links():
         log.info(zip_link)
 
     return zip_links
+
 
 def process_census():
     input_path = config.get_path(["loader", "sources", "zensus_2022", "path", "unzip"])
@@ -99,13 +99,14 @@ def process_census():
                     file = file.replace(key, value)
                 file = prefix + "_" + resolution + "_" + file
                 gdf_clipped.to_postgis(file, engine, if_exists='replace', schema=schema, index=False)
-                #gdf_clipped.to_file(os.path.join(output_path, f"zenus-2022{resolution}.gpkg"), layer=file, driver="GPKG")
+                # gdf_clipped.to_file(os.path.join(output_path, f"zenus-2022{resolution}.gpkg"), layer=file, driver="GPKG")
 
             except Exception as err:
                 log.info(Exception, err)
                 log.info(file)
 
     log.info("Zensus2022 imported successfully.")
+
 
 def load():
     logger.init_logger("infdb-loader", "infdb-loader.log")
@@ -117,7 +118,7 @@ def load():
 
     zip_links = get_zensus_links()
 
-    #download_zensus(zip_links)
+    # download_zensus(zip_links)
     zip_path = config.get_path(["loader", "sources", "zensus_2022", "path", "zip"])
     utils.download_files(zip_links, zip_path)
 
