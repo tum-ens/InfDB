@@ -12,8 +12,8 @@ services:
       - pgadmin_data:/var/lib/pgadmin
     networks:
       - ${NETWORK_NAME}
-    depends_on:
-      citydb:
-        condition: service_healthy
-      timescaledb:
-        condition: service_healthy
+#    depends_on:
+#      citydb:
+#        condition: service_healthy
+#      timescaledb:
+#        condition: service_healthy

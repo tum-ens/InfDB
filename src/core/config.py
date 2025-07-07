@@ -17,9 +17,12 @@ def __load_config(path: str):
 
 def __load_configs():
     base_path = os.path.join(get_root_path(), "configs", "config.yml")
+    print(base_path)
+    print(os.listdir(os.path.dirname(base_path)))
 
     # first get the base config
     configs = __load_config(base_path)
+    print(configs)
 
     # Load sub configs defined under config.yaml configs field
     for config_path in configs.get("configs", []):
@@ -107,6 +110,3 @@ def get_config():
     # otherwise we would need to do I/O operations multiple times
     config = __load_configs()
     return config
-
-config = get_config()
-print(config)

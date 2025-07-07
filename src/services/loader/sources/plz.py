@@ -5,21 +5,22 @@ from src.core import config
 
 from src.services.loader import utils, logger
 
-log = logger.get_logger("infdb-loader")
-
 
 def load():
+    logger.init_logger("infdb-loader", "infdb-loader.log")
+    log = logger.get_logger("infdb-loader")
+
     if not utils.if_active("plz"):
-        log.info("bkg skips, status not active")
+        log.info("PLZ skips, status not active")
         return
 
-    log.info("Loading BKG data...")
+    log.info("Loading PLZ data...")
 
     base_path = config.get_path(["loader", "sources", "plz", "path", "base"])
     os.makedirs(base_path, exist_ok=True)
 
-    processed_path = config.get_path(["loader", "sources", "plz", "path", "processed"])
-    os.makedirs(processed_path, exist_ok=True)
+    # processed_path = config.get_path(["loader", "sources", "plz", "path", "processed"])
+    # os.makedirs(processed_path, exist_ok=True)
 
     filename = "plz-5stellig.geojson"
     path_file = os.path.join(base_path, filename)

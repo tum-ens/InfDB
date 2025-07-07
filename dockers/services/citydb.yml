@@ -1,7 +1,7 @@
 services:
-  citydb-tool:
-    image: 3dcitydb/citydb-tool
-    container_name: citydb-tool
+  citydb:
+    image: 3dcitydb/3dcitydb-pg:5.0.0
+    container_name: citydb
     environment:
       POSTGRES_DB: ${CITYDB_DB}
       POSTGRES_USER: ${CITYDB_USER}
@@ -10,7 +10,7 @@ services:
     ports:
       - ${CITYDB_EXPOSED_PORT}:5432
     volumes:
-      - citydb_data:/var/lib/postgresql/data
+      - ../../${CITYDB_PATH}:/var/lib/postgresql/data
     networks:
       - ${NETWORK_NAME}
     healthcheck:
