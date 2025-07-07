@@ -1,13 +1,9 @@
 import os
-from sys import prefix
-
 import psycopg2
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 import sqlalchemy
-
-import src.core.utils
 from src.core import config
 from zipfile import ZipFile
 from src.services.loader import logger
@@ -73,13 +69,6 @@ def download_files(urls, base_path):
             log.info(f"{path_file} downloaded.")
         files.append(path_file)
     return files
-
-# def unzip(zip_files, unzip_dir):
-#     os.makedirs(unzip_dir, exist_ok=True)
-#     for zip_file in zip_files:
-#         log.info(f"Unzipping {zip_file}")
-#         with ZipFile(zip_file, 'r') as zip_ref:
-#             zip_ref.extractall(unzip_dir)
 
 def unzip(zip_files, unzip_dir):
     os.makedirs(unzip_dir, exist_ok=True)
@@ -160,7 +149,8 @@ def get_envelop():
     # gdf_envelope = gpd.read_postgis(sql, engine)
 
     scope = config.get_value(["base", "scope"])
-    gdf = gpd.read_file(os.path.join(config.get_root_path(), "infdb-data/opendata/bkg/unzip/nuts250_12-31.utm32s.gpkg/nuts250_1231/DE_NUTS250.gpkg"))
+    nuts_path = config.get_value(["loader", "sources", "bkg", "path", "unzip"])
+    gdf = gpd.read_file(os.path.join(config.get_root_path(), os.path.join(nuts_path, "nuts250_12-31.utm32s.gpkg/nuts250_1231/DE_NUTS250.gpkg")))
 
     gdf_scope = gdf[gdf["NUTS_CODE"].str.startswith(scope)]
 

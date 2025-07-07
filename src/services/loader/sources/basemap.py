@@ -7,6 +7,9 @@ from src.services.loader import logger
 log = logger.get_logger("infdb-loader")
 
 def load():
+    logger.init_logger("infdb-loader", "infdb-loader.log")
+    log = logger.get_logger("infdb-loader")
+
     if not utils.if_active("basemap"):
         log.info("basemap skips, status not active")
         return
@@ -17,8 +20,8 @@ def load():
     base_path = config.get_path(["loader", "sources", "basemap", "path", "base"])
     os.makedirs(base_path, exist_ok=True)
 
-    processed_path = config.get_path(["loader", "sources", "basemap", "path", "processed"])
-    os.makedirs(processed_path, exist_ok=True)
+    # processed_path = config.get_path(["loader", "sources", "basemap", "path", "processed"])
+    # os.makedirs(processed_path, exist_ok=True)
 
     site_url = config.get_value(["loader", "sources", "basemap", "url"])
     ending = config.get_value(["loader", "sources", "basemap", "ending"])

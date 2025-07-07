@@ -5,6 +5,9 @@ import os
 log = logger.get_logger("infdb-loader")
 
 def load():
+    logger.init_logger("infdb-loader", "infdb-loader.log")
+    log = logger.get_logger("infdb-loader")
+
     if not utils.if_active("zensus_2022"):
         log.info("zensus_2022 skips, status not active")
         return
@@ -25,8 +28,8 @@ def load():
     host, port, user, password, db = utils.get_db_config("citydb")
     # epsg = config.get_value(["services", "citydb", "epsg"])
 
-    cmd = f"citydb import citygml -H {host} -P {port} -d {db} -u {user} -p {password} {gml_path}/*.gml"
-    utils.do_cmd(cmd)
+    # cmd = f"citydb import citygml -H {host} -P {port} -d {db} -u {user} -p {password} {gml_path}/*.gml"
+    # utils.do_cmd(cmd)
 
     # ## Extract general information like envelope
     # schema = config.get_value(["base", "schema"])
