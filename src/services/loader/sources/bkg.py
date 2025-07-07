@@ -123,4 +123,3 @@ def create_geogitter(resolution):
         FROM id_named;
     """
     utils.sql_query(sql)
-
