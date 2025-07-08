@@ -2,46 +2,46 @@ import os
 import geopandas as gpd
 from src.services.loader import utils
 from src.core import config
+from src.services.loader import logger
+
+log = logger.get_logger("infdb-loader")
 
 
-def import_basemap():
-    status = config.get_value(["loader", "basemap", "status"])
-    if status != "active":
-        print("basemap skips, status not active")
+def load():
+    logger.init_logger("infdb-loader", "infdb-loader.log")
+    log = logger.get_logger("infdb-loader")
+
+    if not utils.if_active("basemap"):
+        log.info("basemap skips, status not active")
         return
 
-    engine = utils.get_engine()
+    log.info("Loading Basemap data...")
 
-    # Get envelope
-    sql = "SELECT geometry as geom FROM general.envelope"
-    gdf_envelope = gpd.read_postgis(sql, engine)
-
-    base_path = config.get_path(["loader", "basemap", "basemap_dir"])
-    processed_path = config.get_path(["loader", "basemap", "basemap_processed_dir"])
+    # Create folders if they do not exist
+    base_path = config.get_path(["loader", "sources", "basemap", "path", "base"])
     os.makedirs(base_path, exist_ok=True)
-    os.makedirs(processed_path, exist_ok=True)
 
-    site_url = config.get_value(["loader", "basemap", "url"])
-    ending = config.get_value(["loader", "basemap", "ending"])
-    filter = config.get_value(["loader", "basemap", "filter"])
+    # processed_path = config.get_path(["loader", "sources", "basemap", "path", "processed"])
+    # os.makedirs(processed_path, exist_ok=True)
+
+    site_url = config.get_value(["loader", "sources", "basemap", "url"])
+    ending = config.get_value(["loader", "sources", "basemap", "ending"])
+    filter = config.get_value(["loader", "sources", "basemap", "filter"])
     urls = utils.get_links(site_url, ending, filter)
 
     download_files = utils.download_files(urls, base_path)
 
-    schema = config.get_value(["loader", "basemap", "schema"])
     # Create schema if it doesn't exist
+    schema = config.get_value(["loader", "sources", "basemap", "schema"])
     sql = f"CREATE SCHEMA IF NOT EXISTS {schema};"
     utils.sql_query(sql)
 
+    prefix = config.get_value(["loader", "sources", "basemap", "prefix"])
+
     for file in download_files:
-
-        for layer in gpd.list_layers(file)["name"]:
-            print(f"Importing layer: {layer} into {schema}")
-            gdf = gpd.read_file(file, layer=layer, bbox=gdf_envelope)
-
-            epsg = config.get_value(["services", "citydb", "epsg"])
-            gdf.to_crs(epsg=epsg, inplace=True)
-
-            name = layer.replace("_bdlm", "")
-            gdf.to_postgis(name, engine, if_exists='append', schema=schema, index=False)
-            gdf.to_file(os.path.join(processed_path, os.path.basename(file)), layer=name, driver="GPKG")
+        log.info(f"Loading {file}...")
+        list = gpd.list_layers(file)["name"]
+        print(list)
+        layer_names = config.get_value(["loader", "sources", "basemap", "layer"])
+        layers = [layer + "_bdlm" for layer in layer_names]
+        utils.import_layers(file, layers, schema, prefix=prefix, layer_names=layer_names)

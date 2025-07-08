@@ -1,7 +1,7 @@
+import os
 import re
 import yaml
-import os
-import sqlalchemy
+from copy import deepcopy
 
 
 def __load_config(path: str):
@@ -9,45 +9,43 @@ def __load_config(path: str):
 
     if os.path.exists(path):
         with open(path, "r") as file:
-            return yaml.safe_load(file) or {}
+            return yaml.safe_load(file)
 
     return config
 
 
 def __load_configs():
-    base_path = os.path.join("configs", "config.yml")
+    base_path = os.path.join(get_root_path(), "configs", "config.yml")
 
     # first get the base config
     configs = __load_config(base_path)
+    print(configs)
 
     # Load sub configs defined under config.yaml configs field
     for config_path in configs.get("configs", []):
-        full_path = os.path.join("configs", config_path)
+        full_path = os.path.join(get_root_path(), "configs", config_path)
         configs.update(__load_config(full_path))
 
-    return configs
+    # Resolve placeholders in the config
+    resolved_configs = resolve_yaml_placeholders(configs)
+
+    return resolved_configs
 
 
 def get_value(keys):
     if not keys:
         raise ValueError("keys must be a non-empty list")
 
-    element = CONFIG
+    config = get_config()
+
+    element = config
     for key in keys:
         if key not in element:
             raise KeyError(f"Key '{key}' not found in configuration.")
 
         element = element.get(key, {})
 
-    # Check if element is list
-    if isinstance(element, str):
-        value = replace_placeholders(element, CONFIG)
-    elif isinstance(element, list):
-        value = [replace_placeholders(value, CONFIG) for value in element]
-    else:
-        value = element
-
-    return value
+    return element
 
 
 def get_path(keys):
@@ -64,71 +62,49 @@ def get_root_path():
     return root_path
 
 
-# Function to flatten json configuration to single level dict
-def flatten_config(config):
-    flat_dict = {}
-
-    def flatten_recursive(data):
-        for k, v in data.items():
-            key = k
-            if isinstance(v, dict):
-                flatten_recursive(v)
-            else:
-                flat_dict[key] = v
-        return flat_dict
-    return flatten_recursive(config)
+def flatten_dict(d, parent_key=''):
+    """Flatten nested dictionary with keys joined by /."""
+    items = {}
+    for k, v in d.items():
+        new_key = f"{parent_key}/{k}" if parent_key else k
+        if isinstance(v, dict):
+            items.update(flatten_dict(v, new_key))
+        else:
+            items[new_key] = v
+    return items
 
 
-def replace_placeholders(path, config):
-    """
-    Replaces placeholders in a given path string with values from a configuration dictionary.
-    """
-    # Convert nested dictionary into a flat dictionary for easy lookup
-    variables = flatten_config(config)
-
-    def replacer(match):
-        """
-        Callback function for re.sub to replace placeholders with corresponding values.
-
-        Raises:
-            KeyError: If the placeholder is missing from the config.
-        """
-        key = match.group(1)  # Extract the placeholder name
-        if key not in variables:
-            raise KeyError(f"Missing placeholder: {key}")
-        return variables[key]
-
-    # Replace placeholders iteratively until none remain
-    while re.search(r"\{(\w+)\}", path):
-        path = re.sub(r"\{(\w+)\}", replacer, path)
-
-    # Normalize the final path to remove redundant separators and up-level references
-    return path
+def replace_placeholders(data, flat_map):
+    """Recursively replace placeholders like {a/b} using flat_map."""
+    if isinstance(data, dict):
+        return {k: replace_placeholders(v, flat_map) for k, v in data.items()}
+    elif isinstance(data, list):
+        return [replace_placeholders(item, flat_map) for item in data]
+    elif isinstance(data, str):
+        pattern = re.compile(r'{([^{}]+)}')
+        while True:
+            match = pattern.search(data)
+            if not match:
+                break
+            key = match.group(1)
+            replacement = flat_map.get(key)
+            if replacement is None:
+                break  # unresolved
+            data = data.replace(f"{{{key}}}", str(replacement))
+        return data
+    else:
+        return data
 
 
-def get_db_config(service_name: str):
-    if service_name not in ["citydb", "timescaledb"]:
-        raise ValueError(f"Unsupported service: {service_name}")
-
-    host = get_value(["services", service_name, "host"])
-    port = 5432
-    user = get_value(["services", service_name, "user"])
-    password = get_value(["services", service_name, "password"])
-    db = get_value(["services", service_name, "db"])
-
-    return host, port, user, password, db
+def resolve_yaml_placeholders(yaml_data: dict) -> dict:
+    """Resolve {a/b} placeholders in a YAML dictionary."""
+    flat_map = flatten_dict(yaml_data)
+    resolved = replace_placeholders(deepcopy(yaml_data), flat_map)
+    return resolved
 
 
-def get_db_engine(service_name: str):
-    host, port, user, password, db = get_db_config(service_name)
-    db_url = f"postgresql://{user}:{password}@{host}:{port}/{db}"
-    return sqlalchemy.create_engine(db_url)
-
-
-# We can load config once and then use,
-# otherwise we would need to do I/O operations multiple times
-CONFIG = __load_configs()
-
-# Create engines
-citydb_engine = get_db_engine("citydb")
-timescale_engine = get_db_engine("timescaledb")
+def get_config():
+    # We can load config once and then use,
+    # otherwise we would need to do I/O operations multiple times
+    config = __load_configs()
+    return config

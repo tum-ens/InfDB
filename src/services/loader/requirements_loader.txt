@@ -1,4 +1,6 @@
+#gdal-dev
 geopandas
+pandas
 psycopg2-binary
 sqlalchemy
 requests
