@@ -1,120 +1,125 @@
 import os
-import requests
-from zipfile import ZipFile
-import geopandas as gpd
-from src.services.loader import utils
+from src.services.loader import utils, logger
 from src.core import config
 
+log = logger.get_logger("infdb-loader")
 
-def import_bkg():
-    status = config.get_value(["loader", "bkg", "status"])
-    if status != "active":
-        print("bkg skips, status not active")
+
+def load():
+    logger.init_logger("infdb-loader", "infdb-loader.log")
+    log = logger.get_logger("infdb-loader")
+
+    if not utils.if_active("bkg"):
+        log.info("bkg skips, status not active")
         return
 
-    # Get locations
-    zip_path = config.get_path(["loader", "bkg", "bkg_zip_dir"])
-    unzip_path = config.get_path(["loader", "bkg", "bkg_unzip_dir"])
-    processed_path = config.get_path(["loader", "bkg", "bkg_processed_dir"])
+    log.info("Loading BKG data...")
 
+    ## Check if the required directories exist, if not create them
+    # Base path for zip files
+    zip_path = config.get_path(["loader", "sources", "bkg", "path", "zip"])
     os.makedirs(zip_path, exist_ok=True)
-    os.makedirs(unzip_path, exist_ok=True)
-    os.makedirs(processed_path, exist_ok=True)
 
-    # Create schema if it doesn't exist
-    schema = config.get_value(["loader", "bkg", "schema"])
+    # Base path for unzipped files
+    unzip_path = config.get_path(["loader", "sources", "bkg", "path", "unzip"])
+    os.makedirs(unzip_path, exist_ok=True)
+
+    # # Base path for processed files
+    # processed_path = config.get_path(["loader", "sources", "bkg", "path", "processed"])
+    # os.makedirs(processed_path, exist_ok=True)
+
+    # Create database connection
+    ## Create schema in database
+    schema = config.get_value(["loader", "sources", "bkg", "schema"])
     sql = f"CREATE SCHEMA IF NOT EXISTS {schema};"
     utils.sql_query(sql)
 
-    def download_and_unzip(url, zip_path, unzip_dir):
-        if not os.path.exists(zip_path):
-            print(f"Downloading {zip_path}")
-            response = requests.get(url)
-            with open(zip_path, "wb") as file:
-                file.write(response.content)
-        else:
-            print(f"{zip_path} already exists.")
-
-        with ZipFile(zip_path, 'r') as zip_ref:
-            zip_ref.extractall(unzip_dir)
-
-    def import_layers(gpkg_file, layers):
-        # Get envelope
-        engine = utils.get_engine()
-        sql = "SELECT geometry as geom FROM general.envelope"
-        gdf_envelope = gpd.read_postgis(sql, engine)
-
-        processed_file = os.path.join(processed_path, os.path.basename(gpkg_file))
-
-        input_file = gpkg_file
-        output_file = processed_file
-        # cmd = f"ogr2ogr -f \"GPKG\" {output_file} {input_file} -spat {minX} {minY} {maxX} {maxY}"
-        # utils.do_cmd(cmd)
-
-        for layer in layers:
-            print(f"Importing layer: {layer} into {schema}")
-            gdf = gpd.read_file(input_file, layer=layer, bbox=gdf_envelope)
-
-            epsg = config.get_value(["services", "citydb", "epsg"])
-            gdf.to_crs(epsg=epsg, inplace=True)
-
-            gdf.to_file(output_file, layer=layer, driver="GPKG")
-            gdf.to_postgis(layer, engine, if_exists='replace', schema=schema, index=False)
-
-            # subprocess.run([
-            #     "ogr2ogr", "-f", "PostgreSQL", pg_conn,
-            #     "-t_srs", f"epsg:{config.epsg}", "-overwrite", "-clipsrclayer", layer,
-            #     processed_file, layer
-            # ])
-
-    # Verwaltungsgebiete
-    print("Downloading and unzipping Verwaltungsgebiete")
-    vg_zip = os.path.join(zip_path, "vg5000.utm32s.gpkg.ebenen.zip")
-    download_and_unzip("https://daten.gdz.bkg.bund.de/produkte/vg/vg5000_1231/aktuell/vg5000_12-31.utm32s.gpkg.ebenen.zip",
-                       vg_zip, unzip_path)
-
-    vg_gpkg = os.path.join(unzip_path, "vg5000_12-31.utm32s.gpkg.ebenen/vg5000_ebenen_1231/DE_VG5000.gpkg")
-    vg_layers = ["vg5000_gem", "vg5000_krs", "vg5000_lan", "vg5000_li", "vg5000_rbz", "vg5000_sta", "vg5000_vwg"]
-    import_layers(vg_gpkg, vg_layers)
+    # Prefix for table names
+    prefix = config.get_value(["loader", "sources", "bkg", "prefix"])
 
     # NUTS-Gebiete
-    print("Downloading and unzipping NUTS-Gebiete")
-    nuts_zip = os.path.join(zip_path, "nuts250.utm32s.gpkg.zip")
-    download_and_unzip("https://daten.gdz.bkg.bund.de/produkte/vg/nuts250_1231/aktuell/nuts250_12-31.utm32s.gpkg.zip",
-                       nuts_zip, unzip_path)
+    log.info("Downloading and unzipping NUTS")
+    url = config.get_value(["loader", "sources", "bkg", "nuts", "url"])
+    files = utils.download_files(url, zip_path)
+    utils.unzip(files, unzip_path)
+    nuts_layers = config.get_value(["loader", "sources", "bkg", "nuts", "layer"])
+    utils.import_layers(os.path.join(unzip_path, "nuts250_12-31.utm32s.gpkg/nuts250_1231/DE_NUTS250.gpkg"), nuts_layers, schema, prefix)
 
-    nuts_gpkg = os.path.join(unzip_path, "nuts250_12-31.utm32s.gpkg/nuts250_1231/DE_NUTS250.gpkg")
-    nuts_layers = ["nuts250_n1", "nuts250_n2", "nuts250_n3"]
-    import_layers(nuts_gpkg, nuts_layers)
+    # Verwaltungsgebiete
+    log.info("Downloading and unzipping Verwaltungsgebiete")
+    url = config.get_value(["loader", "sources", "bkg", "vg500", "url"])
+    files = utils.download_files(url, zip_path)
+    utils.unzip(files, unzip_path)
+    vg_layers = config.get_value(["loader", "sources", "bkg", "vg500", "layer"])
+    utils.import_layers(os.path.join(unzip_path, "vg5000_12-31.utm32s.gpkg.ebenen/vg5000_ebenen_1231/DE_VG5000.gpkg"), vg_layers, schema, prefix)
 
-    # Geogitter
-    # ToDo: loop for resolution
-    # 1km
-    print("Downloading and unzipping Geogitter")
-    geogitter_zip = os.path.join(zip_path, "DE_Grid_ETRS89-LAEA_1km.gpkg.zip")
-    download_and_unzip("https://daten.gdz.bkg.bund.de/produkte/sonstige/geogitter/aktuell/DE_Grid_ETRS89-LAEA_1km.gpkg.zip",
-                       geogitter_zip, unzip_path)
+    # # Geogitter
+    log.info("Creating Geogitter layers")
+    resolutions = config.get_value(["loader", "sources", "bkg", "geogitter", "resolutions"])
 
-    geogitter_1km_gpkg = os.path.join(unzip_path, "DE_Grid_ETRS89-LAEA_1km.gpkg/geogitter/DE_Grid_ETRS89-LAEA_1km.gpkg")
-    geogitter_1km_layers = ["de_grid_laea_1km"]
-    import_layers(geogitter_1km_gpkg, geogitter_1km_layers)
+    for resolution in resolutions:
+        log.info(f"Creating Geogitter for resolution {resolution}")
+        create_geogitter(resolution)
 
-    # 10km
-    geogitter_zip = os.path.join(zip_path, "DE_Grid_ETRS89-LAEA_10km.gpkg.zip")
-    download_and_unzip("https://daten.gdz.bkg.bund.de/produkte/sonstige/geogitter/aktuell/DE_Grid_ETRS89-LAEA_10km.gpkg.zip",
-                       geogitter_zip, unzip_path)
 
-    geogitter_10km_gpkg = os.path.join(unzip_path, "DE_Grid_ETRS89-LAEA_10km.gpkg/geogitter/DE_Grid_ETRS89-LAEA_10km.gpkg")
-    geogitter_10km_layers = ["de_grid_laea_10km"]
-    import_layers(geogitter_10km_gpkg, geogitter_10km_layers)
+def create_geogitter(resolution):
 
-    # 100m
-    geogitter_zip = os.path.join(zip_path, "DE_Grid_ETRS89-LAEA_100m.gpkg.zip")
-    download_and_unzip("https://daten.gdz.bkg.bund.de/produkte/sonstige/geogitter/aktuell/DE_Grid_ETRS89-LAEA_100m.gpkg.zip",
-                       geogitter_zip, unzip_path)
+    scope = config.get_value(["base", "scope"])
+    epsg = config.get_value(["services", "citydb", "epsg"])
+    schema = config.get_value(["loader", "sources", "bkg", "schema"])
+    prefix = config.get_value(["loader", "sources", "bkg", "prefix"])
 
-    geogitter_100m_gpkg = os.path.join(unzip_path, "DE_Grid_ETRS89-LAEA_100m/geogitter/DE_Grid_ETRS89-LAEA_100m.gpkg")
-    geogitter_100m_layers = ["de_grid_laea_100m"]
-    import_layers(geogitter_100m_gpkg, geogitter_100m_layers)
+    if resolution.endswith("km"):
+        resolution_meters = int(resolution[:-2]) * 1000
+    elif resolution.endswith("m"):
+        resolution_meters = int(resolution[:-1])
 
-    # ToDo: Remove temporary files
+    sql = f"""
+        DROP TABLE IF EXISTS {schema}.{prefix}_DE_Grid_ETRS89_LAEA_{resolution};
+        CREATE TABLE {schema}.{prefix}_DE_Grid_ETRS89_LAEA_{resolution} AS
+        WITH params AS (
+            SELECT {resolution_meters}::int AS cell_size  -- 🛠️ change this to 10000 for 10km, etc.
+        ),
+             boundary AS (
+                 SELECT ST_Union(ST_Transform(geometry, 3035)) AS geom
+                 FROM opendata.bkg_nuts250_n3
+                 WHERE "NUTS_CODE" LIKE '{scope}%'
+             ),
+             envelope AS (
+                 SELECT
+                     FLOOR(ST_XMin(b.geom) / p.cell_size) * p.cell_size AS x_min,
+                     FLOOR(ST_YMin(b.geom) / p.cell_size) * p.cell_size AS y_min,
+                     CEIL(ST_XMax(b.geom) / p.cell_size) * p.cell_size AS x_max,
+                     CEIL(ST_YMax(b.geom) / p.cell_size) * p.cell_size AS y_max,
+                     p.cell_size
+                 FROM boundary b, params p
+             ),
+             grid_raw AS (
+                 SELECT (ST_SquareGrid(
+                         e.cell_size,
+                         ST_MakeEnvelope(e.x_min, e.y_min, e.x_max, e.y_max, 3035)
+                         )).*
+                 FROM envelope e
+             ),
+             grid AS (
+                 SELECT
+                     ST_Transform(geom, {epsg}) AS geom,
+                     ST_XMin(geom) AS x,
+                     ST_YMin(geom) AS y
+                 FROM grid_raw
+             ),
+             id_named AS (
+                 SELECT
+                     FORMAT(
+                             '%sN%sE%s',
+                             '{resolution}',
+                              FLOOR(g.y / p.cell_size)::int::text,
+                              FLOOR(g.x / p.cell_size)::int::text
+                     ) AS id,
+                     g.geom
+                 FROM grid g, params p
+             )
+        SELECT *
+        FROM id_named;
+    """
+    utils.sql_query(sql)

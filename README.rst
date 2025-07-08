@@ -71,7 +71,7 @@ Using the API
      -H "Content-Type: application/json" \
      -d '{"dateRange": {"startDate": "2023-01-01", "endDate": "2023-01-31"}, "sensorNames": ["temperature", "humidity"]}'
 
-**With Python requests**
+      docker-compose -f ./dockers/docker-compose.yml up --build
 
 .. code-block:: python
 
