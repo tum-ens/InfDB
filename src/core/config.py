@@ -16,8 +16,6 @@ def __load_config(path: str):
 
 def __load_configs():
     base_path = os.path.join(get_root_path(), "configs", "config.yml")
-    print(base_path)
-    print(os.listdir(os.path.dirname(base_path)))
 
     # first get the base config
     configs = __load_config(base_path)
