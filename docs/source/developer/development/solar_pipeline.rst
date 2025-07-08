@@ -20,7 +20,7 @@ These steps are intended for developers working on the solar potential analysis 
 
    This command reads configuration values from two sources:
 
-   - ``configs/configs-sunpot.yml``: Contains Sunpot-specific database connection values such as:
+- ``configs/configs-sunpot.yml``: Contains Sunpot-specific database connection values such as:
 
    .. code-block:: yaml
 
@@ -30,7 +30,7 @@ These steps are intended for developers working on the solar potential analysis 
       CITYDBV4_EPSG: 25832
       CITYDBV4_HOST: citydbv4
 
-   - ``configs/config-loader.yml``: Provides shared project structure information such as:
+- ``configs/config.yml``: Provides shared project structure information such as:
 
    .. code-block:: yaml
 
@@ -39,13 +39,19 @@ These steps are intended for developers working on the solar potential analysis 
          base_dir: "data/{name}/"
          base_sunset_dir: "{base_dir}/sunset/"
 
+- ``configs/config-loader.yml`` (shared paths):
+
+      .. code-block:: yaml
+
+         lod2:
+               path:
+                  lod2: "{loader/path/base}/lod2/"
+                  gml: "{loader/path/processed}/lod2/"
+
    These settings ensure that:
 
-   - **Input geometry data (e.g., LOD2)** is read from the loader-managed directory under ``{base_dir}/opendata/lod2/``
-   - **Solar potential output** is stored under ``{base_sunset_dir}``, keeping it organized per project
-
-   Placeholders like ``{name}`` and ``{base_dir}`` are expanded automatically,
-   ensuring Sunpot reads and writes in the correct project-specific folders.
+   - **Input geometry data (e.g., LOD2)** is read from the loader-managed directory under ``{loader/path/base}/lod2/``
+   - **Solar potential output** is stored under ``base_sunset_dir`` which is ``{base_dir}/sunset/``, keeping it organized per project
 
 #. **Run the Sunpot Service**
 
@@ -90,5 +96,5 @@ These steps are intended for developers working on the solar potential analysis 
       Once the calculations are completed, we run the **export-and-import** step — implemented inside ``src/services/sunpot/``.
       This process:
 
-      - Exports data from CityDB v4 to CSV in the ``base sunset directory`` (please check ``config.yml``)
+      - Exports data from CityDB v4 to CSV.
       - Then imports these CSV files into **CityDB v5**

@@ -54,21 +54,15 @@ Each dataset is stored in its own subfolder (e.g., `zip/`, `unzip/`, `processed/
 
     .. code-block:: yaml
 
-        timescaledb:
-          user: postgres
-          password: password
-          db: timescaledb
-          host: 127.0.0.1
-          port: 5432
-          status: active
-
         citydb:
-          user: postgres
-          password: password
-          db: citydb
-          host: 127.0.0.1
-          port: 5433
-          status: active
+            user: citydb_user
+            password: citydb_password
+            db: citydb
+            host: citydb
+            exposed_port: 5433
+            epsg: 25832
+            path: "{base/path/base}/{base/name}/citydb/"
+            status: active
 
 #. **Loader Configuration**
 
@@ -77,25 +71,42 @@ Each dataset is stored in its own subfolder (e.g., `zip/`, `unzip/`, `processed/
     .. code-block:: yaml
 
         base:
-          name: sonthofen
-          base_dir: "data/{name}/"
-          base_sunset_dir: "{base_dir}/sunset/"
+            name: sonthofen
+            path:
+                base: "infdb-data/"
+            scope: DE27E
+            schema: general
+            network_name: network
+            environment: container
+            base_sunset_dir: "{base/path/base}/sunset/"
 
     Loader-specific settings live in ``configs/config-loader.yml``.
 
     .. code-block:: yaml
 
         loader:
-          loader_dir: "{base_dir}/opendata"
+            hosts:
+                citydb:
+                user: "{services/citydb/user}"
+                password: "{services/citydb/password}"
+                db: "{services/citydb/db}"
+                host: "{services/citydb/host}"
+                port: 5432
+                epsg: "{services/citydb/epsg}"
+                timescaledb:
+                user: "{services/timescaledb/user}"
+                password: "{services/timescaledb/password}"
+                db: "{services/timescaledb/db}"
+                host: "{services/timescaledb/host}"
+                port: 5432
+            path:
+                base: "{base/path/base}/opendata"
+                processed: "{base/path/base}/{base/name}"
 
-          zensus_2022:
-            status: active
-            resolutions: [10km]
-            zensus_2022_dir: "{loader_dir}/zensus_2022/"
-            schema: census2022
-
-    Placeholders like ``{name}``, ``{base_dir}``, and ``{loader_dir}`` are automatically resolved. 
-    Files are stored under ``data/{name}/``, which keeps each project isolated and well-structured.
+    Placeholders like ``{base/path/base}``, ``{services/citydb/user}``, and ``{services/citydb/password}`` are automatically resolved. 
+    
+    Each project depending on the ``{base/name}``, will be stored under ``infdb-data/{base/name}``.
+    As an example, if your project name is ``sonthofen``, you will see the data under ``infdb-data/sonthofen``.
 
 #. **Supported Modules**
 
@@ -114,10 +125,10 @@ Each dataset is stored in its own subfolder (e.g., `zip/`, `unzip/`, `processed/
     .. code-block:: bash
 
         # Linux/macOS
-        python3 -m dockers.loader.generate-compose
+        python3 -m dockers.generate-compose
 
         # Windows
-        python -m dockers.loader.generate-compose
+        python -m dockers.generate-compose
 
 #. **Start Database Services**
 
@@ -125,7 +136,7 @@ Each dataset is stored in its own subfolder (e.g., `zip/`, `unzip/`, `processed/
 
     .. code-block:: bash
 
-        docker-compose -f ./dockers/loader/docker-compose.yml up
+        docker-compose -f ./dockers/docker-compose.yml up
 
     If loader modules are active, they will automatically download and load datasets into the appropriate databases.
 

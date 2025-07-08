@@ -49,8 +49,13 @@ Contains Docker Compose orchestration logic that brings together all services fo
 - ``loader/``
 
   - Generates ``docker-compose.yml`` dynamically via ``generate-compose.py``, based on ``configs/config-service.yml``.  
-  - Services include: CityDB, TimescaleDB, pgAdmin, etc.  
   - Includes a ``README.md`` explaining the workflow and how service dependencies and health checks are coordinated.
+
+- ``services/``
+    
+  - Contains individual service definitions (YAML fragments) used by the dynamic ``generate-compose.py`` script to assemble the final ``docker-compose.yml``.  
+  - Each file defines image, ports, volumes, environment, and health checks for services like CityDB, TimescaleDB, pgAdmin, Jupyter, and server-lists.  
+  - These services are conditionally included based on their status in ``configs/config-service.yml``.
 
 - ``sunpot/``
     

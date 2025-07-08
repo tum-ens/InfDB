@@ -117,7 +117,7 @@ Follow these guidelines when making changes to the codebase.
 Coding Standards
 ^^^^^^^^^^^^^^^^
 
-- Follow the :doc:`../guidelinescoding_guidelines`
+- Follow the :doc:`../guidelines/coding_guidelines`
 - Use consistent code style and formatting
 - Write clear, descriptive comments and docstrings
 - Follow the domain-specific guidelines for energy system modeling

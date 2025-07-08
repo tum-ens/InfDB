@@ -36,20 +36,30 @@ You can enable this workflow after the loader setup is complete and 3DCityDB ser
             CITYDBV4_PASSWORD: citydb_password
             CITYDBV4_EPSG: 25832
             CITYDBV4_HOST: citydbv4
+    
+    - ``configs/config.yml``:
+
+        .. code-block:: yaml
+
+            base:
+                name: sonthofen
+                path:
+                    base: "infdb-data/"
+                base_sunset_dir: "{base/path/base}/sunset/"
 
     - ``configs/config-loader.yml`` (shared paths):
 
         .. code-block:: yaml
 
-            base:
-              name: sonthofen
-              base_dir: "data/{name}/"
-              base_sunset_dir: "{base_dir}/sunset/"
+            lod2:
+                path:
+                    lod2: "{loader/path/base}/lod2/"
+                    gml: "{loader/path/processed}/lod2/"
 
     These ensure:
 
-    - Input geometry is read from: ``{base_dir}/opendata/lod2/``
-    - Output results are stored in: ``{base_sunset_dir}``
+    - Input geometry is read from: ``{loader/path/base}/lod2/``
+    - Output results are stored in: ``{base/path/base}/sunset/``
 
 #. **Run the Sunpot Service**
 
@@ -81,5 +91,5 @@ You can enable this workflow after the loader setup is complete and 3DCityDB ser
 
     1. Make sure CityDB v5 is running (via loader setup)
     2. The Sunpot pipeline will:
-        - Export results from CityDB v4 into CSVs in ``{base_sunset_dir}``
+        - Export results from CityDB v4 into CSVs in ``base_sunset_dir`` which will be resolved as ``infdb-data/sunset/``
         - Import those CSVs into CityDB v5 using the script under ``src/services/sunpot/``

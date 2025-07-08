@@ -35,21 +35,24 @@ Local Development Setup
 
    .. code-block:: yaml
 
-      timescaledb:
-         user: postgres
-         password: password
-         db: timescaledb
-         host: 127.0.0.1
-         port: 5432
+      citydb:
+         user: citydb_user
+         password: citydb_password
+         db: citydb
+         host: citydb
+         exposed_port: 5433
+         epsg: 25832
+         path: "{base/path/base}/{base/name}/citydb/"
          status: active
 
-      citydb:
-         user: postgres
-         password: password
-         db: citydb
-         host: 127.0.0.1
-         port: 5433
+      timescaledb:
+         user: timescale_user
+         password: secret
+         db: timescaledb_db
+         host: timescaledb
+         exposed_port: 5432
          status: active
+         path: "{base/path/base}/{base/name}/timescaledb/"
 
    Services marked with ``status: active`` will be included in the generated
    Docker Compose file and launched at runtime.
@@ -59,50 +62,49 @@ Local Development Setup
    loader-specific settings live in ``configs/config-loader.yml``.
    This file controls dataset sources, directory layout, schemas, and more.
 
+   Example (``configs/config-loader.yml``):
+
+   .. code-block:: yaml
+
+      loader:
+         lod2:
+            status: active
+            url:
+            - "https://geodaten.bayern.de/odd/a/lod2/citygml/meta/metalink/09780139.meta4"
+            path:
+            lod2: "{loader/path/base}/lod2/"
+            gml: "{loader/path/processed}/lod2/"
+
+
    Base configuration example:
 
    .. code-block:: yaml
 
       base:
          name: sonthofen
-         base_dir: "data/{name}/"
+         path:
+            base: "infdb-data/"
          scope: DE27E
          schema: general
          network_name: network
          environment: container
-         base_sunset_dir: "{base_dir}/sunset/"
+         base_sunset_dir: "{base/path/base}/sunset/"
 
-   Placeholders like ``{name}``, ``{base_dir}``, and ``{base_sunset_dir}`` will be
-   automatically replaced at runtime. For example:
+      configs:
+      - config-loader.yml
+      - config-services.yml
 
-   - ``base_dir`` becomes ``data/sonthofen/``
-   - ``base_sunset_dir`` becomes ``data/sonthofen/sunset/``
 
-   Each project keeps its own data in ``data/{name}/``, including:
+   Placeholders like ``{base/path/base}``, ``{services/citydb/user}``, and ``{services/citydb/password}`` are automatically resolved. 
+    
+   Each project depending on the ``{base/name}``, will be stored under ``infdb-data/{base/name}``.
+   As an example, if your project name is ``sonthofen``, you will see the data under ``infdb-data/sonthofen``.
+
+   Each project keeps its own data, including:
 
    - Raw downloads
    - Unzipped or processed datasets
    - Notebooks or custom files
-
-   Sample loader module configuration:
-
-   .. code-block:: yaml
-
-      loader:
-      loader_dir: "{base_dir}/opendata"
-
-      zensus_2022:
-         status: active
-         resolutions:
-            - 10km
-         zensus_2022_dir: "{loader_dir}/zensus_2022/"
-         zensus_2022_zip_dir: "{zensus_2022_dir}/zip/"
-         zensus_2022_unzip_dir: "{zensus_2022_dir}/unzip/"
-         zensus_2022_processed_dir: "{zensus_2022_dir}/processed/"
-         url: "https://www.zensus2022.de/DE/Ergebnisse-des-Zensus/_inhalt.html"
-         schema: census2022
-
-   Placeholders like ``{loader_dir}`` and ``{zensus_2022_dir}`` are derived from the base config and expanded automatically.
 
 #. **Supported Modules**
 
@@ -124,10 +126,10 @@ Local Development Setup
    .. code-block:: bash
 
       # Linux/macOS
-      python3 -m dockers.loader.generate-compose
+      python3 -m dockers.generate-compose
 
       # Windows
-      python -m dockers.loader.generate-compose
+      python -m dockers.generate-compose
 
    This script reads ``configs/config-services.yml`` and writes a Compose file that includes
    only services with ``status: active``.
@@ -138,16 +140,12 @@ Local Development Setup
 
    .. code-block:: bash
 
-      docker-compose -f ./dockers/loader/docker-compose.yml up
+      docker-compose -f ./dockers/docker-compose.yml up
 
    This launches the defined services (TimescaleDB, 3DCityDB, etc.) in the order they appear.
 
    If loader modules are ``active`` in ``configs/config-loader.yml``, they will automatically
    begin processing and loading data into the running database.
-
-   All downloads, processed files, and outputs are stored under ``data/{name}/``,
-   as structured by the configuration and placeholder logic.
-
 
 #. **Start the FastAPI application**
 
@@ -159,4 +157,4 @@ Local Development Setup
 
    .. code-block:: bash
 
-      docker-compose -f ./dockers/loader/docker-compose.yml up --build
+      docker-compose -f ./dockers/docker-compose.yml up --build
