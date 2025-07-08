@@ -39,49 +39,47 @@ Installation for Local Development
 
       pip install -r requirements.txt
 
-#. InfDB depends on 3DCityDB and TimescaleDB. Use the following command to start both services locally using Docker. Please only run the services you would need!:
+#. Our application has dependency on 3dCityDB and Timescale; that's why environment should be set first. 
+Under `configs` folder we have multiple `config` files that keeps service related inputs.
+Information related configuration is explained under `configs/Readme.md`
+   
+   .. code-block:: bash
+
+    # example for timescaledb
+      timescaledb:
+        user: timescale_user
+        password:
+        db: timescaledb_db
+        host: 127.0.0.1 
+        port: 5432
+        status: active
+
+#. To run our databases and feed them with data, we should first run the code below. This will auto generate the `docker-compose.yaml` depending on our needs. 
+Information related docker-compose generations is explained under `configs/Readme.md`
 
    .. code-block:: bash
 
-      docker-compose -f docker-compose.local.yaml up -d --build timescaledb
-      docker-compose -f docker-compose.local.yaml up -d --build citydb
+    # example for timescaledb
+      python3 -m  dockers.generate_compose 
 
-
-#. To use 3DCityDB, you need to import demo data. Use the following commands with the provided Docker Compose file:
-   (Note: If you haven’t deleted the volume previously created for 3DCityDB, you don’t need to run this again.)
+#. As a last step we would need to start our services.
 
    .. code-block:: bash
 
-      # This will download LOD2 data and import it into 3DCityDB
-      docker-compose -f docker-compose.lod2-import.yaml up --build downloader
-      docker-compose -f docker-compose.lod2-import.yaml up --build citydb-tool
+      docker-compose -f ./dockers/docker-compose.yaml up
 
-#. Use already existing `.env` file in the repository. If you have given different environment variables during database initializations, please also update the env file. Use the same values defined in `docker-compose.local.yaml`:
+#. If you had any changes related with loader, you should create the image again if you have an existing image. Then you should do:
 
    .. code-block:: bash
 
-      # TimescaleDB Configuration
-      TIMESCALE_USER=
-      TIMESCALE_PASSWORD=
-      TIMESCALE_HOST=127.0.0.1
-      TIMESCALE_PORT=
-      TIMESCALE_DB=
+      docker-compose -f ./dockers/docker-compose.yaml build
+      docker-compose -f ./dockers/docker-compose.yaml up
 
-      # CityDB Configuration
-      CITYDB_USER=
-      CITYDB_PASSWORD=
-      CITYDB_HOST=127.0.0.1
-      CITYDB_PORT=
-      CITYDB_DB=
-
-      # General Configuration
-      DEBUG=true
-
-#. Start the FastAPI application:
+#. Now you can start the application:
 
    .. code-block:: bash
 
-      fastapi dev src/main.py
+    fastapi dev src/main.py
 
 #. Open your browser and navigate to the API documentation at: `http://127.0.0.1:8000/docs`
 
@@ -90,40 +88,28 @@ Installation for Local Development
    :align: center
 
 
-If you want to import different sources of data other than LOD2 via `data_import`
+If you want to import different sources of data other than LOD2 via `loader`
 ---------------------------------------------------------------------------------
 
 #. LOD2 data is must have for application, So if not already done in the previous steps, please import the LOD2 data. Otherwise, you can skip this.
 
-   .. code-block:: bash
 
-      docker-compose -f docker-compose.lod2-import.yaml up --build downloader
-      docker-compose -f docker-compose.lod2-import.yaml up --build citydb-tool
-
-#. After importing LOD2 data, we should create a shared image for data_import services for the next step. You can also just use docker build command and give a proper name according to your needs, but then you have to use the correct image name in the docker-compose.data_import.yaml for each service!. This could be easier to track which image name we had.
-   
-   .. code-block:: bash
-      docker-compose -f docker-compose.data_import.yaml up --build _myimage_build
-
-
-#. Now you can use the `data_import` to upload different types of data, depending on the available services. Please check for `.env` file in the main directory and `open-data-config` file under `data_import`. It provides env variables for the `data_import` but those values might be different depending on how you initialized your databases:
+#. Please go under `configs` folder and find `configs_loader.yaml`. There we have our loader sources defined. You firs need to set `status: active`.
+Then you can run this command:
 
    .. code-block:: bash
 
-      # Example services defined in data_import.yaml include:
-      # imp_lod2
-      # imp_bkg
-      # imp_basemap
-      # imp_census2022
-      # imp_plz
-      docker-compose -f docker-compose.data_import.yaml up --build <service_name>
+    # example for timescaledb
+      python3 -m  dockers.generate_compose 
+      docker-compose -f ./dockers/docker-compose.yaml up
 
 .. image:: ../../img/data_import_architecture.png
    :alt: InfDB Data Import Architecture
    :align: center
 
 
-Sunsetting CityDB V4 and migrating solarpotantial to V5 via `data_import`
+
+Sunsetting CityDB V4 and migrating solarpotantial to V5 via `loader` (Not yet applicable)
 ---------------------------------------------------------------------------------
 
 #. You should have cityDB v4 running on your system.

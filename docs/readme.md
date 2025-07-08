@@ -1,1 +1,0 @@
-1. pip install -r requirements.txt inside docs folder

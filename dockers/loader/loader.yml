@@ -1,0 +1,14 @@
+services:
+  loader:
+    build:
+      context: ../..
+      dockerfile: src/services/loader/Dockerfile
+    container_name: loader
+    networks:
+      - ${NETWORK_NAME}
+    depends_on:
+      citydb:
+        condition: service_healthy
+    volumes:
+      - ../../configs:/app/configs
+      - ../../${LOADER_DIR}:/app/${LOADER_DIR}/
