@@ -147,7 +147,12 @@ cython_debug/
 
 **/dockers/loader/.env
 **/dockers/sunpot/.env
-**/dockers/loader/docker-compose.yaml
+**/dockers/docker-compose.yaml
 
 # Local development tools
 **/citydb-tool/*
+
+# Data
+*.gml
+*.gpkg
+*.zip

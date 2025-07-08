@@ -107,8 +107,8 @@ services:
         condition: service_completed_successfully
         restart: false
     volumes:
-      - ../../configs/:/app/configs
-      - ../../${SUNSET_DIR}/:/app/${SUNSET_DIR}
+      - ../configs/:/app/configs
+      - ../${SUNSET_DIR}/:/app/${SUNSET_DIR}
 
 networks:
   infdb_network:

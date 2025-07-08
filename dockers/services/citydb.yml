@@ -10,7 +10,7 @@ services:
     ports:
       - ${CITYDB_EXPOSED_PORT}:5432
     volumes:
-      - citydb_data:/var/lib/postgresql/data
+      - ../../${CITYDB_PATH}:/var/lib/postgresql/data
     networks:
       - ${NETWORK_NAME}
     healthcheck:

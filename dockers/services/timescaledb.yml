@@ -9,7 +9,7 @@ services:
     ports:
       - ${TIMESCALEDB_EXPOSED_PORT}:5432
     volumes:
-      - timescale_data:/var/lib/postgresql/data
+      - ../../${TIMESCALEDB_PATH}:/var/lib/postgresql/data
     networks:
       - ${NETWORK_NAME}
     healthcheck:
