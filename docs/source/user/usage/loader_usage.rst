@@ -1,150 +1,168 @@
 Data Loader
 ===========
 
-InfDB includes a Data Loader that sets up the necessary services (like 3DCityDB and TimescaleDB), manages project structure, and prepares your datasets for use.
+InfDB includes a Data Loader that prepares your datasets, sets up the required services (e.g., 3DCityDB, TimescaleDB), and organizes your project files.
 
 When the loader runs:
 
-- Required services (e.g., city model and weather databases) are started automatically
-- Configurations are read from internal files in the ``configs/`` directory
-- Datasets are downloaded, structured, and stored in consistent project folders
-- Once finished, the system is ready to be used via the API or extended modules like solar potential analysis
-
-**Supported Datasets:**
-
-- Building models (LOD2)
-- Street networks
-- Administrative boundaries
-- Postal code regions
-
-Each dataset is stored in its own subfolder (e.g., `zip/`, `unzip/`, `processed/`), and organized automatically.
+- Required services are launched (e.g., 3DCityDB, TimescaleDB)
+- Datasets are downloaded and structured
+- Results are stored in organized folders based on your project name
+- The system becomes ready for further analysis (e.g., solar potential, API access)
 
 #. **Clone the Repository**
 
-    .. code-block:: bash
+   .. code-block:: bash
 
-        git clone https://gitlab.lrz.de/tum-ens/need/infdb.git
-        cd infdb
+      git clone https://gitlab.lrz.de/tum-ens/need/infdb.git
+      cd infdb
 
 #. **Set Up a Virtual Environment**
 
-    .. code-block:: bash
+   .. code-block:: bash
 
-        python -m venv venv
+      python -m venv venv
 
-        # Windows
-        venv\Scripts\activate
+      # Windows
+      venv\Scripts\activate
 
-        # Linux/macOS
-        source venv/bin/activate
+      # Linux/macOS
+      source venv/bin/activate
 
-#. **Install Python Dependencies**
+#. **Install Dependencies**
 
-    .. code-block:: bash
+   .. code-block:: bash
 
-        pip install -r requirements.txt
+      pip install -r requirements.txt
 
 #. **Configure Services**
 
-    All configurations live under the ``configs/`` directory.  
-    You must be familiar with this folder — especially with the ``base_dir`` setting under ``config.yml``.  
-    It controls where your data is stored and processed.
+   Configuration files are under the ``configs/`` directory.  
+   These include database access and project structure.
 
-    Example (``configs/config-services.yml``):
+   Example (``configs/config-services.yml``):
 
-    .. code-block:: yaml
+   .. code-block:: yaml
 
-        citydb:
-            user: citydb_user
-            password: citydb_password
-            db: citydb
-            host: citydb
-            exposed_port: 5433
-            epsg: 25832
-            path: "{base/path/base}/{base/name}/citydb/"
-            status: active
+      citydb:
+        user: citydb_user
+        password: citydb_password
+        db: citydb
+        host: citydb
+        exposed_port: 5433
+        epsg: 25832
+        path: "{base/path/base}/{base/name}/citydb/"
+        status: active
 
-#. **Loader Configuration**
+      timescaledb:
+        user: timescale_user
+        password: secret
+        db: timescaledb_db
+        host: timescaledb
+        exposed_port: 5432
+        path: "{base/path/base}/{base/name}/timescaledb/"
+        status: active
 
-    Project-level settings live in ``configs/config.yml``.
+#. **Define Your Project Setup**
 
-    .. code-block:: yaml
+   Project-level configuration lives in ``configs/config.yml``.  
+   It controls the name and base path of your project.
 
-        base:
-            name: sonthofen
-            path:
-                base: "infdb-data/"
-            scope: DE27E
-            schema: general
-            network_name: network
-            environment: container
-            base_sunset_dir: "{base/path/base}/sunset/"
+   Example (``config.yml``):
 
-    Loader-specific settings live in ``configs/config-loader.yml``.
+   .. code-block:: yaml
 
-    .. code-block:: yaml
+      base:
+        name: sonthofen
+        path:
+          base: "infdb-data/"
+        scope: DE27E
+        schema: general
+        base_sunset_dir: "{base/path/base}/sunset/"
 
-        loader:
-            hosts:
-                citydb:
-                user: "{services/citydb/user}"
-                password: "{services/citydb/password}"
-                db: "{services/citydb/db}"
-                host: "{services/citydb/host}"
-                port: 5432
-                epsg: "{services/citydb/epsg}"
-                timescaledb:
-                user: "{services/timescaledb/user}"
-                password: "{services/timescaledb/password}"
-                db: "{services/timescaledb/db}"
-                host: "{services/timescaledb/host}"
-                port: 5432
-            path:
-                base: "{base/path/base}/opendata"
-                processed: "{base/path/base}/{base/name}"
+   Data will be stored under ``infdb-data/sonthofen/`` based on the ``base.name`` setting.
 
-    Placeholders like ``{base/path/base}``, ``{services/citydb/user}``, and ``{services/citydb/password}`` are automatically resolved. 
-    
-    Each project depending on the ``{base/name}``, will be stored under ``infdb-data/{base/name}``.
-    As an example, if your project name is ``sonthofen``, you will see the data under ``infdb-data/sonthofen``.
+#. **Configure the Loader**
 
-#. **Supported Modules**
+   Loader settings live in ``configs/config-loader.yml``.  
+   This includes:
 
-    You can activate/deactivate each dataset by setting ``status: active`` or ``status: inactive``.
+   - Database access (uses the service config)
+   - Input/output paths
+   - List of datasets to download and process
 
-    - **Zensus 2022** – 10km statistical grids
-    - **LOD2** – 3D building models in CityGML
-    - **BKG** – Official German geodata
-    - **Basemap** – Raster/vector base maps (.gpkg)
-    - **PLZ** – Postal code geometries (GeoJSON)
+   Example:
+
+   .. code-block:: yaml
+
+      loader:
+        hosts:
+          citydb:
+            user: "{services/citydb/user}"
+            password: "{services/citydb/password}"
+            db: "{services/citydb/db}"
+            host: "{services/citydb/host}"
+            port: 5432
+            epsg: "{services/citydb/epsg}"
+          timescaledb:
+            user: "{services/timescaledb/user}"
+            password: "{services/timescaledb/password}"
+            db: "{services/timescaledb/db}"
+            host: "{services/timescaledb/host}"
+            port: 5432
+        path:
+          base: "{base/path/base}/opendata"
+          processed: "{base/path/base}/{base/name}"
+
+#. **Enable or Disable Datasets**
+
+   In ``config-loader.yml``, each dataset has a ``status`` field.  
+   Set it to ``active`` to include it during loading.
+
+   Example (partial):
+
+   .. code-block:: yaml
+
+      sources:
+        zensus_2022:
+          status: active
+          resolutions: [10km, 1km]
+          path:
+            base: "{loader/path/base}/zensus_2022/"
+            processed: "{loader/path/processed}/zensus_2022/"
+
+   Supported datasets:
+
+   - **Zensus 2022**
+   - **LOD2** – CityGML models
+   - **BKG** – Administrative geodata
+   - **Basemap** – Raster/vector layers
+   - **PLZ** – Postal code boundaries
 
 #. **Generate Docker Compose File**
 
-    This step generates the Compose file based on your configs:
+   .. code-block:: bash
 
-    .. code-block:: bash
+      # Linux/macOS
+      python3 -m dockers.generate-compose
 
-        # Linux/macOS
-        python3 -m dockers.generate-compose
+      # Windows
+      python -m dockers.generate-compose
 
-        # Windows
-        python -m dockers.generate-compose
+   This creates a `docker-compose.yml` with only the active services.
 
-#. **Start Database Services**
+#. **Start the Database Services**
 
-    Run the following to start all active services (TimescaleDB, CityDB, etc.):
+   .. code-block:: bash
 
-    .. code-block:: bash
+      docker-compose -f ./dockers/docker-compose.yml up
 
-        docker-compose -f ./dockers/docker-compose.yml up
-
-    If loader modules are active, they will automatically download and load datasets into the appropriate databases.
+   Active loader modules will automatically run and process data into the databases.
 
 #. **Start the API Server**
 
-    Launch the FastAPI application to interact with the data:
+   Once services are running and data is loaded, launch the FastAPI app:
 
-    .. code-block:: bash
+   .. code-block:: bash
 
-        fastapi dev src/main.py
-
+      fastapi dev src/main.py
