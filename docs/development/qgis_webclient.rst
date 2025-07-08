@@ -14,7 +14,7 @@ There is an official GitHub repo for the QWC docker containers, but we use a sli
 | https://github.com/qwc-services/qwc-docker
 |
 | Our adjusted version can be found at
-| https://gitlab.lrz.de/tum-ens/need/database/-/tree/main/tools/qgis_webclient
+| https://gitlab.lrz.de/tum-ens/need/infdb/-/tree/main/tools/qgis_webclient
 |
 | After installation, the QWC interface can be reached via
 | http://[ip_address]:8088/
@@ -30,7 +30,7 @@ If not already installed, you have to install docker (https://docs.docker.com/en
 
 **Get config files from repo:**
 ::
-   git clone https://gitlab.lrz.de/tum-ens/need/database.git
+   git clone https://gitlab.lrz.de/tum-ens/need/infdb.git
    cp -r database/tools/qgis_webclient/ qwc
    rm -r database``
 
@@ -44,19 +44,13 @@ If not already installed, you have to install docker (https://docs.docker.com/en
    password=need
    sslmode=disable
 
-**Change the database password in qwc/docker-compose.yml:**
-::
-   services:
-      qwc-postgis:
-         image: sourcepole/qwc-base-db:16 # 16 refers to the Postgres major version
-         environment:
-            POSTGRES_PASSWORD: 'need' # TODO: Set your postgres password here!
-
 **Create a secret key:**
 ::
    python3 -c 'import secrets; print("JWT_SECRET_KEY=\"%s\"" % secrets.token_hex(48))' >.env
 
-**Change user and group id in qwc/docker-compose.yml according to the user that owns the config files:**
+| **Change user and group id in qwc/docker-compose.yml to match the UNIX user that owns the config files:**
+| *(you can see which user owns which file with ``ls -l`` and see the uid & gid of every user by ``cat /etc/passwd``)*
+| *(if the root user owns the config files, change the file owner of all config files to a regular user with ``chown -R [user] qwc``)*
 ::
    x-qwc-service-variables: &qwc-service-variables
       [...]
@@ -229,32 +223,29 @@ As QGIS Desktop by default saves projects as ``.qgz``, we also rely on that for 
 4. **docker-compose.yml**
 
 This file is an adjusted copy of ``docker-compose-example.yml``.
-The following lines were changed:
+We changed the following lines:
 
-These lines were uncommented. They should be set to the UID & GID of the UNIX user that owns the /qwc/ directory.
+We uncommented these lines. They should be set to the UID & GID of the UNIX user that owns the /qwc/ directory.
+You can see which user owns which file with ``ls -l`` and see the uid & gid of every user by ``cat /etc/passwd``.
+If the root user owns the config files, change the file owner of all config files to a regular user with ``chown -R [user] qwc``.
 ::
 
    SERVICE_UID: 1000
    SERVICE_GID: 1000
 
-The database password should be entered here:
-::
-
-   POSTGRES_PASSWORD: 'need' # TODO: Set your postgres password here!
-
-These lines were commented out to remove the demo theme:
+We commented these lines out to remove the demo theme:
 ::
 
    #- ./volumes/demo-data/setup-demo-data.sh:/docker-entrypoint-initdb.d/2_setup-demo-data.sh
    [...]
    #- ./volumes/demo-data/setup-demo-data-permissions.sh:/tmp/extra-init.d/setup-demo-data-permissions.sh
 
-This line was added to set the QGIS project file extension (see above: 3. volumes/config-in/default/tenantConfig.json):
+We added this line to set the QGIS project file extension (see above: 3. volumes/config-in/default/tenantConfig.json):
 ::
 
    QGIS_PROJECT_SUFFIX: 'qgz'
 
-This line was added to enable multithread rendering of the map viewer for increased performance:
+We added this line to enable multithread rendering of the map viewer for increased performance:
 ::
 
    QGIS_SERVER_PARALLEL_RENDERING: 1
