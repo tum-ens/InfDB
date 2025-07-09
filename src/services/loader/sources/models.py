@@ -25,6 +25,8 @@ def create_common_data_table(schema: str):
 def create_heat_pump_table(schema):
     sql = f"""
         CREATE TABLE {schema}.heat_pump (
+            genarator TEXT,
+            load TEXT,
             heating_capacity_kw FLOAT,
             cop_heating FLOAT,
             source_type TEXT
@@ -36,6 +38,8 @@ def create_heat_pump_table(schema):
 def create_battery_storage_table(schema):
     sql = f"""
         CREATE TABLE {schema}.battery_storage (
+            genarator TEXT,
+            load TEXT,
             capacity_kw FLOAT,
             max_charge FLOAT,
             max_discharge FLOAT
@@ -47,6 +51,8 @@ def create_battery_storage_table(schema):
 def create_electric_vehicle_table(schema):
     sql = f"""
         CREATE TABLE {schema}.electric_vehicle (
+            genarator TEXT,
+            load TEXT,
             battery_capacity_kw FLOAT,
             charge_rate_kw FLOAT
         ) INHERITS ({schema}.common_data);
@@ -57,6 +63,8 @@ def create_electric_vehicle_table(schema):
 def create_wind_turbine_table(schema):
     sql = f"""
         CREATE TABLE {schema}.wind_turbine (
+            genarator TEXT,
+            load TEXT,
             rated_power_kw FLOAT,
             hub_height_m FLOAT,
             rotor_trip_efficiency FLOAT
@@ -68,6 +76,8 @@ def create_wind_turbine_table(schema):
 def create_photovolatic_system_table(schema):
     sql = f"""
         CREATE TABLE {schema}.photovolatic_system (
+            genarator TEXT,
+            load TEXT,
             rated_power_kw FLOAT,
             tilt FLOAT,
             area_m2 FLOAT
