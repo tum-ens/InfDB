@@ -63,7 +63,7 @@ def create_wind_turbine_table(schema):
         ) INHERITS ({schema}.common_data);
     """
     utils.sql_query(sql)
-    
+
 
 def create_photovolatic_system_table(schema):
     sql = f"""
