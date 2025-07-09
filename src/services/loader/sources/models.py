@@ -22,66 +22,67 @@ def create_common_data_table(schema: str):
     utils.sql_query(sql)
 
 
-def create_transformer_table(schema):
+def create_heat_pump_table(schema):
     sql = f"""
-    CREATE TABLE {schema}.heat_pump (
-	heating_capacity_kw FLOAT,
-    cop_heating FLOAT,
-    source_type TEXT
-) INHERITS ({schema}.common_data);
-    """
-    utils.sql_query(sql)
-
-
-def create_line_table(schema):
-    sql = f"""
-        CREATE TABLE {schema}.line (
-            from_bus INTEGER,
-            to_bus INTEGER,
-            length_km DOUBLE PRECISION,
-            geodata DOUBLE PRECISION[][],
-            std_type TEXT
+        CREATE TABLE {schema}.heat_pump (
+            heating_capacity_kw FLOAT,
+            cop_heating FLOAT,
+            source_type TEXT
         ) INHERITS ({schema}.common_data);
     """
     utils.sql_query(sql)
 
 
-def create_switch_table(schema):
+def create_battery_storage_table(schema):
     sql = f"""
-        CREATE TABLE {schema}.switch (
-            bus INTEGER,
-            element INTEGER,
-            et TEXT,
-            closed BOOLEAN,
-            type INTEGER,
-            name TEXT,
-            z_ohm DOUBLE PRECISION,
-            in_ka DOUBLE PRECISION
+        CREATE TABLE {schema}.battery_storage (
+            capacity_kw FLOAT,
+            max_charge FLOAT,
+            max_discharge FLOAT
         ) INHERITS ({schema}.common_data);
     """
     utils.sql_query(sql)
 
 
-def create_bus_table(schema):
+def create_electric_vehicle_table(schema):
     sql = f"""
-        CREATE TABLE {schema}.bus (
-            vn_kv INTEGER,
-            geodata DOUBLE PRECISION[2],
-            type TEXT,
-            zone TEXT
+        CREATE TABLE {schema}.electric_vehicle (
+            battery_capacity_kw FLOAT,
+            charge_rate_kw FLOAT
         ) INHERITS ({schema}.common_data);
     """
     utils.sql_query(sql)
 
 
-def electricity_network_components(schema):
-    create_transformer_table(schema)
-    create_line_table(schema)
-    create_switch_table(schema)
-    create_bus_table(schema)
+def create_wind_turbine_table(schema):
+    sql = f"""
+        CREATE TABLE {schema}.wind_turbine (
+            rated_power_kw FLOAT,
+            hub_height_m FLOAT,
+            rotor_trip_efficiency FLOAT
+        ) INHERITS ({schema}.common_data);
+    """
+    utils.sql_query(sql)
+
+def create_photovolatic_system_table(schema):
+    sql = f"""
+        CREATE TABLE {schema}.photovolatic_system (
+            rated_power_kw FLOAT,
+            tilt FLOAT,
+            area_m2 FLOAT
+         ) INHERITS ({schema}.common_data);
+    """
+    utils.sql_query(sql)
+
+def energy_assets(schema):
+    create_heat_pump_table(schema)
+    create_battery_storage_table(schema)
+    create_electric_vehicle_table(schema)
+    create_wind_turbine_table(schema)
+    create_photovolatic_system_table(schema)
 
 
 def import_models():
     schema = "energy_infra"
     create_common_data_table(schema)
-    electricity_network_components(schema)
+    energy_assets(schema)
