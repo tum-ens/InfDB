@@ -1,4 +1,4 @@
--- Insert data into pylovo_input.ways from basemap.verkehrslinie
+-- Insert data into pylovo_input.ways from opendata.bmp_verkehrslinie
 -- filter out classes that are not relevant for routing
 -- and transform geometry to EPSG:3035 (ETRS89 / LAEA Europe)
 -- calculate cost as length in km divided by speed in km/h
@@ -13,7 +13,7 @@ SELECT
     c.clazz,
     ST_Transform(v.geometry, 3035) AS geom, 
     ST_Length(ST_Transform(v.geometry, 3035)) / 1000.0 / NULLIF(c.kmh, 0) AS cost
-FROM basemap.verkehrslinie v,
+FROM opendata.bmp_verkehrslinie v,
      LATERAL pylovo_input.map_strasse_klasse_to_class_kmh(v.klasse) AS c
 WHERE v.geometry IS NOT NULL AND c.clazz NOT IN (3, 92, 99);
 
@@ -24,5 +24,5 @@ SET reverse_cost =
     WHEN v.richtung = '1' THEN 1000000.0  -- one-way
     WHEN v.richtung = '0' OR v.richtung IS NULL THEN w.cost  -- bidirectional
   END
-FROM basemap.verkehrslinie AS v
+FROM opendata.bmp_verkehrslinie AS v
 WHERE w.verkehrslinie_id_basemap = v.id;
