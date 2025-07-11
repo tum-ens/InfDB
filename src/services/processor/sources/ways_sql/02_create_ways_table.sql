@@ -11,5 +11,5 @@ CREATE TABLE IF NOT EXISTS pylovo_input.ways (
 
 CREATE INDEX IF NOT EXISTS idx_ways_geom ON pylovo_input.ways USING GIST (geom);
 CREATE INDEX IF NOT EXISTS idx_ways_verkehrslinie_id ON pylovo_input.ways (verkehrslinie_id_basemap);
-CREATE INDEX IF NOT EXISTS idx_verkehrslinie_id ON basemap.verkehrslinie (id);
+CREATE INDEX IF NOT EXISTS idx_verkehrslinie_id ON opendata.bmp_verkehrslinie (id);
 

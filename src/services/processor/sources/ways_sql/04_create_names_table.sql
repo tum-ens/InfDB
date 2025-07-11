@@ -6,6 +6,6 @@ SELECT
 FROM
     pylovo_input.ways w
 JOIN
-    basemap.verkehrslinie v
+    opendata.bmp_verkehrslinie v
 ON
     w.verkehrslinie_id_basemap = v.id;
