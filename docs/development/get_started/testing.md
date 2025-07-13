@@ -1,13 +1,12 @@
-Testing
--------
+# Testing
 
 To verify your setup or write new tests:
 
-.. code-block:: bash
-
+```bash
    pytest              # Run all tests
    pytest tests/unit   # Unit tests
    pytest --cov=src    # With coverage
+```
 
 Place tests in:
 

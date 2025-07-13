@@ -25,14 +25,8 @@ The goal of InfDB is to seamlessly combine the static, spatial data managed by 3
 .. toctree::
    :maxdepth: 2
 
-   user/index
-
-.. toctree::
-   :maxdepth: 2
-
-   developer/index
-
-.. toctree::
-   :maxdepth: 1
-
+   architecture/index
+   api/index
+   usage/index
    changelog/index
+

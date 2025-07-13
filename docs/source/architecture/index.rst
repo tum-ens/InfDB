@@ -58,6 +58,6 @@ TimescaleDB
 |                  | Enables querying historical weather data for spatial regions.                              |
 +------------------+--------------------------------------------------------------------------------------------+
 
-.. image:: ../../../img/db_tables.png
+.. image:: ../../img/db_tables.png
    :alt: InfDB Architecture
    :align: center

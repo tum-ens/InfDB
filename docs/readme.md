@@ -54,10 +54,6 @@ For example:
 - The official `Sphinx RTD tutorial <https://sphinx-rtd-tutorial.readthedocs.io/en/latest/folders.html>`_ follows this pattern.
 - The accompanying repository `simpleble <https://github.com/sglvladi/simpleble>`_ stores its documentation in a ``docs/source/`` directory as well.
 
-In our project:
-
-- The documentation "source" is made up of subfolders like ``user/``, ``developer/``, and ``changelog/``.
-
 Following this convention:
 - Keep static assets like images (``img/``) and stylesheets (``css/``) at the same level as ``source/``, enabling shared use across multiple documentation sections.
 
@@ -65,20 +61,22 @@ Following this convention:
 A quick overview of the documentation directory structure:
 
 - `docs/` – Root directory for all documentation-related files.
-- `docs/css/` – Contains custom CSS files for theming the generated HTML.
-- `docs/img/` – Holds images used throughout the documentation.
-- `docs/data_formats/` – (Optional) Reference or example data files used in docs.
-- `docs/source/` – Main Sphinx source folder for `.rst` files and configuration.
-- `docs/source/_build/` – Output directory where built documentation (HTML, PDF, etc.) is generated.
-- `docs/source/changelog/` – Contains version history or release notes.
-- `docs/source/developer/` – Developer-focused documentation (architecture, CI/CD, contribution guidelines).
-  - `api/` – Development guide for the API structure.
-  - `architecture/` – System-level architecture and design docs.
-  - `ci_cd/`, `repository/`, `services/`, `workflow/`, etc. – Internal guides and module-specific details.
-- `docs/source/user/` – User-facing documentation (API usage, architecture explanation, service access).
-  - `api/`, `architecture/`, `services/` – User-accessible functionality and how to interact with it.
-- `docs/source/index.rst` – Root entry file for the entire Sphinx documentation.
-- `docs/source/conf.py` – Sphinx configuration file (theme, extensions, source paths, etc.).
-- `Makefile` / `make.bat` – Build scripts for generating documentation (e.g., `make html`).
-- `requirements.txt` – Python dependencies required to build the documentation.
-- `readme.md` – This Markdown file with setup instructions and structure overview.
+  - `architecture/`, `contributing/`, `development/`, `guidelines/`, `operations/` – Top-level documentation or notes, outside of Sphinx source structure.
+  - `css/` – Custom CSS files for theming the generated HTML output.
+  - `data_formats/` – (Optional) Reference or sample data files used in the documentation.
+  - `img/` – Shared images used across different documentation sections.
+
+- `docs/source/` – Main Sphinx source folder containing reStructuredText (`.rst`) files and the configuration.
+  - `_build/` – Directory where the generated output (HTML, PDF, etc.) is placed after running Sphinx.
+  - `api/` – Developer documentation for API-related modules.
+  - `architecture/` – System-level architecture documentation.
+  - `changelog/` – Version history and release notes.
+  - `usage/` – Usage guides or setup instructions for users.
+  - `conf.py` – Sphinx configuration file (themes, extensions, paths, etc.).
+  - `index.rst` – Root entry point that defines the structure of the generated docs.
+
+- Other files:
+  - `.gitignore` – Specifies ignored files for version control.
+  - `Makefile` / `make.bat` – Scripts to build the docs (e.g., `make html`).
+  - `readme.md` – Markdown overview with documentation setup instructions.
+  - `requirements.txt` – Python dependencies for building the documentation.

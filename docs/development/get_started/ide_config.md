@@ -1,24 +1,19 @@
-IDE Configuration (optional)
-----------------------------
+# IDE Configuration (optional)
 
-Visual Studio Code
-^^^^^^^^^^^^^^^^^^
+## Visual Studio Code
 
-1. Install Extensions:
-   
+1. **Install Extensions:**
    - Python
    - Pylance
    - Docker
    - GitLens
 
-2. Configure:
-   
+2. **Configure:**
    - Set Python interpreter to `venv`
    - Enable format on save (Black)
    - Enable Flake8 for linting
 
-PyCharm
-^^^^^^^
+## PyCharm
 
 1. Set interpreter to `venv`
 2. Install Black + Flake8 plugins
