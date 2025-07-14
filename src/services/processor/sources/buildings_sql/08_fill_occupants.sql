@@ -7,7 +7,7 @@ SELECT b.id                    AS building_id,
        v.id as bevoelkerungszahl_id,
        v.einwohner
 FROM pylovo_input.buildings b
-         JOIN census2022.bevoelkerungszahl v ON ST_Contains(v.geometry, ST_CENTROID(b.geom))
+         JOIN opendata.cns22_100m_bevoelkerungszahl v ON ST_Contains(ST_Transform(v.geometry, 3035), ST_Centroid(b.geom))
 WHERE building_use = 'Residential';
 
 -- Step 2: Create temp table for total weights per grid cell
@@ -52,10 +52,10 @@ FROM pylovo_input.buildings b
 CROSS JOIN LATERAL (
     SELECT g.id as bevoelkerungszahl_id,
            g.einwohner as nearest_einwohner
-    FROM census2022.bevoelkerungszahl g
+    FROM opendata.cns22_100m_bevoelkerungszahl g
     WHERE g.gitter_id_100m IS NOT NULL
       AND g.einwohner IS NOT NULL
-    ORDER BY g.geometry <-> ST_Centroid(b.geom)
+    ORDER BY ST_Transform(g.geometry, 3035) <-> ST_Centroid(b.geom)
     LIMIT 1
 ) nearest
 JOIN temp_building_occupants bo ON b.id = bo.building_id
