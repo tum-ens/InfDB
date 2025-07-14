@@ -257,8 +257,8 @@ WHERE b.id = nc.id
 ALTER TABLE pylovo_input.buildings ADD COLUMN grid_id text;
 UPDATE pylovo_input.buildings
 SET grid_id = w.gitter_id_100m
-FROM census2022.wohnungen_nach_gebaeudetyp_groesse w
-WHERE ST_Contains(w.geometry, ST_Centroid(geom));
+FROM opendata.cns w
+WHERE ST_Contains(ST_Transform(w.geometry, 3035), ST_Centroid(geom));
 
 -- Step 2: Calculate current counts and target counts per grid
 DROP TABLE IF EXISTS temp_grid_current;
@@ -272,7 +272,7 @@ WITH grid_current AS (
         COUNT(CASE WHEN b.building_type = 'SFH' THEN 1 END) as current_sfh,
         COUNT(*) as total_buildings
     FROM pylovo_input.buildings b
-    JOIN census2022.wohnungen_nach_gebaeudetyp_groesse w ON ST_Contains(w.geometry, ST_Centroid(b.geom))
+    JOIN opendata.cns22_100m_geb_gbdtyp_groesse w ON ST_Contains(ST_Transform(w.geometry, 3035), ST_Centroid(b.geom))
     WHERE b.building_use = 'Residential' AND w.gitter_id_100m IS NOT NULL
     GROUP BY w.gitter_id_100m
 )
@@ -289,7 +289,7 @@ CREATE TABLE temp_grid_target AS (
         COALESCE(freiefh + efh_dhh, 0) as target_sfh,
         COALESCE(freiefh + efh_dhh + efh_reihenhaus + freist_zfh + zfh_dhh + zfh_reihenhaus + mfh_3bis6wohnungen + mfh_7bis12wohnungen + mfh_13undmehrwohnungen, 0)
             as total_target
-    FROM census2022.wohnungen_nach_gebaeudetyp_groesse w
+    FROM opendata.cns22_100m_geb_gbdtyp_groesse w
     WHERE gitter_id_100m IS NOT NULL
     AND EXISTS (
         SELECT 1
@@ -380,7 +380,7 @@ CREATE TABLE temp_building_rankings AS (
         ) as sfh_conversion_rank
 
     FROM pylovo_input.buildings b
-    JOIN census2022.wohnungen_nach_gebaeudetyp_groesse w ON ST_Contains(w.geometry, ST_Centroid(b.geom))
+    JOIN opendata.cns22_100m_geb_gbdtyp_groesse w ON ST_Contains(ST_Transform(w.geometry, 3035), ST_Centroid(b.geom))
     JOIN temp_grid_comparison gc ON w.gitter_id_100m = gc.grid_id
     WHERE b.building_use = 'Residential'
       AND gc.total_target > 0

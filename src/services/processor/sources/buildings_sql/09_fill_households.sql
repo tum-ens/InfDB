@@ -7,8 +7,8 @@ SELECT b.id AS building_id,
        d.id as haushaltsgroesse_id,
        d.durchschnhhgroesse
 FROM pylovo_input.buildings b
-         JOIN census2022.durchschn_haushaltsgroesse d
-              ON ST_Intersects(d.geometry, b.geom)
+         JOIN opendata.cns22_100m_durchschn_haushaltsgroesse d
+              ON ST_Contains(ST_Transform(d.geometry, 3035), ST_Centroid(b.geom))
 WHERE b.occupants IS NOT NULL
   AND b.building_use = 'Residential'; -- already ensured by above clause
 
@@ -20,8 +20,6 @@ CREATE TEMP TABLE temp_building_households AS
 SELECT building_id,
        GREATEST(ROUND(occupants / durchschnhhgroesse)::int, 1) AS estimated_households
 FROM temp_building_hh_grid;
-
-SELECT * FROM temp_building_households;
 
 -- Step 3: Update original building table
 UPDATE pylovo_input.buildings b
@@ -41,10 +39,10 @@ FROM pylovo_input.buildings b
 CROSS JOIN LATERAL (
     SELECT g.id as bevoelkerungszahl_id,
            g.einwohner as nearest_einwohner
-    FROM census2022.bevoelkerungszahl g
+    FROM opendata.cns22_100m_bevoelkerungszahl g
     WHERE g.gitter_id_100m IS NOT NULL
       AND g.einwohner IS NOT NULL
-    ORDER BY g.geometry <-> ST_Centroid(b.geom)
+    ORDER BY ST_Transform(g.geometry, 3035) <-> ST_Centroid(b.geom)
     LIMIT 1
 ) nearest
 JOIN temp_building_occupants bo ON b.id = bo.building_id

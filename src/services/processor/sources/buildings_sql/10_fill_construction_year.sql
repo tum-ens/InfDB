@@ -6,8 +6,8 @@ SELECT b.id   AS building_id,
        b.geom AS building_geom,
        g.*
 FROM pylovo_input.buildings b
-         JOIN census2022.gebaeude_nach_baujahr_in_mikrozensus_klassen g
-             ON ST_Contains(g.geometry, ST_Centroid(b.geom))
+         JOIN opendata.cns22_100m_gebaeude_nach_baujahr_in_mikrozensus_klassen g
+             ON ST_Contains(ST_Transform(g.geometry, 3035), ST_Centroid(b.geom))
 WHERE g.gitter_id_100m IS NOT NULL;
 
 
@@ -59,13 +59,13 @@ CROSS JOIN LATERAL (
            g.a2001bis2010,
            g.a2011bis2019,
            g.a2020undspaeter
-    FROM census2022.gebaeude_nach_baujahr_in_mikrozensus_klassen g
+    FROM opendata.cns22_100m_gebaeude_nach_baujahr_in_mikrozensus_klassen g
     WHERE g.gitter_id_100m IS NOT NULL
       AND (COALESCE(g.vor1919, 0) + COALESCE(g.a1919bis1948, 0) +
            COALESCE(g.a1949bis1978, 0) + COALESCE(g.a1979bis1990, 0) +
            COALESCE(g.a1991bis2000, 0) + COALESCE(g.a2001bis2010, 0) +
            COALESCE(g.a2011bis2019, 0) + COALESCE(g.a2020undspaeter, 0)) > 0
-    ORDER BY g.geometry <-> ST_Centroid(b.geom)
+    ORDER BY ST_Transform(g.geometry, 3035) <-> ST_Centroid(b.geom)
     LIMIT 1
 ) nearest
 WHERE b.construction_year IS NULL;
