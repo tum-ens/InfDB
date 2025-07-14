@@ -16,8 +16,8 @@ DB_HOST = config.get_value(["services", "citydb", "host"])
 DB_PORT = config.get_value(["services", "citydb", "exposed_port"])
 
 # SQL files directory and list of files to execute in order
-WAYS_SQL_DIR = os.path.join(os.path.dirname(__file__), 'ways_sql')
-BUILDINGS_SQL_DIR = os.path.join(os.path.dirname(__file__), 'buildings_sql')
+WAYS_SQL_DIR = os.path.join(os.path.dirname(__file__), 'sql', 'ways_sql')
+BUILDINGS_SQL_DIR = os.path.join(os.path.dirname(__file__), 'sql', 'buildings_sql')
 
 
 WAYS_SQL_FILES = [

@@ -4,7 +4,7 @@ DROP TABLE IF EXISTS temp_building_weights;
 CREATE TEMP TABLE temp_building_weights AS
 SELECT b.id                    AS building_id,
        b.height * b.floor_area AS weight,
-       v.id as bevoelkerungszahl_id,
+       v.gitter_id_100m as bevoelkerungszahl_id,
        v.einwohner
 FROM pylovo_input.buildings b
          JOIN opendata.cns22_100m_bevoelkerungszahl v ON ST_Contains(ST_Transform(v.geometry, 3035), ST_Centroid(b.geom))
@@ -50,7 +50,7 @@ SELECT
     GREATEST(ROUND((bo.weight / cw.total_weight) * nearest.nearest_einwohner)::int, 1) as assigned_occupants
 FROM pylovo_input.buildings b
 CROSS JOIN LATERAL (
-    SELECT g.id as bevoelkerungszahl_id,
+    SELECT g.gitter_id_100m as bevoelkerungszahl_id,
            g.einwohner as nearest_einwohner
     FROM opendata.cns22_100m_bevoelkerungszahl g
     WHERE g.gitter_id_100m IS NOT NULL
