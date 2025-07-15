@@ -6,9 +6,9 @@ CREATE TEMP TABLE IF NOT EXISTS temp_postcode_3035
 );
 INSERT INTO temp_postcode_3035 (plz, geometry)
 SELECT plz::int, ST_Transform(geometry, 3035)
-FROM plz."plz-5stellig";
+FROM opendata."plz_plz-5stellig";
 
 UPDATE pylovo_input.buildings b
 SET postcode = plz::int
 FROM temp_postcode_3035 p
-WHERE ST_Contains(geometry, ST_Centroid(b.geom));
+WHERE ST_Contains(geometry, b.centroid);

@@ -256,32 +256,32 @@ WHERE b.id = nc.id
 -- Step 1: Assign grid id for later use
 ALTER TABLE pylovo_input.buildings ADD COLUMN grid_id text;
 UPDATE pylovo_input.buildings
-SET grid_id = w.gitter_id_100m
-FROM opendata.cns w
-WHERE ST_Contains(ST_Transform(w.geometry, 3035), ST_Centroid(geom));
+SET grid_id = g.id
+FROM pylovo_input.buildings_grid g
+WHERE ST_Contains(g.geom, centroid);
 
 -- Step 2: Calculate current counts and target counts per grid
 DROP TABLE IF EXISTS temp_grid_current;
 CREATE TABLE temp_grid_current AS
 WITH grid_current AS (
     SELECT
-        w.gitter_id_100m as grid_id,
+        g.id as grid_id,
         COUNT(CASE WHEN b.building_type = 'AB' THEN 1 END) as current_ab,
         COUNT(CASE WHEN b.building_type = 'MFH' THEN 1 END) as current_mfh,
         COUNT(CASE WHEN b.building_type = 'TH' THEN 1 END) as current_th,
         COUNT(CASE WHEN b.building_type = 'SFH' THEN 1 END) as current_sfh,
         COUNT(*) as total_buildings
     FROM pylovo_input.buildings b
-    JOIN opendata.cns22_100m_geb_gbdtyp_groesse w ON ST_Contains(ST_Transform(w.geometry, 3035), ST_Centroid(b.geom))
-    WHERE b.building_use = 'Residential' AND w.gitter_id_100m IS NOT NULL
-    GROUP BY w.gitter_id_100m
+    JOIN pylovo_input.buildings_grid g ON ST_Contains(g.geom, b.centroid)
+    WHERE b.building_use = 'Residential' AND g.id IS NOT NULL
+    GROUP BY g.id
 )
 SELECT * FROM grid_current;
 
 DROP TABLE IF EXISTS temp_grid_target;
 CREATE TABLE temp_grid_target AS (
     SELECT
-        gitter_id_100m as grid_id,
+        id as grid_id,
         -- Calculate target counts from reference data
         COALESCE(mfh_13undmehrwohnungen + mfh_7bis12wohnungen, 0) as target_ab,
         COALESCE(mfh_3bis6wohnungen + freist_zfh + zfh_dhh, 0) as target_mfh,
@@ -289,12 +289,12 @@ CREATE TABLE temp_grid_target AS (
         COALESCE(freiefh + efh_dhh, 0) as target_sfh,
         COALESCE(freiefh + efh_dhh + efh_reihenhaus + freist_zfh + zfh_dhh + zfh_reihenhaus + mfh_3bis6wohnungen + mfh_7bis12wohnungen + mfh_13undmehrwohnungen, 0)
             as total_target
-    FROM opendata.cns22_100m_geb_gbdtyp_groesse w
-    WHERE gitter_id_100m IS NOT NULL
+    FROM pylovo_input.buildings_grid g
+    WHERE g.id IS NOT NULL
     AND EXISTS (
         SELECT 1
         FROM pylovo_input.buildings b
-        WHERE b.grid_id = w.gitter_id_100m
+        WHERE b.grid_id = g.id
     )
 );
 
@@ -380,8 +380,8 @@ CREATE TABLE temp_building_rankings AS (
         ) as sfh_conversion_rank
 
     FROM pylovo_input.buildings b
-    JOIN opendata.cns22_100m_geb_gbdtyp_groesse w ON ST_Contains(ST_Transform(w.geometry, 3035), ST_Centroid(b.geom))
-    JOIN temp_grid_comparison gc ON w.gitter_id_100m = gc.grid_id
+    JOIN pylovo_input.buildings_grid g ON ST_Contains(g.geom, b.centroid)
+    JOIN temp_grid_comparison gc ON g.id = gc.grid_id
     WHERE b.building_use = 'Residential'
       AND gc.total_target > 0
 );
