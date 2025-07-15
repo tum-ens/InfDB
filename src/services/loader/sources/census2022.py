@@ -85,14 +85,19 @@ def process_census():
 
             log.info(f"Processing {file}...")
             try:
-                df = pd.read_csv(os.path.join(input_path, file), sep=";", decimal=",", na_values="–", low_memory=False, encoding='utf-8')  # , encoding="latin_1"   # GeoDataFrame laden (Beispiel) nrows=10,
+                csv_path = os.path.join(input_path, file)
+                csv_path = utils.ensure_utf8_encoding(csv_path)  # <-- check and fix encoding
+                df = pd.read_csv(csv_path, sep=";", decimal=",", na_values="–", low_memory=False, encoding='utf-8')  # , encoding="latin_1"   # GeoDataFrame laden (Beispiel) nrows=10,
+
                 df.fillna(0, inplace=True)
                 df.columns = df.columns.str.lower()
 
                 gdf = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.loc[:, "x_mp_" + resolution], df.loc[:, "y_mp_" + resolution]), crs="EPSG:3035")  # ETRS89 / UTM zone 32N
                 epsg = config.get_value(["services", "citydb", "epsg"])
                 gdf = gdf.to_crs(epsg=epsg)
-                gdf_clipped = gpd.clip(gdf, gdf_envelope)
+                if not gdf_envelope.empty:
+                    gdf_clipped = gpd.clip(gdf, gdf_envelope)
+                else: gdf_clipped = gdf
 
                 file = file.lower().replace(f"_{resolution}-gitter.csv", "").replace("zensus2022_", "")
                 for key, value in replace_dict.items():
