@@ -14,7 +14,8 @@ CREATE TABLE pylovo_input.buildings
     construction_year text,
     postcode          int,
     address_street_id bigint,
-    geom              geometry(MultiPolygon, 3035)
+    geom              geometry(MultiPolygon, 3035),
+    centroid          geometry(Point, 3035)
 );
 
 CREATE INDEX IF NOT EXISTS building_geom_idx ON pylovo_input.buildings USING GIST (geom);

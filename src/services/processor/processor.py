@@ -36,14 +36,15 @@ BUILDINGS_SQL_FILES = [
     '05_fill_floor_area_geom.sql',
     '06_create_touching_buildings_temp_tables.sql',
     '07_fill_floor_number.sql',
-    '08_fill_occupants.sql',
-    '09_fill_households.sql',
-    '10_fill_construction_year.sql',
-    '11_fill_building_type.sql',
-    '12_assign_postcode_to_buildings.sql',
-    '13_create_address_table.sql',
-    '14_assign_streets_to_buildings.sql',
-    '15_add_constraints.sql'
+    '08_prepare_grid.sql',
+    '09_fill_occupants.sql',
+    '10_fill_households.sql',
+    # '11_fill_construction_year.sql',
+    '12_fill_building_type.sql',
+    '13_assign_postcode_to_buildings.sql',
+    '14_create_address_table.sql',
+    '15_assign_streets_to_buildings.sql',
+    '16_add_constraints.sql'
 ]
 
 

@@ -10,7 +10,8 @@ WITH ground_data AS (SELECT regexp_replace(f.objectid, '_[^_]*-.*$', '') as buil
                          p.name = 'Flaeche')
 UPDATE pylovo_input.buildings
 SET floor_area = gd.area,
-    geom       = gd.geometry
+    geom       = gd.geometry,
+    centroid   = ST_Centroid(gd.geometry)
 FROM ground_data gd
 WHERE objectid = building_objectid;
 
