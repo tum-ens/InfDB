@@ -113,9 +113,11 @@ def create_geogitter(resolution):
                      FORMAT(
                              '%sN%sE%s',
                              '{resolution}',
-                              FLOOR(g.y / p.cell_size)::int::text,
-                              FLOOR(g.x / p.cell_size)::int::text
+                              (100 * FLOOR(g.y / p.cell_size))::int::text,
+                              (100 * FLOOR(g.x / p.cell_size))::int::text
                      ) AS id,
+                     ((100 * FLOOR(g.x / p.cell_size)) + (p.cell_size / 2.0))::int AS x_mp,
+                     ((100 * FLOOR(g.y / p.cell_size)) + (p.cell_size / 2.0))::int AS y_mp,
                      g.geom
                  FROM grid g, params p
              )
