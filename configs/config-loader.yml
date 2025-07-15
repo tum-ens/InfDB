@@ -5,7 +5,7 @@ loader:
       password: "{services/citydb/password}"
       db: "{services/citydb/db}"
       host: "{services/citydb/host}"  # localhost for local development
-      port: 5432  # 5433 (exposed port) for local development
+      port: "{services/citydb/exposed_port}"  # 5433 (exposed port) for local development
       epsg: "{services/citydb/epsg}"
     timescaledb:
       user: "{services/timescaledb/user}"
