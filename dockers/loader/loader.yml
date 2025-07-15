@@ -12,4 +12,4 @@ services:
 networks:
   infdb:
     external: true
-    name: infdb_${BASE_NETWORK_NAME}  # ✅ Variable substitution only allowed here
+    name: infdb_${BASE_NETWORK_NAME}

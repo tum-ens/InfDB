@@ -181,6 +181,7 @@ def get_db_engine(service_name: str):
 
     return engine
 
+
 def ensure_utf8_encoding(filepath: str) -> str:
     with open(filepath, 'rb') as f:
         raw_data = f.read()
