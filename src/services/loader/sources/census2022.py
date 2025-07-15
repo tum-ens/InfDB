@@ -97,7 +97,8 @@ def process_census():
                 gdf = gdf.to_crs(epsg=epsg)
                 if not gdf_envelope.empty:
                     gdf_clipped = gpd.clip(gdf, gdf_envelope)
-                else: gdf_clipped = gdf
+                else:
+                    gdf_clipped = gdf
 
                 file = file.lower().replace(f"_{resolution}-gitter.csv", "").replace("zensus2022_", "")
                 for key, value in replace_dict.items():

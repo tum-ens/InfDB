@@ -1,23 +1,19 @@
-import yaml
 import os
 from src.core.config import get_value
 from src.core import config
-import json
 
-#base_dir = os.path.dirname(__file__)
 
-## This function writes configuration for services into a .env file which then be read by the containers.
+# This function writes configuration for services into a .env file which then be read by the containers.
 def write_env_file(file_path=".env"):
     path = os.path.join(config.get_root_path(), file_path)
     with open(path, "w") as f:
-        aa = config.get_config()
         flattened_config = config.flatten_dict(config.get_config(), sep="_")
         for key, value in flattened_config.items():
             env_key = key.upper()
             f.write(f"{env_key}={value}\n")
 
 
-## This function auto generates the docker compose file for us.
+# This function auto generates the docker compose file for us.
 def write_compose_file(output_path):
 
     output = {

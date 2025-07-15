@@ -108,6 +108,7 @@ def get_config():
     config = __load_configs()
     return config
 
+
 def write_yaml(output_yaml, output_path):
     output_path = os.path.join(get_root_path(), output_path)
     with open(output_path, "w") as f:
