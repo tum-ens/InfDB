@@ -18,13 +18,13 @@ services:
   qwc-postgis:
     image: sourcepole/qwc-base-db:16 # 16 refers to the Postgres major version
     environment:
-      POSTGRES_PASSWORD: '' # TODO: Set your postgres password here!
+      POSTGRES_PASSWORD: ${SERVICES_QWC_POSTGRES_PASSWORD} # TODO: Set your postgres password here!
     volumes:
       - ./volumes/db:/var/lib/postgresql/docker
       # NOTE: Remove this line if you don't want/need the demo data
       #- ./volumes/demo-data/setup-demo-data.sh:/docker-entrypoint-initdb.d/2_setup-demo-data.sh
     ports:
-     - "127.0.0.1:5439:5432"
+     - "127.0.0.1:${SERVICES_QWC_EXPOSED_DB}:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -267,7 +267,7 @@ services:
     image: nginx:1.27
     ports:
       # NOTE: The port the qwc application runs on. You can choose another port instead of 8088.
-      - "8088:80"
+      - "${SERVICES_QWC_EXPOSED_PORT_GUI}:80"
     volumes:
       - ./api-gateway/nginx.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:

@@ -35,7 +35,9 @@ services:
     compose_file: "dockers/services/juypter.yml"
 
   qwc:
-    exposed_port: 8888
+    exposed_port_gui: 8888
+    exposed_port_db: 8888
+    postgres_password: qwc_password
     status: not-active
-    compose_file: "dockers/services/juypter.yml"
+    compose_file: "tools/qgis_webclient/docker-compose.yml"
 
