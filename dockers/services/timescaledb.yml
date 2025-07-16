@@ -1,0 +1,19 @@
+services:
+  timescaledb:
+    image: timescale/timescaledb:latest-pg14
+    container_name: timescaledb
+    environment:
+      POSTGRES_DB: ${SERVICES_TIMESCALEDB_DB}
+      POSTGRES_USER: ${SERVICES_TIMESCALEDB_USER}
+      POSTGRES_PASSWORD: ${SERVICES_TIMESCALEDB_PASSWORD}
+    ports:
+      - ${SERVICES_TIMESCALEDB_EXPOSED_PORT}:5432
+    volumes:
+      - ../../${SERVICES_TIMESCALEDB_PATH}:/var/lib/postgresql/data
+    networks:
+      - ${BASE_NETWORK_NAME}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U timescale_user -d timescaledb_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

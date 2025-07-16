@@ -145,6 +145,15 @@ cython_debug/
 # Desktop
 *.DS_Store
 
-# Data loader outputs
-/data_import/**/*.gml
-/data_import/**/*.meta4
+**/dockers/loader/.env
+**/dockers/sunpot/.env
+**/dockers/docker-compose.yaml
+
+# Local development tools
+**/citydb-tool/*
+
+# Data
+*.gml
+*.gpkg
+*.zip
+.log

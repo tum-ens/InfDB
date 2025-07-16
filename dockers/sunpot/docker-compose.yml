@@ -1,0 +1,118 @@
+services:
+  citydbv4:
+    image: 3dcitydb/3dcitydb-pg:13-3.2-4.4.0
+    environment:
+      POSTGRES_DB: ${CITYDBV4_DB}
+      POSTGRES_USER: ${CITYDBV4_USER}
+      POSTGRES_PASSWORD: ${CITYDBV4_PASSWORD}
+      SRID: ${CITYDBV4_EPSG}
+    volumes:
+      - citydb_data_v4:/var/lib/postgresql/data
+    ports:
+      - "5435:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${CITYDBV4_USER} -d ${CITYDBV4_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - infdb_network
+
+  import-to-v4:
+    image: 3dcitydb/impexp
+    user: 0:0
+    environment:
+      CITYDB_TYPE: postgresql
+      CITYDB_HOST: ${CITYDBV4_HOST}
+      CITYDB_PORT: 5432
+      CITYDB_NAME: ${CITYDBV4_DB}
+      CITYDB_USERNAME: ${CITYDBV4_USER}
+      CITYDB_PASSWORD: ${CITYDBV4_PASSWORD}
+    volumes:
+      - ../../${GML_DIR}:/data
+    command: ["import", "/data/*.gml"]
+    # helps for the first time to wait citydb is ready
+    restart: on-failure
+    stdin_open: true
+    tty: true
+    depends_on:
+      citydbv4:
+        condition: service_healthy
+    networks:
+      - infdb_network
+
+  sunpot-core:
+    image: gitlab.lrz.de:5005/sunpot/sunpot-core
+    volumes:
+      - ../../src/services/sunpot/sunpotConfig.xml:/sunpotConfig.xml
+    environment:
+      - CITYDBV4_DB        
+      - CITYDBV4_USER
+      - CITYDBV4_PASSWORD
+      - CITYDBV4_HOST
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - >
+        /sunpot/bin/sunpot-core -r
+        -h ${CITYDBV4_HOST}
+        -p 5432
+        -d ${CITYDBV4_DB}
+        -u ${CITYDBV4_USER}
+        -pw ${CITYDBV4_PASSWORD}
+        /sunpotConfig.xml;
+        exit 0
+    stdin_open: true
+    tty: true
+    depends_on:
+      import-to-v4:
+        condition: service_completed_successfully
+        restart: false
+    networks:
+      - infdb_network
+
+  sunpot-texture:
+    image: gitlab.lrz.de:5005/sunpot/sunpot-texture
+    environment:
+      - CITYDBV4_DB        
+      - CITYDBV4_USER
+      - CITYDBV4_PASSWORD
+      - CITYDBV4_HOST
+    command: [
+      "-h", "${CITYDBV4_HOST}",
+      "-p", "5432",
+      "-d", "${CITYDBV4_DB}",
+      "-u", "${CITYDBV4_USER}",
+      "-pw", "${CITYDBV4_PASSWORD}",
+      "-y"
+    ]
+    stdin_open: true
+    tty: true
+    depends_on:
+      sunpot-core:
+        condition: service_completed_successfully
+        restart: false
+    networks:
+      - infdb_network
+
+  export-and-import:
+    build:
+      context: ../..
+      dockerfile: src/services/sunpot/Dockerfile
+    container_name: solarpotential-export-and-import
+    networks:
+      - infdb_network
+    depends_on:
+      sunpot-texture:
+        condition: service_completed_successfully
+        restart: false
+    volumes:
+      - ../configs/:/app/configs
+      - ../${SUNSET_DIR}/:/app/${SUNSET_DIR}
+
+networks:
+  infdb_network:
+    external: true
+
+volumes:
+  citydb_data_v4: null
