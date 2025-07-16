@@ -1,26 +1,38 @@
 # Startup
 
-## uv install
+## uv install (only once)
 ```bash
-    status = config.get_value(["loader", "basemap", "status"])
-    citydb_db = config.get_value(["services", "citydb", "db"])
+    # on linux and macos
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    # by pip
+    pip install uv
 ```
 
-## create environment
+## create environment (only once)
+```bash
+    # linux and macos
+    uv venv --python 3.12
+```
+
+## activate environment
 ```bash
     # linux and macos
     source venv/bin/activate
     # windows
     venv\Scripts\activate
-    
+```
+
+## install packages (only once)
+```bash
     # install requirements
     uv pip install -r requirements.txt
 ```
 
 ## generate docker compose and env files
+You need to generate the configurations files once you changed any of the config yaml files in configs directory.
 ```bash
     # on linux and macos
-    python3 -m python3 -m src.utils.generate-compose
+    python3 -m src.utils.generate-compose
     
     # on windows
 ```
