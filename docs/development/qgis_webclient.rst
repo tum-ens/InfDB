@@ -112,6 +112,10 @@ Publish/Update Project:
 | *(address: http://[ip_address]:8088/qwc_admin/)*
 |
 
+Default credentials:
+| user: admin
+| password: admin
+
 .. image:: ../img/login_qwc_admin.png
 
 |

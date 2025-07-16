@@ -15,7 +15,7 @@ services:
     password: secret
     db: timescaledb_db
     host: timescaledb
-    exposed_port: 5432
+    exposed_port: 5434
     status: active
     path: "{base/path/base}/{base/name}/timescaledb/"
     compose_file: "dockers/services/timescaledb.yml"
@@ -35,9 +35,9 @@ services:
     compose_file: "dockers/services/juypter.yml"
 
   qwc:
-    exposed_port_gui: 8888
-    exposed_port_db: 8888
+    exposed_port_gui: 80
+    exposed_port_db: 5435
     postgres_password: qwc_password
-    status: not-active
+    status: active
     compose_file: "tools/qgis_webclient/docker-compose.yml"
 
