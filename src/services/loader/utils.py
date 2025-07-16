@@ -90,7 +90,7 @@ def unzip(zip_files, unzip_dir):
                 log.info(f"Unzipping {zip_file}")
                 zip_ref.extractall(unzip_dir)
         except BadZipFile as e:
-                    log.error(f"Error unzipping {zip_file}: {e}")
+            log.error(f"Error unzipping {zip_file}: {e}")
 
 
 def sql_query(query):

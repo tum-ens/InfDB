@@ -1,7 +1,7 @@
 base:
   name: sonthofen
   path:
-    base: "infdb-data2/"
+    base: "infdb-data/"
   scope: DE27E
   schema: general
   network_name: network
