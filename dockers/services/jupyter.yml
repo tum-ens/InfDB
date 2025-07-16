@@ -2,8 +2,8 @@ services:
   jupyter:
     image: jupyter/scipy-notebook:latest
     ports:
-      - ${JUPYTER_EXPOSED_PORT}:8888
+      - ${SERVICES_JUPYTER_EXPOSED_PORT}:8888
     volumes:
-      - ../../${JUPYTER_VOLUME_DIR}:/home/jovyan/work
+      - ../../${SERVICES_JUPYTER_VOLUME_DIR}:/home/jovyan/work
     environment:
-      -  ${JUPYTER_ENABLE_LAB}
+      -  ${SERVICES_JUPYTER_ENABLE_LAB}
