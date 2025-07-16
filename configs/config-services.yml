@@ -8,6 +8,7 @@ services:
     epsg: 25832
     path: "{base/path/base}/{base/name}/citydb/"
     status: active
+    compose_file: "dockers/services/citydb.yml"
 
   timescaledb:
     user: timescale_user
@@ -17,16 +18,24 @@ services:
     exposed_port: 5432
     status: active
     path: "{base/path/base}/{base/name}/timescaledb/"
+    compose_file: "dockers/services/timescaledb.yml"
 
   pgadmin:
     default_email: admin@admin.com
     default_password: admin
     exposed_port: 81
     status: active
+    compose_file: "dockers/services/pgadmin.yml"
 
   jupyter:
     exposed_port: 8888
     enable_lab: yes
     status: not-active
     volume_dir: "{base/path/base}/{base/name}/notebooks/"
+    compose_file: "dockers/services/juypter.yml"
+
+  qwc:
+    exposed_port: 8888
+    status: not-active
+    compose_file: "dockers/services/juypter.yml"
 

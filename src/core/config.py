@@ -19,7 +19,6 @@ def __load_configs():
 
     # first get the base config
     configs = __load_config(base_path)
-    print(configs)
 
     # Load sub configs defined under config.yaml configs field
     for config_path in configs.get("configs", []):
@@ -62,13 +61,13 @@ def get_root_path():
     return root_path
 
 
-def flatten_dict(d, parent_key=''):
+def flatten_dict(d, parent_key='', sep="/"):
     """Flatten nested dictionary with keys joined by /."""
     items = {}
     for k, v in d.items():
-        new_key = f"{parent_key}/{k}" if parent_key else k
+        new_key = f"{parent_key}{sep}{k}" if parent_key else k
         if isinstance(v, dict):
-            items.update(flatten_dict(v, new_key))
+            items.update(flatten_dict(v, parent_key=new_key, sep=sep))
         else:
             items[new_key] = v
     return items
@@ -108,3 +107,9 @@ def get_config():
     # otherwise we would need to do I/O operations multiple times
     config = __load_configs()
     return config
+
+
+def write_yaml(output_yaml, output_path):
+    output_path = os.path.join(get_root_path(), output_path)
+    with open(output_path, "w") as f:
+        yaml.dump(output_yaml, f, default_flow_style=False, sort_keys=False)

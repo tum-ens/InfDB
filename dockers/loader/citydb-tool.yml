@@ -3,17 +3,17 @@ services:
     image: 3dcitydb/citydb-tool
     #container_name: citydb-tool
     environment:
-      CITYDB_HOST: citydb
-      CITYDB_PORT: 5432
-      CITYDB_NAME: ${CITYDB_DB}
-      CITYDB_USERNAME: ${CITYDB_USER}
-      CITYDB_PASSWORD: ${CITYDB_PASSWORD}
-      SRID: ${CITYDB_EPSG}
+      CITYDB_HOST: ${LOADER_HOSTS_CITYDB_HOST}
+      CITYDB_PORT: ${LOADER_HOSTS_CITYDB_PORT}
+      CITYDB_NAME: ${SERVICES_CITYDB_DB}
+      CITYDB_USERNAME: ${LOADER_HOSTS_CITYDB_USER}
+      CITYDB_PASSWORD: ${LOADER_HOSTS_CITYDB_PASSWORD}
+      SRID: ${LOADER_HOSTS_CITYDB_EPSG}
     command: import citygml /data/
     volumes:
-      - ../../${GML_DIR}/:/data/
+      - ../../${LOADER_SOURCES_LOD2_PATH_GML}/:/data/
     networks:
-      - ${NETWORK_NAME}
+      - ${BASE_NETWORK_NAME}
     depends_on:
         loader:
             condition: service_completed_successfully

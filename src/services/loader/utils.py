@@ -5,9 +5,10 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 import sqlalchemy
 from src.core import config
-from zipfile import ZipFile
+from zipfile import ZipFile, BadZipFile
 from src.services.loader import logger
 import geopandas as gpd
+import chardet
 
 log = logger.get_logger("infdb-loader")
 
@@ -76,17 +77,20 @@ def unzip(zip_files, unzip_dir):
     os.makedirs(unzip_dir, exist_ok=True)
 
     for zip_file in zip_files:
-        with ZipFile(zip_file, 'r') as zip_ref:
-            members = zip_ref.namelist()
-            # Check if all files already exist
-            all_exist = all(os.path.exists(os.path.join(unzip_dir, member)) for member in members)
+        try:
+            with ZipFile(zip_file, 'r') as zip_ref:
+                members = zip_ref.namelist()
+                # Check if all files already exist
+                all_exist = all(os.path.exists(os.path.join(unzip_dir, member)) for member in members)
 
-            if all_exist:
-                log.info(f"Skipping {zip_file} — all files already extracted.")
-                continue
+                if all_exist:
+                    log.info(f"Skipping {zip_file} — all files already extracted.")
+                    continue
 
-            log.info(f"Unzipping {zip_file}")
-            zip_ref.extractall(unzip_dir)
+                log.info(f"Unzipping {zip_file}")
+                zip_ref.extractall(unzip_dir)
+        except BadZipFile as e:
+            log.error(f"Error unzipping {zip_file}: {e}")
 
 
 def sql_query(query):
@@ -176,3 +180,25 @@ def get_db_engine(service_name: str):
     engine = sqlalchemy.create_engine(db_url)
 
     return engine
+
+
+def ensure_utf8_encoding(filepath: str) -> str:
+    with open(filepath, 'rb') as f:
+        raw_data = f.read()
+        result = chardet.detect(raw_data)
+        source_encoding = result['encoding']
+
+    if source_encoding is None:
+        raise ValueError(f"Could not detect encoding of file: {filepath}")
+
+    if source_encoding.lower() != 'utf-8':
+        # Re-encode the file to UTF-8
+        log.info(f"Re-encoding file from {source_encoding} to UTF-8: {filepath}")
+        temp_path = filepath + "_utf8.csv"
+        with open(filepath, 'r', encoding=source_encoding, errors='replace') as src, \
+             open(temp_path, 'w', encoding='utf-8') as dst:
+            for line in src:
+                dst.write(line)
+        return temp_path
+
+    return filepath  # already UTF-8
