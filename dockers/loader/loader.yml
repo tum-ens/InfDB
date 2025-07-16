@@ -5,10 +5,11 @@ services:
       dockerfile: src/services/loader/Dockerfile
     container_name: loader
     networks:
-      - ${NETWORK_NAME}
-    depends_on:
-      citydb:
-        condition: service_healthy
+      - infdb
     volumes:
       - ../../configs:/app/configs
-      - ../../${LOADER_DIR}:/app/${LOADER_DIR}/
+      - ../../${LOADER_PATH_BASE}:/app/${LOADER_PATH_BASE}/
+networks:
+  infdb:
+    external: true
+    name: infdb_${BASE_NETWORK_NAME}
