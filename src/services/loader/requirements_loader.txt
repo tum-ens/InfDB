@@ -8,3 +8,4 @@ beautifulsoup4
 python-dotenv==1.0.1
 geoalchemy2==0.17.1
 PyYAML
+chardet
