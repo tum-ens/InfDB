@@ -65,6 +65,8 @@ def process_census():
                     "durschnittliche": "durtle",
                     "energietraeger": "etrg",
                     "heizung": "heiz",
+                    "staatsangehoerigkeiten": "stagktn",
+
                     }
     # Get user configurations
     layers = config.get_value(["loader", "sources", "zensus_2022", "layer"])
@@ -72,16 +74,23 @@ def process_census():
     schema = config.get_value(["loader", "sources", "zensus_2022", "schema"])
 
     resolutions = config.get_value(["loader", "sources", "zensus_2022", "resolutions"])
+    csv_files = utils.get_all_csv_files(input_path)
+    # for file in csv_files:
+    #     print(os.path.basename(file))
+
     for resolution in resolutions:
 
         log.info(f"Processing {resolution}...")
-
-        files_with_resolution = [file for file in os.listdir(input_path) if resolution in file]
-        # log.debug(files_with_resolution)
-        for file in files_with_resolution:
-            if file.replace("_" + resolution, "") not in layers:
-                log.info(f"Skipping {file}...")
+        for file in csv_files:
+            # print(file)
+            if "_utf8.csv" in file:
+                print("utf8" + file)
                 continue
+            if resolution not in file:
+                continue
+            # if os.path.basename(file).replace("_" + resolution, "") not in layers:
+            #     log.info(f"Skipping {file}...")
+            #     continue
 
             log.info(f"Processing {file}...")
             try:
@@ -100,11 +109,11 @@ def process_census():
                 else:
                     gdf_clipped = gdf
 
-                file = file.lower().replace(f"_{resolution}-gitter.csv", "").replace("zensus2022_", "")
+                table_name = os.path.basename(file).lower().replace(f"_{resolution}-gitter.csv", "").replace("zensus2022_", "")
                 for key, value in replace_dict.items():
-                    file = file.replace(key, value)
-                file = prefix + "_" + resolution + "_" + file
-                gdf_clipped.to_postgis(file, engine, if_exists='replace', schema=schema, index=False)
+                    table_name = table_name.replace(key, value)
+                table_name = prefix + "_" + resolution + "_" + table_name
+                gdf_clipped.to_postgis(table_name, engine, if_exists='replace', schema=schema, index=False)
                 # gdf_clipped.to_file(os.path.join(output_path, f"zenus-2022{resolution}.gpkg"), layer=file, driver="GPKG")
 
             except Exception as err:
