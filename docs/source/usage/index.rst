@@ -9,7 +9,9 @@ Follow the steps in the sections below depending on what you want to do:
 2. Optionally compute and export solar potential information
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
+   installation
    loader_usage
    solar_usage
+   api

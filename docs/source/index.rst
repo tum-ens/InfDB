@@ -1,32 +1,24 @@
 Welcome to InfDB Documentation
 ==============================
 
-This site contains comprehensive documentation for users, developers, and administrators of InfDB.
+**InfDB (Infrastructure Database)** is designed to create comprehensive digital twins of energy infrastructure systems, enabling advanced modeling, analysis, and planning of energy networks. This database system integrates geospatial data with time-series information to provide a complete representation of energy systems.
 
-Overview
---------
+What is InfDB For?
+------------------
 
-InfDB (Infrastructure Database) is a software platform that combines 3D city models with time-based data like weather or electricity usage. It connects location-based data (such as buildings and streets) with time-related data (such as daily temperatures or energy demand).
+InfDB serves as a foundation for:
 
-InfDB is built on two main technologies:
-
-* **3DCityDB** – to store and manage detailed 3D models of cities.
-* **TimescaleDB** – to store time-series data like weather or energy measurements.
-
-This platform helps planners and researchers understand how buildings and infrastructure are affected by changing data over time. It supports better decisions in energy planning and city management.
-
-
-Purpose
--------
-
-The goal of InfDB is to seamlessly combine the static, spatial data managed by 3DCityDB with the dynamic, temporal data stored in TimescaleDB.
-
+- **Energy System Modeling**: Create detailed digital representations of electrical grids, heating networks, and gas infrastructure.
+- **Infrastructure Planning**: Support decision-making for future energy infrastructure development and optimization.
+- **Scenario Analysis**: Model and compare different energy system configurations and their impacts.
+- **Time-Series Integration**: Combine static infrastructure data with dynamic measurements like weather conditions and energy consumption.
+- **Geospatial Analysis**: Analyze spatial relationships between energy infrastructure components and their environment.
 
 .. toctree::
    :maxdepth: 2
 
-   architecture/index
-   api/index
+   introduction/index
    usage/index
+   user_guide/index
    changelog/index
 

@@ -1,6 +1,48 @@
-# Repository Structure
+# Development Folder
 
-The InfDB project is modular, clearly layered, and designed to separate responsibilities across core services, configuration, documentation, and deployment. Below is a breakdown of major directories along with developer-relevant details.
+This folder contains guides, best practices, and setup instructions for developing and running InfDB locally. It is organized into two subfolders:
+
+## Purpose
+
+The `development/` folder is meant to **guide contributors and maintainers**. Whether you're setting up the system, running pipelines, or contributing code, this folder provides all necessary instructions in one place.
+
+
+## `api/` — API Development Guide
+
+This folder includes documentation for working with the FastAPI-based backend:
+
+- **`overview.md`**  
+  Introduction to the API structure, routes, and how endpoints are organized.
+
+- **`usage.md`**  
+  Explains how to interact with the API (e.g., via Swagger UI, curl, or frontend clients).
+
+- **`error_handling_and_best_practises.md`**  
+  Covers recommended practices for error handling, response structure, and validation using FastAPI and Pydantic.
+
+
+## `get_started/` — Local Setup & Troubleshooting
+
+This folder helps new developers set up and run InfDB on their local machines. It includes practical guides and workflows.
+
+- **`ide_config.md`**  
+  Recommended IDE extensions, linters, and configurations for working on InfDB.
+
+- **`local_setup.md`**  
+  Step-by-step instructions to spin up the entire system using Docker.
+
+- **`solar_pipeline.md`**  
+  Explains how to run the solar potential analysis pipeline using SunPot and 3DCityDB.
+
+- **`testing.md`**  
+  Describes how to run unit, integration, and end-to-end tests.
+
+- **`troubleshooting.md`**  
+  Common problems during development and how to fix them.
+
+- **`workflow.md`**  
+  Developer workflow overview including Git branching, code formatting, and how to contribute effectively.
+
 
 ## Main Application Package (`src/`)
 

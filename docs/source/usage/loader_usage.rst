@@ -10,31 +10,6 @@ When the loader runs:
 - Results are stored in organized folders based on your project name
 - The system becomes ready for further analysis (e.g., solar potential, API access)
 
-#. **Clone the Repository**
-
-   .. code-block:: bash
-
-      git clone https://gitlab.lrz.de/tum-ens/need/infdb.git
-      cd infdb
-
-#. **Set Up a Virtual Environment**
-
-   .. code-block:: bash
-
-      python -m venv venv
-
-      # Windows
-      venv\Scripts\activate
-
-      # Linux/macOS
-      source venv/bin/activate
-
-#. **Install Dependencies**
-
-   .. code-block:: bash
-
-      pip install -r requirements.txt
-
 #. **Configure Services**
 
    Configuration files are under the ``configs/`` directory.  

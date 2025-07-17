@@ -1,5 +1,5 @@
-Architecture
-============
+User Guide
+==========
 
 This chapter outlines the architecture of **InfDB**.
 

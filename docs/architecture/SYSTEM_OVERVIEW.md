@@ -113,6 +113,16 @@ InfDB extends the CityGML schema with two application-specific tables:
     -   `raster_id`: raster reference
     -   Composite key: (`building_id`, `raster_id`)
 
++------------------------+-----------------------------------------------------------------------------------------+
+| **Table**              | **Purpose**                                                                             |
++========================+=========================================================================================+
+| **raster**             | Stores raster grid cells. Includes raster_id (PK), resolution, and geom.                |
+|                        | The raster_id follows the BKG grid ID convention.                                       |
++------------------------+-----------------------------------------------------------------------------------------+
+| **building_2_raster**  | Maps each building_id to one or more raster_id entries. Composite PK on                 |
+|                        | (building_id, raster_id). Allows many-to-many relationships.                            |
++------------------------+-----------------------------------------------------------------------------------------+
+
 ### TimescaleDB Schema
 
 Weather and sensor data is stored in TimescaleDB.
@@ -131,3 +141,12 @@ Key fields:
 -   `timestamp` -- Observation time
 -   `sensor_name` -- Type of sensor
 -   `value` -- Measured value
+
+
++------------------+--------------------------------------------------------------------------------------------+
+| **Table**        | **Purpose**                                                                                |
++==================+============================================================================================+
+| **weather_data** | Stores time-stamped sensor readings such as temperature, humidity, and more.               |
+|                  | Each record includes raster_id, timestamp, sensor_name, and value.                         |
+|                  | Enables querying historical weather data for spatial regions.                              |
++------------------+--------------------------------------------------------------------------------------------+
