@@ -20,11 +20,11 @@ ALTER TABLE pylovo_input.buildings ADD CONSTRAINT occupants_check CHECK (occupan
 
 ALTER TABLE pylovo_input.buildings ADD CONSTRAINT households_check CHECK (households >= 0);
 
---ALTER TABLE pylovo_input.buildings ALTER COLUMN construction_year SET NOT NULL;
---ALTER TABLE pylovo_input.buildings
---    ADD CONSTRAINT construction_year_check CHECK (construction_year IN
---                                                  ('-1919', '1919-1948', '1949-1978', '1979-1990', '1991-2000',
---                                                   '2001-2010', '2011-2019', '2020-'));
+ALTER TABLE pylovo_input.buildings ALTER COLUMN construction_year SET NOT NULL;
+ALTER TABLE pylovo_input.buildings
+   ADD CONSTRAINT construction_year_check CHECK (construction_year IN
+                                                  ('-1919', '1919-1948', '1949-1978', '1979-1990', '1991-2000',
+                                                   '2001-2010', '2011-2019', '2020-'));
 
 ALTER TABLE pylovo_input.buildings
     ADD CONSTRAINT building_type_check CHECK (building_type IN
