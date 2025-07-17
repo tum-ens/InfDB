@@ -42,7 +42,16 @@ ADD COLUMN zfh_reihenhaus double precision,
 ADD COLUMN mfh_3bis6wohnungen double precision,
 ADD COLUMN mfh_7bis12wohnungen double precision,
 ADD COLUMN mfh_13undmehrwohnungen double precision,
-ADD COLUMN anderergebaeudetyp double precision;
+ADD COLUMN anderergebaeudetyp double precision,
+-- cns22_100m_gbd_nach_baujahr_in_mz_klassen
+ADD COLUMN vor1919 double precision,
+ADD COLUMN a1919bis1948 double precision,
+ADD COLUMN a1949bis1978 double precision,
+ADD COLUMN a1979bis1990 double precision,
+ADD COLUMN a1991bis2000 double precision,
+ADD COLUMN a2001bis2010 double precision,
+ADD COLUMN a2011bis2019 double precision,
+ADD COLUMN a2020undspaeter double precision;
 
 -- Update with population data
 UPDATE pylovo_input.buildings_grid
@@ -75,3 +84,17 @@ SET insgesamt_gebaeude = bld.insgesamt_gebaeude,
 FROM opendata.cns22_100m_geb_gbdtyp_groesse bld
 WHERE buildings_grid.x_mp = bld.x_mp_100m
   AND buildings_grid.y_mp = bld.y_mp_100m;
+
+-- Update with construction year data
+UPDATE pylovo_input.buildings_grid
+SET vor1919 = bauj.vor1919,
+    a1919bis1948 = bauj.a1919bis1948,
+    a1949bis1978 = bauj.a1949bis1978,
+    a1979bis1990 = bauj.a1979bis1990,
+    a1991bis2000 = bauj.a1991bis2000,
+    a2001bis2010 = bauj.a2001bis2010,
+    a2011bis2019 = bauj.a2011bis2019,
+    a2020undspaeter = bauj.a2020undspaeter
+FROM opendata.cns22_100m_gbd_nach_baujahr_in_mz_klassen bauj
+WHERE buildings_grid.x_mp = bauj.x_mp_100m
+  AND buildings_grid.y_mp = bauj.y_mp_100m;
