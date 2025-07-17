@@ -1,18 +1,18 @@
 loader:
   hosts:
     citydb:
-      user: citydb_user #"{services/citydb/user}"
-      password: citydb_password #"{services/citydb/password}"
+      user: "{services/citydb/user}"
+      password: "{services/citydb/password}"
       db: "{services/citydb/db}"
       host: "{services/citydb/host}"  # localhost for local development
-      port: "{services/citydb/exposed_port}"  # 5433 (exposed port) for local development
+      port: 5432  # "{services/citydb/exposed_port}" exposed port outside the container
       epsg: "{services/citydb/epsg}"
     timescaledb:
       user: "{services/timescaledb/user}"
       password: "{services/timescaledb/password}"
       db: "{services/timescaledb/db}"
       host: "{services/timescaledb/host}"   # localhost for local development
-      port: 5432
+      port: 5432  # "{services/timescaledb/exposed_port}"
   path:
     base: "{base/path/base}/opendata"
     processed: "{base/path/base}/{base/name}"
