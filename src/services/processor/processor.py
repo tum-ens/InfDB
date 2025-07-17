@@ -39,7 +39,7 @@ BUILDINGS_SQL_FILES = [
     '08_prepare_grid.sql',
     '09_fill_occupants.sql',
     '10_fill_households.sql',
-    # '11_fill_construction_year.sql',
+    '11_fill_construction_year.sql',
     '12_fill_building_type.sql',
     '13_assign_postcode_to_buildings.sql',
     '14_create_address_table.sql',

@@ -78,7 +78,7 @@ def create_geogitter(resolution):
         DROP TABLE IF EXISTS {schema}.{prefix}_DE_Grid_ETRS89_LAEA_{resolution};
         CREATE TABLE {schema}.{prefix}_DE_Grid_ETRS89_LAEA_{resolution} AS
         WITH params AS (
-            SELECT {resolution_meters}::int AS cell_size  -- 🛠️ change this to 10000 for 10km, etc.
+            SELECT {resolution_meters}::int AS cell_size
         ),
              boundary AS (
                  SELECT ST_Union(ST_Transform(geometry, 3035)) AS geom
