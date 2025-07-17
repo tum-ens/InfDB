@@ -9,11 +9,11 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 # Database configuration
-DB_USER = config.get_value(["services", "citydb", "user"])
-DB_PASSWORD = config.get_value(["services", "citydb", "password"])
-DB_NAME = config.get_value(["services", "citydb", "db"])
-DB_HOST = config.get_value(["services", "citydb", "host"])
-DB_PORT = config.get_value(["services", "citydb", "exposed_port"])
+DB_USER = config.get_value(["services", "processor", "hosts", "citydb", "user"])
+DB_PASSWORD = config.get_value(["services", "processor", "hosts", "citydb", "password"])
+DB_NAME = config.get_value(["services", "processor", "hosts", "citydb", "db"])
+DB_HOST = config.get_value(["services", "processor", "hosts", "citydb", "host"])
+DB_PORT = config.get_value(["services", "processor", "hosts", "citydb", "port"])
 
 # SQL files directory and list of files to execute in order
 WAYS_SQL_DIR = os.path.join(os.path.dirname(__file__), 'sql', 'ways_sql')
