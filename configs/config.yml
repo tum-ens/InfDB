@@ -11,3 +11,4 @@ base:
 configs:
   - config-loader.yml
   - config-services.yml
+  - config-processor.yml
