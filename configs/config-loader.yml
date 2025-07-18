@@ -72,7 +72,7 @@ loader:
     lod2:
       status: active
       url:
-        - "https://geodaten.bayern.de/odd/a/lod2/citygml/meta/metalink/09780139.meta4"
+        - "https://geodaten.bayern.de/odd/a/lod2/citygml/meta/metalink/{base/scope}.meta4"
       path:
         lod2: "{loader/path/base}/lod2/"
         gml: "{loader/path/processed}/lod2/"

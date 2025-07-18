@@ -152,10 +152,10 @@ def get_envelop():
     # gdf_envelope = gpd.read_postgis(sql, engine)
 
     scope = config.get_value(["base", "scope"])
-    nuts_path = config.get_value(["loader", "sources", "bkg", "path", "unzip"])
-    gdf = gpd.read_file(os.path.join(config.get_root_path(), os.path.join(nuts_path, "nuts250_12-31.utm32s.gpkg/nuts250_1231/DE_NUTS250.gpkg")))
+    ags_path = config.get_value(["loader", "sources", "bkg", "path", "unzip"])
+    gdf = gpd.read_file(os.path.join(config.get_root_path(), os.path.join(ags_path, "vg5000_12-31.utm32s.gpkg.ebenen/vg5000_ebenen_1231/DE_VG5000.gpkg")), layer = "vg5000_gem")
 
-    gdf_scope = gdf[gdf["NUTS_CODE"].str.startswith(scope)]
+    gdf_scope = gdf[gdf["AGS"].str.startswith(scope)]
 
     return gdf_scope
 
