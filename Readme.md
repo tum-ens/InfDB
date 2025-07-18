@@ -53,3 +53,11 @@ You need to generate the configurations files once you changed any of the config
     
     # on windows
 ```
+
+## process data
+```bash
+    # on linux and macos
+    docker compose -f dockers/processor.yml --env-file .env up --build
+    
+    # on windows
+```
