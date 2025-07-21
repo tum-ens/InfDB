@@ -114,29 +114,39 @@ When the loader runs:
    - **Basemap** – Raster/vector layers
    - **PLZ** – Postal code boundaries
 
-#. **Generate Docker Compose File**
+#. **Generate Docker Compose and Environment Files**
 
    .. code-block:: bash
 
       # Linux/macOS
-      python3 -m dockers.generate-compose
+      python3 -m src.utils.generate-compose
 
       # Windows
-      python -m dockers.generate-compose
+      python -m src.utils.generate-compose
 
-   This creates a `docker-compose.yml` with only the active services.
+   This creates a ``docker-compose.yml`` and ``.env`` file with only the active services.
 
-#. **Start the Database Services**
+#. **Start the INFDB Services**
 
    .. code-block:: bash
 
-      docker-compose -f ./dockers/docker-compose.yml up
+      docker compose -f docker-compose.yml --env-file .env up --build
 
-   Active loader modules will automatically run and process data into the databases.
+#. **Load Data**
+
+   .. code-block:: bash
+
+      docker compose -f dockers/loader/loader.yml --env-file .env up --build
+
+#. **Process Data**
+
+   .. code-block:: bash
+
+      docker compose -f dockers/processor.yml --env-file .env up --build
 
 #. **Start the API Server**
 
-   Once services are running and data is loaded, launch the FastAPI app:
+   Once services are running and data is loaded and processed, launch the FastAPI app:
 
    .. code-block:: bash
 

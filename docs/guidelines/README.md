@@ -8,6 +8,6 @@ The project guidelines establish consistent standards and best practices for dev
 
 ## Contents
 
-- [**Coding Guidelines**](coding_guidelines.md): Detailed coding standards and best practices for the project
+- [**Coding Guidelines**](CODING_GUIDELINES.md): Detailed coding standards and best practices for the project
 - [**Requirements**](requirements.adoc): System requirements and specifications in AsciiDoc format
 

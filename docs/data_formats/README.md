@@ -55,9 +55,3 @@ When working with data formats:
 2. Use the provided examples as templates
 3. Validate your data against the schemas before import
 4. Use the conversion utilities when necessary to transform data between formats
-
-## Related Documentation
-
-- The [API Guide](../development/api_guide.md) includes information about API request and response formats
-- The [Database Schema](../development/database_schema.md) provides details about how data is stored in the database
-- The [Examples](../examples/) directory contains code examples for working with these data formats

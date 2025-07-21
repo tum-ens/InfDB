@@ -24,4 +24,4 @@ The `architecture/` folder helps developers, analysts, and maintainers understan
 - Each project (identified by a base name) maintains isolated folders and data pipelines for reproducibility and modularity.
 - The architecture is extensible, allowing new datasets and services to be added with minimal effort.
 
-For setup instructions, refer to the [development guides](../development/).
+For setup instructions, refer to the [development guides](../development/README.md).

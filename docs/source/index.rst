@@ -20,5 +20,6 @@ InfDB serves as a foundation for:
    introduction/index
    usage/index
    user_guide/index
+   contributing/index
    changelog/index
 

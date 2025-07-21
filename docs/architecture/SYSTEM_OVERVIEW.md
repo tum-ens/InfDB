@@ -17,8 +17,7 @@ Each building is assigned to one or more raster cells depending on resolution. S
 
 InfDB is composed of the following main components:
 
-1.  **Database Layer** PostgreSQL with extensions for specialized data
-    types:
+1.  **Database Layer** PostgreSQL with extensions for specialized data types:
     -   TimescaleDB: Handles time-series data efficiently
     -   PostGIS: Provides geospatial capabilities
     -   3DCityDB: Supports urban modeling and 3D city data

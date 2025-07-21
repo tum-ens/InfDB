@@ -8,8 +8,8 @@ The operations documentation provides guidance for DevOps engineers, system admi
 
 ## Contents
 
-- [**CI/CD Guide**](ci_cd_guide.md):  
+- [**CI/CD Guide**](CI_CD_GUIDE.md):  
   Explains how the automated pipelines work, including build, test, and deploy stages. It includes GitLab CI/CD details, environment variables, and job responsibilities.
 
-- [**Deployment**](deployment.md):  
+- [**Deployment**](DEPLOYMENT.md):  
   Step-by-step instructions for deploying InfDB, including Docker Compose usage, environment setup, credentials, and optional services.

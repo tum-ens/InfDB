@@ -5,14 +5,14 @@ loader:
       password: "{services/citydb/password}"
       db: "{services/citydb/db}"
       host: "{services/citydb/host}"  # localhost for local development
-      port: 5432  # 5433 (exposed port) for local development
+      port: 5432  # "{services/citydb/exposed_port}" exposed port outside the container
       epsg: "{services/citydb/epsg}"
     timescaledb:
       user: "{services/timescaledb/user}"
       password: "{services/timescaledb/password}"
       db: "{services/timescaledb/db}"
       host: "{services/timescaledb/host}"   # localhost for local development
-      port: 5432
+      port: 5432  # "{services/timescaledb/exposed_port}"
   path:
     base: "{base/path/base}/opendata"
     processed: "{base/path/base}/{base/name}"
@@ -55,14 +55,14 @@ loader:
         - Zensus2022_Familienstand-Gitter.csv
         - Zensus2022_Geburtsland_Gruppen-Gitter.csv
         - Zensus2022_Anteil_ueber_65-Gitter.csv
-        # - Zensus2022_Heizungsart-Gitter.csv # UTF-8 encoding issue
+        - Zensus2022_Heizungsart-Gitter.csv # UTF-8 encoding issue
         - Zensus2022_Anteil_unter_18-Gitter.csv
         - Zensus2022_Marktaktive_Leerstandsquote-Gitter.csv
         - Zensus2022_Gebaeude_mit_Wohnraum_nach_Anzahl_der_Wohnungen_im_Gebaeude-Gitter.csv
         - Zensus2022_Staatsangehoerigkeit-Gitter.csv
         - Zensus2022_Gebaeude_mit_Wohnraum_nach_Energietraeger_der_Heizung-Gitter.csv
-        # - Zensus2022_Energietraeger-Gitter.csv  # UTF-8 encoding issue
-        # - Zensus2022_Deutsche_Staatsangehoerige_ab18-Gitter.csv   # UTF-8 encoding issue
+        - Zensus2022_Energietraeger-Gitter.csv  # UTF-8 encoding issue
+        - Zensus2022_Deutsche_Staatsangehoerige_ab18-Gitter.csv   # UTF-8 encoding issue
         - Zensus2022_Groesse_des_privaten_Haushalts-Gitter.csv
         - Zensus2022_Durchschn_Nettokaltmiete-Gitter.csv
         - Zensus2022_Gebaeude_mit_Wohnraum_nach_ueberwiegender_Heizungsart-Gitter.csv

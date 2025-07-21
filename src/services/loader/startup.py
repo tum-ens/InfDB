@@ -18,11 +18,11 @@ if __name__ == "__main__":
     # Load remaining data in parallel
     mp.freeze_support()
     processes = []
+    processes.append(mp.Process(target=bkg.load))
     processes.append(mp.Process(target=lod2.load))
-    processes.append(mp.Process(target=census2022.load))
     processes.append(mp.Process(target=plz.load))
     processes.append(mp.Process(target=basemap.load))
-    processes.append(mp.Process(target=bkg.load))
+    processes.append(mp.Process(target=census2022.load))
 
     for process in processes:
         process.start()
