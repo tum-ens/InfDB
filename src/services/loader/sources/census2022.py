@@ -74,7 +74,7 @@ def process_census():
     schema = config.get_value(["loader", "sources", "zensus_2022", "schema"])
 
     resolutions = config.get_value(["loader", "sources", "zensus_2022", "resolutions"])
-    csv_files = utils.get_all_csv_files(input_path)
+    csv_files = utils.get_all_files(input_path, ".csv")
     # for file in csv_files:
     #     print(os.path.basename(file))
 
