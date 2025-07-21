@@ -5,7 +5,7 @@ services:
     db: citydb
     host: citydb
     exposed_port: 5433
-    epsg: 25832
+    epsg: 25832 # 3035 (Europe)
     path: "{base/path/base}/{base/name}/citydb/"
     status: active
     compose_file: "dockers/services/citydb.yml"
