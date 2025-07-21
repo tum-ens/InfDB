@@ -157,13 +157,7 @@ def get_envelop():
     scope = config.get_value(["base", "scope"])
     ags_path = config.get_path(["loader", "sources", "bkg", "path", "unzip"])
 
-    files = get_file(ags_path, filename="vg5000", ending=".gpkg")
-    path = ""
-    for file in files:
-        if "vg5000" in file:
-            path = file
-            break
-
+    path = get_file(ags_path, filename="vg5000", ending=".gpkg")
     log.debug(f"Envelop Path: {path}")
     gdf = gpd.read_file(path, layer = "vg5000_gem")
 
