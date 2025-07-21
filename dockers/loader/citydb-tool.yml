@@ -12,8 +12,10 @@ services:
     command: import citygml /data/
     volumes:
       - ../../${LOADER_SOURCES_LOD2_PATH_GML}/:/data/
-    networks:
-      - ${BASE_NETWORK_NAME}
     depends_on:
-        loader:
-            condition: service_completed_successfully
+      loader:
+        condition: service_completed_successfully
+networks:
+  infdb:
+    external: true
+    name: infdb_${BASE_NETWORK_NAME}
