@@ -202,3 +202,22 @@ def ensure_utf8_encoding(filepath: str) -> str:
         return temp_path
 
     return filepath  # already UTF-8
+
+
+def get_all_csv_files(folder_path):
+    """
+    Recursively finds all .csv files in the given folder and its subfolders.
+
+    Parameters:
+        folder_path (str): Path to the top-level folder.
+
+    Returns:
+        List[str]: List of full paths to .csv files.
+    """
+    csv_files = []
+    for dirpath, _, filenames in os.walk(folder_path):
+        for filename in filenames:
+            if filename.lower().endswith(".csv"):
+                csv_files.append(os.path.join(dirpath, filename))
+    csv_files.sort()
+    return csv_files
