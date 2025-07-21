@@ -12,9 +12,9 @@ services:
     command: import citygml /data/
     volumes:
       - ../../${LOADER_SOURCES_LOD2_PATH_GML}/:/data/
-    depends_on:
-      loader:
-        condition: service_completed_successfully
+#    depends_on:
+#      loader:
+#        condition: service_completed_successfully
 networks:
   infdb:
     external: true
