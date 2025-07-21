@@ -61,3 +61,50 @@ TimescaleDB
 .. image:: ../../img/db_tables.png
    :alt: InfDB Architecture
    :align: center
+
+Example Data Relations
+----------------------
+
+Here are example entries showing how the tables are related:
+
+**raster** table:
+
++------------+-----------+----------------------------------+
+| raster_id  | resolution| geom (WKB format, simplified)    |
++============+===========+==================================+
+| DE_100_123 | 100       | POLYGON((11.5 48.1, ...))        |
++------------+-----------+----------------------------------+
+| DE_100_124 | 100       | POLYGON((11.6 48.1, ...))        |
++------------+-----------+----------------------------------+
+| DE_1000_45 | 1000      | POLYGON((11.5 48.0, ...))        |
++------------+-----------+----------------------------------+
+
+**building_2_raster** table:
+
++-------------+------------+
+| building_id | raster_id  |
++=============+============+
+| BLDG_001    | DE_100_123 |
++-------------+------------+
+| BLDG_001    | DE_100_124 |
++-------------+------------+
+| BLDG_002    | DE_100_123 |
++-------------+------------+
+
+**weather_data** table:
+
++------------+---------------------+-------------+-------+
+| raster_id  | timestamp           | sensor_name | value |
++============+=====================+=============+=======+
+| DE_100_123 | 2024-01-01 12:00:00 | temperature | 20.5  |
++------------+---------------------+-------------+-------+
+| DE_100_123 | 2024-01-01 12:00:00 | humidity    | 65.0  |
++------------+---------------------+-------------+-------+
+| DE_100_124 | 2024-01-01 12:00:00 | temperature | 20.3  |
++------------+---------------------+-------------+-------+
+
+This example shows:
+
+- Building BLDG_001 spans two 100m raster cells (DE_100_123 and DE_100_124)
+- Building BLDG_002 is contained within one cell (DE_100_123)
+- Weather measurements are stored per raster cell with timestamp and sensor type

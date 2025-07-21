@@ -18,3 +18,7 @@
 1. Set interpreter to `venv`
 2. Install Black + Flake8 plugins
 3. Set code style to PEP8 (max line length: 88)
+
+## 🚀 Quick Start
+
+Ready to start developing? Follow our [Local Development Setup Guide](./LOCAL_SETUP.md) to get up and running in minutes.

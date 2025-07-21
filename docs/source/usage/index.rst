@@ -1,15 +1,28 @@
-Get Started
-===========
+Get Started with InfDB
+======================
 
-This documentation is for users who want to run the platform locally and access it through the API.
+This guide helps you set up, configure, and use InfDB for your infrastructure data management needs.
 
-Follow the steps in the sections below depending on what you want to do:
+Quick Reference
+---------------
 
-1. Use the data loaders and database services
-2. Optionally compute and export solar potential information
+.. list-table::
+   :header-rows: 1
+
+   * - If you want to...
+     - Go to...
+   * - Set up InfDB locally
+     - :doc:`installation`
+   * - Load data
+     - :doc:`loader_usage`
+   * - Calculate solar potential
+     - :doc:`solar_usage`
+   * - Use the REST API
+     - :doc:`api`
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
+   :hidden:
 
    installation
    loader_usage

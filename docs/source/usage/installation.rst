@@ -6,7 +6,7 @@ To use InfDB, you first need to set up your environment. This includes downloadi
 Follow these steps to get started:
 
 1. Install UV Package Manager
-----------------------------
+-----------------------------
 
 First, install the UV package manager which we'll use for dependency management.
 
