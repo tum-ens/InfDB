@@ -48,5 +48,6 @@ retry_requests==2.0.0
 pandas==2.2.3
 geoalchemy2==0.17.1
 PyYAML==6.0.2
+chardet
 
 # Documentation dependencies are in docs/requirements.txt
