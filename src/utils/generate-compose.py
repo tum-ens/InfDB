@@ -1,6 +1,5 @@
 import os
 import secrets
-from src.core.config import get_value
 from src.core import config
 
 
@@ -27,7 +26,7 @@ def write_compose_file(output_path):
             "pgadmin_data": None
         },
         "networks": {
-            get_value(["base", "network_name"]): {
+            config.get_value(["base", "network_name"]): {
                 "driver": "bridge"
             }
         }
@@ -41,31 +40,44 @@ def write_compose_file(output_path):
 
     config.write_yaml(output, output_path)
 
+import json
 
 def setup_pgadmin_servers(output_path):
-    services = config.get_value(["services"])
+    # services = config.get_value(["services"])
 
-    servers = {
-        "Servers": {}
-    }
+    # Build pgAdmin-compatible structure
+    servers_json = {"Servers": {}}
+    pgpass_entries = []
+    PORT = 5432
 
-    for server_id, name in enumerate(services, start=1):
-        if name.lower() in ["citydb", "timescaledb"]:
+    for server_id, service in enumerate(["citydb", "timescaledb"], 1):
+        servers_json["Servers"][server_id] = {
+            "Name": service,
+            "Group": "Servers",
+            "Host": config.get_value(["services", service, "host"]),
+            "Port": PORT,
+            "MaintenanceDB": config.get_value(["services", service, "db"]),
+            "Username": config.get_value(["services", service, "user"]),
+            "SSLMode": "prefer",
+            "Password": config.get_value(["services", service, "password"]),
+            "PassFile": "/pgadmin4/.pgpass"
+        }
 
-            servers["Servers"][str(server_id)] = {
-                "Name": name.capitalize(),
-                "Group": "Servers",
-                "Host": get_value(["services", name, "host"]),
-                "Port": 5432,
-                "MaintenanceDB": get_value(["services", name, "db"]),
-                "Username": get_value(["services", name, "user"]),
-                "SSLMode": "prefer"
-            }
+        pgpass_entries.append(
+            f"{config.get_value(["services", service, "host"])}:{PORT}:{service}:{config.get_value(["services", service, "user"])}:{config.get_value(["services", service, "password"])}"
+        )
 
-    output_path = os.path.join(config.get_root_path(), output_path)
-    config.write_yaml(servers, output_path)
+    # Save to servers.json
+    with open(os.path.join(output_path, "servers.json"), "w") as f:
+        json.dump(servers_json, f, indent=4)
+    # print("servers.json with passwords written.")
 
+    # Write .pgpass (PostgreSQL client password file)
+    pgpass_path = os.path.join(output_path, ".pgpass")
+    with open(pgpass_path, "w") as f:
+        f.write("\n".join(pgpass_entries) + "\n")
+    os.chmod(pgpass_path, 0o600)  # Set permissions to read/write for the owner only
 
 write_env_file(".env")
 write_compose_file("docker-compose.yml")
-setup_pgadmin_servers("dockers/services/servers.json")
+setup_pgadmin_servers("dockers/services/")

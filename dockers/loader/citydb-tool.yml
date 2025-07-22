@@ -1,5 +1,5 @@
 services:
-  citydb-tool:
+  lod2-loader:
     image: 3dcitydb/citydb-tool
     #container_name: citydb-tool
     environment:
@@ -10,10 +10,10 @@ services:
       CITYDB_PASSWORD: ${LOADER_HOSTS_CITYDB_PASSWORD}
       SRID: ${LOADER_HOSTS_CITYDB_EPSG}
     command: import citygml /data/
+    networks:
+      - infdb
     volumes:
       - ../../${LOADER_SOURCES_LOD2_PATH_GML}/:/data/
-    networks:
-      - ${BASE_NETWORK_NAME}
     depends_on:
-        loader:
-            condition: service_completed_successfully
+      data-loader:
+        condition: service_completed_successfully

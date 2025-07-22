@@ -74,7 +74,7 @@ def process_census():
     schema = config.get_value(["loader", "sources", "zensus_2022", "schema"])
 
     resolutions = config.get_value(["loader", "sources", "zensus_2022", "resolutions"])
-    csv_files = utils.get_all_csv_files(input_path)
+    csv_files = utils.get_all_files(input_path, ".csv")
     # for file in csv_files:
     #     print(os.path.basename(file))
 
@@ -84,13 +84,13 @@ def process_census():
         for file in csv_files:
             # print(file)
             if "_utf8.csv" in file:
-                print("utf8" + file)
+                log.debug("utf8" + file)
                 continue
             if resolution not in file:
                 continue
-            # if os.path.basename(file).replace("_" + resolution, "") not in layers:
-            #     log.info(f"Skipping {file}...")
-            #     continue
+            if os.path.basename(file).replace("_" + resolution, "") not in layers:
+                log.info(f"Skipping {file}...")
+                continue
 
             log.info(f"Processing {file}...")
             try:
@@ -135,7 +135,13 @@ def load():
 
     # download_zensus(zip_links)
     zip_path = config.get_path(["loader", "sources", "zensus_2022", "path", "zip"])
-    utils.download_files(zip_links, zip_path)
+
+    layers = config.get_value(["loader", "sources", "zensus_2022", "layer"])
+    for zip_link in zip_links:
+        if zip_link not in layers:
+            log.info(f"Skipping {zip_link}, not in layers")
+            continue
+        utils.download_files(zip_link, zip_path)
 
     unzip_path = config.get_path(["loader", "sources", "zensus_2022", "path", "unzip"])
 

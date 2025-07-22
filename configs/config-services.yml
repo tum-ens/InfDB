@@ -11,11 +11,11 @@ services:
     compose_file: "dockers/services/citydb.yml"
 
   timescaledb:
-    user: timescale_user
-    password: secret
-    db: timescaledb_db
+    user: timescaledb_user
+    password: timescaledb_password
+    db: timescaledb
     host: timescaledb
-    exposed_port: 5434
+    exposed_port: 5432
     status: active
     path: "{base/path/base}/{base/name}/timescaledb/"
     compose_file: "dockers/services/timescaledb.yml"
