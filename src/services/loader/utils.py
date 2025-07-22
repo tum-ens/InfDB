@@ -123,9 +123,12 @@ def do_cmd(cmd):
     print(f"{cmd} executed successfully.")
 
 
-def import_layers(input_file, layers, schema, prefix="", layer_names=None):
+def import_layers(input_file, layers, schema, prefix="", layer_names=None, scope=True):
 
-    gdf_scope = get_envelop()
+    if scope:
+        gdf_scope = get_envelop()
+    else:
+        gdf_scope = None
     epsg = config.get_value(["services", "citydb", "epsg"])
     citydb_engine = get_db_engine("citydb")
 
@@ -152,10 +155,13 @@ def get_envelop():
     # gdf_envelope = gpd.read_postgis(sql, engine)
 
     scope = config.get_value(["base", "scope"])
-    nuts_path = config.get_value(["loader", "sources", "bkg", "path", "unzip"])
-    gdf = gpd.read_file(os.path.join(config.get_root_path(), os.path.join(nuts_path, "nuts250_12-31.utm32s.gpkg/nuts250_1231/DE_NUTS250.gpkg")))
+    ags_path = config.get_path(["loader", "sources", "bkg", "path", "unzip"])
 
-    gdf_scope = gdf[gdf["NUTS_CODE"].str.startswith(scope)]
+    path = get_file(ags_path, filename="vg5000", ending=".gpkg")
+    log.debug(f"Envelop Path: {path}")
+    gdf = gpd.read_file(path, layer = "vg5000_gem")
+
+    gdf_scope = gdf[gdf["AGS"].str.startswith(scope)]
 
     return gdf_scope
 
@@ -204,7 +210,7 @@ def ensure_utf8_encoding(filepath: str) -> str:
     return filepath  # already UTF-8
 
 
-def get_all_csv_files(folder_path):
+def get_all_files(folder_path, ending):
     """
     Recursively finds all .csv files in the given folder and its subfolders.
 
@@ -217,7 +223,19 @@ def get_all_csv_files(folder_path):
     csv_files = []
     for dirpath, _, filenames in os.walk(folder_path):
         for filename in filenames:
-            if filename.lower().endswith(".csv"):
+            if filename.lower().endswith(ending):
                 csv_files.append(os.path.join(dirpath, filename))
     csv_files.sort()
     return csv_files
+
+def get_file(folder_path, filename, ending):
+    files = get_all_files(folder_path, ending)
+    # TODO: Check for newest version in case of multiple files
+    path = ""
+    for file in files:
+        if filename in file:
+            path = file
+            break
+
+    log.debug(f"Envelop Path: {path}")
+    return path

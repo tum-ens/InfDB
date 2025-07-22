@@ -2,7 +2,8 @@ base:
   name: sonthofen
   path:
     base: "infdb-data/"
-  scope: DE27E
+  scope: 09780139
+  schema: general
   network_name: network
   environment: container
   base_sunset_dir: "{base/path/base}/sunset/"
