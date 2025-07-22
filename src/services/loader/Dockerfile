@@ -24,7 +24,7 @@ RUN apk add --no-cache \
 
 
 WORKDIR /app
-#Note for the next lines, in the dockers/loader.yml we set the build context.
+#Note for the next lines, in the dockers/data-loader.yml we set the build context.
 #As the build context shows us the base project directory, we can reach all the directories and paths.
 
 #better to copy requirement here and install because we mostly change source code

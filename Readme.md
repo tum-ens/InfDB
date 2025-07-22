@@ -17,7 +17,7 @@
 ## activate environment
 ```bash
     # linux and macos
-    source venv/bin/activate
+    source .venv/bin/activate
     # windows
     venv\Scripts\activate
 ```
@@ -40,7 +40,7 @@ You need to generate the configurations files once you changed any of the config
 ## start infdb
 ```bash
     # on linux and macos
-     docker compose -f docker-compose.yml --env-file .env up --build
+     docker compose -f docker-compose.yml --env-file .env up -d --build
 
     # on windows
 ```
@@ -49,19 +49,15 @@ You need to generate the configurations files once you changed any of the config
 ## load data
 ```bash
     # on linux and macos
-    docker compose -f dockers/loader/loader.yml --env-file .env up --build
-    docker compose -f dockers/loader/citydb-tool.yml --env-file .env up --build
+    docker compose -f dockers/loader/docker-compose.yml --env-file .env up --build
 
     # on windows
 ```
-<<<<<<< HEAD
-=======
 
 ## process data
 ```bash
     # on linux and macos
     docker compose -f dockers/processor.yml --env-file .env up --build
-    
+
     # on windows
 ```
->>>>>>> develop
