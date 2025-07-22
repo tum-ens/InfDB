@@ -4,27 +4,28 @@ loader:
       user: "{services/citydb/user}"
       password: "{services/citydb/password}"
       db: "{services/citydb/db}"
-      host: "{services/citydb/host}"  # localhost for local development
-      port: 5432  # "{services/citydb/exposed_port}" exposed port outside the container
+      host: "{services/citydb/host}" # localhost for local development
+      port: 5432 # "{services/citydb/exposed_port}" exposed port outside the container
       epsg: "{services/citydb/epsg}"
     timescaledb:
       user: "{services/timescaledb/user}"
       password: "{services/timescaledb/password}"
       db: "{services/timescaledb/db}"
-      host: "{services/timescaledb/host}"   # localhost for local development
-      port: 5432  # "{services/timescaledb/exposed_port}"
+      host: "{services/timescaledb/host}" # localhost for local development
+      port: 5432 # "{services/timescaledb/exposed_port}"
   path:
-    base: "{base/path/base}/opendata"
-    processed: "{base/path/base}/{base/name}"
+    base: "{base/path/base}/"
+    opendata: "{loader/path/base}/opendata2"
+    processed: "{loader/path/base}/{base/name}"
   sources:
     zensus_2022:
       status: active
       resolutions:
-        - 10km
-        - 1km
+        # - 10km
+        # - 1km
         - 100m
       path:
-        base: "{loader/path/base}/zensus_2022/"
+        base: "{loader/path/opendata}/zensus_2022/"
         zip: "{loader/sources/zensus_2022/path/base}/zip/"
         unzip: "{loader/sources/zensus_2022/path/base}/unzip/"
         processed: "{loader/path/processed}/zensus_2022/"
@@ -32,55 +33,55 @@ loader:
       schema: opendata
       prefix: cns22
       layer:
-        - Zensus2022_Religion-Gitter.csv
-        - Wohnungen_nach_Zahl_der_Raeume-Gitter.csv
-        - Typ_der_Kernfamilie_nach_Kindern-Gitter.csv
-        - Zensus2022_Anteil_Auslaender-Gitter.csv
-        - Zensus2022_Durchschnittsalter-Gitter.csv
-        - Durchschnittliche_Nettokaltmiete_und_Anzahl_der_Wohnungen-Gitter.csv
-        - Zensus2022_Durchschn_Haushaltsgroesse-Gitter.csv
-        - Zensus2022_Auslaenderanteil_ab18-Gitter.csv
-        - Zensus2022_Bevoelkerungszahl-Gitter.csv
-        - Zensus2022_Flaeche_der_Wohnung_10m2_Intervalle-Gitter.csv
-        - Zensus2022_Durchschn_Flaeche_je_Bewohner-Gitter.csv
-        - Zensus2022_Staatsangehoerigkeit_Gruppen-Gitter.csv
-        - Zensus2022_Alter_in_10er-Jahresgruppen-Gitter.csv
-        - Zensus2022_Durchschn_Flaeche_je_Wohnung-Gitter.csv
-        - Zensus2022_Alter_5Altersklassen-Gitter.csv
-        - Zensus2022_Zahl_der_Staatsangehoerigkeiten-Gitter.csv
-        - Zensus2022_Eigentuemerquote-Gitter.csv
-        - Zensus2022_Gebaeude_nach_Baujahr_in_Mikrozensus_Klassen-Gitter.csv
-        - Zensus2022_Wohnung_Gebaeudetyp_Groesse-Gitter.csv
-        - Zensus2022_Seniorenstatus_eines_privaten_Haushalts-Gitter.csv
-        - Zensus2022_Familienstand-Gitter.csv
-        - Zensus2022_Geburtsland_Gruppen-Gitter.csv
-        - Zensus2022_Anteil_ueber_65-Gitter.csv
-        - Zensus2022_Heizungsart-Gitter.csv # UTF-8 encoding issue
-        - Zensus2022_Anteil_unter_18-Gitter.csv
-        - Zensus2022_Marktaktive_Leerstandsquote-Gitter.csv
-        - Zensus2022_Gebaeude_mit_Wohnraum_nach_Anzahl_der_Wohnungen_im_Gebaeude-Gitter.csv
-        - Zensus2022_Staatsangehoerigkeit-Gitter.csv
-        - Zensus2022_Gebaeude_mit_Wohnraum_nach_Energietraeger_der_Heizung-Gitter.csv
-        - Zensus2022_Energietraeger-Gitter.csv  # UTF-8 encoding issue
-        - Zensus2022_Deutsche_Staatsangehoerige_ab18-Gitter.csv   # UTF-8 encoding issue
-        - Zensus2022_Groesse_des_privaten_Haushalts-Gitter.csv
-        - Zensus2022_Durchschn_Nettokaltmiete-Gitter.csv
-        - Zensus2022_Gebaeude_mit_Wohnraum_nach_ueberwiegender_Heizungsart-Gitter.csv
-        - Zensus2022_Geb_Gebaeudetyp_Groesse-Gitter.csv
-        - Zensus2022_Leerstandsquote-Gitter.csv
+#        - Zensus2022_Religion-Gitter.csv
+#        - Wohnungen_nach_Zahl_der_Raeume-Gitter.csv
+#        - Typ_der_Kernfamilie_nach_Kindern-Gitter.csv
+#        - Zensus2022_Anteil_Auslaender-Gitter.csv
+#        - Zensus2022_Durchschnittsalter-Gitter.csv
+#        - Durchschnittliche_Nettokaltmiete_und_Anzahl_der_Wohnungen-Gitter.csv
+         - Zensus2022_Durchschn_Haushaltsgroesse-Gitter.csv
+#        - Zensus2022_Auslaenderanteil_ab18-Gitter.csv
+         - Zensus2022_Bevoelkerungszahl-Gitter.csv
+#        - Zensus2022_Flaeche_der_Wohnung_10m2_Intervalle-Gitter.csv
+#        - Zensus2022_Durchschn_Flaeche_je_Bewohner-Gitter.csv
+#        - Zensus2022_Staatsangehoerigkeit_Gruppen-Gitter.csv
+#        - Zensus2022_Alter_in_10er-Jahresgruppen-Gitter.csv
+#        - Zensus2022_Durchschn_Flaeche_je_Wohnung-Gitter.csv
+#        - Zensus2022_Alter_5Altersklassen-Gitter.csv
+#        - Zensus2022_Zahl_der_Staatsangehoerigkeiten-Gitter.csv
+#        - Zensus2022_Eigentuemerquote-Gitter.csv
+         - Zensus2022_Gebaeude_nach_Baujahr_in_Mikrozensus_Klassen-Gitter.csv
+         - Zensus2022_Wohnung_Gebaeudetyp_Groesse-Gitter.csv
+#        - Zensus2022_Seniorenstatus_eines_privaten_Haushalts-Gitter.csv
+#        - Zensus2022_Familienstand-Gitter.csv
+#        - Zensus2022_Geburtsland_Gruppen-Gitter.csv
+#        - Zensus2022_Anteil_ueber_65-Gitter.csv
+#        - Zensus2022_Heizungsart-Gitter.csv # UTF-8 encoding issue
+#        - Zensus2022_Anteil_unter_18-Gitter.csv
+#        - Zensus2022_Marktaktive_Leerstandsquote-Gitter.csv
+#        - Zensus2022_Gebaeude_mit_Wohnraum_nach_Anzahl_der_Wohnungen_im_Gebaeude-Gitter.csv
+#        - Zensus2022_Staatsangehoerigkeit-Gitter.csv
+#        - Zensus2022_Gebaeude_mit_Wohnraum_nach_Energietraeger_der_Heizung-Gitter.csv
+#        - Zensus2022_Energietraeger-Gitter.csv # UTF-8 encoding issue
+#        - Zensus2022_Deutsche_Staatsangehoerige_ab18-Gitter.csv # UTF-8 encoding issue
+#        - Zensus2022_Groesse_des_privaten_Haushalts-Gitter.csv
+#        - Zensus2022_Durchschn_Nettokaltmiete-Gitter.csv
+#        - Zensus2022_Gebaeude_mit_Wohnraum_nach_ueberwiegender_Heizungsart-Gitter.csv
+#        - Zensus2022_Geb_Gebaeudetyp_Groesse-Gitter.csv
+#        - Zensus2022_Leerstandsquote-Gitter.csv
 
     lod2:
       status: active
       url:
         - "https://geodaten.bayern.de/odd/a/lod2/citygml/meta/metalink/{base/scope}.meta4"
       path:
-        lod2: "{loader/path/base}/lod2/"
+        lod2: "{loader/path/opendata}/lod2/"
         gml: "{loader/path/processed}/lod2/"
 
     bkg:
       status: active
       path:
-        base: "{loader/path/base}/bkg/"
+        base: "{loader/path/opendata}/bkg/"
         zip: "{loader/sources/bkg/path/base}/zip/"
         unzip: "{loader/sources/bkg/path/base}/unzip/"
         processed: "{loader/path/processed}/bkg/"
@@ -105,8 +106,8 @@ loader:
       geogitter:
         resolutions:
           - 100m
-          - 1km
-          - 10km
+#          - 1km
+#          - 10km
 
     basemap:
       status: active
@@ -115,7 +116,7 @@ loader:
       filter:
         - by
       path:
-        base: "{loader/path/base}/basemap/"
+        base: "{loader/path/opendata}/basemap/"
         processed: "{loader/path/processed}/basemap/"
       schema: opendata
       prefix: bmp
@@ -156,7 +157,7 @@ loader:
       status: active
       url: "https://downloads.suche-postleitzahl.org/v2/public/plz-5stellig.geojson"
       path:
-        base: "{loader/path/base}/plz/"
+        base: "{loader/path/opendata}/plz/"
         processed: "{loader/path/processed}/plz/"
       schema: opendata
       prefix: plz
