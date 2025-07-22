@@ -41,7 +41,7 @@ def load():
     for file in download_files:
         log.info(f"Loading {file}...")
         list = gpd.list_layers(file)["name"]
-        print(list)
+        # print(list)
         layer_names = config.get_value(["loader", "sources", "basemap", "layer"])
         layers = [layer + "_bdlm" for layer in layer_names]
         utils.import_layers(file, layers, schema, prefix=prefix, layer_names=layer_names)
