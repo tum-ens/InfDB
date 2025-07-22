@@ -1,8 +1,8 @@
 base:
-  name: sonthofen
+  name: bergkirchen
   path:
     base: "infdb-data/"
-  scope: DE27E
+  scope: 09174113 #ags
   schema: general
   network_name: network
   environment: container
