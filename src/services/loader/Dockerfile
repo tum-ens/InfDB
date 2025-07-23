@@ -1,39 +1,49 @@
-FROM python:3.11-alpine
-
-RUN apk add --no-cache \
-    gdal-dev \
-    aria2 \
-    python3-dev \
-    py3-pip \
-    build-base \
-    geos-dev \
-    proj-dev
-
-
-## JAVA needed for CITYDB-TOOL
-#ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk
-#ENV PATH=$JAVA_HOME/bin:$PATH
-#
-#ENV CITYDB_VERSION=1.0.0
-#ENV CITYDB_TOOL_DIR=/opt/citydb-tool
-#RUN wget https://github.com/3dcitydb/citydb-tool/releases/download/v${CITYDB_VERSION}/citydb-tool-${CITYDB_VERSION}.zip && \
-#    unzip citydb-tool-${CITYDB_VERSION}.zip -d /opt && \
-#    rm citydb-tool-${CITYDB_VERSION}.zip && \
-#    mv /opt/citydb-tool-${CITYDB_VERSION} ${CITYDB_TOOL_DIR}
-#ENV PATH="$PATH:/opt/citydb-tool"
-
+FROM ubuntu:latest
 
 WORKDIR /app
-#Note for the next lines, in the dockers/data-loader.yml we set the build context.
-#As the build context shows us the base project directory, we can reach all the directories and paths.
 
-#better to copy requirement here and install because we mostly change source code
-#we only need to rerun those steps as docker has layers.
-#this way we only run pip install if requirements_loader.txt changes
-COPY src/services/loader/requirements_loader.txt requirements_loader.txt
-RUN pip install --upgrade pip
-RUN pip install --no-cache-dir -r requirements_loader.txt
+## Install uv on Ubuntu
+# The installer requires curl (and certificates) to download the release archive
+RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates
 
-COPY /src/core/ /app/src/core/
-COPY /src/services/loader /app/src/services/loader
-CMD ["python", "-u", "-m", "src.services.loader.startup"]
+# Download the latest installer
+ADD https://astral.sh/uv/install.sh /uv-installer.sh
+
+# Run the installer then remove it
+RUN sh /uv-installer.sh && rm /uv-installer.sh
+
+# Ensure the installed binary is on the `PATH`
+ENV PATH="/root/.local/bin/:$PATH"
+
+
+## Run python scripts with uv
+# COPY requiremets into the container
+COPY src/services/loader/pyproject.toml /app/pyproject.toml
+
+# Copy the source code into the container
+COPY src /app/src
+
+# Run main.py with uv and environment defined in pyproject.toml
+CMD ["uv", "run", "python", "-m", "src.services.loader.main"]
+
+
+
+#FROM python:3.12
+#
+#RUN apk add --no-cache \
+#    gdal-dev \
+#    aria2 \
+#    python3-dev \
+#    py3-pip \
+#    build-base \
+#    geos-dev \
+#    proj-dev
+#
+#WORKDIR /app
+#
+#COPY src/services/loader/requirements.txt requirements.txt
+#RUN pip install --upgrade pip
+#RUN pip install --no-cache-dir -r requirements.txt
+#
+#
+#CMD ["python", "-u", "-m", "src.services.loader.main"]
