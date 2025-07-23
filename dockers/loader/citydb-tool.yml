@@ -17,3 +17,7 @@ services:
     depends_on:
       data-loader:
         condition: service_completed_successfully
+networks:
+  infdb:
+    external: true
+    name: infdb_${BASE_NETWORK_NAME}

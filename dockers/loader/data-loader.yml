@@ -9,3 +9,7 @@ services:
     volumes:
       - ../../configs:/app/configs
       - ../../${LOADER_PATH_BASE}:/app/${LOADER_PATH_BASE}/
+networks:
+  infdb:
+    external: true
+    name: infdb_${BASE_NETWORK_NAME}
