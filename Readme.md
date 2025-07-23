@@ -25,14 +25,14 @@
 ## install packages (only once)
 ```bash
     # install requirements
-    uv pip install -r requirements.txt
+    uv pip install .
 ```
 
 ## generate docker compose and env files
 You need to generate the configurations files once you changed any of the config yaml files in configs directory.
 ```bash
     # on linux and macos
-    python3 -m src.utils.generate-compose
+    docker compose -f dockers/setup/docker-compose.yml up --build
 
     # on windows
 ```
@@ -57,7 +57,7 @@ You need to generate the configurations files once you changed any of the config
 ## process data
 ```bash
     # on linux and macos
-    docker compose -f dockers/processor.yml --env-file .env up --build
+    docker compose -f dockers/processor/docker-compose.yml --env-file .env up --build
 
     # on windows
 ```
