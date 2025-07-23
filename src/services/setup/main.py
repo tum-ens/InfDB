@@ -81,3 +81,4 @@ def setup_pgadmin_servers(output_path):
 write_env_file(".env")
 write_compose_file("docker-compose.yml")
 setup_pgadmin_servers("dockers/services/")
+print("Setup completed successfully. Configuration files generated.")
