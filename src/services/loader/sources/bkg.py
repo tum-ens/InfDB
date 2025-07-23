@@ -84,8 +84,8 @@ def create_geogitter(resolution):
         ),
              boundary AS (
                  SELECT ST_Union(ST_Transform(geometry, 3035)) AS geom
-                 FROM opendata.bkg_nuts250_n3
-                 WHERE "NUTS_CODE" LIKE '{scope}%'
+                 FROM opendata.bkg_vg5000_gem
+                 WHERE "AGS" LIKE '{scope}%'
              ),
              envelope AS (
                  SELECT
