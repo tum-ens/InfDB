@@ -8,8 +8,8 @@ services:
     ports:
       - ${SERVICES_PGADMIN_EXPOSED_PORT}:80
     volumes:
-      - ./servers.json:/pgadmin4/servers.json
-      - ./.pgpass:/pgadmin4/.pgpass
+      - ../../configs/.generated/servers.json:/pgadmin4/servers.json
+      - ../../configs/.generated/.pgpass:/pgadmin4/.pgpass
       - pgadmin_data:/var/lib/pgadmin
     networks:
       - ${BASE_NETWORK_NAME}
