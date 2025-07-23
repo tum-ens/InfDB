@@ -6,6 +6,7 @@ from src.core import config
 # This function writes configuration for services into a .env file which then be read by the containers.
 def write_env_file(file_path=".env"):
     path = os.path.join(config.get_root_path(), file_path)
+    # print("Writing environment variables to {}".format(path))
     with open(path, "w") as f:
         flattened_config = config.flatten_dict(config.get_config(), sep="_")
         for key, value in flattened_config.items():
@@ -78,7 +79,42 @@ def setup_pgadmin_servers(output_path):
         f.write("\n".join(pgpass_entries) + "\n")
     os.chmod(pgpass_path, 0o600)  # Set permissions to read/write for the owner only
 
-write_env_file(".env")
-write_compose_file("docker-compose.yml")
-setup_pgadmin_servers("dockers/services/")
+import os
+
+def write_pg_service_conf(output_path):
+    """
+    Write a pg_service.conf file to enable PostgreSQL connection shortcuts.
+    Example usage with psql: `psql service=infdb_citydb`
+    """
+    services = ["citydb"] #, "timescaledb"
+    port = 5432
+
+    lines = []
+
+    for service in services:
+        host = config.get_value(["services", service, "host"])
+        db = config.get_value(["services", service, "db"])
+        user = config.get_value(["services", service, "user"])
+        password = config.get_value(["services", service, "password"])
+        service_name = f"infdb_{service}"
+
+        lines.append(f"[{service_name}]")
+        lines.append(f"host={host}")
+        lines.append(f"port={port}")
+        lines.append(f"dbname={db}")
+        lines.append(f"user={user}")
+        lines.append("")  # empty line between entries
+
+    # Write file to output path
+    pg_service_path = os.path.join(output_path, "pg_service.conf")
+    with open(pg_service_path, "w") as f:
+        f.write("\n".join(lines))
+    print(f"pg_service.conf written to {pg_service_path}")
+
+
+
+write_env_file("configs/.generated/.env")
+write_compose_file("dockers/docker-compose.yml")
+setup_pgadmin_servers("configs/.generated/")
+write_pg_service_conf("configs/.generated/")
 print("Setup completed successfully. Configuration files generated.")

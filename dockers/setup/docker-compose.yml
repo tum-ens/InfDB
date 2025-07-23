@@ -5,6 +5,5 @@ services:
       dockerfile: src/services/setup/Dockerfile
     container_name: setup
     volumes:
-      - ../../configs:/app/configs
-      - ../../dockers:/app/dockers
-      - ../../services:/app/services
+      - ../../configs:/app/configs  # for *.yml configs and generated files
+      - ../../dockers:/app/dockers  # for overall docker-compose.yml
