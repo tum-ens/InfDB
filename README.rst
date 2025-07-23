@@ -1,6 +1,6 @@
 
-.. figure:: docs/img/infDB.png
-    :width: 200px
+.. figure:: docs/img/logo_infDB_text.png
+    :width: 600px
     :target: https://gitlab.lrz.de/tum-ens/super-repo
     :alt: Repo logo
     :class: align-center
