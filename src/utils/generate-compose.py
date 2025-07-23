@@ -1,4 +1,5 @@
 import os
+import secrets
 from src.core import config
 
 
@@ -10,7 +11,8 @@ def write_env_file(file_path=".env"):
         for key, value in flattened_config.items():
             env_key = key.upper()
             f.write(f"{env_key}={value}\n")
-
+        # Add JWT secret key for QWC
+        f.write("JWT_SECRET_KEY=" + secrets.token_hex(48))
 
 # This function auto generates the docker compose file for us.
 def write_compose_file(output_path):

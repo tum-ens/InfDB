@@ -1,0 +1,34 @@
+<dataConfig>
+    <dataSource
+        driver="org.postgresql.Driver"
+        url="jdbc:postgresql://qwc-postgis/qwc_services" user="qwc_admin" password="qwc_admin" />
+    <document>
+        <entity name="dataproduct_solr_v" query="
+            WITH dataproduct AS (
+                SELECT
+                    'foreground' AS facet,
+                    'datasetview' AS subclass,
+                    name AS ident,
+                    name AS display,
+                    NULL AS synonyms,
+                    CONCAT_WS(', ', 'map', 'layer') AS keywords,
+                    'qwc_demo' AS desc_org,
+                    '[]' AS children_json_array,
+                    FALSE AS dset_info
+                FROM qwc_config.resources
+                WHERE type='map'
+            )
+            SELECT
+                (array_to_json(ARRAY[subclass::text, ident::TEXT]))::text AS id,
+                display,
+                children_json_array::text AS dset_children,
+                dset_info,
+                CONCAT_WS(', ', display, synonyms)  AS search_1_stem,
+                CONCAT_WS(', ', display, synonyms, desc_org) AS search_2_stem,
+                CONCAT_WS(', ', display, synonyms, desc_org, keywords) AS search_3_stem,
+                facet,
+                'default' AS tenant
+            FROM dataproduct">
+        </entity>       
+    </document>
+</dataConfig>
