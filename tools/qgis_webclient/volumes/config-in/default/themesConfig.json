@@ -30,12 +30,12 @@
         }
     ],
     "defaultMapCrs": "EPSG:3857",
-    "defaultTheme": "pylovo",
+    "defaultTheme": "infDB",
     "themes": {
         "items": [{
-            "id": "pylovo",
-            "title": "pylovo",
-            "url": "/ows/scan/pylovo"
+            "id": "indDB",
+            "title": "infDB",
+            "url": "/ows/scan/infdb"
         }],
         "backgroundLayers": [{
             "name": "mapnik",
