@@ -1,4 +1,4 @@
-FROM python:3.11-alpine
+FROM python:3.12
 
 RUN apk add --no-cache \
     gdal-dev \
@@ -11,10 +11,10 @@ RUN apk add --no-cache \
 
 WORKDIR /app
 
-COPY src/services/processor/requirements_processor.txt requirements_processor.txt
+COPY src/services/processor/requirements.txt requirements.txt
 RUN pip install --upgrade pip
-RUN pip install --no-cache-dir -r requirements_processor.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-COPY /src/core/ /app/src/core/
+COPY /src/core /app/src/core/
 COPY /src/services/processor /app/src/services/processor
-CMD ["python", "-u", "-m", "src.services.processor.processor"]
+CMD ["python", "-u", "-m", "src.services.processor.main"]
