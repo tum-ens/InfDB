@@ -1,8 +1,9 @@
 
-.. figure:: docs/img/logo_TUM.png
+.. figure:: docs/img/infDB.png
     :width: 200px
     :target: https://gitlab.lrz.de/tum-ens/super-repo
     :alt: Repo logo
+    :class: align-center
 
 ==========
 InfDB - Infrastructure and Energy Digital Twin Database
