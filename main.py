@@ -21,11 +21,11 @@ if __name__ == "__main__":
     # Load remaining data in parallel
     mp.freeze_support()
     processes = []
-    processes.append(mp.Process(target=bkg.load, args=(log_queue,)))
-    processes.append(mp.Process(target=lod2.load, args=(log_queue,)))
-    processes.append(mp.Process(target=plz.load, args=(log_queue,)))
-    processes.append(mp.Process(target=basemap.load, args=(log_queue,)))
-    processes.append(mp.Process(target=census2022.load, args=(log_queue,)))
+    processes.append(mp.Process(target=bkg.load, args=(log_queue,), name="bkg"))
+    processes.append(mp.Process(target=lod2.load, args=(log_queue,), name="lod2"))
+    processes.append(mp.Process(target=plz.load, args=(log_queue,), name="plz"))
+    processes.append(mp.Process(target=basemap.load, args=(log_queue,), name="basemap"))
+    processes.append(mp.Process(target=census2022.load, args=(log_queue,), name="census2022"))
 
     for process in processes:
         process.start()
@@ -35,9 +35,9 @@ if __name__ == "__main__":
     log.info("Processes started")
 
     # Wait for processes
-    for process in processes:
+    for cnt, process in enumerate(processes, 1):
         process.join()
-        log.info("Process %s done", process.name)
+        log.info("Process %s done (%d out of %d)", process.name, cnt, len(processes))
 
     listener.stop()
 
