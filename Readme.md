@@ -1,5 +1,6 @@
 # Startup
 
+### Local development environment for InfDB for developers
 ## uv install (only once)
 ```bash
     # on linux and macos
@@ -11,7 +12,7 @@
 ## create environment (only once)
 ```bash
     # linux and macos
-    uv venv --python 3.12
+    uv sync
 ```
 
 ## activate environment
@@ -25,14 +26,15 @@
 ## install packages (only once)
 ```bash
     # install requirements
-    uv pip install .
+    # uv pip install .
 ```
 
+### Prodcution Deployment via docker compose
 ## generate docker compose and env files
 You need to generate the configurations files once you changed any of the config yaml files in configs directory.
 ```bash
     # on linux and macos
-    docker compose -f dockers/setup/docker-compose.yml up --build
+    docker compose -f dockers/setup/compose.yml up
 
     # on windows
 ```
@@ -40,16 +42,15 @@ You need to generate the configurations files once you changed any of the config
 ## start infdb
 ```bash
     # on linux and macos
-     docker compose -f docker-compose.yml --env-file .env up -d --build
+     docker compose -f .generated/compose.yml --env-file .generated/.env up -d
 
     # on windows
 ```
 
-
 ## load data
 ```bash
     # on linux and macos
-    docker compose -f dockers/loader/docker-compose.yml --env-file .env up --build
+    docker compose -f tools/loader/compose.yml --env-file .generated/.env up 
 
     # on windows
 ```
@@ -57,7 +58,7 @@ You need to generate the configurations files once you changed any of the config
 ## process data
 ```bash
     # on linux and macos
-    docker compose -f dockers/processor/docker-compose.yml --env-file .env up --build
+    docker compose -f tools/processor/compose.yml --env-file .generated/.env up 
 
     # on windows
 ```

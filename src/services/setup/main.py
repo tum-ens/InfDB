@@ -28,6 +28,7 @@ def write_compose_file(output_path):
         },
         "networks": {
             config.get_value(["base", "network_name"]): {
+                "name": config.get_value(["base", "network_name"]),
                 "driver": "bridge"
             }
         }
@@ -36,7 +37,7 @@ def write_compose_file(output_path):
     services = config.get_value(["services"])
     for service_name, props in services.items():
         if isinstance(props, dict) and props.get("status") == "active":
-            path = props.get("compose_file")
+            path = os.path.join("../", props.get("compose_file"))
             output["include"].append(path)
 
     config.write_yaml(output, output_path)
@@ -69,12 +70,12 @@ def setup_pgadmin_servers(output_path):
         )
 
     # Save to servers.json
-    with open(os.path.join(output_path, "servers.json"), "w") as f:
+    with open(os.path.join(config.get_root_path(), output_path, "servers.json"), "w") as f:
         json.dump(servers_json, f, indent=4)
     # print("servers.json with passwords written.")
 
     # Write .pgpass (PostgreSQL client password file)
-    pgpass_path = os.path.join(output_path, ".pgpass")
+    pgpass_path = os.path.join(config.get_root_path(), output_path, ".pgpass")
     with open(pgpass_path, "w") as f:
         f.write("\n".join(pgpass_entries) + "\n")
     os.chmod(pgpass_path, 0o600)  # Set permissions to read/write for the owner only
@@ -106,15 +107,15 @@ def write_pg_service_conf(output_path):
         lines.append("")  # empty line between entries
 
     # Write file to output path
-    pg_service_path = os.path.join(output_path, "pg_service.conf")
+    pg_service_path = os.path.join(config.get_root_path(), output_path, "pg_service.conf")
     with open(pg_service_path, "w") as f:
         f.write("\n".join(lines))
     print(f"pg_service.conf written to {pg_service_path}")
 
 
 
-write_env_file("configs/.generated/.env")
-write_compose_file("dockers/docker-compose.yml")
-setup_pgadmin_servers("configs/.generated/")
-write_pg_service_conf("configs/.generated/")
+write_env_file(".generated/.env")
+write_compose_file(".generated/compose.yml")
+setup_pgadmin_servers(".generated/")
+write_pg_service_conf(".generated/")
 print("Setup completed successfully. Configuration files generated.")

@@ -15,15 +15,15 @@ def __load_config(path: str):
 
 
 def __load_configs():
-    base_path = os.path.join(get_root_path(), "configs", "config.yml")
+    base_path = os.path.join(get_root_path(), "configs", "config-infdb.yml")
 
     # first get the base config
     configs = __load_config(base_path)
 
-    # Load sub configs defined under config.yaml configs field
-    for config_path in configs.get("configs", []):
-        full_path = os.path.join(get_root_path(), "configs", config_path)
-        configs.update(__load_config(full_path))
+    # # Load sub configs defined under config.yaml configs field
+    # for config_path in configs.get("configs", []):
+    #     full_path = os.path.join(get_root_path(), "configs", config_path)
+    #     configs.update(__load_config(full_path))
 
     # Resolve placeholders in the config
     resolved_configs = resolve_yaml_placeholders(configs)

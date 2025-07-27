@@ -15,10 +15,11 @@ RUN sh /uv-installer.sh && rm /uv-installer.sh
 # Ensure the installed binary is on the `PATH`
 ENV PATH="/root/.local/bin/:$PATH"
 
-
 ## Run python scripts with uv
 # COPY requiremets into the container
 COPY src/services/setup/pyproject.toml /app/pyproject.toml
+
+RUN uv sync
 
 # Copy the source code into the container
 COPY src /app/src
