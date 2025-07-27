@@ -157,3 +157,6 @@ cython_debug/
 *.gpkg
 *.zip
 .log
+
+# Generated config files
+.generated
