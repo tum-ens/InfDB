@@ -8,8 +8,8 @@ def setup_main_logger(log_queue):
     formatter = logging.Formatter('%(asctime)s | %(processName)s | %(levelname)s: %(message)s')
 
     # Logging to console
-    handler = logging.StreamHandler(sys.stdout)
-    handler.setFormatter(formatter)
+    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler.setFormatter(formatter)
 
     # Logging to file
     file_path = config.get_value(["loader", "logging", "path"])
@@ -23,10 +23,10 @@ def setup_main_logger(log_queue):
     level = logging._nameToLevel.get(level_string.upper(), logging.INFO)
     root_logger.setLevel(level)
     root_logger.handlers.clear()
-    root_logger.addHandler(handler)
+    root_logger.addHandler(console_handler)
     root_logger.addHandler(file_handler)
 
-    listener = QueueListener(log_queue, handler)
+    listener = QueueListener(log_queue, console_handler, file_handler)
     listener.start()
     return listener
 
