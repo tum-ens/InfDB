@@ -160,3 +160,6 @@ cython_debug/
 
 # Generated config files
 .generated
+infdb-data
+.env
+uv.lock

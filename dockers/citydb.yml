@@ -1,20 +1,24 @@
 services:
-  citydb:
-    image: 3dcitydb/3dcitydb-pg:5.0.0
-    container_name: citydb
-    environment:
-      POSTGRES_DB: ${SERVICES_CITYDB_DB}
-      POSTGRES_USER: ${SERVICES_CITYDB_USER}
-      POSTGRES_PASSWORD: ${SERVICES_CITYDB_PASSWORD}
-      SRID: ${SERVICES_CITYDB_EPSG}
-    ports:
-      - ${SERVICES_CITYDB_EXPOSED_PORT}:5432
-    volumes:
-      - ${SERVICES_CITYDB_PATH}:/var/lib/postgresql/data
-    networks:
-      - ${BASE_NETWORK_NAME}
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${SERVICES_CITYDB_USER} -d ${SERVICES_CITYDB_DB}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    citydb:
+        image: 3dcitydb/3dcitydb-pg:5.0.0
+        container_name: citydb
+        environment:
+            POSTGRES_DB: ${SERVICES_CITYDB_DB}
+            POSTGRES_USER: ${SERVICES_CITYDB_USER}
+            POSTGRES_PASSWORD: ${SERVICES_CITYDB_PASSWORD}
+            SRID: ${SERVICES_CITYDB_EPSG}
+        ports:
+            - ${SERVICES_CITYDB_EXPOSED_PORT}:5432
+        volumes:
+            - ../../${SERVICES_CITYDB_PATH}:/var/lib/postgresql/data
+        networks:
+            - ${BASE_NETWORK_NAME}
+        healthcheck:
+            test:
+                [
+                    "CMD-SHELL",
+                    "pg_isready -U ${SERVICES_CITYDB_USER} -d ${SERVICES_CITYDB_DB}",
+                ]
+            interval: 10s
+            timeout: 5s
+            retries: 5

@@ -1,199 +1,199 @@
 loader:
-  scope: 09162000 # Sonthofen 09780139 # AGS (Amtlicher Gemeindeschlüssel)
-  multiproccesing: active
-  path:
-    config-infdb: "../../configs/config-infdb.yml"  # for *.yml configs and generated files
-    base: "../../infdb-data"  # for docker-compose
-    opendata: "{loader/path/base}/opendata/"  # within docker -> /data/...
-    processed: "{loader/path/base}/{loader/scope}"
-  logging:
-    path: "loader.log"
-    level: "INFO" # ERROR, WARNING, INFO, DEBUG
-  hosts:
-    citydb:
-      user: None
-      password: None
-      db: None
-      host: host.docker.internal #localhost #
-      exposed_port: 5433
-      epsg: None # 3035 (Europe)
-#      user: citydb_user
-#      password: citydb_password
-#      db: citydb
-#      host: localhost
-#      port: 5433
-#      epsg: 25832 # 3035 (Europe)
-#      user: "{services/citydb/user}"
-#      password: "{services/citydb/password}"
-#      db: "{services/citydb/db}"
-#      host: "{services/citydb/host}" # localhost for local development
-#      port: 5432 # "{services/citydb/exposed_port}" exposed port outside the container
-#      epsg: "{services/citydb/epsg}"
-    timescaledb:
-      user: None
-      password: None
-      db: None
-      host: None
-      exposed_port: None
-#      user: timescaledb_user
-#      password: timescaledb_password
-#      db: timescaledb
-#      host: timescaledb
-#      port: 5432
-#      user: "{services/timescaledb/user}"
-#      password: "{services/timescaledb/password}"
-#      db: "{services/timescaledb/db}"
-#      host: "{services/timescaledb/host}" # localhost for local development
-#      port: 5432 # "{services/timescaledb/exposed_port}"
-  sources:
-    zensus_2022:
-      status: active
-      resolutions:
-        - 10km
-        # - 1km
-        - 100m
-      path:
-        base: "{loader/path/opendata}/zensus_2022/"
-        zip: "{loader/sources/zensus_2022/path/base}/zip/"
-        unzip: "{loader/sources/zensus_2022/path/base}/unzip/"
-        processed: "{loader/path/processed}/zensus_2022/"
-      url: "https://www.zensus2022.de/DE/Ergebnisse-des-Zensus/_inhalt.html"
-      schema: opendata
-      prefix: cns22
-      layer:
-        - Alter_in_10er-Jahresgruppen
-        - Alter_in_5_Altersklassen
-        - Alter_in_infrastrukturellen_Altersgruppen
-        - Anteil_ab_65-jaehrige
-        - Anteil_unter_18-jaehrige
-        - Auslaenderanteil_EU_nichtEU_Gitterzellen
-        - Auslaenderanteil_ab_18_Jahren
-        - Auslaenderanteil
-        - Deutsche_Staatsangehoerige_ab_18_Jahren
-        - Durchschnittliche_Flaeche_je_Wohnung
-        - Durchschnittliche_Haushaltsgroesse
-        - Durchschnittliche_Nettokaltmiete_und_Anzahl_der_Wohnungen
-        - Durchschnittliche_Wohnflaeche_je_Bewohner
-        - Durchschnittsalter
-        - Eigentuemerquote
-        - Familienstand
-        - Flaeche_der_Wohnung_10m2_Intervalle
-        - Gebaeude_mit_Wohnraum_nach_Energietraeger_der_Heizung
-        - Gebaeude_mit_Wohnraum_nach_Gebaeudetyp_Groesse
-        - Gebaeude_mit_Wohnraum_nach_ueberwiegender_Heizungsart
-        - Gebaeude_nach_Anzahl_der_Wohnungen_im_Gebaeude
-        - Gebaeude_nach_Baujahr_Jahrzehnte
-        - Gebaeude_nach_Baujahr_in_Mikrozensus_Klassen
-        - Groesse_der_Kernfamilie
-        - Leerstandsquote
-        - Marktaktive_Leerstandsquote
-        - Religion
-        - Seniorenstatus_eines_privaten_Haushalts
-        - Typ_der_Kernfamilie_nach_Kindern
-        - Typ_des_privaren_Haushalts_Lebensform
-        - Typ_des_privaten_Haushalts_Familien
-        - Bevoelkerungszahl
-        - Wohnungen_nach_Gebaeudetyp_Groesse
-        - Wohnungen_nach_Zahl_der_Raeume
-        - Zahl_der_Staatsangehoerigkeiten
-        - Durchschn_Nettokaltmiete
-        - Energietraeger
-        - Geburtsland_Gruppen
-        - Groesse_des_privaten_Haushalts
-        - Heizungsart
-        - Staatsangehoerigkeit_Gruppen
-        - Staatsangehoerigkeit
+    scope: 09162000 # Sonthofen 09780139 # AGS (Amtlicher Gemeindeschlüssel)
+    multiproccesing: active
+    path:
+        config-infdb: "../../configs/config-infdb.yml" # for *.yml configs and generated files
+        base: "../../infdb-data" # for docker-compose
+        opendata: "{loader/path/base}/opendata/" # within docker -> /data/...
+        processed: "{loader/path/base}/{loader/scope}"
+    logging:
+        path: "loader.log"
+        level: "INFO" # ERROR, WARNING, INFO, DEBUG
+    hosts:
+        citydb:
+            user: None
+            password: None
+            db: None
+            host: host.docker.internal #localhost #
+            exposed_port: None
+            epsg: None # 3035 (Europe)
+        #      user: citydb_user
+        #      password: citydb_password
+        #      db: citydb
+        #      host: localhost
+        #      port: 5433
+        #      epsg: 25832 # 3035 (Europe)
+        #      user: "{services/citydb/user}"
+        #      password: "{services/citydb/password}"
+        #      db: "{services/citydb/db}"
+        #      host: "{services/citydb/host}" # localhost for local development
+        #      port: 5432 # "{services/citydb/exposed_port}" exposed port outside the container
+        #      epsg: "{services/citydb/epsg}"
+        timescaledb:
+            user: None
+            password: None
+            db: None
+            host: None
+            exposed_port: None
+    #      user: timescaledb_user
+    #      password: timescaledb_password
+    #      db: timescaledb
+    #      host: timescaledb
+    #      port: 5432
+    #      user: "{services/timescaledb/user}"
+    #      password: "{services/timescaledb/password}"
+    #      db: "{services/timescaledb/db}"
+    #      host: "{services/timescaledb/host}" # localhost for local development
+    #      port: 5432 # "{services/timescaledb/exposed_port}"
+    sources:
+        zensus_2022:
+            status: active
+            resolutions:
+                - 10km
+                # - 1km
+                - 100m
+            path:
+                base: "{loader/path/opendata}/zensus_2022/"
+                zip: "{loader/sources/zensus_2022/path/base}/zip/"
+                unzip: "{loader/sources/zensus_2022/path/base}/unzip/"
+                processed: "{loader/path/processed}/zensus_2022/"
+            url: "https://www.zensus2022.de/DE/Ergebnisse-des-Zensus/_inhalt.html"
+            schema: opendata
+            prefix: cns22
+            layer:
+                - Alter_in_10er-Jahresgruppen
+                - Alter_in_5_Altersklassen
+                - Alter_in_infrastrukturellen_Altersgruppen
+                - Anteil_ab_65-jaehrige
+                - Anteil_unter_18-jaehrige
+                - Auslaenderanteil_EU_nichtEU_Gitterzellen
+                - Auslaenderanteil_ab_18_Jahren
+                - Auslaenderanteil
+                - Deutsche_Staatsangehoerige_ab_18_Jahren
+                - Durchschnittliche_Flaeche_je_Wohnung
+                - Durchschnittliche_Haushaltsgroesse
+                - Durchschnittliche_Nettokaltmiete_und_Anzahl_der_Wohnungen
+                - Durchschnittliche_Wohnflaeche_je_Bewohner
+                - Durchschnittsalter
+                - Eigentuemerquote
+                - Familienstand
+                - Flaeche_der_Wohnung_10m2_Intervalle
+                - Gebaeude_mit_Wohnraum_nach_Energietraeger_der_Heizung
+                - Gebaeude_mit_Wohnraum_nach_Gebaeudetyp_Groesse
+                - Gebaeude_mit_Wohnraum_nach_ueberwiegender_Heizungsart
+                - Gebaeude_nach_Anzahl_der_Wohnungen_im_Gebaeude
+                - Gebaeude_nach_Baujahr_Jahrzehnte
+                - Gebaeude_nach_Baujahr_in_Mikrozensus_Klassen
+                - Groesse_der_Kernfamilie
+                - Leerstandsquote
+                - Marktaktive_Leerstandsquote
+                - Religion
+                - Seniorenstatus_eines_privaten_Haushalts
+                - Typ_der_Kernfamilie_nach_Kindern
+                - Typ_des_privaren_Haushalts_Lebensform
+                - Typ_des_privaten_Haushalts_Familien
+                - Bevoelkerungszahl
+                - Wohnungen_nach_Gebaeudetyp_Groesse
+                - Wohnungen_nach_Zahl_der_Raeume
+                - Zahl_der_Staatsangehoerigkeiten
+                - Durchschn_Nettokaltmiete
+                - Energietraeger
+                - Geburtsland_Gruppen
+                - Groesse_des_privaten_Haushalts
+                - Heizungsart
+                - Staatsangehoerigkeit_Gruppen
+                - Staatsangehoerigkeit
 
-    lod2:
-      status: active
-      url:
-        - "https://geodaten.bayern.de/odd/a/lod2/citygml/meta/metalink/{loader/scope}.meta4"
-      path:
-        lod2: "{loader/path/opendata}/lod2/"
-        gml: "{loader/path/opendata}/lod2/{loader/scope}"
+        lod2:
+            status: active
+            url:
+                - "https://geodaten.bayern.de/odd/a/lod2/citygml/meta/metalink/{loader/scope}.meta4"
+            path:
+                lod2: "{loader/path/opendata}/lod2/"
+                gml: "{loader/path/opendata}/lod2/{loader/scope}"
 
-    bkg:
-      status: active
-      path:
-        base: "{loader/path/opendata}/bkg/"
-        zip: "{loader/sources/bkg/path/base}/zip/"
-        unzip: "{loader/sources/bkg/path/base}/unzip/"
-        processed: "{loader/path/processed}/bkg/"
-      prefix: bkg
-      schema: opendata
-      vg5000:
-        url: "https://daten.gdz.bkg.bund.de/produkte/vg/vg5000_1231/aktuell/vg5000_12-31.utm32s.gpkg.ebenen.zip"
-        layer:
-          - "vg5000_gem"
-          - "vg5000_krs"
-          - "vg5000_lan"
-          - "vg5000_li"
-          - "vg5000_rbz"
-          - "vg5000_sta"
-          - "vg5000_vwg"
-      nuts:
-        url: "https://daten.gdz.bkg.bund.de/produkte/vg/nuts250_1231/aktuell/nuts250_12-31.utm32s.gpkg.zip"
-        layer:
-          - "nuts250_n1"
-          - "nuts250_n2"
-          - "nuts250_n3"
-      geogitter:
-        resolutions:
-          - 100m
-          #- 1km
-          - 10km
+        bkg:
+            status: active
+            path:
+                base: "{loader/path/opendata}/bkg/"
+                zip: "{loader/sources/bkg/path/base}/zip/"
+                unzip: "{loader/sources/bkg/path/base}/unzip/"
+                processed: "{loader/path/processed}/bkg/"
+            prefix: bkg
+            schema: opendata
+            vg5000:
+                url: "https://daten.gdz.bkg.bund.de/produkte/vg/vg5000_1231/aktuell/vg5000_12-31.utm32s.gpkg.ebenen.zip"
+                layer:
+                    - "vg5000_gem"
+                    - "vg5000_krs"
+                    - "vg5000_lan"
+                    - "vg5000_li"
+                    - "vg5000_rbz"
+                    - "vg5000_sta"
+                    - "vg5000_vwg"
+            nuts:
+                url: "https://daten.gdz.bkg.bund.de/produkte/vg/nuts250_1231/aktuell/nuts250_12-31.utm32s.gpkg.zip"
+                layer:
+                    - "nuts250_n1"
+                    - "nuts250_n2"
+                    - "nuts250_n3"
+            geogitter:
+                resolutions:
+                    - 100m
+                    #- 1km
+                    - 10km
 
-    basemap:
-      status: active
-      url: "https://basemap.de/dienste/opendata/basisviews/"
-      ending: ".gpkg"
-      filter:
-        - by
-      path:
-        base: "{loader/path/opendata}/basemap/"
-        processed: "{loader/path/processed}/basemap/"
-      schema: opendata
-      prefix: bmp
-      layer:
-        - barrierenlinie
-        - bauwerksflaeche
-        - bauwerkslinie
-        - bauwerkspunkt
-        - besondere_flaeche
-        - besondere_linie
-        - besonderer_punkt
-        - gewaesserflaeche
-        - gewaesserlinie
-        - gewaesserpunkt
-        - grenze_flaeche
-        - grenze_linie
-        - grenze_punkt
-        - historische_flaeche
-        - historische_linie
-        - historischer_punkt
-        - name_flaeche
-        - name_punkt
-        - reliefflaeche
-        - relieflinie
-        - reliefpunkt
-        - siedlungsflaeche
-        - vegetationsflaeche
-        - vegetationslinie
-        - vegetationspunkt
-        - verkehrsflaeche
-        - verkehrslinie
-        - verkehrspunkt
-        - versorgungslinie
-        - versorgungspunkt
-        - weitere_nutzung_flaeche
+        basemap:
+            status: active
+            url: "https://basemap.de/dienste/opendata/basisviews/"
+            ending: ".gpkg"
+            filter:
+                - by
+            path:
+                base: "{loader/path/opendata}/basemap/"
+                processed: "{loader/path/processed}/basemap/"
+            schema: opendata
+            prefix: bmp
+            layer:
+                - barrierenlinie
+                - bauwerksflaeche
+                - bauwerkslinie
+                - bauwerkspunkt
+                - besondere_flaeche
+                - besondere_linie
+                - besonderer_punkt
+                - gewaesserflaeche
+                - gewaesserlinie
+                - gewaesserpunkt
+                - grenze_flaeche
+                - grenze_linie
+                - grenze_punkt
+                - historische_flaeche
+                - historische_linie
+                - historischer_punkt
+                - name_flaeche
+                - name_punkt
+                - reliefflaeche
+                - relieflinie
+                - reliefpunkt
+                - siedlungsflaeche
+                - vegetationsflaeche
+                - vegetationslinie
+                - vegetationspunkt
+                - verkehrsflaeche
+                - verkehrslinie
+                - verkehrspunkt
+                - versorgungslinie
+                - versorgungspunkt
+                - weitere_nutzung_flaeche
 
-    plz:
-      status: active
-      url: "https://downloads.suche-postleitzahl.org/v2/public/plz-5stellig.geojson"
-      path:
-        base: "{loader/path/opendata}/plz/"
-        processed: "{loader/path/processed}/plz/"
-      schema: opendata
-      prefix: plz
-      layer:
-        - plz-5stellig
+        plz:
+            status: active
+            url: "https://downloads.suche-postleitzahl.org/v2/public/plz-5stellig.geojson"
+            path:
+                base: "{loader/path/opendata}/plz/"
+                processed: "{loader/path/processed}/plz/"
+            schema: opendata
+            prefix: plz
+            layer:
+                - plz-5stellig

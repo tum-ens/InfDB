@@ -13,7 +13,8 @@ def setup_main_logger(log_queue):
 
     # Logging to file
     file_path = config.get_value(["loader", "logging", "path"])
-    os.remove(file_path)    # for debugging
+    # if os.path.exists(file_path):
+    #     os.remove(file_path)    # for debugging
     file_handler = logging.FileHandler(file_path)
     file_handler.setFormatter(formatter)
 

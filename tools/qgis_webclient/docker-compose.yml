@@ -29,7 +29,7 @@ services:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
     networks:
-      - infdb
+      - ${BASE_NETWORK_NAME}
 
   qwc-config-db-migrate:
     image: sourcepole/qwc-base-db-migrate:latest-2025-lts
@@ -38,7 +38,7 @@ services:
       # NOTE: Remove this line if you don't want/need the demo data
       #- ./volumes/demo-data/setup-demo-data-permissions.sh:/tmp/extra-init.d/setup-demo-data-permissions.sh
     networks:
-      - infdb
+      - ${BASE_NETWORK_NAME}
 
   qwc-qgis-server:
     image: sourcepole/qwc-qgis-server:3.40
@@ -61,7 +61,7 @@ services:
       - ./volumes/qgis-server-plugins/clear_capabilities:/usr/share/qgis/python/plugins/clear_capabilities:ro
       - ./volumes/print-layouts:/layouts:ro
     networks:
-      - infdb
+      - ${BASE_NETWORK_NAME}
 
   qwc-config-service:
     image: sourcepole/qwc-config-generator:latest-2025-lts
@@ -81,7 +81,7 @@ services:
       - ./volumes/reports:/reports
       - ./pg_service.conf:/srv/pg_service.conf:ro
     networks:
-      - infdb
+      - ${BASE_NETWORK_NAME}
 
   qwc-admin-gui:
     image: sourcepole/qwc-admin-gui:latest-2025-lts
@@ -106,7 +106,7 @@ services:
       # - ./volumes/qgs-resources:/qgs-resources
       # - ./volumes/info-templates:/info_templates
     networks:
-      - infdb
+      - ${BASE_NETWORK_NAME}
 
   qwc-auth-service:
     image: sourcepole/qwc-db-auth:latest-2025-lts
@@ -128,7 +128,7 @@ services:
       - ./pg_service.conf:/srv/pg_service.conf:ro
       - ./volumes/config:/srv/qwc_service/config:ro
     networks:
-      - infdb
+      - ${BASE_NETWORK_NAME}
 
   qwc-data-service:
     image: sourcepole/qwc-data-service:latest-2025-lts
@@ -144,7 +144,7 @@ services:
       # NOTE: you can mount a pg_service-write.conf with R/W DB users and have R/O DB users in the main pg_service.conf
       # - ./pg_service-write.conf:/srv/pg_service.conf:ro
     networks:
-      - infdb
+      - ${BASE_NETWORK_NAME}
 
   # NOTE: you can use clamav for virus scanning in the data service
   # clamav:
@@ -161,7 +161,7 @@ services:
       - ./volumes/reports/fonts:/srv/qwc_service/fonts
       - ./volumes/config:/srv/qwc_service/config:ro
     networks:
-      - infdb
+      - ${BASE_NETWORK_NAME}
 
   qwc-elevation-service:
     image: sourcepole/qwc-elevation-service:latest-2025-lts
@@ -171,7 +171,7 @@ services:
     volumes:
       - ./volumes/config:/srv/qwc_service/config:ro
     networks:
-      - infdb
+      - ${BASE_NETWORK_NAME}
 
   qwc-feature-info-service:
     image: sourcepole/qwc-feature-info-service:latest-2025-lts
@@ -183,7 +183,7 @@ services:
       - ./volumes/config:/srv/qwc_service/config:ro
       - ./volumes/info-templates:/info_templates:ro
     networks:
-      - infdb
+      - ${BASE_NETWORK_NAME}
 
   qwc-fulltext-search-service:
     image: sourcepole/qwc-fulltext-search-service:latest-2025-lts
@@ -194,7 +194,7 @@ services:
       - ./pg_service.conf:/srv/pg_service.conf:ro
       - ./volumes/config:/srv/qwc_service/config:ro
     networks:
-      - infdb
+      - ${BASE_NETWORK_NAME}
 
   qwc-solr:
     image: solr:8.11-slim
@@ -214,7 +214,7 @@ services:
       # Change "#credentials" to "credentials" in security.json for adding a user 'solr' with password 'SolrRocks'
       #- ./volumes/solr/security.json:/var/solr/data/security.json:ro
     networks:
-      - infdb
+      - ${BASE_NETWORK_NAME}
 
   qwc-legend-service:
     image: sourcepole/qwc-legend-service:latest-2025-lts
@@ -225,7 +225,7 @@ services:
       - ./volumes/config:/srv/qwc_service/config:ro
       - ./volumes/legends:/legends
     networks:
-      - infdb
+      - ${BASE_NETWORK_NAME}
 
   qwc-mapinfo-service:
     image: sourcepole/qwc-mapinfo-service:latest-2025-lts
@@ -236,7 +236,7 @@ services:
       - ./pg_service.conf:/srv/pg_service.conf:ro
       - ./volumes/config:/srv/qwc_service/config:ro
     networks:
-      - infdb
+      - ${BASE_NETWORK_NAME}
 
   qwc-map-viewer:
     # Stock qwc2 app
@@ -254,7 +254,7 @@ services:
       # When using own viewer build with qwc-map-viewer-base:
       #- ./volumes/qwc2:/qwc2:ro
     networks:
-      - infdb
+      - ${BASE_NETWORK_NAME}
 
   qwc-ogc-service:
     image: sourcepole/qwc-ogc-service:latest-2025-lts
@@ -264,7 +264,7 @@ services:
     volumes:
       - ./volumes/config:/srv/qwc_service/config:ro
     networks:
-      - infdb
+      - ${BASE_NETWORK_NAME}
 
   qwc-permalink-service:
     image: sourcepole/qwc-permalink-service:latest-2025-lts
@@ -275,7 +275,7 @@ services:
       - ./pg_service.conf:/srv/pg_service.conf:ro
       - ./volumes/config:/srv/qwc_service/config:ro
     networks:
-      - infdb
+      - ${BASE_NETWORK_NAME}
 
   qwc-print-service:
     image: sourcepole/qwc-print-service:latest-2025-lts
@@ -285,7 +285,7 @@ services:
     volumes:
       - ./volumes/config:/srv/qwc_service/config:ro
     networks:
-      - infdb
+      - ${BASE_NETWORK_NAME}
   # qwc-registration-gui:
   #   image: sourcepole/qwc-registration-gui:latest-2025-lts
   #   environment:
@@ -324,8 +324,4 @@ services:
       - qwc-print-service
       #- qwc-registration-gui
     networks:
-      - infdb
-networks:
-  infdb:
-    external: true
-    name: infdb_${BASE_NETWORK_NAME}
+      - ${BASE_NETWORK_NAME}
