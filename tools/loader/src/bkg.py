@@ -123,7 +123,7 @@ def load(log_queue):
     # Verwaltungsgebiete
     vg_layers = config.get_value(["loader", "sources", "bkg", "vg5000", "layer"])
     file = utils.get_file(unzip_path, filename="vg5000", ending=".gpkg")
-    utils.import_layers(file, vg_layers, schema, prefix, scope=False)
+    utils.import_layers(file, vg_layers, schema, prefix)
 
     # # Geogitter
     log.info("Creating Geogitter layers")
