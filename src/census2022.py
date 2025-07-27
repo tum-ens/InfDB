@@ -27,9 +27,9 @@ def load(log_queue):
         filename, name, extension = utils.get_file_from_url(zip_link)
 
 
-        if name not in layers:
-            log.info(f"Skipping download {filename}, not in layers")
-            continue
+        # if name not in layers:
+        #     log.info(f"Skipping download {filename}, not in layers")
+        #     continue
         utils.download_files(zip_link, zip_path)
 
     unzip_path = config.get_value(["loader", "sources", "zensus_2022", "path", "unzip"])
