@@ -1,0 +1,10 @@
+services:
+  data-loader-setup:
+    build:
+      context: .
+      dockerfile: Dockerfile-setup
+    working_dir: /tools/loader
+    volumes:
+      - ../../configs:/tools/loader/../../configs  # for *.yml configs and generated files
+      - ./:/tools/loader
+      - /tools/loader/.venv  # Exclude .venv from volume mount
