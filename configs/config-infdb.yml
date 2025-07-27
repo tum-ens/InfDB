@@ -10,7 +10,7 @@ services:
         password: citydb_password
         db: citydb
         host: citydb
-        exposed_port: 54331
+        exposed_port: None
         epsg: 25832 # 3035 (Europe)
         path: "{base/path/base}/{base/name}/citydb/"
         status: active

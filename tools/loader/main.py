@@ -1,6 +1,5 @@
 import multiprocessing as mp
 from src import utils
-import env
 from src import bkg , basemap, lod2, census2022, plz
 from src.logger import setup_main_logger
 import multiprocessing
@@ -31,8 +30,8 @@ if __name__ == "__main__":
     for process in processes:
         process.start()
         if not utils.if_multiproccesing():
-            print("hallo!!!")
             processes.join()    # Only one process at a time
+            log.info("Process %s done", process.name)
     log.info("Processes started")
 
     # Wait for processes
