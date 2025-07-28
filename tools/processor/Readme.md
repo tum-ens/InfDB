@@ -15,9 +15,5 @@
 ### Startup
 From the root project folder you can start the processor by executing these commands via bash:
 ```bash
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements_processor.txt 
-
-python3 -m src.services.processor.processor
+docker compose -f tools/processor/compose.yml up
 ```
