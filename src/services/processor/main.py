@@ -26,6 +26,7 @@ WAYS_SQL_FILES = [
     '02_create_ways_table.sql',
     '03_fill_id_ways_table.sql',
     '04_create_names_table.sql',
+    '05_assign_postcode_to_ways.sql'
 ]
 BUILDINGS_SQL_FILES = [
     '00_cleanup.sql',
