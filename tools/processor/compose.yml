@@ -1,0 +1,13 @@
+services:
+    data-processor:
+        build:
+            context: .
+            dockerfile: Dockerfile
+            #container_name: processor
+        working_dir: /tools/processor
+        volumes:
+            - ../../configs:/tools/processor/../../configs:ro # for *.yml configs and generated files
+            - ./:/tools/processor
+            - /tools/processor/.venv # Exclude .venv from volume mount
+        extra_hosts:
+            - "host.docker.internal:host-gateway"

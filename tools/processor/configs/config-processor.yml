@@ -1,0 +1,20 @@
+processor:
+    path:
+      config-infdb: "../../configs/config-infdb.yml" # for *.yml configs and generated files
+    logging:
+        path: "processor.log"
+        level: "INFO" # ERROR, WARNING, INFO, DEBUG
+    hosts:
+        citydb:
+            user: None
+            password: None
+            db: None
+            host: 10.162.28.165 #host.docker.internal #localhost #
+            exposed_port: None
+            epsg: None # 3035 (Europe)
+        timescaledb:
+            user: None
+            password: None
+            db: None
+            host: None
+            exposed_port: None
