@@ -1,6 +1,5 @@
 processor:
-    path:
-      config-infdb: "../../configs/config-infdb.yml" # for *.yml configs and generated files
+    config-infdb: "config-infdb.yml" # only filename - change path in ".env" file "CONFIG_INFDB_PATH"
     logging:
         path: "processor.log"
         level: "INFO" # ERROR, WARNING, INFO, DEBUG

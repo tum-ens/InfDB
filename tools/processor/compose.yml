@@ -5,9 +5,10 @@ services:
             dockerfile: Dockerfile
         working_dir: /tools/processor
         volumes:
-            - ../../configs:/tools/processor/../../configs:ro # for infdb configs
+            - ${CONFIG_INFDB_PATH}:/tools/processor/configs-infdb:ro # for infdb configs
             - ./configs:/tools/processor/configs:ro # for processor configs
             - ./src:/tools/processor/src:ro # for source code
+            - ./main.py:/tools/processor/main.py:ro # for main script
             - ./processor.log:/tools/processor/processor.log # for log file
             - ./sql:/tools/processor/sql:ro # for source code
         extra_hosts:
