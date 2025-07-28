@@ -3,11 +3,12 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
-            #container_name: processor
         working_dir: /tools/processor
         volumes:
-            - ../../configs:/tools/processor/../../configs:ro # for *.yml configs and generated files
-            - ./:/tools/processor
-            - /tools/processor/.venv # Exclude .venv from volume mount
+            - ../../configs:/tools/processor/../../configs:ro # for infdb configs
+            - ./configs:/tools/processor/configs:ro # for processor configs
+            - ./src:/tools/processor/src:ro # for source code
+            - ./processor.log:/tools/processor/processor.log # for log file
+            - ./sql:/tools/processor/sql:ro # for source code
         extra_hosts:
             - "host.docker.internal:host-gateway"

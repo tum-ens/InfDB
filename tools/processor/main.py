@@ -2,17 +2,12 @@ import psycopg2
 import os
 import logging
 import time
-from src import utils, logger
-from src.logger import setup_main_logger
-import logging
+from src import config, utils, logger
 
 log = logging.getLogger(__name__)
 
 # Initialize logging
-listener = setup_main_logger(None)
-
-# Database configuration
-parameters = utils.get_db_parameters("citydb")
+listener = logger.setup_main_logger(None)
 
 # SQL files directory and list of files to execute in order
 WAYS_SQL_DIR = os.path.join(os.path.dirname(__file__), 'sql', 'ways_sql')
@@ -127,7 +122,8 @@ class PostgreSQLExecutor:
 
 def main():
     try:
-        print("Start!!!")
+        # Database configuration
+        parameters = config.get_db_parameters("citydb")
 
         # Initialize database executor
         db_executor = PostgreSQLExecutor(

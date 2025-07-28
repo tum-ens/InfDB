@@ -119,4 +119,32 @@ def write_yaml(output_yaml, output_path):
     with open(output_path, "w") as f:
         yaml.dump(output_yaml, f, default_flow_style=False, sort_keys=False)
 
+
+def get_db_parameters(service_name: str):
+
+    parameters_loader = get_value(["processor", "hosts", service_name])
+
+    # Adopt settings if config-infdb exists
+    dict_config = get_config()
+    if "services" in dict_config:
+        parameters = get_value(["services", service_name])
+        log.debug(f"Using infdb configuration for: {service_name}")
+
+        # Override config-infdb by config-loader
+        for key in parameters_loader.keys():
+            if parameters_loader[key] != "None":
+                parameters[key] = parameters_loader[key]
+                log.debug("Key overridden: key = {parameters_loader[key]}")
+    else:
+        # Use settings from config-loader
+        parameters = parameters_loader
+        log.debug(f"Using loader configuration for: {service_name}")
+
+    # Check if parameters are found
+    for key in parameters.keys():
+        if parameters[key] is None:
+            log.error(f"Service '{service_name}' not found in configuration.")
+
+    return parameters
+
 _CONFIG = _merge_configs()

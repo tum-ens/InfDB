@@ -14,16 +14,12 @@ RUN sh /uv-installer.sh && rm /uv-installer.sh
 
 # Ensure the installed binary is on the `PATH`
 ENV PATH="/root/.local/bin/:$PATH"
-#ENV PYTHONPATH=/tools/processor/
 
-## Run python scripts with uv
 # COPY requiremets into the container
 COPY pyproject.toml /tools/processor/pyproject.toml
-#COPY config-processor.yml /tools/processor/config-processor.yml
-RUN uv sync
 
-# Copy the source code into the container
-#OPY src /tools/processor/src
+## Install venv with uv
+RUN uv sync
 
 # Run main.py with uv and environment defined in pyproject.toml
 CMD ["uv", "run", "python", "main.py"]
