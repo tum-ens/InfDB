@@ -1,6 +1,6 @@
 import multiprocessing as mp
 from src import utils
-from src import bkg , basemap, lod2, census2022, plz
+from src import bkg, basemap, lod2, census2022, plz, citydbtool
 from src.logger import setup_main_logger
 import multiprocessing
 import logging
@@ -17,8 +17,7 @@ if __name__ == "__main__":
     # Ensure that administrative areas are
     bkg.load_envelop()
 
-    # Load NUTS Regions beforehand as basis
-    # Load remaining data in parallel
+    # Load data in parallel
     mp.freeze_support()
     processes = []
     processes.append(mp.Process(target=bkg.load, args=(log_queue,), name="bkg"))

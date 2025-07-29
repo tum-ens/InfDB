@@ -3,6 +3,7 @@ import os
 import re
 import yaml
 from copy import deepcopy
+from dotenv import load_dotenv
 
 log = logging.getLogger(__name__)
 
@@ -16,7 +17,7 @@ def _load_config(path: str):
 
 
 def _merge_configs():
-    base_path = os.path.join("configs", "config-loader.yml")
+    base_path = os.path.join("configs", "config-loader.yml")    # hardcoded in compose.yml btw. .env file
     logging.debug(f"Loading configuration from '{base_path}'")
     logging.debug(f"File in '{base_path}': '{os.listdir(os.path.dirname(base_path))}'")
 
@@ -24,7 +25,9 @@ def _merge_configs():
     configs = _load_config(base_path)
 
     # Load sub configs defined under config.yaml configs field
-    path_infdb_config = configs["loader"]["path"]["config-infdb"]   # hardcoded path beceause of docker mount
+    filename = configs["loader"]["config-infdb"]
+    path_infdb_config = os.path.join("configs-infdb", filename) # hardcoded in compose.yml btw. env file
+
     log.debug(f"Loading configuration from '{path_infdb_config}'")
     if os.path.exists(path_infdb_config):
         configs.update(_load_config(path_infdb_config))

@@ -1,4 +1,5 @@
 import os
+import shutil
 from . import config, utils, logger
 import logging
 
@@ -7,7 +8,7 @@ log = logging.getLogger(__name__)
 def load(log_queue):
     logger.setup_worker_logger(log_queue)
 
-    if not utils.if_active("zensus_2022"):
+    if not utils.if_active("lod2"):
         return
 
     base_path = config.get_value(["loader", "sources", "lod2", "path", "lod2"])
@@ -21,3 +22,18 @@ def load(log_queue):
     gml_path = config.get_value(["loader", "sources", "lod2", "path", "gml"])
     cmd = f"aria2c --continue=true --allow-overwrite=false --auto-file-renaming=false {url} -d {gml_path}"
     utils.do_cmd(cmd)
+
+    # Run citydb tool to import the downloaded GML files
+    params = utils.get_db_parameters("citydb")
+
+    cmd = [
+        "citydb import citygml",
+        "-H", params["host"],
+        "-d", params["db"],
+        "-u", params["user"],
+        "-p", params["password"],
+        "-P", str(params["exposed_port"]),
+        str(gml_path)
+    ]
+    cmd_str = " ".join(str(arg) for arg in cmd)
+    utils.do_cmd(cmd_str)

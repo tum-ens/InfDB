@@ -1,42 +1,12 @@
 services:
-    data-loader:
+    loader:
         build:
             context: .
             dockerfile: Dockerfile
-        #    container_name: loader
-        #    networks:
-        #      - infdb
-        working_dir: /tools/loader
         volumes:
-            - ${LOADER_CONFIG_INFDB_PATH}:/tools/loader/${LOADER_CONFIG_INFDB_PATH}:ro # for *.yml configs and generated files
-            - ${LOADER_DATA_PATH}:/tools/loader/${LOADER_DATA_PATH} # for overall docker-compose.yml
+            - ./${CONFIG_INFDB_PATH}:/tools/loader/configs-infdb:ro # for *.yml configs and generated files
+            - ./${LOADER_DATA_PATH}:/tools/loader/data-loader # for overall docker-compose.yml
             - ./:/tools/loader
             - /tools/loader/.venv # Exclude .venv from volume mount
         extra_hosts:
             - "host.docker.internal:host-gateway"
-        #command: sleep infinity
-
-    lod2-loader:
-        image: 3dcitydb/citydb-tool
-        #container_name: citydb-tool
-        environment:
-            CITYDB_HOST: ${CITYDB_HOST}
-            CITYDB_PORT: ${CITYDB_PORT}
-            CITYDB_NAME: ${CITYDB_NAME}
-            CITYDB_USERNAME: ${CITYDB_USERNAME}
-            CITYDB_PASSWORD: ${CITYDB_PASSWORD}
-            SRID: ${CITYDB_SRID}
-        command: import citygml /data/
-        #    networks:
-        #      - infdb
-        volumes:
-            - ${LOADER_LOD2_PATH}:/data/:ro
-        extra_hosts:
-            - "host.docker.internal:host-gateway"
-        depends_on:
-            data-loader:
-                condition: service_completed_successfully
-#networks:
-#  infdb:
-#    external: true
-#    name: infdb_${BASE_NETWORK_NAME}‚
