@@ -1,14 +1,14 @@
 loader:
     scope: 09162000 # Sonthofen 09780139 # AGS (Amtlicher Gemeindeschlüssel)
     multiproccesing: active
+    config-infdb: "config-infdb.yml" # only filename - change path in ".env" file "CONFIG_INFDB_PATH"
     path:
-        config-infdb: "../../configs/config-infdb.yml" # for *.yml configs and generated files
-        base: "../../infdb-data" # for docker-compose
-        opendata: "{loader/path/base}/opendata/" # within docker -> /data/...
+        base: "infdb-data" # only foldername - change path in ".env" file "LOADER_DATA_PATH"
+        opendata: "{loader/path/base}/opendata/"
         processed: "{loader/path/base}/{loader/scope}"
     logging:
         path: "loader.log"
-        level: "INFO" # ERROR, WARNING, INFO, DEBUG
+        level: "DEBUG" # ERROR, WARNING, INFO, DEBUG
     hosts:
         citydb:
             user: None
@@ -17,34 +17,12 @@ loader:
             host: host.docker.internal #localhost #
             exposed_port: None
             epsg: None # 3035 (Europe)
-        #      user: citydb_user
-        #      password: citydb_password
-        #      db: citydb
-        #      host: localhost
-        #      port: 5433
-        #      epsg: 25832 # 3035 (Europe)
-        #      user: "{services/citydb/user}"
-        #      password: "{services/citydb/password}"
-        #      db: "{services/citydb/db}"
-        #      host: "{services/citydb/host}" # localhost for local development
-        #      port: 5432 # "{services/citydb/exposed_port}" exposed port outside the container
-        #      epsg: "{services/citydb/epsg}"
         timescaledb:
             user: None
             password: None
             db: None
             host: None
             exposed_port: None
-    #      user: timescaledb_user
-    #      password: timescaledb_password
-    #      db: timescaledb
-    #      host: timescaledb
-    #      port: 5432
-    #      user: "{services/timescaledb/user}"
-    #      password: "{services/timescaledb/password}"
-    #      db: "{services/timescaledb/db}"
-    #      host: "{services/timescaledb/host}" # localhost for local development
-    #      port: 5432 # "{services/timescaledb/exposed_port}"
     sources:
         zensus_2022:
             status: active

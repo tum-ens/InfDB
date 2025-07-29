@@ -1,9 +1,10 @@
-FROM python:latest
+FROM 3dcitydb/citydb-tool
 
 WORKDIR /tools/loader/
 
 ## Install uv on Ubuntu
 # The installer requires curl (and certificates) to download the release archive
+USER root
 RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates
 
 # Install aria2 for downloading lod2 of bavaria
@@ -17,7 +18,6 @@ RUN sh /uv-installer.sh && rm /uv-installer.sh
 
 # Ensure the installed binary is on the `PATH`
 ENV PATH="/root/.local/bin/:$PATH"
-#ENV PYTHONPATH=/tools/loader/
 
 ## Run python scripts with uv
 # COPY requiremets into the container
@@ -28,5 +28,8 @@ RUN uv sync
 # Copy the source code into the container
 #OPY src /tools/loader/src
 
+# Reset entrypoint to the default because of citydb-tool image
+ENTRYPOINT []
+
 # Run main.py with uv and environment defined in pyproject.toml
-CMD ["uv", "run", "python", "main.py"]
+CMD [ "uv", "run", "python", "main.py"]

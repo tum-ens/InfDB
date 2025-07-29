@@ -9,6 +9,7 @@ from zipfile import ZipFile, BadZipFile
 import geopandas as gpd
 import chardet
 from urllib.parse import urlparse
+import subprocess
 
 import logging
 
@@ -133,10 +134,29 @@ def sql_query(query):
     except Exception as error:
         log.error(f"ProgrammingError: {error}")
 
+def do_cmd(cmd: str):
+    log.info(f"Executing command: {cmd}")
 
-def do_cmd(cmd):
-    os.system(cmd)
-    print(f"{cmd} executed successfully.")
+    process = subprocess.Popen(
+        cmd,
+        shell=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        bufsize=1  # Zeilenweise Puffern
+    )
+
+    # Zeilenweise lesen und direkt loggen
+    if process.stdout:
+        for line in process.stdout:
+            log.info(line.rstrip())
+
+    # Warten bis der Prozess beendet ist
+    return_code = process.wait()
+    if return_code == 0:
+        log.info("Command completed successfully.")
+    else:
+        log.error(f"Command failed with return code {return_code}")
 
 
 def import_layers(input_file, layers, schema, prefix="", layer_names=None, scope=True):
