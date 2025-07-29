@@ -148,7 +148,7 @@ def main():
 
         # Execute WAYS scripts first
         log.info("Running WAYS SQL scripts")
-        #db_executor.execute_sql_scripts(WAYS_SQL_DIR, WAYS_SQL_FILES)
+        db_executor.execute_sql_scripts(WAYS_SQL_DIR, WAYS_SQL_FILES)
 
         # Then BUILDINGS scripts
         log.info("Running BUILDINGS SQL scripts")
