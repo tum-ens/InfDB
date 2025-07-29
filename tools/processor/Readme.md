@@ -4,6 +4,12 @@
 - Docker
 - Have database set up with Open Data (see `src/services/loader`)
 
+## Startup
+From the root project folder you can start the processor by executing these commands via bash:
+```bash
+docker compose -f compose.yml up
+```
+
 ### Source Code
 - The folder contains source code to create three tables in the `pylovo_input`:
   - `ways` (street segments)
@@ -12,8 +18,3 @@
   - `way_names` (street names of ways)
   - `building_addresses` (addresses assigned to buildings)
 
-### Startup
-From the root project folder you can start the processor by executing these commands via bash:
-```bash
-docker compose -f tools/processor/compose.yml up
-```
