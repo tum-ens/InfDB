@@ -25,10 +25,10 @@ def _merge_configs():
     configs = _load_config(base_path)
 
     # Load sub configs defined under config.yaml configs field
-    load_dotenv()
-    dir_infdb_config = os.environ.get("CONFIG_INFDB_PATH", "")
+    #load_dotenv()
+    # dir_infdb_config = os.environ.get("CONFIG_INFDB_PATH", "")
     filename = configs["processor"]["config-infdb"]
-    path_infdb_config = os.path.join(dir_infdb_config, filename)
+    path_infdb_config = os.path.join("configs-infdb", filename)     # hardcoded because of docker mount in compose.yml
     log.debug(f"Loading configuration from '{path_infdb_config}'")
     if os.path.exists(path_infdb_config):
         configs.update(_load_config(path_infdb_config))

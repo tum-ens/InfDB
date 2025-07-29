@@ -22,4 +22,4 @@ COPY pyproject.toml /tools/processor/pyproject.toml
 RUN uv sync
 
 # Run main.py with uv and environment defined in pyproject.toml
-CMD ["uv", "run", "python", "main.py"]
+#CMD ["uv", "run", "python", "main.py"]

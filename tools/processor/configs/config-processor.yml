@@ -2,7 +2,7 @@ processor:
     config-infdb: "config-infdb.yml" # only filename - change path in ".env" file "CONFIG_INFDB_PATH"
     logging:
         path: "processor.log"
-        level: "INFO" # ERROR, WARNING, INFO, DEBUG
+        level: "DEBUG" # ERROR, WARNING, INFO, DEBUG
     hosts:
         citydb:
             user: None
