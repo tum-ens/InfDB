@@ -37,21 +37,23 @@ def load():
     # Prefix for table names
     prefix = config.get_value(["loader", "sources", "bkg", "prefix"])
 
+    # Verwaltungsgebiete
+    log.info("Downloading and unzipping Verwaltungsgebiete")
+    url = config.get_value(["loader", "sources", "bkg", "vg5000", "url"])
+    files = utils.download_files(url, zip_path)
+    utils.unzip(files, unzip_path)
+    vg_layers = config.get_value(["loader", "sources", "bkg", "vg5000", "layer"])
+    file = utils.get_file(unzip_path, filename="vg5000", ending=".gpkg")
+    utils.import_layers(file, vg_layers, schema, prefix, scope=False)
+
     # NUTS-Gebiete
     log.info("Downloading and unzipping NUTS")
     url = config.get_value(["loader", "sources", "bkg", "nuts", "url"])
     files = utils.download_files(url, zip_path)
     utils.unzip(files, unzip_path)
     nuts_layers = config.get_value(["loader", "sources", "bkg", "nuts", "layer"])
-    utils.import_layers(os.path.join(unzip_path, "nuts250_12-31.utm32s.gpkg/nuts250_1231/DE_NUTS250.gpkg"), nuts_layers, schema, prefix)
-
-    # Verwaltungsgebiete
-    log.info("Downloading and unzipping Verwaltungsgebiete")
-    url = config.get_value(["loader", "sources", "bkg", "vg500", "url"])
-    files = utils.download_files(url, zip_path)
-    utils.unzip(files, unzip_path)
-    vg_layers = config.get_value(["loader", "sources", "bkg", "vg500", "layer"])
-    utils.import_layers(os.path.join(unzip_path, "vg5000_12-31.utm32s.gpkg.ebenen/vg5000_ebenen_1231/DE_VG5000.gpkg"), vg_layers, schema, prefix)
+    file = utils.get_file(unzip_path, filename="nuts250", ending=".gpkg")
+    utils.import_layers(file, nuts_layers, schema, prefix)
 
     # # Geogitter
     log.info("Creating Geogitter layers")
@@ -82,8 +84,8 @@ def create_geogitter(resolution):
         ),
              boundary AS (
                  SELECT ST_Union(ST_Transform(geometry, 3035)) AS geom
-                 FROM opendata.bkg_nuts250_n3
-                 WHERE "NUTS_CODE" LIKE '{scope}%'
+                 FROM opendata.bkg_vg5000_gem
+                 WHERE "AGS" LIKE '{scope}%'
              ),
              envelope AS (
                  SELECT

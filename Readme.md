@@ -17,7 +17,7 @@
 ## activate environment
 ```bash
     # linux and macos
-    source venv/bin/activate
+    source .venv/bin/activate
     # windows
     venv\Scripts\activate
 ```
@@ -25,23 +25,23 @@
 ## install packages (only once)
 ```bash
     # install requirements
-    uv pip install -r requirements.txt
+    uv pip install .
 ```
 
 ## generate docker compose and env files
 You need to generate the configurations files once you changed any of the config yaml files in configs directory.
 ```bash
     # on linux and macos
-    python3 -m src.utils.generate-compose
-    
+    docker compose -f dockers/setup/docker-compose.yml up --build
+
     # on windows
 ```
 
 ## start infdb
 ```bash
     # on linux and macos
-     docker compose -f docker-compose.yml --env-file .env up --build
-    
+     docker compose -f docker-compose.yml --env-file .env up -d --build
+
     # on windows
 ```
 
@@ -49,15 +49,15 @@ You need to generate the configurations files once you changed any of the config
 ## load data
 ```bash
     # on linux and macos
-    docker compose -f dockers/loader/loader.yml --env-file .env up --build
-    
+    docker compose -f dockers/loader/docker-compose.yml --env-file .env up --build
+
     # on windows
 ```
 
 ## process data
 ```bash
     # on linux and macos
-    docker compose -f dockers/processor.yml --env-file .env up --build
-    
+    docker compose -f dockers/processor/docker-compose.yml --env-file .env up --build
+
     # on windows
 ```

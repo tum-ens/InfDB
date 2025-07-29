@@ -1,0 +1,9 @@
+services:
+  setup:
+    build:
+      context: ../..
+      dockerfile: src/services/setup/Dockerfile
+    container_name: setup
+    volumes:
+      - ../../configs:/app/configs  # for *.yml configs and generated files
+      - ../../dockers:/app/dockers  # for overall docker-compose.yml

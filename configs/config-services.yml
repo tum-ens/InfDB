@@ -11,9 +11,9 @@ services:
     compose_file: "dockers/services/citydb.yml"
 
   timescaledb:
-    user: timescale_user
-    password: secret
-    db: timescaledb_db
+    user: timescaledb_user
+    password: timescaledb_password
+    db: timescaledb
     host: timescaledb
     exposed_port: 5432
     status: active
@@ -35,7 +35,9 @@ services:
     compose_file: "dockers/services/juypter.yml"
 
   qwc:
-    exposed_port: 80
-    status: not-active
-    compose_file: "dockers/services/juypter.yml"
+    exposed_port_gui: 80
+    exposed_port_db: 5435
+    postgres_password: qwc_password
+    status: active
+    compose_file: "tools/qgis_webclient/docker-compose.yml"
 

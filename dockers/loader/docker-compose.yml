@@ -1,0 +1,8 @@
+name: loader
+include:
+- data-loader.yml
+- citydb-tool.yml
+#networks:
+#  infdb:
+#    external: true
+#    name: infdb_${BASE_NETWORK_NAME}
