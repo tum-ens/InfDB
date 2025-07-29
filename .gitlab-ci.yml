@@ -18,8 +18,6 @@ stages:
   - setup
   - test
   - lint
-  - build
-  - deploy
 
 # Install uv and dependencies
 .install_uv: &install_uv
