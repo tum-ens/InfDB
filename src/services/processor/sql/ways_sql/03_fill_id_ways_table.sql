@@ -15,7 +15,7 @@ SELECT
     ST_Length(ST_Transform(v.geometry, 3035)) / 1000.0 / NULLIF(c.kmh, 0) AS cost
 FROM opendata.bmp_verkehrslinie v,
      LATERAL pylovo_input.map_strasse_klasse_to_class_kmh(v.klasse) AS c
-WHERE v.geometry IS NOT NULL AND c.clazz NOT IN (3, 92, 99);
+WHERE v.geometry IS NOT NULL AND c.clazz NOT IN (99);
 
 -- Set reverse_cost based on the direction of the traffic line
 UPDATE pylovo_input.ways AS w

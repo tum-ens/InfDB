@@ -6,7 +6,8 @@ CREATE TABLE IF NOT EXISTS pylovo_input.ways (
     target                     INTEGER,
     cost                       DOUBLE PRECISION,
     reverse_cost               DOUBLE PRECISION,
-    geom                       geometry(LineString, 3035)
+    geom                       geometry(LineString, 3035),
+    postcode                 INTEGER
 );
 
 CREATE INDEX IF NOT EXISTS idx_ways_geom ON pylovo_input.ways USING GIST (geom);
