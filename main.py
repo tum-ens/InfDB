@@ -1,6 +1,6 @@
 import multiprocessing as mp
 from src import utils
-from src import bkg, basemap, lod2, census2022, plz, citydbtool
+from src import bkg, basemap, lod2, census2022, plz
 from src.logger import setup_main_logger
 import multiprocessing
 import logging
