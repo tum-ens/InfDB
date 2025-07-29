@@ -91,11 +91,6 @@ def process_census():
             if os.path.basename(file).replace("_" + resolution, "") not in layers:
                 log.info(f"Skipping {file}...")
                 continue
-            if resolution not in file:
-                continue
-            # if os.path.basename(file).replace("_" + resolution, "") not in layers:
-            #     log.info(f"Skipping {file}...")
-            #     continue
 
             log.info(f"Processing {file}...")
             try:
