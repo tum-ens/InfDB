@@ -29,45 +29,12 @@ BEGIN
             clazz := 72; kmh := 10;
         WHEN 'Fußweg' THEN
             clazz := 91; kmh := 5;
-        WHEN 'Reitweg' THEN
-            clazz := 92; kmh := 5;
+        WHEN 'Radweg ' THEN
+            clazz := 81; kmh := 10;
 
-        -- Rails
-        WHEN 'Gleis' THEN
-            clazz := 3; kmh := 50;
-        WHEN 'Eisenbahn' THEN
-            clazz := 3; kmh := 50;
-        WHEN 'Zahnradbahn' THEN
-            clazz := 3; kmh := 40;
-        WHEN '["Eisenbahn", "S-Bahn"]' THEN
-            clazz := 3; kmh := 50;
-
-        -- Aerial transport
-        WHEN 'Luftseilbahn, Großkabinenbahn' THEN
-            clazz := 98; kmh := 30;
-        WHEN 'Kabinenbahn, Umlaufseilbahn' THEN
-            clazz := 98; kmh := 20;
-        WHEN 'Sessellift' THEN
-            clazz := 98; kmh := 15;
-        WHEN 'Materialseilbahn' THEN
-            clazz := 98; kmh := 10;
-
-        -- Airfields
-        WHEN 'Startbahn, Landebahn' THEN
-            clazz := 99; kmh := 30;
-
-        -- Special terrain
-        WHEN 'Furt' THEN
-            clazz := 99; kmh := 10;
-        WHEN '(Kletter-)Steig im Gebirge' THEN
-            clazz := 97; kmh := 3;
-
-        -- Lifts
-        WHEN 'Ski-, Schlepplift' THEN
-            clazz := 96; kmh := 10;
-
+        -- Default case for unknown types
         ELSE
-            RAISE EXCEPTION 'Unknown way class: %', klasse;
+            clazz := 99; kmh := 99;
     END CASE;
 END;
 $$ LANGUAGE plpgsql IMMUTABLE STRICT;
