@@ -11,9 +11,17 @@ def write_env_file(file_path=".env"):
         flattened_config = config.flatten_dict(config.get_config(), sep="_")
         for key, value in flattened_config.items():
             env_key = key.upper()
+            if "PATH" in env_key:
+                if not os.path.isabs(value):
+                    if "SERVICE" in env_key and not "COMPOSE_FILE" in env_key:
+                        value = os.path.join("..", value)
+                    else:
+                        value = os.path.join(".", value)
             f.write(f"{env_key}={value}\n")
+
         # Add JWT secret key for QWC
         f.write("JWT_SECRET_KEY=" + secrets.token_hex(48))
+    print(f".env  file written to {path}")
 
 # This function auto generates the docker compose file for us.
 def write_compose_file(output_path):
@@ -35,10 +43,11 @@ def write_compose_file(output_path):
     services = config.get_value(["services"])
     for service_name, props in services.items():
         if isinstance(props, dict) and props.get("status") == "active":
-            path = config.get_path(["services", service_name, "compose_file"])
+            path = config.get_path(["services", service_name, "path", "compose_file"])
             output["include"].append(path)
 
     config.write_yaml(output, output_path)
+    print(f".docker compose file written to {output_path}")
 
 import json
 
@@ -77,6 +86,7 @@ def setup_pgadmin_servers(output_path):
     with open(pgpass_path, "w") as f:
         f.write("\n".join(pgpass_entries) + "\n")
     os.chmod(pgpass_path, 0o600)  # Set permissions to read/write for the owner only
+    print(f".pgpass written to {pgpass_path}")
 
 import os
 
