@@ -98,7 +98,7 @@ services:
   export-and-import:
     build:
       context: ../..
-      dockerfile: src/services/sunpot/Dockerfile
+      dockerfile: ../../tools/sunpot/Dockerfile
     container_name: solarpotential-export-and-import
     networks:
       - infdb_network
