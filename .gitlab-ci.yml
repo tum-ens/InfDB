@@ -22,10 +22,7 @@ stages:
 # Install uv and dependencies
 .install_uv: &install_uv
   before_script:
-    - apt-get update && apt-get install -y curl
-    - curl -LsSf https://astral.sh/uv/install.sh | sh
-    - source $HOME/.cargo/env
-    - uv --version
+    - pip install uv
 
 # Setup job
 setup:
