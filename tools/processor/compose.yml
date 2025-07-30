@@ -15,6 +15,6 @@ services:
             # Only for development, for production: uncomment above and comment below
             - .:/tools/processor
             - ${CONFIG_INFDB_PATH}:/tools/processor/configs-infdb:ro # for infdb configs
-            - /tools/loader/.venv
+            - /tools/processor/.venv
         extra_hosts:
             - "host.docker.internal:host-gateway"
