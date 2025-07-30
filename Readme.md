@@ -12,7 +12,7 @@ You need to generate the configurations files once you changed any of the config
 ### start infDB
 ```bash
     # on linux and macos
-     docker compose -f .generated/compose.yml --env-file .generated/.env up -d
+     docker compose -f compose.yml up -d
 
     # on windows
 ```
