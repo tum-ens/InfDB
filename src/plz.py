@@ -10,7 +10,7 @@ def load(log_queue):
     if not utils.if_active("plz"):
         return
 
-    base_path = config.get_value(["loader", "sources", "plz", "path", "base"])
+    base_path = config.get_path(["loader", "sources", "plz", "path", "base"])
     log.debug(f"base_path={base_path}")
     os.makedirs(base_path, exist_ok=True)
 

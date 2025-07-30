@@ -18,7 +18,7 @@ def load(log_queue):
     zip_links = utils.get_website_links(url)
 
     # download_zensus(zip_links)
-    zip_path = config.get_value(["loader", "sources", "zensus_2022", "path", "zip"])
+    zip_path = config.get_path(["loader", "sources", "zensus_2022", "path", "zip"])
     print("Zippath:" + os.path.abspath(zip_path))
 
     layers = config.get_value(["loader", "sources", "zensus_2022", "layer"])
@@ -32,7 +32,7 @@ def load(log_queue):
         #     continue
         utils.download_files(zip_link, zip_path)
 
-    unzip_path = config.get_value(["loader", "sources", "zensus_2022", "path", "unzip"])
+    unzip_path = config.get_path(["loader", "sources", "zensus_2022", "path", "unzip"])
 
     zip_files = [os.path.join(zip_path, f) for f in os.listdir(zip_path)]
     utils.unzip(zip_files, unzip_path)

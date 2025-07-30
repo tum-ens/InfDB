@@ -1,6 +1,8 @@
 import multiprocessing as mp
+import sys
+
 from src import utils
-from src import bkg, basemap, lod2, census2022, plz
+from src import bkg, basemap, lod2, census2022, plz, tabula
 from src.logger import setup_main_logger
 import multiprocessing
 import logging
@@ -14,6 +16,8 @@ if __name__ == "__main__":
 
     log.info("Starting loader...")
 
+    #tabula.load(log_queue)
+    #sys.exit()
     # Ensure that administrative areas are
     bkg.load_envelop()
 
