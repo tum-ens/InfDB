@@ -23,7 +23,9 @@ def load(log_queue):
     filter = config.get_value(["loader", "sources", "basemap", "filter"])
     urls = utils.get_links(site_url, ending, filter)
 
+    log.debug(urls)
     download_files = utils.download_files(urls, base_path)
+    log.debug(f"Download_files: {download_files}")
 
     # Create schema if it doesn't exist
     schema = config.get_value(["loader", "sources", "basemap", "schema"])
@@ -32,10 +34,11 @@ def load(log_queue):
 
     prefix = config.get_value(["loader", "sources", "basemap", "prefix"])
 
-    for file in download_files:
+    files = utils.get_all_files(base_path, ".gpkg")
+    for file in files:
         log.info(f"Loading {file}...")
         list = gpd.list_layers(file)["name"]
         # print(list)
         layer_names = config.get_value(["loader", "sources", "basemap", "layer"])
         layers = [layer + "_bdlm" for layer in layer_names]
-        utils.import_layers(file, layers, schema, prefix=prefix, layer_names=layer_names)
+        utils.import_layers(file, layers, schema, prefix=prefix, layer_names=layer_names) #TODO: Add if several files

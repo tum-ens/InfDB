@@ -61,26 +61,49 @@ def get_links(url, ending, filter):
     return zip_links
 
 
-def download_files(urls, base_path):
+import os
+import requests
+from tqdm import tqdm
+import logging
+
+log = logging.getLogger(__name__)
+
+def download_files(urls, base_path, chunk_size=1024):
     os.makedirs(base_path, exist_ok=True)
     files = []
-    # if urls is a string, convert it to a list
+
     if isinstance(urls, str):
         urls = [urls]
 
     for url in urls:
-        path_file = os.path.join(base_path, url.split("/")[-1])
+        filename = url.split("/")[-1]
+        path_file = os.path.join(base_path, filename)
+
         if os.path.exists(path_file):
             log.info(f"File {path_file} already exists.")
         else:
-            # Datei herunterladen
             log.info(f"File {path_file} will be downloaded from {url}")
 
-            response = requests.get(url)
-            with open(path_file, "wb") as file:
-                file.write(response.content)
+            with requests.get(url, stream=True) as response:
+                response.raise_for_status()
+                total_size = int(response.headers.get('content-length', 0))
+
+                with open(path_file, "wb") as file, tqdm(
+                    total=total_size,
+                    unit='B',
+                    unit_scale=True,
+                    desc=filename,
+                    disable=(total_size == 0)
+                ) as pbar:
+                    for chunk in response.iter_content(chunk_size=chunk_size):
+                        if chunk:  # filter out keep-alive chunks
+                            file.write(chunk)
+                            pbar.update(len(chunk))
+
             log.info(f"{path_file} downloaded.")
+
         files.append(path_file)
+
     return files
 
 
@@ -187,8 +210,8 @@ def import_layers(input_file, layers, schema, prefix="", layer_names=None, scope
 def get_envelop():
 
     scope = config.get_value(["loader", "scope"])
-    ags_path = config.get_value(["loader", "sources", "bkg", "path", "unzip"])
-
+    ags_path = config.get_path(["loader", "sources", "bkg", "path", "unzip"])
+    log.debug(f"Envelop Path: {ags_path}")
     path = get_file(ags_path, filename="vg5000", ending=".gpkg")
     log.debug(f"Envelop Path: {path}")
     gdf = gpd.read_file(path, layer = "vg5000_gem")
