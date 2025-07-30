@@ -37,7 +37,7 @@ def load(log_queue):
     zip_files = [os.path.join(zip_path, f) for f in os.listdir(zip_path)]
     utils.unzip(zip_files, unzip_path)
 
-    input_path = config.get_value(["loader", "sources", "zensus_2022", "path", "unzip"])
+    input_path = config.get_path(["loader", "sources", "zensus_2022", "path", "unzip"])
     print(f"Input path: {input_path}")
 
     # output_path = config.get_path(["loader", "sources", "zensus_2022", "path", "processed"])
@@ -91,6 +91,7 @@ def load(log_queue):
                 log.debug("utf8" + file)
                 continue
             if resolution not in file:
+                log.debug(f"Skipping {file} because of {resolution}...")
                 continue
 
             layer = os.path.basename(file).replace("_" + resolution, "").replace("Zensus2022_", "").replace(
@@ -127,6 +128,7 @@ def load(log_queue):
                 table_name = prefix + "_" + resolution + "_" + table_name
                 gdf_clipped.to_postgis(table_name, engine, if_exists='replace', schema=schema, index=False)
                 # gdf_clipped.to_file(os.path.join(output_path, f"zenus-2022{resolution}.gpkg"), layer=file, driver="GPKG")
+                log.info(f"Processed sucessfully {file}")
 
             except Exception as err:
                 log.info(Exception, err)

@@ -8,7 +8,7 @@ processor:
             user: None
             password: None
             db: None
-            host: 10.162.28.165 #host.docker.internal #localhost #
+            host: host.docker.internal #10.162.28.165 #host.docker.internal #localhost #
             exposed_port: None
             epsg: None # 3035 (Europe)
         timescaledb:

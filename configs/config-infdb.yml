@@ -2,9 +2,9 @@
 # Relative paths are relative to the project directory
 
 base:
-    name: infdb-munich-ds1
+    name: infdb-munich
     path:
-        base: "infdb-data-ds1/"
+        base: "/data/infdb/data-infdb/"
     network_name: infdb_network_ds1
 services:
     citydb:
