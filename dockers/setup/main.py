@@ -5,7 +5,7 @@ from src import config
 
 # This function writes configuration for services into a .env file which then be read by the containers.
 def write_env_file(file_path=".env"):
-    path = os.path.join(config.get_root_path(), file_path)
+    path = os.path.join(file_path)
     # print("Writing environment variables to {}".format(path))
     with open(path, "w") as f:
         flattened_config = config.flatten_dict(config.get_config(), sep="_")
@@ -112,8 +112,12 @@ def write_pg_service_conf(output_path):
 
 
 
-write_env_file(".env")
+
+write_env_file("infdb-root/.env")
 write_compose_file("infdb-root/compose.yml")
-setup_pgadmin_servers(".generated/")
-write_pg_service_conf(".generated/")
+
+os.makedirs("infdb-root/.generated/", exist_ok=True)
+setup_pgadmin_servers("infdb-root/.generated/")
+write_pg_service_conf("infdb-root/.generated/")
+
 print("Setup completed successfully. Configuration files generated.")
