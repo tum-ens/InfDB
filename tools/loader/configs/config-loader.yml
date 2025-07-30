@@ -1,5 +1,5 @@
 loader:
-    scope: 09780139 #09162000 # Sonthofen:  AGS (Amtlicher Gemeindeschlüssel)
+    scope:  09162000 # Sonthofen: 09780139 AGS (Amtlicher Gemeindeschlüssel)
     multiproccesing: active
     config-infdb: "config-infdb.yml" # only filename - change path in ".env" file "CONFIG_INFDB_PATH"
     path:
