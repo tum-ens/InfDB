@@ -5,7 +5,7 @@ import subprocess
 
 
 base_dir = os.path.dirname(__file__)
-input_path = os.path.join(base_dir, "../../configs/config-sunpot.yml")
+input_path = os.path.join(base_dir, "config-sunpot.yml")
 file_path = os.path.join(base_dir, ".env")
 
 

@@ -2,7 +2,7 @@
 The instructions on how to use the tool can be found [here](https://advanced-gis-for-ee.netlify.app/software-lab-2/solar-potential-analysis)
 
 ```bash
-docker login gitlab.lrz.de:5005 --username ge82buj --password glpat-mc1S_YrzT9XPJ-NgsVtu
+docker login gitlab.lrz.de:5005 --username ge82buj --password REDACTED
 docker pull gitlab.lrz.de:5005/sunpot/sunpot-core
 ```
 
