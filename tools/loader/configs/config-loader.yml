@@ -175,3 +175,10 @@ loader:
             prefix: plz
             layer:
                 - plz-5stellig
+        tabula:
+            status: active
+            url:
+                - "https://raw.githubusercontent.com/RWTH-EBC/TEASER/refs/heads/main/teaser/data/input/inputdata/TypeElements_TABULA_DE.json"
+            path:
+                lod2: "{loader/path/opendata}/lod2/"
+                gml: "{loader/path/opendata}/lod2/{loader/scope}"
