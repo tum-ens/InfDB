@@ -50,8 +50,8 @@ def get_value(keys):
 def get_path(keys):
     path = get_value(keys)
     if not os.path.isabs(path):
-        path = os.path.join(get_root_path(), path)
-    path = os.path.abspath(path)
+        path = os.path.join(".", path)
+    #path = os.path.abspath(path)
     return path
 
 

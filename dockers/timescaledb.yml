@@ -1,15 +1,16 @@
 services:
     timescaledb:
-        image: timescale/timescaledb:latest-pg14
+        image: timescale/timescaledb:latest-pg17
         container_name: timescaledb
         environment:
             POSTGRES_DB: ${SERVICES_TIMESCALEDB_DB}
             POSTGRES_USER: ${SERVICES_TIMESCALEDB_USER}
             POSTGRES_PASSWORD: ${SERVICES_TIMESCALEDB_PASSWORD}
+            PGDATA: /pgdata
         ports:
             - ${SERVICES_TIMESCALEDB_EXPOSED_PORT}:5432
         volumes:
-            - ${SERVICES_TIMESCALEDB_PATH}:/var/lib/postgresql/data
+            - ${SERVICES_TIMESCALEDB_PATH_BASE}:/pgdata
         networks:
             - ${BASE_NETWORK_NAME}
         healthcheck:

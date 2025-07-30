@@ -12,7 +12,7 @@ def load(log_queue):
         return
 
     # Create folders if they do not exist
-    base_path = config.get_value(["loader", "sources", "basemap", "path", "base"])
+    base_path = config.get_path(["loader", "sources", "basemap", "path", "base"])
     os.makedirs(base_path, exist_ok=True)
 
     # processed_path = config.get_path(["loader", "sources", "basemap", "path", "processed"])

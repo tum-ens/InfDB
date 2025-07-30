@@ -1,47 +1,55 @@
+# Configuration for the INFDB database setup
+# Relative paths are relative to the project directory
+
 base:
-    name: infdb-munich2
+    name: infdb-munich-ds1
     path:
-        base: "infdb-data/"
-    network_name: infdb_network2
+        base: "infdb-data-ds1/"
+    network_name: infdb_network_ds1
 services:
     citydb:
         user: citydb_user
-        password: citydb_password
+        password: V#3rn+nmma!-c_9upZkM
         db: citydb
         host: citydb
-        exposed_port: 5432
+        exposed_port: 54321
         epsg: 25832 # 3035 (Europe)
-        path: "{base/path/base}/{base/name}/citydb/"
+        path: 
+            base: "{base/path/base}/{base/name}/citydb/"
+            compose_file: "dockers/citydb.yml"
         status: active
-        compose_file: "dockers/citydb.yml"
 
     timescaledb:
         user: timescaledb_user
-        password: timescaledb_password
+        password: V#3rn+nmma!-c_9upZkM
         db: timescaledb
         host: timescaledb
-        exposed_port: 5433
+        exposed_port: 54331
         status: active
-        path: "{base/path/base}/{base/name}/timescaledb/"
-        compose_file: "dockers/timescaledb.yml"
+        path: 
+            base: "{base/path/base}/{base/name}/timescaledb/"
+            compose_file: "dockers/timescaledb.yml"
 
     pgadmin:
         default_email: admin@admin.com
-        default_password: admin
-        exposed_port: 81
+        default_password: V#3rn+nmma!-c_9upZkM
+        exposed_port: 8011
         status: active
-        compose_file: "dockers/pgadmin.yml"
+        path:
+            compose_file: "dockers/pgadmin.yml"
 
     jupyter:
         exposed_port: 8888
         enable_lab: yes
         status: not-active
-        volume_dir: "{base/path/base}/{base/name}/notebooks/"
-        compose_file: "dockers/juypter.yml"
+        path:
+            base: "{base/path/base}/{base/name}/notebooks/"
+            compose_file: "dockers/juypter.yml"
 
     qwc:
-        exposed_port_gui: 80
-        exposed_port_db: 5434
-        postgres_password: qwc_password
         status: active
-        compose_file: "dockers/qgis_webclient/docker-compose.yml"
+        exposed_port_gui: 801
+        exposed_port_db: 5434
+        postgres_password: V#3rn+nmma!-c_9upZkM
+        path:
+            compose_file: "dockers/qgis_webclient/docker-compose.yml"

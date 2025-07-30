@@ -11,7 +11,7 @@ def load(log_queue):
     if not utils.if_active("lod2"):
         return
 
-    base_path = config.get_value(["loader", "sources", "lod2", "path", "lod2"])
+    base_path = config.get_path(["loader", "sources", "lod2", "path", "lod2"])
     os.makedirs(base_path, exist_ok=True)
 
     # Run aria2c to download the file (equivalent to `aria2c <url>`)
@@ -19,7 +19,7 @@ def load(log_queue):
     if isinstance(url, list):
         url = (" ").join(url)
 
-    gml_path = config.get_value(["loader", "sources", "lod2", "path", "gml"])
+    gml_path = config.get_path(["loader", "sources", "lod2", "path", "gml"])
     cmd = f"aria2c --continue=true --allow-overwrite=false --auto-file-renaming=false {url} -d {gml_path}"
     utils.do_cmd(cmd)
 

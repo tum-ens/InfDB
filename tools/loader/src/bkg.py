@@ -8,11 +8,11 @@ log = logging.getLogger(__name__)
 def create_folders():
     ## Check if the required directories exist, if not create them
     # Base path for zip files
-    zip_path = config.get_value(["loader", "sources", "bkg", "path", "zip"])
+    zip_path = config.get_path(["loader", "sources", "bkg", "path", "zip"])
     os.makedirs(zip_path, exist_ok=True)
 
     # Base path for unzipped files
-    unzip_path = config.get_value(["loader", "sources", "bkg", "path", "unzip"])
+    unzip_path = config.get_path(["loader", "sources", "bkg", "path", "unzip"])
     os.makedirs(unzip_path, exist_ok=True)
 
     # # Base path for processed files

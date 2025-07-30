@@ -1,6 +1,8 @@
 services:
     citydb:
-        image: 3dcitydb/3dcitydb-pg:5.0.0
+        build:
+            context: .
+            dockerfile: Dockerfile-citydb
         container_name: citydb
         environment:
             POSTGRES_DB: ${SERVICES_CITYDB_DB}
@@ -10,7 +12,7 @@ services:
         ports:
             - ${SERVICES_CITYDB_EXPOSED_PORT}:5432
         volumes:
-            - ${SERVICES_CITYDB_PATH}:/var/lib/postgresql/data
+            - ${SERVICES_CITYDB_PATH_BASE}:/var/lib/postgresql/data
         networks:
             - ${BASE_NETWORK_NAME}
         healthcheck:
