@@ -17,23 +17,4 @@ The contributing documentation provides clear instructions and guidelines for an
   - Issue reporting guidelines
 - [**Release Procedure**](RELEASE_PROCEDURE.md): Process for creating and managing releases
 
-## For New Contributors
-
-If you're new to the project, we recommend starting with the following steps:
-
-1. Read the [Code of Conduct](CODE_OF_CONDUCT.md) to understand our community standards
-2. Follow the setup instructions in the [Contributing Guide](CONTRIBUTING.md)
-3. Look for issues labeled "good first issue" in the issue tracker
-4. Reach out to the maintainers if you have any questions
-
-## Contribution Process Overview
-
-1. **Find or create an issue** describing the change you want to make
-2. **Fork the repository** and create a branch for your changes
-3. **Make your changes** following the coding guidelines
-4. **Write or update tests** to verify your changes
-5. **Submit a pull request** referencing the issue
-6. **Address review feedback** until your changes are approved
-7. **Merge** your changes into the main codebase
-
 Thank you for considering contributing to the InfDB project!

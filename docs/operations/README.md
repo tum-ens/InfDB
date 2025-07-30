@@ -8,57 +8,40 @@ The operations documentation provides guidance for DevOps engineers, system admi
 
 ## Contents
 
-- [**CI/CD Guide**](CI_CD_Guide.md): Detailed information about the continuous integration and deployment pipeline
+- [**CI/CD Guide**](CI_CD_GUIDE.md):  
+  Explains how the automated pipelines work, including build, test, and deploy stages. It includes GitLab CI/CD details, environment variables, and job responsibilities.
 
-## Key Topics
+- [**Deployment**](DEPLOYMENT.md):  
+  Step-by-step instructions for deploying InfDB, including Docker Compose usage, environment setup, credentials, and optional services.
 
-### CI/CD Pipeline
+## Development vs Operations Guide
 
-The CI/CD guide covers:
-- Pipeline stages and jobs
-- Configuration details
-- Best practices for each stage
-- Troubleshooting common issues
-- Integration with GitLab CI/CD
+### Local Development (development/)
+- Setting up local development environment
+- Running services locally
+- Local testing and debugging
+- Using development configurations
 
-### Deployment (Planned)
+### Production Operations (operations/)
+- Deploying to production environments
+- CI/CD pipeline management
+- Production monitoring and maintenance
+- Production configuration management
 
-Future documentation will cover:
-- Deployment procedures for different environments
-- Configuration management
-- Environment variables
-- Infrastructure requirements
-- Scaling considerations
+### When to Use Which
+- Use development/ when:
+  - Setting up your local development environment
+  - Making code changes
+  - Running tests locally
+  - Debugging issues
 
-### Monitoring and Logging (Planned)
+- Use operations/ when:
+  - Deploying to staging/production
+  - Setting up CI/CD pipelines
+  - Managing production configurations
+  - Monitoring production systems
 
-Future documentation will cover:
-- Monitoring setup
-- Log aggregation
-- Alert configuration
-- Performance metrics
-- Health checks
-
-### Backup and Recovery (Planned)
-
-Future documentation will cover:
-- Backup procedures
-- Recovery processes
-- Data retention policies
-- Disaster recovery planning
-
-## For Operations Staff
-
-When working with the InfDB system:
-
-1. Review the [CI/CD Guide](CI_CD_Guide.md) to understand the deployment pipeline
-2. Follow the deployment procedures for your target environment
-3. Set up appropriate monitoring and alerting
-4. Implement regular backup procedures
-5. Test recovery processes periodically
-
-## Related Documentation
-
-- The [Development Documentation](../development/README.md) provides information about the development environment
-- The [Database Schema](../development/database_schema.md) contains details about the database structure
-- The [Project Guidelines](../guidelines/coding_guidelines.md) include performance and security considerations
+### Common Workflows
+- Development → Staging → Production
+- Local testing → CI/CD pipeline
+- Development configuration → Production configuration

@@ -23,12 +23,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Established the initial API structure, connecting TimescaleDB and 3DCityDB. (!7, !8, !9)
 
 ### Fixed
+- Fixes raster generation queries with the new buildings data coming from loader service (#82, !43)
 - Fix/ci resource size by updating artifact expiration date (#69, !34)
 - Add healthchecks for databases in docker compose (!15)
 - Convert post to get endpoint for citydb (!11)
 - Get jupyter notebook volume path from config.yaml (#78, !35)
 
 ### Changed
+- Improve general documentation structure and consistency (#66, !33)
 - Optimize initial general config merge request !29 (!32)
 - Fix/update db connection setup for data import (!24)
 - Update raster table generation with a given lat and long in meters (#12, !21)
