@@ -4,8 +4,8 @@ services:
             context: .
             dockerfile: Dockerfile
         volumes:
-            - ./${CONFIG_INFDB_PATH}:/tools/loader/configs-infdb:ro # for *.yml configs and generated files
-            - ./${LOADER_DATA_PATH}:/tools/loader/data-loader # for overall docker-compose.yml
+            - ${CONFIG_INFDB_PATH}:/tools/loader/configs-infdb:ro # for *.yml configs and generated files
+            - ${LOADER_DATA_PATH}:/tools/loader/data-loader # for overall docker-compose.yml
             - ./:/tools/loader
             - /tools/loader/.venv # Exclude .venv from volume mount
         extra_hosts:

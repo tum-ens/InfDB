@@ -1,6 +1,6 @@
 # Startup Guide for InfDB
 ## Prodcution deployment via docker compose
-### generate docker compose and env files
+### setup infDB
 You need to generate the configurations files once you changed any of the config yaml files in configs directory.
 ```bash
     # on linux and macos
@@ -9,16 +9,25 @@ You need to generate the configurations files once you changed any of the config
     # on windows
 ```
 
-### start infdb
+### start infDB
 ```bash
     # on linux and macos
      docker compose -f .generated/compose.yml --env-file .generated/.env up -d
 
     # on windows
 ```
+Hint: If compose.yml is not found, you either forgot to run the command above or something went wrong. 
+Please check the logs of the setup service.
 
 ### load data
+Paths in .env
+```yml
+CONFIG_INFDB_PATH=../../configs # Path to the configs directory of infDB
+LOADER_DATA_PATH=/Users/patrickbuchenberg/infdb # Path to data storage # ../../infdb-data-ds1
+```
+
 Settings in /tools/loader/configs/config-loader.yml
+
 ```bash
     # on linux and macos
     docker compose -f tools/loader/compose.yml up 
@@ -27,6 +36,10 @@ Settings in /tools/loader/configs/config-loader.yml
 ```
 
 ### process data
+Paths in .env
+```yml
+CONFIG_INFDB_PATH=../../configs # Path to the configs directory of infDB
+```
 Settings in /tools/processor/configs/config-processor.yml
 ```bash
     # on linux and macos
@@ -34,7 +47,7 @@ Settings in /tools/processor/configs/config-processor.yml
 
     # on windows
 ```
-# Configurations
+# Configurations (only in addition for QGIS Desktop)
 .pg_service.conf for QGIS to connect to InfDB via service
 ```
 [infdb]
