@@ -70,12 +70,12 @@ def load(log_queue):
     #     print(os.path.basename(file))
 
     #list_files = []
-
+    bundle_todo = []
     for resolution in resolutions:
 
         log.info(f"Processing {resolution}...")
-        bundle_todo = []
         for file in csv_files:
+            log.info(f"Checking {file}...")
 
             keywords_census_2011 = ["Bevoelkerung100M.csv", "Wohnungen100m.csv", "Geb100m.csv", "Haushalte100m.csv", "Familie100m.csv"]
             if any(kw.lower() in file.lower() for kw in keywords_census_2011):
