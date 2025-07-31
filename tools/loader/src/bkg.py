@@ -133,3 +133,5 @@ def load(log_queue):
         log.info(f"Creating Geogitter for resolution {resolution}")
         epsg = utils.get_db_parameters("citydb")["epsg"]
         create_geogitter(resolution, epsg, schema, prefix)
+
+    log.info(f"BKG data loaded successfully")

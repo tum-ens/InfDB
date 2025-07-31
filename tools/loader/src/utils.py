@@ -49,7 +49,7 @@ def get_links(url, ending, filter):
         href = link['href']
         if href.endswith(ending):
             # Check for filters
-            if any_element_in_string(href.lower(), filter):
+            if filter in href.lower():
                 # Append if url not already in list
                 full_url = urljoin(url, link['href'])
                 if full_url not in zip_links:
@@ -308,10 +308,10 @@ def get_file(folder_path, filename, ending):
     files = get_all_files(folder_path, ending)
 
     # Filter files that contain the filename
-    matching_files = [f for f in files if filename in f]
+    matching_files = [f for f in files if filename in f.lower()]
 
     if not matching_files:
-        log.warning(f"No files found containing '{filename}' with ending '{ending}' in {folder_path}")
+        log.error(f"No files found containing '{filename}' with ending '{ending}' in {folder_path}")
         return ""
 
     # Pick the newest by modification time
