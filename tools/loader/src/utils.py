@@ -308,7 +308,7 @@ def get_file(folder_path, filename, ending):
     files = get_all_files(folder_path, ending)
 
     # Filter files that contain the filename
-    matching_files = [f for f in files if filename in f.lower()]
+    matching_files = [f for f in files if filename.lower() in f.lower()]
 
     if not matching_files:
         log.error(f"No files found containing '{filename}' with ending '{ending}' in {folder_path}")
