@@ -76,6 +76,7 @@ def download_files(urls, base_path, chunk_size=1024):
         urls = [urls]
 
     for url in urls:
+        # ToDo Mulitprocessing with Pools as in census2022.py
         filename = url.split("/")[-1]
         path_file = os.path.join(base_path, filename)
 
