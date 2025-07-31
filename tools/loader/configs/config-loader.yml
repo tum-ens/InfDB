@@ -80,7 +80,7 @@ loader:
                 - wohnungen_nach_zahl_der_raeume
                 - zahl_der_staatsangehoerigkeiten
         lod2:
-            status: not-active
+            status: active
             url:
                 - "https://geodaten.bayern.de/odd/a/lod2/citygml/meta/metalink/{loader/scope}.meta4"
             path:

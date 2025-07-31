@@ -107,6 +107,9 @@ def download_files(urls, base_path, chunk_size=1024):
 def unzip(zip_files, unzip_dir):
     os.makedirs(unzip_dir, exist_ok=True)
 
+    if isinstance(zip_files, str):
+        zip_files = [zip_files]
+
     for zip_file in zip_files:
         try:
             with ZipFile(zip_file, 'r') as zip_ref:

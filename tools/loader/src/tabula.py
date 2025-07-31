@@ -100,7 +100,7 @@ def load(log_queue):
     
     # Export to citdyb
     df_elements.to_sql(f"{prefix}_type_elements", citydb_engine, schema=schema, if_exists="replace", index=False)
-    df_layers.to_sql(f"{prefix}__layers", citydb_engine, schema=schema, if_exists="replace", index=False)
+    df_layers.to_sql(f"{prefix}_layers", citydb_engine, schema=schema, if_exists="replace", index=False)
     df_materials.to_sql(f"{prefix}_materials", citydb_engine, schema=schema, if_exists="replace", index=False)
 
     log.info(f"Tabula data loaded successfully")
