@@ -32,12 +32,24 @@ def load(log_queue):
         # if name not in layers:
         #     log.info(f"Skipping download {filename}, not in layers")
         #     continue
-        utils.download_files(zip_link, zip_path)
+    max_processes = min(multiprocessing.cpu_count(), 20)
+
+    args = [(url, zip_path) for url in zip_links]
+    with multiprocessing.Pool(processes=max_processes,
+                              initializer=logger.setup_worker_logger,
+                                initargs=(log_queue,)) as pool:
+        results = pool.starmap(utils.download_files, args)
+    #utils.download_files(zip_link, zip_path)
 
     unzip_path = config.get_path(["loader", "sources", "zensus_2022", "path", "unzip"])
 
     zip_files = [os.path.join(zip_path, f) for f in os.listdir(zip_path)]
-    utils.unzip(zip_files, unzip_path)
+    args = [(zip_file, unzip_path) for zip_file in zip_files]
+    with multiprocessing.Pool(processes=max_processes,
+                              initializer=logger.setup_worker_logger,
+                              initargs=(log_queue,)) as pool:
+        results = pool.starmap(utils.unzip, args)
+    # utils.unzip(zip_files, unzip_path)
 
     input_path = config.get_path(["loader", "sources", "zensus_2022", "path", "unzip"])
     log.debug(f"Input path: {input_path}")
@@ -50,7 +62,6 @@ def load(log_queue):
     sql = f"CREATE SCHEMA IF NOT EXISTS {schema};"
     utils.sql_query(sql)
 
-    max_processes = min(multiprocessing.cpu_count(), 20)
     log.info(f"Using {max_processes} worker processes.")
 
     resolutions = config.get_value(["loader", "sources", "zensus_2022", "resolutions"])
