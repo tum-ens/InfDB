@@ -93,7 +93,7 @@ def load(log_queue):
             layers_lower = [l.lower() for l in layers]
             if layer not in layers_lower:
                 log.info(f"Skipping {file}..., layer: {layer} ")
-                continue
+                # continue
 
             # Create data bundle for multiprocessing
             bundle_todo.append((file, resolution))
