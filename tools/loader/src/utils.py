@@ -205,7 +205,7 @@ def import_layers(input_file, layers, schema, prefix="", layer_names=None, scope
         gdf = gpd.read_file(input_file, layer=layer, bbox=gdf_scope)
         gdf.to_crs(epsg=epsg, inplace=True)
         # gdf.to_file(output_file, layer=layer, driver="GPKG")
-        gdf.to_postgis(layer_name, citydb_engine, if_exists='replace', schema=schema, index=False)
+        gdf.to_postgis(layer_name, citydb_engine, if_exists='replace', schema=schema, index=False, method="multi")
 
 
 def get_envelop():
