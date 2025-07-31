@@ -306,18 +306,6 @@ def get_all_files(folder_path, ending):
 
 def get_file(folder_path, filename, ending):
     files = get_all_files(folder_path, ending)
-    # TODO: Check for newest version in case of multiple files
-    path = ""
-    for file in files:
-        if filename in file:
-            path = file
-            break
-
-    log.debug(f"Envelop Path: {path}")
-    return path
-
-def get_file(folder_path, filename, ending):
-    files = get_all_files(folder_path, ending)
 
     # Filter files that contain the filename
     matching_files = [f for f in files if filename in f]
