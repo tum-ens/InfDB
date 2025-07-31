@@ -38,3 +38,5 @@ def load(log_queue):
     ]
     cmd_str = " ".join(str(arg) for arg in cmd)
     utils.do_cmd(cmd_str)
+
+    log.info(f"LOD2 data loaded successfully")

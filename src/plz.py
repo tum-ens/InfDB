@@ -43,3 +43,5 @@ def load(log_queue):
 
     log.info(f"Loading PLZ data from {url} to {file_path}")
     utils.import_layers(file_path, layers, schema, prefix=prefix)
+
+    log.info(f"PLZ data loaded successfully")
