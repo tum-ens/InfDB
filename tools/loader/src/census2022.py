@@ -72,36 +72,36 @@ def load(log_queue):
                 log.debug(f"Skipping {file} because of {resolution}...")
                 continue
 
-            #layer = os.path.basename(file).replace("_" + resolution, "").replace("Zensus2022_", "").replace("-Gitter.csv", "")
-            #layer = os.path.basename(file)
+            replacements = [
+                f"_{resolution}",
+                "zensus",
+                "2022_",
+                "-gitter",
+                ".csv"
+            ]
+            layer = os.path.basename(file).lower()
+            for pattern in replacements:
+                layer = layer.replace(pattern, "")
 
-            # replacements = [
-            #     f"_{resolution}",
-            #     "Zensus2022_",
-            #     "-Gitter",
-            #     ".csv"
-            # ]
-            # for pattern in replacements:
-            #     layer = layer.replace(pattern, "")
-            #
-            # print(layer)
-            # if layer not in layers:
-            #     log.info(f"Skipping {file}..., layer: {layer} ")
-            #     continue
+            print(layer)
+            if layer not in layers:
+                log.info(f"Skipping {file}..., layer: {layer} ")
+                # continue
 
             # Create data bundle for multiprocessing
             bundle_todo.append((file, resolution))
             list_files.append(layer)
 
-        # with multiprocessing.Pool(processes=max_processes,
-        #                           initializer=logger.setup_worker_logger,
-        #                             initargs=(log_queue,)) as pool:
-        #     results = pool.map(zensus_to_postgis, bundle_todo)
+        with multiprocessing.Pool(processes=max_processes,
+                                  initializer=logger.setup_worker_logger,
+                                    initargs=(log_queue,)) as pool:
+            results = pool.map(zensus_to_postgis, bundle_todo)
 
     log.info("Zensus2022 imported successfully.")
     log.info(list_files.sort())
     log.info("csv_files: " + list_files.sort())
-    sys.exit(0)
+
+    log.info(f"Census2022 data loaded successfully")
 
 
 def zensus_to_postgis(bundle_todo):

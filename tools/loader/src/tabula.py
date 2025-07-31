@@ -28,3 +28,5 @@ def load(log_queue):
 
     # Ausgabe
     print(df.head())
+
+    log.info(f"TABULA data loaded successfully")

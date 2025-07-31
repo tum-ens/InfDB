@@ -21,25 +21,29 @@ def load(log_queue):
     site_url = config.get_value(["loader", "sources", "basemap", "url"])
     ending = config.get_value(["loader", "sources", "basemap", "ending"])
     filters = config.get_value(["loader", "sources", "basemap", "filter"])
-    urls = utils.get_links(site_url, ending, filter)
-
-    log.debug(urls)
-    download_files = utils.download_files(urls, base_path)
-    log.debug(f"Download_files: {download_files}")
-
-    # Create schema if it doesn't exist
-    schema = config.get_value(["loader", "sources", "basemap", "schema"])
-    sql = f"CREATE SCHEMA IF NOT EXISTS {schema};"
-    utils.sql_query(sql)
-
-    prefix = config.get_value(["loader", "sources", "basemap", "prefix"])
-
+    
     for filter in filters:
+        urls = utils.get_links(site_url, ending, filter)
+
+        log.debug(urls)
+        download_files = utils.download_files(urls, base_path)
+        log.debug(f"Download_files: {download_files}")
+
+        # Create schema if it doesn't exist
+        schema = config.get_value(["loader", "sources", "basemap", "schema"])
+        sql = f"CREATE SCHEMA IF NOT EXISTS {schema};"
+        utils.sql_query(sql)
+
+        prefix = config.get_value(["loader", "sources", "basemap", "prefix"])
+        log.debug(f"Using prefix: {prefix}")
+
         file = utils.get_file(base_path, filter, ".gpkg")
 
         log.info(f"Loading {file}...")
-        list = gpd.list_layers(file)["name"]
+        # list = gpd.list_layers(file)["name"]
         # print(list)
         layer_names = config.get_value(["loader", "sources", "basemap", "layer"])
         layers = [layer + "_bdlm" for layer in layer_names]
         utils.import_layers(file, layers, schema, prefix=prefix, layer_names=layer_names) #TODO: Add if several files
+
+        log.info(f"Basemap data loaded successfully")
