@@ -316,6 +316,23 @@ def get_file(folder_path, filename, ending):
     log.debug(f"Envelop Path: {path}")
     return path
 
+def get_file(folder_path, filename, ending):
+    files = get_all_files(folder_path, ending)
+
+    # Filter files that contain the filename
+    matching_files = [f for f in files if filename in f]
+
+    if not matching_files:
+        log.warning(f"No files found containing '{filename}' with ending '{ending}' in {folder_path}")
+        return ""
+
+    # Pick the newest by modification time
+    newest_file = max(matching_files, key=os.path.getmtime)
+
+    log.debug(f"Envelop Path: {newest_file}")
+    return newest_file
+
+
 def get_website_links(url):
 
     # HTML-Seite herunterladen
