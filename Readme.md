@@ -23,7 +23,7 @@ Please check the logs of the setup service.
 Paths in .env
 ```yml
 CONFIG_INFDB_PATH=../../configs # Path to the configs directory of infDB
-LOADER_DATA_PATH=/Users/patrickbuchenberg/infdb # Path to data storage # ../../infdb-data-ds1
+LOADER_DATA_PATH=data # Path to data storage
 ```
 
 Settings in /tools/loader/configs/config-loader.yml
