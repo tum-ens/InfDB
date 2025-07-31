@@ -18,14 +18,13 @@ if __name__ == "__main__":
     log.info("-------------------------------------------------------------")
     log.info("-------------------------------------------------------------")
 
-    #tabula.load(log_queue)
-    #sys.exit()
     # Ensure that administrative areas are
     bkg.load_envelop()
 
     # Load data in parallel
     mp.freeze_support()
     processes = []
+    processes.append(mp.Process(target=tabula.load, args=(log_queue,), name="tabula"))
     processes.append(mp.Process(target=bkg.load, args=(log_queue,), name="bkg"))
     processes.append(mp.Process(target=lod2.load, args=(log_queue,), name="lod2"))
     processes.append(mp.Process(target=plz.load, args=(log_queue,), name="plz"))
