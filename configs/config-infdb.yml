@@ -4,7 +4,7 @@
 base:
     name: infdb-munich
     path:
-        base: "/data/infdb/data-infdb/"
+        base: "data-infdb/"
     network_name: infdb_network_ds1
 services:
     citydb:
