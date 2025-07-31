@@ -73,21 +73,21 @@ def load(log_queue):
                 continue
 
             #layer = os.path.basename(file).replace("_" + resolution, "").replace("Zensus2022_", "").replace("-Gitter.csv", "")
-            layer = os.path.basename(file)
+            #layer = os.path.basename(file)
 
-            replacements = [
-                f"_{resolution}",
-                "Zensus2022_",
-                "-Gitter",
-                ".csv"
-            ]
-            for pattern in replacements:
-                layer = layer.replace(pattern, "")
-
-            print(layer)
-            if layer not in layers:
-                log.info(f"Skipping {file}..., layer: {layer} ")
-                continue
+            # replacements = [
+            #     f"_{resolution}",
+            #     "Zensus2022_",
+            #     "-Gitter",
+            #     ".csv"
+            # ]
+            # for pattern in replacements:
+            #     layer = layer.replace(pattern, "")
+            #
+            # print(layer)
+            # if layer not in layers:
+            #     log.info(f"Skipping {file}..., layer: {layer} ")
+            #     continue
 
             # Create data bundle for multiprocessing
             bundle_todo.append((file, resolution))
