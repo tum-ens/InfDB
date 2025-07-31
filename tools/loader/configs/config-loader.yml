@@ -7,7 +7,7 @@ loader:
         opendata: "{loader/path/base}/opendata/"
         processed: "{loader/path/base}/{loader/scope}"
     logging:
-        path: "loader.log"
+        path: "{loader/path/base}/loader.log"
         level: "DEBUG" # ERROR, WARNING, INFO, DEBUG
     hosts:
         citydb:
@@ -83,7 +83,7 @@ loader:
                 - Staatsangehoerigkeit
 
         lod2:
-            status: active
+            status: not-active
             url:
                 - "https://geodaten.bayern.de/odd/a/lod2/citygml/meta/metalink/{loader/scope}.meta4"
             path:
@@ -179,6 +179,8 @@ loader:
             status: active
             url:
                 - "https://raw.githubusercontent.com/RWTH-EBC/TEASER/refs/heads/main/teaser/data/input/inputdata/TypeElements_TABULA_DE.json"
+                - "https://raw.githubusercontent.com/RWTH-EBC/TEASER/refs/heads/main/teaser/data/input/inputdata/MaterialTemplates.json"
             path:
-                lod2: "{loader/path/opendata}/lod2/"
-                gml: "{loader/path/opendata}/lod2/{loader/scope}"
+                base: "{loader/path/opendata}/tabula/"
+            schema: opendata
+            prefix: tba
