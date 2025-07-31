@@ -34,7 +34,7 @@ def load(log_queue):
 
     prefix = config.get_value(["loader", "sources", "basemap", "prefix"])
 
-    files = utils.get_all_files(base_path, ".gpkg")
+    files = utils.get_file(base_path, ".gpkg")
     for file in files:
         log.info(f"Loading {file}...")
         list = gpd.list_layers(file)["name"]
