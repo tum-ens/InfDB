@@ -20,6 +20,7 @@ def load(log_queue):
         url = (" ").join(url)
 
     gml_path = config.get_path(["loader", "sources", "lod2", "path", "gml"])
+    log.info("*.gml imported from: " + gml_path + " ...")
     cmd = f"aria2c --continue=true --allow-overwrite=false --auto-file-renaming=false {url} -d {gml_path}"
     utils.do_cmd(cmd)
 
