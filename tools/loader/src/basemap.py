@@ -20,7 +20,7 @@ def load(log_queue):
 
     site_url = config.get_value(["loader", "sources", "basemap", "url"])
     ending = config.get_value(["loader", "sources", "basemap", "ending"])
-    filter = config.get_value(["loader", "sources", "basemap", "filter"])
+    filters = config.get_value(["loader", "sources", "basemap", "filter"])
     urls = utils.get_links(site_url, ending, filter)
 
     log.debug(urls)
@@ -34,8 +34,9 @@ def load(log_queue):
 
     prefix = config.get_value(["loader", "sources", "basemap", "prefix"])
 
-    files = utils.get_file(base_path, ".gpkg")
-    for file in files:
+    for filter in filters:
+        file = utils.get_file(base_path, filter, ".gpkg")
+
         log.info(f"Loading {file}...")
         list = gpd.list_layers(file)["name"]
         # print(list)
