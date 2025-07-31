@@ -58,12 +58,18 @@ def load(log_queue):
     # for file in csv_files:
     #     print(os.path.basename(file))
 
+    list_files = []
+
     for resolution in resolutions:
 
         log.info(f"Processing {resolution}...")
         bundle_todo = []
-        list_files = []
         for file in csv_files:
+
+            if ["file"] in ["Bevoelkerung100M.csv", "Wohnungen100m.csv", "Geb100m.csv", "Haushalte100m.csv", "Familie100m.csv"]:
+                log.info(f"Skipping 2011 {file} because of file name...")
+                continue
+
             # print(file)
             if "_utf8.csv" in file:
                 log.debug("utf8" + file)
@@ -84,9 +90,10 @@ def load(log_queue):
                 layer = layer.replace(pattern, "")
 
             print(layer)
-            if layer not in layers:
+            layers_lower = [l.lower() for l in layers]
+            if layer not in layers_lower:
                 log.info(f"Skipping {file}..., layer: {layer} ")
-                # continue
+                continue
 
             # Create data bundle for multiprocessing
             bundle_todo.append((file, resolution))
