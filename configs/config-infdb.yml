@@ -5,7 +5,7 @@ base:
     name: infdb-munich
     path:
         base: "data-infdb/"
-    network_name: infdb_network_ds1
+    network_name: infdb_network
 services:
     citydb:
         user: citydb_user
@@ -33,13 +33,13 @@ services:
     pgadmin:
         default_email: admin@admin.com
         default_password: V#3rn+nmma!-c_9upZkM
-        exposed_port: 8011
+        exposed_port: 811
         status: active
         path:
             compose_file: "dockers/pgadmin.yml"
 
     jupyter:
-        exposed_port: 8888
+        exposed_port: 88881
         enable_lab: yes
         status: not-active
         path:
@@ -49,7 +49,7 @@ services:
     qwc:
         status: active
         exposed_port_gui: 801
-        exposed_port_db: 5434
+        exposed_port_db: 54341
         postgres_password: V#3rn+nmma!-c_9upZkM
         path:
             compose_file: "dockers/qgis_webclient/docker-compose.yml"

@@ -21,7 +21,7 @@ def load(log_queue):
 
     # download_zensus(zip_links)
     zip_path = config.get_path(["loader", "sources", "zensus_2022", "path", "zip"])
-    print("Zippath:" + os.path.abspath(zip_path))
+    log.debug("Zippath:" + os.path.abspath(zip_path))
 
     layers = config.get_value(["loader", "sources", "zensus_2022", "layer"])
     for zip_link in zip_links:
@@ -40,7 +40,7 @@ def load(log_queue):
     utils.unzip(zip_files, unzip_path)
 
     input_path = config.get_path(["loader", "sources", "zensus_2022", "path", "unzip"])
-    print(f"Input path: {input_path}")
+    log.debug(f"Input path: {input_path}")
 
     # output_path = config.get_path(["loader", "sources", "zensus_2022", "path", "processed"])
     # os.makedirs(output_path, exist_ok=True)
@@ -58,7 +58,7 @@ def load(log_queue):
     # for file in csv_files:
     #     print(os.path.basename(file))
 
-    list_files = []
+    #list_files = []
 
     for resolution in resolutions:
 
@@ -66,16 +66,16 @@ def load(log_queue):
         bundle_todo = []
         for file in csv_files:
 
-            if ["file"] in ["Bevoelkerung100M.csv", "Wohnungen100m.csv", "Geb100m.csv", "Haushalte100m.csv", "Familie100m.csv"]:
-                log.info(f"Skipping 2011 {file} because of file name...")
+            keywords_census_2011 = ["Bevoelkerung100M.csv", "Wohnungen100m.csv", "Geb100m.csv", "Haushalte100m.csv", "Familie100m.csv"]
+            if any(kw.lower() in file.lower() for kw in keywords_census_2011):
+                log.info(f"Skipping Census 2011 {file}")
                 continue
 
-            # print(file)
             if "_utf8.csv" in file:
                 log.debug("utf8" + file)
                 continue
             if resolution not in file:
-                log.debug(f"Skipping {file} because of {resolution}...")
+                log.debug(f"Skipping {file} because of {resolution}")
                 continue
 
             replacements = [
@@ -89,7 +89,7 @@ def load(log_queue):
             for pattern in replacements:
                 layer = layer.replace(pattern, "")
 
-            print(layer)
+            # print(layer)
             layers_lower = [l.lower() for l in layers]
             if layer not in layers_lower:
                 log.info(f"Skipping {file}..., layer: {layer} ")
@@ -97,16 +97,16 @@ def load(log_queue):
 
             # Create data bundle for multiprocessing
             bundle_todo.append((file, resolution))
-            list_files.append(layer)
+            #list_files.append(layer)
 
-        with multiprocessing.Pool(processes=max_processes,
-                                  initializer=logger.setup_worker_logger,
-                                    initargs=(log_queue,)) as pool:
-            results = pool.map(zensus_to_postgis, bundle_todo)
+    with multiprocessing.Pool(processes=max_processes,
+                              initializer=logger.setup_worker_logger,
+                                initargs=(log_queue,)) as pool:
+        results = pool.map(zensus_to_postgis, bundle_todo)
 
-    log.info("Zensus2022 imported successfully.")
-    log.info(list_files.sort())
-    log.info("csv_files: " + list_files.sort())
+    #log.info("Zensus2022 imported successfully.")
+    #list_files.sort()
+    #log.info("csv_files: " + "\n".join(list_files))
 
     log.info(f"Census2022 data loaded successfully")
 

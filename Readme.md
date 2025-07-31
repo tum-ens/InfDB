@@ -47,6 +47,15 @@ Settings in /tools/processor/configs/config-processor.yml
 
     # on windows
 ```
+
+### Remove infDB
+```bash
+    # on linux and macos
+    docker compose -f compose.yml down -v
+
+    # on windows
+```
+
 # Configurations (only in addition for QGIS Desktop)
 .pg_service.conf for QGIS to connect to InfDB via service
 ```

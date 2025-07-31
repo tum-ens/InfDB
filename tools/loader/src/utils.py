@@ -1,6 +1,5 @@
 import os
 import psycopg2
-import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 import sqlalchemy
@@ -10,6 +9,8 @@ import geopandas as gpd
 import chardet
 from urllib.parse import urlparse
 import subprocess
+import requests
+from tqdm import tqdm
 
 import logging
 
@@ -56,15 +57,10 @@ def get_links(url, ending, filter):
                     zip_links.append(full_url)
 
     # Gefundene Links ausgeben
-    print(zip_links)
+    log.debug(zip_links)
 
     return zip_links
 
-
-import os
-import requests
-from tqdm import tqdm
-import logging
 
 log = logging.getLogger(__name__)
 
@@ -205,7 +201,7 @@ def import_layers(input_file, layers, schema, prefix="", layer_names=None, scope
         gdf = gpd.read_file(input_file, layer=layer, bbox=gdf_scope)
         gdf.to_crs(epsg=epsg, inplace=True)
         # gdf.to_file(output_file, layer=layer, driver="GPKG")
-        gdf.to_postgis(layer_name, citydb_engine, if_exists='replace', schema=schema, index=False, method="multi")
+        gdf.to_postgis(layer_name, citydb_engine, if_exists='replace', schema=schema, index=False)
 
 
 def get_envelop():
