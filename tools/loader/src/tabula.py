@@ -77,16 +77,15 @@ def load(log_queue):
     df_layers.to_csv(os.path.join(base_path, "layers.csv"), index=False)
     df_materials.to_csv(os.path.join(base_path, "materials.csv"), index=False)
 
-    # --- Ausgabe prüfen (optional) ---
-    log.info("=== Materials ===")
-    log.info(df_materials.head())
-
-    log.info("\n=== Type Elements ===")
-    log.info(df_elements.head())
-
-    log.info("\n=== Layer Mapping ===")
-    log.info(df_layers.head())
-
+    # # --- Ausgabe prüfen (optional) ---
+    # log.info("=== Materials ===")
+    # log.info(df_materials.head())
+    #
+    # log.info("\n=== Type Elements ===")
+    # log.info(df_elements.head())
+    #
+    # log.info("\n=== Layer Mapping ===")
+    # log.info(df_layers.head())
 
     # Create schema if it doesn't exist
     schema = config.get_value(["loader", "sources", "tabula", "schema"])
