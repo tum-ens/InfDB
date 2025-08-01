@@ -34,6 +34,7 @@ def load(log_queue):
         "-u", params["user"],
         "-p", params["password"],
         "-P", str(params["exposed_port"]),
+        "--import-mode=delete", # deletes existing data before import # skip as alternative
         str(gml_path)
     ]
     cmd_str = " ".join(str(arg) for arg in cmd)
