@@ -9,10 +9,10 @@ base:
 services:
     citydb:
         user: citydb_user
-        password: V#3rn+nmma!-c_9upZkM
+        password: infdb
         db: citydb
         host: citydb
-        exposed_port: 54321
+        exposed_port: 5432
         epsg: 25832 # 3035 (Europe)
         path: 
             base: "{base/path/base}/{base/name}/citydb/"
@@ -21,10 +21,10 @@ services:
 
     timescaledb:
         user: timescaledb_user
-        password: V#3rn+nmma!-c_9upZkM
+        password: infdb
         db: timescaledb
         host: timescaledb
-        exposed_port: 54331
+        exposed_port: 5433
         status: active
         path: 
             base: "{base/path/base}/{base/name}/timescaledb/"
@@ -32,14 +32,14 @@ services:
 
     pgadmin:
         default_email: admin@admin.com
-        default_password: V#3rn+nmma!-c_9upZkM
-        exposed_port: 811
+        default_password: infdb
+        exposed_port: 81
         status: active
         path:
             compose_file: "dockers/pgadmin.yml"
 
     jupyter:
-        exposed_port: 88881
+        exposed_port: 8888
         enable_lab: yes
         status: not-active
         path:
@@ -48,8 +48,8 @@ services:
 
     qwc:
         status: active
-        exposed_port_gui: 801
-        exposed_port_db: 54341
-        postgres_password: V#3rn+nmma!-c_9upZkM
+        exposed_port_gui: 80
+        exposed_port_db: 5434
+        postgres_password: infdb
         path:
             compose_file: "dockers/qgis_webclient/docker-compose.yml"

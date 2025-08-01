@@ -145,10 +145,6 @@ cython_debug/
 # Desktop
 *.DS_Store
 
-**/dockers/loader/.env
-**/dockers/sunpot/.env
-**/dockers/docker-compose.yaml
-
 # Local development tools
 **/citydb-tool/*
 
@@ -166,5 +162,14 @@ compose.yml
 
 # uv
 uv.lock
+
+# opendata
+*.log
+*.gpkg
+*.gpkg.ebenen
+*.gml
+*.zip
+*.csv
+
 
 
