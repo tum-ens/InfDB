@@ -88,10 +88,10 @@ class PostgreSQLExecutor:
             log.info(f"Executing {os.path.join(sql_dir, file_path)}")
             self.cursor.execute(sql_content)
             self.connection.commit()
-            log.info(f"✅ Successfully executed {file_path} in {round(time.time() - start_time, 2)} seconds")
+            log.info(f"Successfully executed {file_path} in {round(time.time() - start_time, 2)} seconds")
 
         except Exception as e:
-            log.error(f"💥 Error executing {file_path} after {round(time.time() - start_time, 2)} seconds")
+            log.error(f"Error executing {file_path} after {round(time.time() - start_time, 2)} seconds")
             self.connection.rollback()
             raise e
 
@@ -155,10 +155,10 @@ def main():
         log.info("Running BUILDINGS SQL scripts")
         db_executor.execute_sql_scripts(BUILDINGS_SQL_DIR, BUILDINGS_SQL_FILES)
 
-        log.info("🏠 Prepared buildings and ways successfully!")
+        log.info("Prepared buildings and ways successfully!")
 
     except Exception as e:
-        log.error(f"💥 Something went wrong: {str(e)}")
+        log.error(f"Something went wrong: {str(e)}")
         raise e
 
 
