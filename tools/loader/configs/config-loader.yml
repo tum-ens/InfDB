@@ -14,14 +14,14 @@ loader:
             user: None
             password: None
             db: None
-            host: host.docker.internal #localhost #
+            host: host.docker.internal
             exposed_port: None
             epsg: None # 3035 (Europe)
         timescaledb:
             user: None
             password: None
             db: None
-            host: None
+            host: host.docker.internal
             exposed_port: None
     sources:
         zensus_2022:
