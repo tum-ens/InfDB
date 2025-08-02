@@ -234,7 +234,10 @@ def get_db_parameters(service_name: str):
         # Override config-infdb by config-loader
         for key in parameters_loader.keys():
             if parameters_loader[key] != "None":
-                parameters[key] = parameters_loader[key]
+                if key == "host":
+                    parameters[key] = "host.docker.internal"
+                else:
+                    parameters[key] = parameters_loader[key]
                 log.debug("Key overridden: key = {parameters_loader[key]}")
     else:
         # Use settings from config-loader
