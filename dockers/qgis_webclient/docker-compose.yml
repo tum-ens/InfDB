@@ -17,6 +17,7 @@ services:
   
   qwc-postgis:
     image: sourcepole/qwc-base-db:16 # 16 refers to the Postgres major version
+    restart: unless-stopped
     environment:
       POSTGRES_PASSWORD: ${SERVICES_QWC_POSTGRES_PASSWORD} # TODO: Set your postgres password here!
     volumes:
@@ -33,6 +34,7 @@ services:
 
   qwc-config-db-migrate:
     image: sourcepole/qwc-base-db-migrate:latest-2025-lts
+    restart: unless-stopped
     volumes:
       - ./pg_service.conf:/tmp/pg_service.conf:ro
       # NOTE: Remove this line if you don't want/need the demo data
@@ -42,6 +44,7 @@ services:
 
   qwc-qgis-server:
     image: sourcepole/qwc-qgis-server:3.40
+    restart: unless-stopped
     # ports:
     #   - "127.0.0.1:8001:80"
     environment:
@@ -65,6 +68,7 @@ services:
 
   qwc-config-service:
     image: sourcepole/qwc-config-generator:latest-2025-lts
+    restart: unless-stopped
     environment:
       <<: *qwc-service-variables
       INPUT_CONFIG_PATH: '/srv/qwc_service/config-in'
@@ -85,6 +89,7 @@ services:
 
   qwc-admin-gui:
     image: sourcepole/qwc-admin-gui:latest-2025-lts
+    restart: unless-stopped
     environment:
       <<: *qwc-service-variables
       # Don't enable JWT CSRF protection for admin gui, it conflicts with CSRF protection offered by Flask-WTF
@@ -110,6 +115,7 @@ services:
 
   qwc-auth-service:
     image: sourcepole/qwc-db-auth:latest-2025-lts
+    restart: unless-stopped
     environment:
       <<: *qwc-service-variables
       SERVICE_MOUNTPOINT: '/auth'
@@ -132,6 +138,7 @@ services:
 
   qwc-data-service:
     image: sourcepole/qwc-data-service:latest-2025-lts
+    restart: unless-stopped
     environment:
       <<: *qwc-service-variables
       SERVICE_MOUNTPOINT: '/api/v1/data'
@@ -152,6 +159,7 @@ services:
 
   qwc-document-service:
     image: sourcepole/qwc-document-service:latest-2025-lts
+    restart: unless-stopped
     environment:
       <<: *qwc-service-variables
       SERVICE_MOUNTPOINT: '/api/v1/document'
@@ -165,6 +173,7 @@ services:
 
   qwc-elevation-service:
     image: sourcepole/qwc-elevation-service:latest-2025-lts
+    restart: unless-stopped
     environment:
       <<: *qwc-service-variables
       SERVICE_MOUNTPOINT: '/api/v1/elevation'
@@ -175,6 +184,7 @@ services:
 
   qwc-feature-info-service:
     image: sourcepole/qwc-feature-info-service:latest-2025-lts
+    restart: unless-stopped
     environment:
       <<: *qwc-service-variables
       SERVICE_MOUNTPOINT: '/api/v1/featureinfo'
@@ -187,6 +197,7 @@ services:
 
   qwc-fulltext-search-service:
     image: sourcepole/qwc-fulltext-search-service:latest-2025-lts
+    restart: unless-stopped
     environment:
       <<: *qwc-service-variables
       SERVICE_MOUNTPOINT: '/api/v2/search'
@@ -198,6 +209,7 @@ services:
 
   qwc-solr:
     image: solr:8.11-slim
+    restart: unless-stopped
     entrypoint:
       - docker-entrypoint.sh
       - solr-precreate
@@ -218,6 +230,7 @@ services:
 
   qwc-legend-service:
     image: sourcepole/qwc-legend-service:latest-2025-lts
+    restart: unless-stopped
     environment:
       <<: *qwc-service-variables
       SERVICE_MOUNTPOINT: '/api/v1/legend'
@@ -241,6 +254,7 @@ services:
   qwc-map-viewer:
     # Stock qwc2 app
     image: sourcepole/qwc-map-viewer:latest-2025-lts
+    restart: unless-stopped
     # Or with own viewer build placed in volumes/qwc2
     # image: sourcepole/qwc-map-viewer-base:latest-2025-lts
     environment:
@@ -258,6 +272,7 @@ services:
 
   qwc-ogc-service:
     image: sourcepole/qwc-ogc-service:latest-2025-lts
+    restart: unless-stopped
     environment:
       <<: *qwc-service-variables
       SERVICE_MOUNTPOINT: '/ows'
@@ -268,6 +283,7 @@ services:
 
   qwc-permalink-service:
     image: sourcepole/qwc-permalink-service:latest-2025-lts
+    restart: unless-stopped
     environment:
       <<: *qwc-service-variables
       SERVICE_MOUNTPOINT: '/api/v1/permalink'
@@ -279,6 +295,7 @@ services:
 
   qwc-print-service:
     image: sourcepole/qwc-print-service:latest-2025-lts
+    restart: unless-stopped
     environment:
       <<: *qwc-service-variables
       SERVICE_MOUNTPOINT: '/api/v1/print'
@@ -300,6 +317,7 @@ services:
 
   qwc-api-gateway:
     image: nginx:1.27
+    restart: unless-stopped
     ports:
       # NOTE: The port the qwc application runs on. You can choose another port instead of 8088.
       - "${SERVICES_QWC_EXPOSED_PORT_GUI}:80"

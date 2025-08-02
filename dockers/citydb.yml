@@ -4,6 +4,7 @@ services:
             context: .
             dockerfile: Dockerfile-citydb
         container_name: citydb
+        restart: unless-stopped
         environment:
             POSTGRES_DB: ${SERVICES_CITYDB_DB}
             POSTGRES_USER: ${SERVICES_CITYDB_USER}
