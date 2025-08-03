@@ -1,2 +1,4 @@
-.env-lod2
-config-citydbtool.json
+.env
+configs-infdb
+data
+data-loader
