@@ -34,7 +34,7 @@ if __name__ == "__main__":
     for process in processes:
         process.start()
         if not utils.if_multiproccesing():
-            processes.join()    # Only one process at a time
+            process.join()    # Only one process at a time
             log.info("Process %s done", process.name)
     log.info("Processes started")
 
