@@ -14,15 +14,17 @@ def load(log_queue):
     base_path = config.get_path(["loader", "sources", "lod2", "path", "lod2"])
     os.makedirs(base_path, exist_ok=True)
 
-    # Run aria2c to download the file (equivalent to `aria2c <url>`)
-    url = config.get_value(["loader", "sources", "lod2", "url"])
-    if isinstance(url, list):
-        url = (" ").join(url)
+    for ags in config.get_list(["loader", "scope"]):
+        # Run aria2c to download the file (equivalent to `aria2c <url>`)
+        url = config.get_value(["loader", "sources", "lod2", "url"])
+        if isinstance(url, list):
+            url = (" ").join(url)
+        url = url.replace("#scope", ags)
 
-    gml_path = config.get_path(["loader", "sources", "lod2", "path", "gml"])
-    log.info("*.gml imported from: " + gml_path + " ...")
-    cmd = f"aria2c --continue=true --allow-overwrite=false --auto-file-renaming=false {url} -d {gml_path}"
-    utils.do_cmd(cmd)
+        gml_path = config.get_path(["loader", "sources", "lod2", "path", "gml"])
+        log.info("*.gml imported from: " + gml_path + " ...")
+        cmd = f"aria2c --continue=true --allow-overwrite=false --auto-file-renaming=false {url} -d {gml_path}"
+        utils.do_cmd(cmd)
 
     # Run citydb tool to import the downloaded GML files
     params = utils.get_db_parameters("citydb")

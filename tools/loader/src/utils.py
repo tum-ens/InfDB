@@ -11,13 +11,14 @@ from urllib.parse import urlparse
 import subprocess
 import requests
 from tqdm import tqdm
+import multiprocessing
 
 import logging
 
 log = logging.getLogger(__name__)
 
 def if_multiproccesing():
-    status = config.get_value(["loader", "multiproccesing"])
+    status = config.get_value(["loader", "multiproccesing", "status"])
     if status == "active":
         return True
     else:
@@ -209,14 +210,14 @@ def import_layers(input_file, layers, schema, prefix="", layer_names=None, scope
 
 def get_envelop():
 
-    scope = config.get_value(["loader", "scope"])
+    scope = config.get_list(["loader", "scope"])
     ags_path = config.get_path(["loader", "sources", "bkg", "path", "unzip"])
     log.debug(f"Envelop Path: {ags_path}")
     path = get_file(ags_path, filename="vg5000", ending=".gpkg")
     log.debug(f"Envelop Path: {path}")
     gdf = gpd.read_file(path, layer = "vg5000_gem")
 
-    gdf_scope = gdf[gdf["AGS"].str.startswith(scope)]
+    gdf_scope = gdf[gdf["AGS"].str.startswith(tuple(scope))]
 
     return gdf_scope
 
@@ -352,3 +353,18 @@ def get_file_from_url(url):
     filename = os.path.basename(path)
     name, extension = os.path.splitext(filename)
     return filename, name, extension
+
+
+def get_number_processes():
+    """
+    Get the maximum number of processes to use based on the configuration.
+    """
+    number_processes = 1
+    max_processes = config.get_value(["loader", "multiproccesing", "max_cores"])
+
+    if config.get_value(["loader", "multiproccesing", "status"]) == "active":
+        number_processes = min(multiprocessing.cpu_count(), max_processes)
+    
+    log.debug(f"Max processes: {max_processes}, Number of processes: {number_processes}")
+    
+    return number_processes
