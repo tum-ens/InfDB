@@ -6,12 +6,12 @@
     :class: align-center
 
 ==========
-InfDB - Infrastructure and Energy Digital Twin Database
+InfDB - Infrastructure and Energy Database
 ==========
 
 
 
-**A comprehensive database system for creating digital twins of energy infrastructure with integrated geospatial and time-series capabilities.**
+**The focus is on a user-friendly, platform-independent, and open-source data infrastructure as a foundation for energy system analyses. It enables complex evaluations by combining various tools through standardized interfaces, fostering an open and interoperable ecosystem.**
 
 .. list-table::
    :widths: auto
