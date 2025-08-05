@@ -63,6 +63,12 @@ def get_path(keys):
     path = os.path.abspath(path)
     return path
 
+def get_list(keys):
+    list = get_value(keys)
+    if isinstance(list, str):
+        list = [list]
+    return list
+
 
 def get_root_path():
     # Get project root path
