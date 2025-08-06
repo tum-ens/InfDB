@@ -3,29 +3,15 @@
                          WAYS TABLE INITIALIZATION SCRIPT
 ═══════════════════════════════════════════════════════════════════════════════
 
-PURPOSE:
---------
-This script defines the core table for storing processed street/way geometries 
-and attributes relevant for routing, spatial analysis, and building-to-street
-assignment operations.
-
-TABLE OVERVIEW:
----------------
-{output_schema}.ways:
-- Stores simplified and filtered road network data derived from base mapping sources
-- Includes routing-relevant metadata such as source/target node IDs and traversal costs
-- Encodes geometries as EPSG:3035-projected LineStrings, suitable for accurate
-  distance-based spatial operations
-
 COLUMN DESCRIPTIONS:
 --------------------
 - way_id: Unique identifier for each street segment (auto-incremented)
 - verkehrslinie_id_basemap: Original street identifier from the basemap
 - clazz: Integer-encoded road classification (e.g., highway, residential)
 - source/target: Node identifiers for graph-based routing algorithms
-- cost/reverse_cost: Forward and backward traversal costs (e.g., time or distance)
+- cost/reverse_cost: Forward and backward traversal costs
 - geom: LineString geometry representing the road segment
-- postcode: Integer postal code associated with the street segment (optional)
+- postcode: Integer postal code associated with the street segment
 
 COORDINATE SYSTEM:
 ------------------
@@ -57,12 +43,6 @@ PURPOSE:
 These indexes support efficient spatial operations, filtering, and joining with
 external datasets (e.g., basemap or building data). They are critical for
 performance in both preprocessing and query-time execution.
-
-INDEX EXPLANATIONS:
--------------------
-- idx_ways_geom: Enables fast spatial queries (e.g., nearest neighbor, intersections)
-- idx_ways_verkehrslinie_id: Optimizes joins using basemap IDs (e.g., for enrichment)
-- idx_verkehrslinie_id: Index on raw input data to support joins when filling `ways`
 
 ═══════════════════════════════════════════════════════════════════════════════
 */

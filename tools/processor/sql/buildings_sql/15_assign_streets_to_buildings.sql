@@ -5,38 +5,39 @@
 
 PURPOSE:
 --------
-This script assigns buildings to their closest street/way based on address matching
-and geometric proximity. It updates the 'address_street_id' field in the buildings 
-table with the way_id of the most appropriate street.
+This script assigns each building to the most appropriate street segment (way),
+based on address name matching and geometric proximity. The result is stored in 
+the 'address_street_id' field of the buildings table.
 
 ALGORITHM OVERVIEW:
-------------------
-1. Match buildings to potential streets using address street names
-2. For each building, find the closest street among those with matching names
-3. Use interior portions of streets (excluding endpoints) to avoid intersection bias
-4. Update buildings table with the selected street assignments
+-------------------
+1. Match buildings to relevant street candidates using address street names
+2. Calculate the shortest distance between the building center and the candidate
+   streets' interior geometries
+3. Select the closest candidate and assign its way_id to the building
+
 
 INPUT REQUIREMENTS:
-------------------
-- building_addresses: Contains building_id and street name for each building
-- buildings: Contains building geometries and the target address_street_id field
-- way_names: Contains way_id to street name mappings (full and abbreviated names)
-- ways: Contains street geometries (LineString format)
+-------------------
+- building_addresses: links buildings to street names
+- buildings: includes building geometry and address_street_id field
+- way_names: maps way_ids to full and short street names
+- ways: contains LineString geometries of all street segments
 
 OUTPUT:
 -------
-Updates the 'address_street_id' field in the buildings table with the assigned way_id.
+Updates the 'address_street_id' field in the buildings table with the assigned
+closest way_id based on semantic and geometric criteria.
 
 PERFORMANCE NOTES:
------------------
-- Creates necessary indexes for optimal query performance
-- Uses PostGIS distance operator (<->) for efficient spatial calculations
-- Processes one building at a time using DISTINCT ON for deterministic results
+------------------
+- Uses GIST indexes and `<->` operator for efficient spatial queries
+- DISTINCT ON ensures deterministic one-to-one assignments
 
 COORDINATE SYSTEM:
------------------
-Designed for projected coordinate systems (e.g., EPSG:3035) where distance 
-calculations are performed in meters.
+------------------
+Designed for projected coordinate systems (e.g., EPSG:3035) to ensure
+meter-based distance accuracy.
 
 ═══════════════════════════════════════════════════════════════════════════════
 */
@@ -44,11 +45,6 @@ calculations are performed in meters.
 -- ─────────────────────────────────────────────
 -- 1. INDEX CREATION (PERFORMANCE OPTIMIZATION)
 -- ─────────────────────────────────────────────
-/*
-Creates indexes on frequently queried columns to optimize join operations
-and spatial queries. These indexes significantly improve performance for
-large datasets.
-*/
 
 CREATE INDEX IF NOT EXISTS idx_way_names_name 
   ON {output_schema}.way_names(name);
@@ -76,28 +72,17 @@ CREATE INDEX IF NOT EXISTS idx_buildings_geom
 -- 2. STREET ASSIGNMENT LOGIC
 -- ─────────────────────────────────────────────
 /*
-CORE ALGORITHM EXPLANATION:
+Step 1: ADDRESS-BASED CANDIDATE SELECTION
+- Matches each building’s address (ba.street) to corresponding way_ids
+  via both full and abbreviated names in the way_names table.
 
-Step 1: ADDRESS-BASED STREET MATCHING
-- Links buildings to potential streets through address street names
-- Matches against both full street names (wn.name) and abbreviated forms (wn.name_kurz)
-- This ensures only semantically relevant streets are considered
-
-Step 2: GEOMETRIC PROXIMITY CALCULATION  
-- Uses ST_LineSubstring(w.geom, 0.05, 0.95) to exclude street endpoints
-- This avoids assigning buildings to intersection points between streets
-- Calculates distance using the <-> operator for optimal performance
+Step 2: GEOMETRIC PROXIMITY EVALUATION
+- Uses the centroid of each building geometry (`b.centroid`)
+- Compares it to the geometry of the candidate street segment (`w.geom`)
+- The `<->` operator efficiently calculates the distance
 
 Step 3: CLOSEST STREET SELECTION
-- DISTINCT ON (ba.building_id) ensures one assignment per building
-- ORDER BY prioritizes the closest street when multiple streets share the same name
-- Results in deterministic assignments based on geometric proximity
-
-INTERSECTION AVOIDANCE:
-The key innovation is using ST_LineSubstring(0.05, 0.95) which removes the first
-and last 5% of each street geometry. This prevents buildings from being assigned
-to intersection points where multiple streets meet, ensuring more logical 
-street assignments.
+- DISTINCT ON ensures only the nearest segment is selected per building
 */
 
 DROP TABLE IF EXISTS temp_closest_ways;
@@ -112,16 +97,16 @@ JOIN {output_schema}.way_names AS wn
   ON ba.street = wn.name OR ba.street = wn.name_kurz
 JOIN {output_schema}.ways AS w 
   ON wn.way_id = w.way_id
-ORDER BY ba.building_id, w.geom <-> b.geom;
+ORDER BY ba.building_id, b.centroid <-> w.geom;
 
 
 -- ─────────────────────────────────────────────
 -- 3. BUILDING TABLE UPDATE
 -- ─────────────────────────────────────────────
 /*
-Updates the target buildings table with the calculated street assignments.
-Only buildings with matching addresses will receive assignments - buildings
-without address data will remain unassigned (address_street_id = NULL).
+Final step: updates the buildings table with the selected way_id
+Only buildings with at least one valid address-street match will be updated.
+All others will retain NULL in address_street_id.
 */
 
 UPDATE {output_schema}.buildings AS b
