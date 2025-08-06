@@ -1,3 +1,3 @@
-DROP TABLE IF EXISTS pylovo_input.building_addresses;
-DROP TABLE IF EXISTS pylovo_input.buildings_grid;
-DROP TABLE IF EXISTS pylovo_input.buildings;
+DROP TABLE IF EXISTS {output_schema}.building_addresses;
+DROP TABLE IF EXISTS {output_schema}.buildings_grid;
+DROP TABLE IF EXISTS {output_schema}.buildings;

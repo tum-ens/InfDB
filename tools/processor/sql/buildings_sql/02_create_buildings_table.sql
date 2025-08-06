@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS pylovo_input.buildings;
-CREATE TABLE pylovo_input.buildings
+DROP TABLE IF EXISTS {output_schema}.buildings;
+CREATE TABLE {output_schema}.buildings
 (
     id                bigint PRIMARY KEY,
     objectid          text UNIQUE NOT NULL,
@@ -18,5 +18,5 @@ CREATE TABLE pylovo_input.buildings
     centroid          geometry(Point, 3035)
 );
 
-CREATE INDEX IF NOT EXISTS building_geom_idx ON pylovo_input.buildings USING GIST (geom);
-CREATE INDEX IF NOT EXISTS idx_building_type_check ON pylovo_input.buildings (id, building_type, building_use);
+CREATE INDEX IF NOT EXISTS building_geom_idx ON {output_schema}.buildings USING GIST (geom);
+CREATE INDEX IF NOT EXISTS idx_building_type_check ON {output_schema}.buildings (id, building_type, building_use);

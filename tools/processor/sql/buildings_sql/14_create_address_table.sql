@@ -1,12 +1,12 @@
-DROP TABLE IF EXISTS pylovo_input.building_addresses;
-CREATE TABLE IF NOT EXISTS pylovo_input.building_addresses AS
+DROP TABLE IF EXISTS {output_schema}.building_addresses;
+CREATE TABLE IF NOT EXISTS {output_schema}.building_addresses AS
 WITH split_addresses AS (
     SELECT b.id,
            a.city,
            a.country,
            a.street AS original_street,
            unnest(string_to_array(a.street, ';')) AS individual_street
-    FROM pylovo_input.buildings b
+    FROM {output_schema}.buildings b
              JOIN property p ON b.id = p.feature_id
              JOIN address a ON p.val_address_id = a.id
 )
@@ -19,6 +19,6 @@ SELECT id as building_id,
 FROM split_addresses;
 
 -- Add foreign key constraint after table creation
-ALTER TABLE pylovo_input.building_addresses
+ALTER TABLE {output_schema}.building_addresses
 ADD CONSTRAINT fk_building_addresses_building_id
-FOREIGN KEY (building_id) REFERENCES pylovo_input.buildings(id);
+FOREIGN KEY (building_id) REFERENCES {output_schema}.buildings(id);
