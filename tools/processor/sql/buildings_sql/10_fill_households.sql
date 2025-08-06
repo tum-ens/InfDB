@@ -6,8 +6,8 @@ SELECT b.id AS building_id,
        b.occupants,
        d.id as haushaltsgroesse_id,
        d.durchschnhhgroesse
-FROM pylovo_input.buildings b
-         JOIN pylovo_input.buildings_grid d
+FROM {output_schema}.buildings b
+         JOIN {output_schema}.buildings_grid d
               ON ST_Contains(d.geom, b.centroid)
 WHERE b.occupants IS NOT NULL
   AND b.building_use = 'Residential'; -- already ensured by above clause
@@ -20,7 +20,7 @@ SELECT building_id,
 FROM temp_building_hh_grid;
 
 -- Step 3: Update original building table
-UPDATE pylovo_input.buildings b
+UPDATE {output_schema}.buildings b
 SET households = bh.estimated_households
 FROM temp_building_households bh
 WHERE b.id = bh.building_id;
@@ -33,11 +33,11 @@ SELECT
     b.id AS building_id,
     -- (bo.weight / bo.total_weight) * nearest.nearest_einwohner * (bo.total_weight / cw.total_weight) as assigned_occupants, -- ratio of building weight * closest occupancy count * ratio of total weights
     GREATEST(ROUND((bo.weight / cw.total_weight) * nearest.nearest_einwohner)::int, 1) as assigned_occupants
-FROM pylovo_input.buildings b
+FROM {output_schema}.buildings b
 CROSS JOIN LATERAL (
     SELECT g.id as bevoelkerungszahl_id,
            g.einwohner as nearest_einwohner
-    FROM pylovo_input.buildings_grid g
+    FROM {output_schema}.buildings_grid g
     WHERE g.id IS NOT NULL
       AND g.einwohner IS NOT NULL
     ORDER BY g.geom <-> b.centroid

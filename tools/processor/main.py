@@ -9,6 +9,12 @@ log = logging.getLogger(__name__)
 # Initialize logging
 listener = logger.setup_main_logger(None)
 
+# Schema configuration
+SCHEMA_CONFIG = {
+    'input_schema': 'opendata',
+    'output_schema': 'pylovo_input'
+}
+
 # SQL files directory and list of files to execute in order
 WAYS_SQL_DIR = os.path.join(os.path.dirname(__file__), 'sql', 'ways_sql')
 BUILDINGS_SQL_DIR = os.path.join(os.path.dirname(__file__), 'sql', 'buildings_sql')
@@ -19,7 +25,8 @@ WAYS_SQL_FILES = [
     '02_create_ways_table.sql',
     '03_fill_id_ways_table.sql',
     '04_create_names_table.sql',
-    '05_assign_postcode_to_ways.sql',
+    '05_create_postcode_table.sql',
+    '06_assign_postcode_to_ways.sql'
 ]
 BUILDINGS_SQL_FILES = [
     '00_cleanup.sql',
@@ -43,7 +50,7 @@ BUILDINGS_SQL_FILES = [
 
 
 class PostgreSQLExecutor:
-    def __init__(self, host, port, database, username, password):
+    def __init__(self, host, port, database, username, password, input_schema=None, output_schema=None):
         self.host = host
         self.port = port
         self.database = database
@@ -51,6 +58,17 @@ class PostgreSQLExecutor:
         self.password = password
         self.connection = None
         self.cursor = None
+
+        # Schema configuration
+        self.input_schema = SCHEMA_CONFIG['input_schema']
+        self.output_schema = SCHEMA_CONFIG['output_schema']
+    
+    def get_schema_params(self):
+        """Get schema parameters for SQL template substitution"""
+        return {
+            'input_schema': self.input_schema,
+            'output_schema': self.output_schema
+        }
 
     def connect(self):
         """Establish database connection"""
@@ -63,7 +81,9 @@ class PostgreSQLExecutor:
                 password=self.password
             )
             self.cursor = self.connection.cursor()
+            self.cursor.execute("SET statement_timeout = '30min';")
             log.info(f"Successfully connected to PostgreSQL database at {self.host}:{self.port}")
+            log.info(f"updated wayss")
 
         except Exception as e:
             log.error(f"Failed to connect to database: {str(e)}")
@@ -84,6 +104,10 @@ class PostgreSQLExecutor:
             full_path = os.path.join(sql_dir, file_path)
             with open(full_path, 'r', encoding='utf-8') as file:
                 sql_content = file.read()
+
+            # Apply schema parameter substitution
+            schema_params = self.get_schema_params()
+            sql_content = sql_content.format(**schema_params)
 
             log.info(f"Executing {os.path.join(sql_dir, file_path)}")
             self.cursor.execute(sql_content)

@@ -6,7 +6,7 @@ SELECT
     x_mp,
     y_mp,
     ST_Transform(geom, 3035) as geom
-FROM opendata.bkg_de_grid_etrs89_laea_100m;
+FROM {input_schema}.bkg_de_grid_etrs89_laea_100m;
 
 -- Create spatial index on transformed geometry (fixed column name)
 CREATE INDEX temp_grid_geom_idx ON temp_grid_transformed USING GIST (geom);
@@ -14,18 +14,18 @@ CREATE INDEX temp_grid_geom_idx ON temp_grid_transformed USING GIST (geom);
 -- Create table joining grid cells with buildings based on geometry
 -- Only keeps grid cells that contain at least one building centroid
 -- Optimized for later joins on x_mp and y_mp coordinates
-DROP TABLE IF EXISTS pylovo_input.buildings_grid;
-CREATE TABLE IF NOT EXISTS pylovo_input.buildings_grid AS
+DROP TABLE IF EXISTS {output_schema}.buildings_grid;
+CREATE TABLE IF NOT EXISTS {output_schema}.buildings_grid AS
 SELECT DISTINCT g.*
 FROM temp_grid_transformed g
-INNER JOIN pylovo_input.buildings b ON ST_Contains(g.geom, ST_Centroid(b.geom));
+INNER JOIN {output_schema}.buildings b ON ST_Contains(g.geom, ST_Centroid(b.geom));
 
 -- Create composite index on x_mp and y_mp for efficient joins
 CREATE INDEX grid_buildings_spatial_coords_idx
-    ON pylovo_input.buildings_grid (x_mp, y_mp);
+    ON {output_schema}.buildings_grid (x_mp, y_mp);
 
 -- Add all census columns to the existing buildings_grid table
-ALTER TABLE pylovo_input.buildings_grid
+ALTER TABLE {output_schema}.buildings_grid
 -- cns22_100m_bevoelkerungszahl
 ADD COLUMN einwohner bigint,
 -- cns22_100m_durchschn_haushaltsgroesse
@@ -54,22 +54,22 @@ ADD COLUMN a2011bis2019 double precision,
 ADD COLUMN a2020undspaeter double precision;
 
 -- Update with population data
-UPDATE pylovo_input.buildings_grid
+UPDATE {output_schema}.buildings_grid
 SET einwohner = pop.einwohner
-FROM opendata.cns22_100m_bevoelkerungszahl pop
+FROM {input_schema}.cns22_100m_bevoelkerungszahl pop
 WHERE buildings_grid.x_mp = pop.x_mp_100m
   AND buildings_grid.y_mp = pop.y_mp_100m;
 
 -- Update with household size data
-UPDATE pylovo_input.buildings_grid
+UPDATE {output_schema}.buildings_grid
 SET durchschnhhgroesse = hh.durchschnhhgroesse,
     werterlaeuternde_zeichen = hh.werterlaeuternde_zeichen
-FROM opendata.cns22_100m_durchschn_haushaltsgroesse hh
+FROM {input_schema}.cns22_100m_durchschn_haushaltsgroesse hh
 WHERE buildings_grid.x_mp = hh.x_mp_100m
   AND buildings_grid.y_mp = hh.y_mp_100m;
 
 -- Update with building type data
-UPDATE pylovo_input.buildings_grid
+UPDATE {output_schema}.buildings_grid
 SET insgesamt_gebaeude = bld.insgesamt_gebaeude,
     freiefh = bld.freiefh,
     efh_dhh = bld.efh_dhh,
@@ -81,12 +81,12 @@ SET insgesamt_gebaeude = bld.insgesamt_gebaeude,
     mfh_7bis12wohnungen = bld.mfh_7bis12wohnungen,
     mfh_13undmehrwohnungen = bld.mfh_13undmehrwohnungen,
     anderergebaeudetyp = bld.anderergebaeudetyp
-FROM opendata.cns22_100m_geb_gbdtyp_groesse bld
+FROM {input_schema}.cns22_100m_geb_gbdtyp_groesse bld
 WHERE buildings_grid.x_mp = bld.x_mp_100m
   AND buildings_grid.y_mp = bld.y_mp_100m;
 
 -- Update with construction year data
-UPDATE pylovo_input.buildings_grid
+UPDATE {output_schema}.buildings_grid
 SET vor1919 = bauj.vor1919,
     a1919bis1948 = bauj.a1919bis1948,
     a1949bis1978 = bauj.a1949bis1978,
@@ -95,6 +95,6 @@ SET vor1919 = bauj.vor1919,
     a2001bis2010 = bauj.a2001bis2010,
     a2011bis2019 = bauj.a2011bis2019,
     a2020undspaeter = bauj.a2020undspaeter
-FROM opendata.cns22_100m_gbd_nach_baujahr_in_mz_klassen bauj
+FROM {input_schema}.cns22_100m_gbd_nach_baujahr_in_mz_klassen bauj
 WHERE buildings_grid.x_mp = bauj.x_mp_100m
   AND buildings_grid.y_mp = bauj.y_mp_100m;
