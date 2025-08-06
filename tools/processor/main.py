@@ -81,9 +81,7 @@ class PostgreSQLExecutor:
                 password=self.password
             )
             self.cursor = self.connection.cursor()
-            self.cursor.execute("SET statement_timeout = '30min';")
             log.info(f"Successfully connected to PostgreSQL database at {self.host}:{self.port}")
-            log.info(f"updated wayss")
 
         except Exception as e:
             log.error(f"Failed to connect to database: {str(e)}")

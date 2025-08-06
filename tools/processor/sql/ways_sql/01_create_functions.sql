@@ -9,35 +9,16 @@ This function maps German street classification names (Straße Klasse) to standa
 numeric classification codes and typical speed limits. It provides consistent 
 categorization of road networks for routing, analysis, and visualization purposes.
 
-
-CLASSIFICATION SYSTEM:
----------------------
-The numeric classification follows a hierarchical system:
-- 10-19: Federal/Interstate roads
-- 20-29: Regional roads 
-- 40-49: Local/Municipal roads
-- 50-59: Private/Restricted roads
-- 70-79: Agricultural/Economic ways 
-- 80-89: Bicycle infrastructure (cycling-specific)
-- 90-99: Unknown/default categories
-
 SPEED ASSIGNMENTS:
 -----------------
-Speed limits (kmh) represent typical maximum speeds for each road type in Germany:
+Speed limits (kmh) represent typical maximum speeds for each road type:
 - Based on osm data
-- Conservative estimates suitable for routing algorithms
 
 INPUT/OUTPUT:
 ------------
 INPUT:  klasse (TEXT) - German street classification name
 OUTPUT: clazz (INTEGER) - Standardized numeric classification code
         kmh (INTEGER) - Typical speed limit in kilometers per hour
-
-FUNCTION PROPERTIES:
--------------------
-- IMMUTABLE: Same input always produces same output (enables optimization)
-- STRICT: Returns NULL if input is NULL (prevents error propagation)
-- Returns composite type with two INTEGER fields
 
 ═══════════════════════════════════════════════════════════════════════════════
 */
