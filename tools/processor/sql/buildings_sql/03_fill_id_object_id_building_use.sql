@@ -1,8 +1,8 @@
 -- Fill id, objectid and building use columns
-INSERT INTO pylovo_input.buildings (id, objectid, building_use, building_use_id)
+INSERT INTO {output_schema}.buildings (id, objectid, building_use, building_use_id)
 SELECT f.id,
        f.objectid,
-       pylovo_input.classify_building_use(p.val_string) as building_use,
+       {output_schema}.classify_building_use(p.val_string) as building_use,
        p.val_string                                     as building_use_id
 FROM feature f
          JOIN property p ON f.id = p.feature_id
