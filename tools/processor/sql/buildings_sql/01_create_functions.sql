@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION pylovo_input.classify_building_use(funktion TEXT)
+CREATE OR REPLACE FUNCTION {output_schema}.classify_building_use(funktion TEXT)
     RETURNS TEXT AS
 $$
 BEGIN
@@ -58,7 +58,7 @@ END;
 $$ LANGUAGE plpgsql IMMUTABLE
                     STRICT;
 
-CREATE OR REPLACE FUNCTION pylovo_input.assign_weighted_year(
+CREATE OR REPLACE FUNCTION {output_schema}.assign_weighted_year(
     vor1919 double precision,
     a1919bis1948 double precision,
     a1949bis1978 double precision,
