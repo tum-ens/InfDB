@@ -1,0 +1,26 @@
+:root > * {
+    --md-primary-fg-color:        #0f3b64;
+    --md-primary-fg-color--dark: #5d6cc0;
+    --md-typeset-a-color: #5ba6ec;
+    /* --md-text-font-color:         #ffffff;  */
+    /* --md-primary-fg-color--light: #ECB7B7; */
+  }
+
+.admonition.valid-example {
+  background-color: #e6ffed;
+  border-left: 4px solid #2e7d32;
+}
+
+.admonition.valid-example .admonition-title {
+  font-weight: bold;
+
+}
+
+.admonition.invalid-example {
+  background-color: #ffebee;
+  border-left: 4px solid #c62828;
+}
+
+.admonition.invalid-example .admonition-title {
+  font-weight: bold;
+}
