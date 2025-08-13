@@ -1,32 +1,27 @@
-# Architecture Documentation
+# InfDB Architecture Overview
 
-This directory contains documentation related to the system architecture of the InfDB project.
+This folder documents how InfDB is structured and how it works behind the scenes. It describes the system’s core components, data flow, and optional services that support advanced use cases like solar potential estimation.
 
 ## Purpose
 
-The architecture documentation provides a comprehensive overview of the system's structure, components, and their interactions. It serves as a reference for developers to understand how the system is designed and how different parts work together.
+The `architecture/` folder helps developers, analysts, and maintainers understand the internal structure and design decisions of InfDB. It outlines how different layers interact, how data is managed, and how additional services like solar simulation are integrated into the platform.
 
 ## Contents
 
-- **System Overview**: High-level description of the system architecture
-- **Component Diagrams**: Visual representations of system components and their relationships
-- **Data Flow Diagrams**: Illustrations of how data moves through the system
-- **Database Schema**: Documentation of the database structure and relationships
-- **API Architecture**: Description of the API design and endpoints
-- **Integration Points**: Documentation of how the system integrates with external services
+- [**System Overview**](SYSTEM_OVERVIEW.md)  
+  Describes the high-level architecture of InfDB, including the layered design (database, API, services, models) and how geospatial and time-series data are combined using raster-based resolution. It also covers key technologies such as PostgreSQL, 3DCityDB, TimescaleDB, and FastAPI.
 
-## Key Files
+- [**Data Loader**](DATA_LOADER.md)  
+  Explains how infrastructure and datasets are configured and provisioned through a modular, Docker-based system. Includes architecture for the loader, how datasets are defined via configuration, and how new sources can be added through modular Python scripts.
 
-- [index.md](index.rst): Main architecture documentation entry point
-- Database schema diagrams
-- Component interaction diagrams
+- [**Solar Potential**](SOLAR_POTENTIAL.md)  
+  Documents the optional solar simulation workflow powered by SunPot. Explains how LOD2 data is processed using CityDB v4, how results are migrated to CityDB v5, and how configuration files coordinate the process across multiple containers.
 
-## For Contributors
+## Notes
 
-When contributing to the architecture documentation:
+- Each service runs as part of a Docker Compose stack and communicates through a shared virtual network.
+- All data sources are defined declaratively using YAML configuration files.
+- Each project (identified by a base name) maintains isolated folders and data pipelines for reproducibility and modularity.
+- The architecture is extensible, allowing new datasets and services to be added with minimal effort.
 
-1. Ensure diagrams are up-to-date with the current implementation
-2. Include both high-level overviews and detailed component descriptions
-3. Document architectural decisions and their rationales
-4. Keep the documentation in sync with code changes
-5. Use standard UML notation for diagrams when applicable
+For setup instructions, refer to the [development guides](../development/README.md).

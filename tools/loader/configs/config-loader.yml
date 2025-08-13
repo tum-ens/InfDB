@@ -1,0 +1,183 @@
+loader:
+    scope:  09162000 # Sonthofen: 09780139 AGS (Amtlicher Gemeindeschlüssel)
+    multiproccesing: active
+    config-infdb: "config-infdb.yml" # only filename - change path in ".env" file "CONFIG_INFDB_PATH"
+    path:
+        base: "data" # only foldername - change path in ".env" file "LOADER_DATA_PATH"
+        opendata: "{loader/path/base}/opendata/"
+        processed: "{loader/path/base}/{loader/scope}"
+    logging:
+        path: "{loader/path/base}/loader.log"
+        level: "INFO" # ERROR, WARNING, INFO, DEBUG
+    hosts:
+        citydb:
+            user: None
+            password: None
+            db: None
+            host: host.docker.internal
+            exposed_port: None
+            epsg: None # 3035 (Europe)
+        timescaledb:
+            user: None
+            password: None
+            db: None
+            host: host.docker.internal
+            exposed_port: None
+    sources:
+        zensus_2022:
+            status: active
+            resolutions:
+                - 10km
+                - 1km
+                - 100m
+            path:
+                base: "{loader/path/opendata}/zensus_2022/"
+                zip: "{loader/sources/zensus_2022/path/base}/zip/"
+                unzip: "{loader/sources/zensus_2022/path/base}/unzip/"
+                processed: "{loader/path/processed}/zensus_2022/"
+            url: "https://www.zensus2022.de/DE/Ergebnisse-des-Zensus/_inhalt.html"
+            schema: opendata
+            prefix: cns22
+            layer:
+                - alter_in_10er-jahresgruppen
+                - alter_in_5_altersklassen
+                - alter_infr
+                - anteil_auslaender
+                - anteil_ueber_65
+                - anteil_unter_18
+                - auslaenderanteil_ab18
+                - baujahr_jz
+                - deutsche_staatsangehoerige_ab18
+                - durchschn_flaeche_je_bewohner
+                - durchschn_flaeche_je_wohnung
+                - durchschn_haushaltsgroesse
+                - durchschn_nettokaltmiete
+                - durchschn_nettokaltmiete_anzahl_der_wohnungen
+                - durchschnittsalter
+                - eigentuemerquote
+                - energietraeger
+                - familienstand
+                - flaeche_der_wohnung_10m2_intervalle
+                - geb_gebaeudetyp_groesse
+                - gebaeude_nach_anzahl_der_wohnungen
+                - gebaeude_nach_baujahr_in_mz_klassen
+                - gebaeude_nach_energietraeger_der_heizung
+                - gebaeude_nach_ueberwiegender_heizungsart
+                - geburtsland_gruppen
+                - groesse_des_privaten_haushalts
+                - grosse_kernfamilie_bis6undmehrpers
+                - heizungsart
+                - leerstandsquote
+                - marktaktive_leerstandsquote
+                - religion
+                - seniorenstatus_eines_privaten_haushalts
+                - staatsangehoerigkeit
+                - staatsangehoerigkeit_gruppen
+                - typ_der_kernfamilie_nach_kindern
+                - typ_priv_hh_familie
+                - typ_priv_hh_lebensform
+                - wohnung_gebaeudetyp_groesse
+                - wohnungen_nach_zahl_der_raeume
+                - zahl_der_staatsangehoerigkeiten
+        lod2:
+            status: active
+            url:
+                - "https://geodaten.bayern.de/odd/a/lod2/citygml/meta/metalink/{loader/scope}.meta4"
+            path:
+                lod2: "{loader/path/opendata}/lod2/"
+                gml: "{loader/path/opendata}/lod2/{loader/scope}"
+
+        bkg:
+            status: active
+            path:
+                base: "{loader/path/opendata}/bkg/"
+                zip: "{loader/sources/bkg/path/base}/zip/"
+                unzip: "{loader/sources/bkg/path/base}/unzip/"
+                processed: "{loader/path/processed}/bkg/"
+            prefix: bkg
+            schema: opendata
+            vg5000:
+                url: "https://daten.gdz.bkg.bund.de/produkte/vg/vg5000_1231/aktuell/vg5000_12-31.utm32s.gpkg.ebenen.zip"
+                layer:
+                    - "vg5000_gem"
+                    - "vg5000_krs"
+                    - "vg5000_lan"
+                    - "vg5000_li"
+                    - "vg5000_rbz"
+                    - "vg5000_sta"
+                    - "vg5000_vwg"
+            nuts:
+                url: "https://daten.gdz.bkg.bund.de/produkte/vg/nuts250_1231/aktuell/nuts250_12-31.utm32s.gpkg.zip"
+                layer:
+                    - "nuts250_n1"
+                    - "nuts250_n2"
+                    - "nuts250_n3"
+            geogitter:
+                resolutions:
+                    - 100m
+                    - 1km
+                    - 10km
+
+        basemap:
+            status: active
+            url: "https://basemap.de/dienste/opendata/basisviews/"
+            ending: ".gpkg"
+            filter:
+                - by
+            path:
+                base: "{loader/path/opendata}/basemap/"
+                processed: "{loader/path/processed}/basemap/"
+            schema: opendata
+            prefix: bmp
+            layer:
+                - barrierenlinie
+                - bauwerksflaeche
+                - bauwerkslinie
+                - bauwerkspunkt
+                - besondere_flaeche
+                - besondere_linie
+                - besonderer_punkt
+                - gewaesserflaeche
+                - gewaesserlinie
+                - gewaesserpunkt
+                - grenze_flaeche
+                - grenze_linie
+                - grenze_punkt
+                - historische_flaeche
+                - historische_linie
+                - historischer_punkt
+                - name_flaeche
+                - name_punkt
+                - reliefflaeche
+                - relieflinie
+                - reliefpunkt
+                - siedlungsflaeche
+                - vegetationsflaeche
+                - vegetationslinie
+                - vegetationspunkt
+                - verkehrsflaeche
+                - verkehrslinie
+                - verkehrspunkt
+                - versorgungslinie
+                - versorgungspunkt
+                - weitere_nutzung_flaeche
+
+        plz:
+            status: active
+            url: "https://downloads.suche-postleitzahl.org/v2/public/plz-5stellig.geojson"
+            path:
+                base: "{loader/path/opendata}/plz/"
+                processed: "{loader/path/processed}/plz/"
+            schema: opendata
+            prefix: plz
+            layer:
+                - plz-5stellig
+        tabula:
+            status: active
+            url:
+                - "https://raw.githubusercontent.com/RWTH-EBC/TEASER/refs/heads/main/teaser/data/input/inputdata/TypeElements_TABULA_DE.json"
+                - "https://raw.githubusercontent.com/RWTH-EBC/TEASER/refs/heads/main/teaser/data/input/inputdata/MaterialTemplates.json"
+            path:
+                base: "{loader/path/opendata}/tabula/"
+            schema: opendata
+            prefix: tba

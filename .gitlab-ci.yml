@@ -1,52 +1,97 @@
-image: python:3.10-slim 
+# .gitlab-ci.yml
+image: python:3.12-slim
 
+# Global variables
 variables:
-  CODE_PATH: "./src" 
-  # DOCKER_HOST: "tcp://docker:2375"
-  # DOCKER_TLS_CERTDIR: ""
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  UV_CACHE_DIR: "$CI_PROJECT_DIR/.cache/uv"
 
-stages:
-  - install
-  - lint
-  # - build
-
+# Cache configuration
 cache:
   paths:
     - .cache/pip
+    - .cache/uv
+    - .venv/
 
-default:
-  tags:
-    - database
+# Stages
+stages:
+  - setup
+  - test
+  - lint
 
-install_dependencies:
-  stage: install
+# Install uv and dependencies
+.install_uv: &install_uv
+  before_script:
+    - pip install uv
+
+# Setup job
+setup:
+  stage: setup
+  <<: *install_uv
   script:
-    - python -m venv venv
-    - source venv/bin/activate
-    - pip install --upgrade pip
-    - pip install -r requirements.txt
+    - uv venv
+    - source .venv/bin/activate
+    - uv pip install -e .
   artifacts:
-    expire_in: 10 days
     paths:
-      - venv
+      - .venv/
+    expire_in: 1 hour
 
+## Test job
+#test:
+#  stage: test
+#  <<: *install_uv
+#  dependencies:
+#    - setup
+#  script:
+#    - source .venv/bin/activate
+#    - uv pip install pytest pytest-cov
+#    - pytest --cov=src --cov-report=xml --cov-report=html
+#  coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
+#  artifacts:
+#    reports:
+#      coverage_report:
+#        coverage_format: cobertura
+#        path: coverage.xml
+#    paths:
+#      - htmlcov/
+#    expire_in: 1 week
+
+# Linting job
 lint:
   stage: lint
+  <<: *install_uv
+  dependencies:
+    - setup
   script:
-    - source venv/bin/activate
-    - flake8 $CODE_PATH
+    - source .venv/bin/activate
+    - uv pip install ruff black mypy
+    - ruff check .
+    - black --check .
+    - mypy src/
+  allow_failure: true
 
+# Type checking
+type-check:
+  stage: lint
+  <<: *install_uv
+  dependencies:
+    - setup
+  script:
+    - source .venv/bin/activate
+    - uv pip install mypy
+    - mypy src/
+  allow_failure: true
 
-#test version
-# build:
-#   stage: build
-#   image: docker:24.0.5
-#   services:
-#     - docker:24.0.5-dind
-#   dependencies:
-#     - install_dependencies
-#     - lint
-#   script:
-#     - echo "Starting the application using Docker Compose..."
-#     - docker build -t my-fastapi-app .
-
+# Security check
+security:
+  stage: lint
+  <<: *install_uv
+  dependencies:
+    - setup
+  script:
+    - source .venv/bin/activate
+    - uv pip install bandit safety
+    - bandit -r src/
+    - safety check
+  allow_failure: true
