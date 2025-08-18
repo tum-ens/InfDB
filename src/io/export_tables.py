@@ -1,8 +1,8 @@
 import os
-import fiona
 import geopandas as gpd
 import pandas as pd
 import pathlib
+
 
 def export_time_series_from_pg(
     engine,
@@ -35,6 +35,7 @@ def export_time_series_from_pg(
 
     print(f"Time‑series exported as {format.upper()} → {export_path}")
 
+
 def export_geospatial_from_pg(
     engine,
     table_name: str,
@@ -61,12 +62,11 @@ def export_geospatial_from_pg(
                   existing .gpkg
     """
 
-
     col_string = ", ".join(f'"{col}"' for col in columns) if columns else "*"
     query = f"SELECT {col_string} FROM {table_name}"
     gdf = gpd.read_postgis(query, engine, geom_col=geom_col)
 
-    format = pathlib.Path(format).suffix.lower()
+    format = pathlib.Path(export_path).suffix.lower()
     if format == ".geojson":
         gdf.to_file(export_path, driver="GeoJSON")
     elif format == ".parquet":
@@ -111,7 +111,7 @@ def export_geospatial_from_pg(
     #     export_path="output12.parquet",
     #     columns=["NUTS_NAME", "OBJID"],
     # )
-    
+
     # df = pd.read_parquet("output12.parquet")
     # print(df.head())
 
@@ -120,7 +120,7 @@ def export_geospatial_from_pg(
     #     table_name="opendata.bkg_nuts250_n3",
     #     export_path="output13.parquet",
     # )
-    
+
     # df = pd.read_parquet("output13.parquet")
     # print(df.head())
 

@@ -2,7 +2,7 @@ import psycopg2
 import os
 import logging
 import time
-from src import config, utils, logger
+from src import config, logger
 
 log = logging.getLogger(__name__)
 
@@ -145,7 +145,6 @@ def main():
             if missing_buildings:
                 log.error(f"Missing BUILDINGS SQL files in {BUILDINGS_SQL_DIR}/: {missing_buildings}")
             return 1
-
 
         # Execute WAYS scripts first
         log.info("Running WAYS SQL scripts")
