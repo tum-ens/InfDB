@@ -1,8 +1,8 @@
 import logging
-import os
 from logging.handlers import QueueHandler, QueueListener
 import sys
 from . import config
+
 
 def setup_main_logger(log_queue):
     formatter = logging.Formatter('%(asctime)s | %(processName)s | %(levelname)s: %(message)s')

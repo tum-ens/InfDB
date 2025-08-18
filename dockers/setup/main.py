@@ -1,5 +1,6 @@
 import os
 import secrets
+import json
 from src import config
 
 
@@ -13,7 +14,7 @@ def write_env_file(file_path=".env"):
             env_key = key.upper()
             if "PATH" in env_key:
                 if not os.path.isabs(value):
-                    if "SERVICE" in env_key and not "COMPOSE_FILE" in env_key:
+                    if "SERVICE" in env_key and "COMPOSE_FILE" not in env_key:
                         value = os.path.join("..", value)
                     else:
                         value = os.path.join(".", value)
@@ -22,6 +23,7 @@ def write_env_file(file_path=".env"):
         # Add JWT secret key for QWC
         f.write("JWT_SECRET_KEY=" + secrets.token_hex(48))
     print(f".env  file written to {path}")
+
 
 # This function auto generates the docker compose file for us.
 def write_compose_file(output_path):
@@ -49,7 +51,6 @@ def write_compose_file(output_path):
     config.write_yaml(output, output_path)
     print(f".docker compose file written to {output_path}")
 
-import json
 
 def setup_pgadmin_servers(output_path):
     # services = config.get_value(["services"])
@@ -88,14 +89,13 @@ def setup_pgadmin_servers(output_path):
     os.chmod(pgpass_path, 0o600)  # Set permissions to read/write for the owner only
     print(f".pgpass written to {pgpass_path}")
 
-import os
 
 def write_pg_service_conf(output_path):
     """
     Write a pg_service.conf file to enable PostgreSQL connection shortcuts.
     Example usage with psql: `psql service=infdb_citydb`
     """
-    services = ["citydb"] #, "timescaledb"
+    services = ["citydb"]   # , "timescaledb"
     port = 5432
 
     lines = []
@@ -104,7 +104,7 @@ def write_pg_service_conf(output_path):
         host = config.get_value(["services", service, "host"])
         db = config.get_value(["services", service, "db"])
         user = config.get_value(["services", service, "user"])
-        password = config.get_value(["services", service, "password"])
+        # password = config.get_value(["services", service, "password"])
         service_name = f"infdb_{service}"
 
         lines.append(f"[{service_name}]")
@@ -119,8 +119,6 @@ def write_pg_service_conf(output_path):
     with open(pg_service_path, "w") as f:
         f.write("\n".join(lines))
     print(f"pg_service.conf written to {pg_service_path}")
-
-
 
 
 write_env_file("infdb-root/.env")

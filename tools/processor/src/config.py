@@ -3,9 +3,9 @@ import os
 import re
 import yaml
 from copy import deepcopy
-from dotenv import load_dotenv
 
 log = logging.getLogger(__name__)
+
 
 def _load_config(path: str):
     if os.path.exists(path):
@@ -25,7 +25,6 @@ def _merge_configs():
     configs = _load_config(base_path)
 
     # Load sub configs defined under config.yaml configs field
-    #load_dotenv()
     # dir_infdb_config = os.environ.get("CONFIG_INFDB_PATH", "")
     filename = configs["processor"]["config-infdb"]
     path_infdb_config = os.path.join("configs-infdb", filename)     # hardcoded because of docker mount in compose.yml
@@ -136,7 +135,7 @@ def get_db_parameters(service_name: str):
 
         # Override config-infdb by config-loader
         for key in parameters_loader.keys():
-            if parameters_loader[key] != "None":
+            if parameters_loader[key] == "None":
                 if key == "host":
                     parameters[key] = "host.docker.internal"
                 else:
@@ -153,5 +152,6 @@ def get_db_parameters(service_name: str):
             log.error(f"Service '{service_name}' not found in configuration.")
 
     return parameters
+
 
 _CONFIG = _merge_configs()
