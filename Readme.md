@@ -190,8 +190,9 @@ sslmode=disable
 ### Clean repo
 ```bash
     # linux and macos
-    git reset --hard
-    git clean -fd
+    git fetch origin
+    git reset --hard origin/develop
+    git clean -fdx
     # windows
 ```
 
