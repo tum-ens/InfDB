@@ -187,6 +187,13 @@ sslmode=disable
     # windows
     venv\Scripts\activate
 ```
+### Clean repo
+```bash
+    # linux and macos
+    git reset --hard
+    git clean -fd
+    # windows
+```
 
 ## Repository Structure
 
