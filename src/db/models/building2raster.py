@@ -17,4 +17,6 @@ class Building2Raster(CityDBBase, table=True):
     __table_args__ = {"schema": "general"}
 
     building_id: int = Field(nullable=False, primary_key=True)
-    raster_id: str = Field(foreign_key="general.raster.id", nullable=False, primary_key=True)
+    raster_id: str = Field(
+        foreign_key="general.raster.id", nullable=False, primary_key=True
+    )

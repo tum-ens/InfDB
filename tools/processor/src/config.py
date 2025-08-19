@@ -27,7 +27,9 @@ def _merge_configs():
     # Load sub configs defined under config.yaml configs field
     # dir_infdb_config = os.environ.get("CONFIG_INFDB_PATH", "")
     filename = configs["processor"]["config-infdb"]
-    path_infdb_config = os.path.join("configs-infdb", filename)     # hardcoded because of docker mount in compose.yml
+    path_infdb_config = os.path.join(
+        "configs-infdb", filename
+    )  # hardcoded because of docker mount in compose.yml
     log.debug(f"Loading configuration from '{path_infdb_config}'")
     if os.path.exists(path_infdb_config):
         configs.update(_load_config(path_infdb_config))
@@ -66,11 +68,13 @@ def get_path(keys):
 
 def get_root_path():
     # Get project root path
-    root_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    root_path = os.path.dirname(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    )
     return root_path
 
 
-def _flatten_dict(d, parent_key='', sep="/"):
+def _flatten_dict(d, parent_key="", sep="/"):
     """Flatten nested dictionary with keys joined by /."""
     items = {}
     for k, v in d.items():
@@ -89,7 +93,7 @@ def _replace_placeholders(data, flat_map):
     elif isinstance(data, list):
         return [_replace_placeholders(item, flat_map) for item in data]
     elif isinstance(data, str):
-        pattern = re.compile(r'{([^{}]+)}')
+        pattern = re.compile(r"{([^{}]+)}")
         while True:
             match = pattern.search(data)
             if not match:
@@ -124,7 +128,6 @@ def write_yaml(output_yaml, output_path):
 
 
 def get_db_parameters(service_name: str):
-
     parameters_loader = get_value(["processor", "hosts", service_name])
 
     # Adopt settings if config-infdb exists

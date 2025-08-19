@@ -65,10 +65,10 @@ lint:
     - setup
   script:
     - source .venv/bin/activate
-    - uv pip install ruff black mypy
+    - uv pip install ruff
     - ruff check .
-    - black --check .
-    - mypy src/
+    - ruff format --check .
+    # - mypy src/
   allow_failure: true
 
 # Type checking
