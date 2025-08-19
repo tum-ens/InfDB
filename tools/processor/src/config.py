@@ -140,7 +140,7 @@ def get_db_parameters(service_name: str):
         for key in parameters_loader.keys():
             if parameters_loader[key] == "None":
                 if key == "host":
-                    parameters[key] = "host.docker.internal"
+                    parameters[key] = "host.docker.internal"    # default on localhost
                 else:
                     parameters[key] = parameters_loader[key]
                 log.debug("Key overridden: key = {parameters_loader[key]}")
