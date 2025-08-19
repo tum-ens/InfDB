@@ -5,6 +5,7 @@ import logging
 
 log = logging.getLogger(__name__)
 
+
 def load(log_queue):
     logger.setup_worker_logger(log_queue)
 
@@ -31,13 +32,18 @@ def load(log_queue):
 
     cmd = [
         "citydb import citygml",
-        "-H", params["host"],
-        "-d", params["db"],
-        "-u", params["user"],
-        "-p", params["password"],
-        "-P", str(params["exposed_port"]),
-        "--import-mode=delete", # deletes existing data before import # skip as alternative
-        str(gml_path)
+        "-H",
+        params["host"],
+        "-d",
+        params["db"],
+        "-u",
+        params["user"],
+        "-p",
+        params["password"],
+        "-P",
+        str(params["exposed_port"]),
+        "--import-mode=delete",  # deletes existing data before import # skip as alternative
+        str(gml_path),
     ]
     cmd_str = " ".join(str(arg) for arg in cmd)
     utils.do_cmd(cmd_str)

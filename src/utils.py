@@ -17,12 +17,14 @@ import logging
 
 log = logging.getLogger(__name__)
 
+
 def if_multiproccesing():
     status = config.get_value(["loader", "multiproccesing", "status"])
     if status == "active":
         return True
     else:
         return False
+
 
 def if_active(service):
     status = config.get_value(["loader", "sources", service, "status"])
@@ -43,17 +45,17 @@ def get_links(url, ending, filter):
     html_content = response.content
 
     # HTML-Seite parsen
-    soup = BeautifulSoup(html_content, 'html.parser')
+    soup = BeautifulSoup(html_content, "html.parser")
 
     # Alle Links zu ZIP-Dateien finden
     zip_links = []
-    for link in soup.find_all('a', href=True):
-        href = link['href']
+    for link in soup.find_all("a", href=True):
+        href = link["href"]
         if href.endswith(ending):
             # Check for filters
             if filter in href.lower():
                 # Append if url not already in list
-                full_url = urljoin(url, link['href'])
+                full_url = urljoin(url, link["href"])
                 if full_url not in zip_links:
                     zip_links.append(full_url)
 
@@ -64,6 +66,7 @@ def get_links(url, ending, filter):
 
 
 log = logging.getLogger(__name__)
+
 
 def download_files(urls, base_path, chunk_size=1024):
     os.makedirs(base_path, exist_ok=True)
@@ -84,15 +87,18 @@ def download_files(urls, base_path, chunk_size=1024):
 
             with requests.get(url, stream=True) as response:
                 response.raise_for_status()
-                total_size = int(response.headers.get('content-length', 0))
+                total_size = int(response.headers.get("content-length", 0))
 
-                with open(path_file, "wb") as file, tqdm(
-                    total=total_size,
-                    unit='B',
-                    unit_scale=True,
-                    desc=filename,
-                    disable=(total_size == 0)
-                ) as pbar:
+                with (
+                    open(path_file, "wb") as file,
+                    tqdm(
+                        total=total_size,
+                        unit="B",
+                        unit_scale=True,
+                        desc=filename,
+                        disable=(total_size == 0),
+                    ) as pbar,
+                ):
                     for chunk in response.iter_content(chunk_size=chunk_size):
                         if chunk:  # filter out keep-alive chunks
                             file.write(chunk)
@@ -113,10 +119,13 @@ def unzip(zip_files, unzip_dir):
 
     for zip_file in zip_files:
         try:
-            with ZipFile(zip_file, 'r') as zip_ref:
+            with ZipFile(zip_file, "r") as zip_ref:
                 members = zip_ref.namelist()
                 # Check if all files already exist
-                all_exist = all(os.path.exists(os.path.join(unzip_dir, member)) for member in members)
+                all_exist = all(
+                    os.path.exists(os.path.join(unzip_dir, member))
+                    for member in members
+                )
 
                 if all_exist:
                     log.info(f"Skipping {zip_file} — all files already extracted.")
@@ -139,11 +148,7 @@ def sql_query(query):
         port = parameters["exposed_port"]
 
         connection = psycopg2.connect(
-            dbname=db,
-            user=user,
-            password=password,
-            host=host,
-            port=port
+            dbname=db, user=user, password=password, host=host, port=port
         )
         cursor = connection.cursor()
         # # Create the users table
@@ -158,6 +163,7 @@ def sql_query(query):
     except Exception as error:
         log.error(f"ProgrammingError: {error}")
 
+
 def do_cmd(cmd: str):
     log.info(f"Executing command: {cmd}")
 
@@ -167,7 +173,7 @@ def do_cmd(cmd: str):
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,
-        bufsize=1  # Zeilenweise Puffern
+        bufsize=1,  # Zeilenweise Puffern
     )
 
     # Zeilenweise lesen und direkt loggen
@@ -184,7 +190,6 @@ def do_cmd(cmd: str):
 
 
 def import_layers(input_file, layers, schema, prefix="", layer_names=None, scope=True):
-
     #
     if scope:
         gdf_scope = get_envelop()
@@ -205,17 +210,18 @@ def import_layers(input_file, layers, schema, prefix="", layer_names=None, scope
         gdf = gpd.read_file(input_file, layer=layer, bbox=gdf_scope)
         gdf.to_crs(epsg=epsg, inplace=True)
         # gdf.to_file(output_file, layer=layer, driver="GPKG")
-        gdf.to_postgis(layer_name, citydb_engine, if_exists='replace', schema=schema, index=False)
+        gdf.to_postgis(
+            layer_name, citydb_engine, if_exists="replace", schema=schema, index=False
+        )
 
 
 def get_envelop():
-
     scope = config.get_list(["loader", "scope"])
     ags_path = config.get_path(["loader", "sources", "bkg", "path", "unzip"])
     log.debug(f"Envelop Path: {ags_path}")
     path = get_file(ags_path, filename="vg5000", ending=".gpkg")
     log.debug(f"Envelop Path: {path}")
-    gdf = gpd.read_file(path, layer = "vg5000_gem")
+    gdf = gpd.read_file(path, layer="vg5000_gem")
 
     gdf_scope = gdf[gdf["AGS"].str.startswith(tuple(scope))]
 
@@ -223,7 +229,6 @@ def get_envelop():
 
 
 def get_db_parameters(service_name: str):
-
     parameters_loader = config.get_value(["loader", "hosts", service_name])
 
     # Adopt settings if config-infdb exists
@@ -236,7 +241,7 @@ def get_db_parameters(service_name: str):
         keys = parameters_loader.keys()
         for key in keys:
             if key == "host":
-                parameters[key] = "host.docker.internal"    # default to localhost
+                parameters[key] = "host.docker.internal"  # default to localhost
 
             if parameters_loader[key] != "None":
                 parameters[key] = parameters_loader[key]
@@ -269,20 +274,22 @@ def get_db_engine(service_name: str):
 
 
 def ensure_utf8_encoding(filepath: str) -> str:
-    with open(filepath, 'rb') as f:
+    with open(filepath, "rb") as f:
         raw_data = f.read()
         result = chardet.detect(raw_data)
-        source_encoding = result['encoding']
+        source_encoding = result["encoding"]
 
     if source_encoding is None:
         raise ValueError(f"Could not detect encoding of file: {filepath}")
 
-    if source_encoding.lower() != 'utf-8':
+    if source_encoding.lower() != "utf-8":
         # Re-encode the file to UTF-8
         log.info(f"Re-encoding file from {source_encoding} to UTF-8: {filepath}")
         temp_path = filepath + "_utf8.csv"
-        with open(filepath, 'r', encoding=source_encoding, errors='replace') as src, \
-             open(temp_path, 'w', encoding='utf-8') as dst:
+        with (
+            open(filepath, "r", encoding=source_encoding, errors="replace") as src,
+            open(temp_path, "w", encoding="utf-8") as dst,
+        ):
             for line in src:
                 dst.write(line)
         return temp_path
@@ -308,6 +315,7 @@ def get_all_files(folder_path, ending):
     csv_files.sort()
     return csv_files
 
+
 def get_file(folder_path, filename, ending):
     files = get_all_files(folder_path, ending)
 
@@ -315,7 +323,9 @@ def get_file(folder_path, filename, ending):
     matching_files = [f for f in files if filename.lower() in f.lower()]
 
     if not matching_files:
-        log.error(f"No files found containing '{filename}' with ending '{ending}' in {folder_path}")
+        log.error(
+            f"No files found containing '{filename}' with ending '{ending}' in {folder_path}"
+        )
         return ""
 
     # Pick the newest by modification time
@@ -326,19 +336,18 @@ def get_file(folder_path, filename, ending):
 
 
 def get_website_links(url):
-
     # HTML-Seite herunterladen
     response = requests.get(url)
     html_content = response.content
 
     # HTML-Seite parsen
-    soup = BeautifulSoup(html_content, 'html.parser')
+    soup = BeautifulSoup(html_content, "html.parser")
 
     # Alle Links zu ZIP-Dateien finden
     zip_links = []
-    for link in soup.find_all('a', href=True):
-        href = link['href']
-        if href.endswith('.zip'):
+    for link in soup.find_all("a", href=True):
+        href = link["href"]
+        if href.endswith(".zip"):
             zip_links.append(href)
 
     # Gefundene Links ausgeben
@@ -365,7 +374,9 @@ def get_number_processes():
 
     if config.get_value(["loader", "multiproccesing", "status"]) == "active":
         number_processes = min(multiprocessing.cpu_count(), max_processes)
-    
-    log.debug(f"Max processes: {max_processes}, Number of processes: {number_processes}")
-    
+
+    log.debug(
+        f"Max processes: {max_processes}, Number of processes: {number_processes}"
+    )
+
     return number_processes

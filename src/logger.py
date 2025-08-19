@@ -4,8 +4,11 @@ from logging.handlers import QueueHandler, QueueListener
 import sys
 from . import config
 
+
 def setup_main_logger(log_queue):
-    formatter = logging.Formatter('%(asctime)s | %(processName)s | %(levelname)s: %(message)s')
+    formatter = logging.Formatter(
+        "%(asctime)s | %(processName)s | %(levelname)s: %(message)s"
+    )
 
     # Logging to console
     console_handler = logging.StreamHandler(sys.stdout)
@@ -14,10 +17,10 @@ def setup_main_logger(log_queue):
     # Logging to file
     file_path = config.get_path(["loader", "logging", "path"])
     if os.path.exists(file_path):
-        os.remove(file_path) # for debugging
+        os.remove(file_path)  # for debugging
     if not os.path.exists(os.path.dirname(file_path)):
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
-        
+
     file_handler = logging.FileHandler(file_path)
     file_handler.setFormatter(formatter)
 

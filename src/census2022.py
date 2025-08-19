@@ -10,6 +10,7 @@ import multiprocessing
 
 log = logging.getLogger(__name__)
 
+
 def load(log_queue):
     logger.setup_worker_logger(log_queue)
 
@@ -34,19 +35,23 @@ def load(log_queue):
     number_processes = utils.get_number_processes()
 
     args = [(url, zip_path) for url in zip_links]
-    with multiprocessing.Pool(processes=number_processes,
-                              initializer=logger.setup_worker_logger,
-                                initargs=(log_queue,)) as pool:
+    with multiprocessing.Pool(
+        processes=number_processes,
+        initializer=logger.setup_worker_logger,
+        initargs=(log_queue,),
+    ) as pool:
         results = pool.starmap(utils.download_files, args)
-    #utils.download_files(zip_link, zip_path)
+    # utils.download_files(zip_link, zip_path)
 
     unzip_path = config.get_path(["loader", "sources", "zensus_2022", "path", "unzip"])
 
     zip_files = [os.path.join(zip_path, f) for f in os.listdir(zip_path)]
     args = [(zip_file, unzip_path) for zip_file in zip_files]
-    with multiprocessing.Pool(processes=number_processes,
-                              initializer=logger.setup_worker_logger,
-                              initargs=(log_queue,)) as pool:
+    with multiprocessing.Pool(
+        processes=number_processes,
+        initializer=logger.setup_worker_logger,
+        initargs=(log_queue,),
+    ) as pool:
         results = pool.starmap(utils.unzip, args)
     # utils.unzip(zip_files, unzip_path)
 
@@ -69,13 +74,18 @@ def load(log_queue):
     list_files = []
     bundle_todo = []
     for resolution in resolutions:
-
         log.info(f"Processing {resolution}...")
         for file in csv_files:
             log.info(f"Checking {file}...")
 
             # Skip Zensus 2011 files
-            keywords_census_2011 = ["Bevoelkerung100M.csv", "Wohnungen100m.csv", "Geb100m.csv", "Haushalte100m.csv", "Familie100m.csv"]
+            keywords_census_2011 = [
+                "Bevoelkerung100M.csv",
+                "Wohnungen100m.csv",
+                "Geb100m.csv",
+                "Haushalte100m.csv",
+                "Familie100m.csv",
+            ]
             if any(kw.lower() in file.lower() for kw in keywords_census_2011):
                 log.info(f"Skipping Census 2011 {file}")
                 continue
@@ -84,20 +94,14 @@ def load(log_queue):
             if "_utf8.csv" in file:
                 log.debug("utf8" + file)
                 continue
-            
+
             # Skip files that are not in the specified resolution
             if resolution not in file:
                 log.debug(f"Skipping {file} because of {resolution}")
                 continue
 
             # Skip files that are not in the specified layers in config-loader.yml
-            replacements = [
-                f"_{resolution}",
-                "zensus",
-                "2022_",
-                "-gitter",
-                ".csv"
-            ]
+            replacements = [f"_{resolution}", "zensus", "2022_", "-gitter", ".csv"]
             layer = os.path.basename(file).lower()
             for pattern in replacements:
                 layer = layer.replace(pattern, "")
@@ -120,42 +124,45 @@ def load(log_queue):
 
     bundle_todo.sort(key=lambda x: (x[1], x[0]))  # Sort by resolution and filename
 
-    with multiprocessing.Pool(processes=number_processes,
-                              initializer=logger.setup_worker_logger,
-                                initargs=(log_queue,)) as pool:
+    with multiprocessing.Pool(
+        processes=number_processes,
+        initializer=logger.setup_worker_logger,
+        initargs=(log_queue,),
+    ) as pool:
         results = pool.map(zensus_to_postgis, bundle_todo)
 
     log.info(f"Census2022 data loaded successfully")
 
 
 def zensus_to_postgis(bundle_todo):
-
     file, resolution = bundle_todo
 
     log.info(f"Processing {file}...")
 
-    replace_dict = {"gebaeude": "gbd",
-                    "wohnbevoelkerung": "wbe",
-                    "wohnraum": "wrm",
-                    "haushalte": "hht",
-                    "heizungsart": "hzat",
-                    "ueberwiegend": "ubwer",
-                    "anzahl": "anz",
-                    "anteil": "atl",
-                    "unter": "utr",
-                    "flache": "fle",
-                    "wohnungen": "wogen",
-                    "nettokaltmiete": "nkm",
-                    "durschnittliche": "durtle",
-                    "energietraeger": "etrg",
-                    "heizung": "heiz",
-                    "staatsangehoerigkeiten": "stagktn",
-                    }
+    replace_dict = {
+        "gebaeude": "gbd",
+        "wohnbevoelkerung": "wbe",
+        "wohnraum": "wrm",
+        "haushalte": "hht",
+        "heizungsart": "hzat",
+        "ueberwiegend": "ubwer",
+        "anzahl": "anz",
+        "anteil": "atl",
+        "unter": "utr",
+        "flache": "fle",
+        "wohnungen": "wogen",
+        "nettokaltmiete": "nkm",
+        "durschnittliche": "durtle",
+        "energietraeger": "etrg",
+        "heizung": "heiz",
+        "staatsangehoerigkeiten": "stagktn",
+    }
 
     try:
         csv_path = file
 
         import chardet
+
         with open(csv_path, "rb") as f:
             raw_bytes = f.read(1000)
             detected_encoding = chardet.detect(raw_bytes)["encoding"]
@@ -166,16 +173,26 @@ def zensus_to_postgis(bundle_todo):
 
         df = pd.read_csv(csv_path, encoding=detected_encoding)
 
-        #csv_path = utils.ensure_utf8_encoding(csv_path)  # <-- check and fix encoding
-        df = pd.read_csv(csv_path, sep=";", decimal=",", na_values="–", low_memory=False,
-                        encoding='utf-8')  # , encoding="latin_1"   # GeoDataFrame laden (Beispiel) nrows=10,
+        # csv_path = utils.ensure_utf8_encoding(csv_path)  # <-- check and fix encoding
+        df = pd.read_csv(
+            csv_path,
+            sep=";",
+            decimal=",",
+            na_values="–",
+            low_memory=False,
+            encoding="utf-8",
+        )  # , encoding="latin_1"   # GeoDataFrame laden (Beispiel) nrows=10,
 
         df.fillna(0, inplace=True)
         df.columns = df.columns.str.lower()
 
-        gdf = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.loc[:, "x_mp_" + resolution],
-                                                            df.loc[:, "y_mp_" + resolution]),
-                            crs="EPSG:3035")  # ETRS89 / UTM zone 32N
+        gdf = gpd.GeoDataFrame(
+            df,
+            geometry=gpd.points_from_xy(
+                df.loc[:, "x_mp_" + resolution], df.loc[:, "y_mp_" + resolution]
+            ),
+            crs="EPSG:3035",
+        )  # ETRS89 / UTM zone 32N
         epsg = utils.get_db_parameters("citydb")["epsg"]
         gdf = gdf.to_crs(epsg=epsg)
 
@@ -194,21 +211,34 @@ def zensus_to_postgis(bundle_todo):
         else:
             gdf_clipped = gdf
 
-        table_name = os.path.basename(file).lower().replace(f"_{resolution}-gitter.csv", "").replace(
-            "zensus2022_", "")
+        table_name = (
+            os.path.basename(file)
+            .lower()
+            .replace(f"_{resolution}-gitter.csv", "")
+            .replace("zensus2022_", "")
+        )
         for key, value in replace_dict.items():
             table_name = table_name.replace(key, value)
         table_name = prefix + "_" + resolution + "_" + table_name
-        
-        #gdf_clipped.to_postgis(table_name, engine, if_exists='replace', schema=schema, index=False)
-        
-        output_path = config.get_path(["loader", "sources", "zensus_2022", "path", "processed"])
+
+        # gdf_clipped.to_postgis(table_name, engine, if_exists='replace', schema=schema, index=False)
+
+        output_path = config.get_path(
+            ["loader", "sources", "zensus_2022", "path", "processed"]
+        )
         log.debug(f"Output path: {output_path}")
         os.makedirs(output_path, exist_ok=True)
-        
-        gdf_clipped.to_file(os.path.join(output_path, f"zenus-2022_{resolution}.gpkg"), layer=table_name, driver="GPKG")
-        gdf_clipped.to_csv(os.path.join(output_path, f"zenus-2022_{resolution}_{table_name}.csv"), index=False)
-        
+
+        gdf_clipped.to_file(
+            os.path.join(output_path, f"zenus-2022_{resolution}.gpkg"),
+            layer=table_name,
+            driver="GPKG",
+        )
+        gdf_clipped.to_csv(
+            os.path.join(output_path, f"zenus-2022_{resolution}_{table_name}.csv"),
+            index=False,
+        )
+
         log.info(f"Processed sucessfully {file}")
 
     except Exception as err:

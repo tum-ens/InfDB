@@ -5,6 +5,7 @@ import logging
 
 log = logging.getLogger(__name__)
 
+
 def create_folders():
     ## Check if the required directories exist, if not create them
     # Base path for zip files
@@ -40,7 +41,6 @@ def load_envelop():
 
 
 def create_geogitter(resolution, epsg, schema, prefix):
-
     if resolution.endswith("km"):
         resolution_meters = int(resolution[:-2]) * 1000
     elif resolution.endswith("m"):
@@ -127,7 +127,9 @@ def load(log_queue):
 
     # # Geogitter
     log.info("Creating Geogitter layers")
-    resolutions = config.get_value(["loader", "sources", "bkg", "geogitter", "resolutions"])
+    resolutions = config.get_value(
+        ["loader", "sources", "bkg", "geogitter", "resolutions"]
+    )
 
     for resolution in resolutions:
         log.info(f"Creating Geogitter for resolution {resolution}")

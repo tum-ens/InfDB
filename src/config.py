@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 
 log = logging.getLogger(__name__)
 
+
 def _load_config(path: str):
     if os.path.exists(path):
         with open(path, "r") as file:
@@ -17,7 +18,9 @@ def _load_config(path: str):
 
 
 def _merge_configs():
-    base_path = os.path.join("configs", "config-loader.yml")    # hardcoded in compose.yml btw. .env file
+    base_path = os.path.join(
+        "configs", "config-loader.yml"
+    )  # hardcoded in compose.yml btw. .env file
     logging.debug(f"Loading configuration from '{base_path}'")
     logging.debug(f"File in '{base_path}': '{os.listdir(os.path.dirname(base_path))}'")
 
@@ -26,7 +29,9 @@ def _merge_configs():
 
     # Load sub configs defined under config.yaml configs field
     filename = configs["loader"]["config-infdb"]
-    path_infdb_config = os.path.join("configs-infdb", filename) # hardcoded in compose.yml btw. env file
+    path_infdb_config = os.path.join(
+        "configs-infdb", filename
+    )  # hardcoded in compose.yml btw. env file
 
     log.debug(f"Loading configuration from '{path_infdb_config}'")
     if os.path.exists(path_infdb_config):
@@ -63,6 +68,7 @@ def get_path(keys):
     path = os.path.abspath(path)
     return path
 
+
 def get_list(keys):
     list = get_value(keys)
     if isinstance(list, str):
@@ -72,11 +78,13 @@ def get_list(keys):
 
 def get_root_path():
     # Get project root path
-    root_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    root_path = os.path.dirname(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    )
     return root_path
 
 
-def _flatten_dict(d, parent_key='', sep="/"):
+def _flatten_dict(d, parent_key="", sep="/"):
     """Flatten nested dictionary with keys joined by /."""
     items = {}
     for k, v in d.items():
@@ -95,7 +103,7 @@ def _replace_placeholders(data, flat_map):
     elif isinstance(data, list):
         return [_replace_placeholders(item, flat_map) for item in data]
     elif isinstance(data, str):
-        pattern = re.compile(r'{([^{}]+)}')
+        pattern = re.compile(r"{([^{}]+)}")
         while True:
             match = pattern.search(data)
             if not match:
@@ -127,5 +135,6 @@ def write_yaml(output_yaml, output_path):
     output_path = os.path.join(get_root_path(), output_path)
     with open(output_path, "w") as f:
         yaml.dump(output_yaml, f, default_flow_style=False, sort_keys=False)
+
 
 _CONFIG = _merge_configs()

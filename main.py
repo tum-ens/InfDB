@@ -1,6 +1,4 @@
 import multiprocessing as mp
-import sys
-
 from src import utils
 from src import bkg, basemap, lod2, census2022, plz, tabula
 from src.logger import setup_main_logger
@@ -10,7 +8,6 @@ import logging
 log = logging.getLogger(__name__)
 
 if __name__ == "__main__":
-
     log_queue = multiprocessing.Queue()
     listener = setup_main_logger(log_queue)
 
@@ -29,12 +26,14 @@ if __name__ == "__main__":
     processes.append(mp.Process(target=lod2.load, args=(log_queue,), name="lod2"))
     processes.append(mp.Process(target=plz.load, args=(log_queue,), name="plz"))
     processes.append(mp.Process(target=basemap.load, args=(log_queue,), name="basemap"))
-    processes.append(mp.Process(target=census2022.load, args=(log_queue,), name="census2022"))
+    processes.append(
+        mp.Process(target=census2022.load, args=(log_queue,), name="census2022")
+    )
 
     for process in processes:
         process.start()
         if not utils.if_multiproccesing():
-            process.join()    # Only one process at a time
+            process.join()  # Only one process at a time
             log.info("Process %s done", process.name)
     log.info("Processes started")
 

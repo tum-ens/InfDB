@@ -6,6 +6,7 @@ import requests
 
 log = logging.getLogger(__name__)
 
+
 def load(log_queue):
     logger.setup_worker_logger(log_queue)
 
@@ -14,10 +15,10 @@ def load(log_queue):
 
     base_path = config.get_path(["loader", "sources", "tabula", "path", "base"])
     os.makedirs(base_path, exist_ok=True)
-    
+
     urls = config.get_value(["loader", "sources", "tabula", "url"])
     files = utils.download_files(urls, base_path)
-    
+
     material_path = utils.get_file(base_path, "material", ".json")
     type_elements_path = utils.get_file(base_path, "TypeElements", ".json")
 
@@ -48,31 +49,35 @@ def load(log_queue):
         building_age_group = data.get("building_age_group", [None, None])
         start_year, end_year = building_age_group
 
-        records.append({
-            "element_id": element_id,
-            "element_name": base_name,
-            "construction_data": data.get("construction_data"),
-            "inner_radiation": data.get("inner_radiation"),
-            "inner_convection": data.get("inner_convection"),
-            "outer_radiation": data.get("outer_radiation"),
-            "outer_convection": data.get("outer_convection"),
-            "start_year": start_year,
-            "end_year": end_year
-        })
+        records.append(
+            {
+                "element_id": element_id,
+                "element_name": base_name,
+                "construction_data": data.get("construction_data"),
+                "inner_radiation": data.get("inner_radiation"),
+                "inner_convection": data.get("inner_convection"),
+                "outer_radiation": data.get("outer_radiation"),
+                "outer_convection": data.get("outer_convection"),
+                "start_year": start_year,
+                "end_year": end_year,
+            }
+        )
 
         for layer_index, layer in data["layer"].items():
-            layer_records.append({
-                "element_id": element_id,
-                "material_id": layer["material"]["material_id"],
-                "layer_index": int(layer_index),
-                "material_name": layer["material"]["name"],
-                "thickness": layer["thickness"]
-            })
+            layer_records.append(
+                {
+                    "element_id": element_id,
+                    "material_id": layer["material"]["material_id"],
+                    "layer_index": int(layer_index),
+                    "material_name": layer["material"]["name"],
+                    "thickness": layer["thickness"],
+                }
+            )
 
     # --- DataFrames erzeugen ---
     df_elements = pd.DataFrame(records)
     df_layers = pd.DataFrame(layer_records)
-    
+
     df_elements.to_csv(os.path.join(base_path, "type_elements.csv"), index=False)
     df_layers.to_csv(os.path.join(base_path, "layers.csv"), index=False)
     df_materials.to_csv(os.path.join(base_path, "materials.csv"), index=False)
@@ -97,11 +102,28 @@ def load(log_queue):
 
     # Create database connection
     citydb_engine = utils.get_db_engine("citydb")
-    
+
     # Export to citdyb
-    df_elements.to_sql(f"{prefix}_type_elements", citydb_engine, schema=schema, if_exists="replace", index=False)
-    df_layers.to_sql(f"{prefix}_layers", citydb_engine, schema=schema, if_exists="replace", index=False)
-    df_materials.to_sql(f"{prefix}_materials", citydb_engine, schema=schema, if_exists="replace", index=False)
+    df_elements.to_sql(
+        f"{prefix}_type_elements",
+        citydb_engine,
+        schema=schema,
+        if_exists="replace",
+        index=False,
+    )
+    df_layers.to_sql(
+        f"{prefix}_layers",
+        citydb_engine,
+        schema=schema,
+        if_exists="replace",
+        index=False,
+    )
+    df_materials.to_sql(
+        f"{prefix}_materials",
+        citydb_engine,
+        schema=schema,
+        if_exists="replace",
+        index=False,
+    )
 
     log.info(f"Tabula data loaded successfully")
-

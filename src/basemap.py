@@ -5,6 +5,7 @@ from . import utils, config, logger
 
 log = logging.getLogger(__name__)
 
+
 def load(log_queue):
     logger.setup_worker_logger(log_queue)
 
@@ -21,7 +22,7 @@ def load(log_queue):
     site_url = config.get_value(["loader", "sources", "basemap", "url"])
     ending = config.get_value(["loader", "sources", "basemap", "ending"])
     filters = config.get_value(["loader", "sources", "basemap", "filter"])
-    
+
     for filter in filters:
         urls = utils.get_links(site_url, ending, filter)
 
@@ -44,6 +45,8 @@ def load(log_queue):
         # print(list)
         layer_names = config.get_value(["loader", "sources", "basemap", "layer"])
         layers = [layer + "_bdlm" for layer in layer_names]
-        utils.import_layers(file, layers, schema, prefix=prefix, layer_names=layer_names) #TODO: Add if several files
+        utils.import_layers(
+            file, layers, schema, prefix=prefix, layer_names=layer_names
+        )  # TODO: Add if several files
 
         log.info(f"Basemap data loaded successfully")

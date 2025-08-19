@@ -4,6 +4,7 @@ from . import utils, config, logger
 
 log = logging.getLogger(__name__)
 
+
 def load(log_queue):
     logger.setup_worker_logger(log_queue)
 
