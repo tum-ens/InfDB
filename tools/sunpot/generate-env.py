@@ -50,6 +50,7 @@ def docker_login(config):
     else:
         print("Docker login successful")
 
+
 if __name__ == "__main__":
     with open(input_path, "r") as f:
         config = yaml.safe_load(f)

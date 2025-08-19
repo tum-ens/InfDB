@@ -91,73 +91,73 @@ def export_geospatial_from_pg(
 # ---------------------------------------------------------------------------
 #                               USAGE EXAMPLES
 # ---------------------------------------------------------------------------
-    # engine = utils.get_db_engine("citydb", "localhost")
-    # export_time_series_from_pg(
-    #     engine,
-    #     table_name="opendata.bkg_nuts250_n3",
-    #     export_path="output1.csv",
-    #     columns=["NUTS_NAME", "OBJID"],
-    # )
+# engine = utils.get_db_engine("citydb", "localhost")
+# export_time_series_from_pg(
+#     engine,
+#     table_name="opendata.bkg_nuts250_n3",
+#     export_path="output1.csv",
+#     columns=["NUTS_NAME", "OBJID"],
+# )
 
-    # export_time_series_from_pg(
-    #     engine,
-    #     table_name="opendata.bkg_nuts250_n3",
-    #     export_path="output11.csv",
-    # )
+# export_time_series_from_pg(
+#     engine,
+#     table_name="opendata.bkg_nuts250_n3",
+#     export_path="output11.csv",
+# )
 
-    # export_time_series_from_pg(
-    #     engine,
-    #     table_name="opendata.bkg_nuts250_n3",
-    #     export_path="output12.parquet",
-    #     columns=["NUTS_NAME", "OBJID"],
-    # )
+# export_time_series_from_pg(
+#     engine,
+#     table_name="opendata.bkg_nuts250_n3",
+#     export_path="output12.parquet",
+#     columns=["NUTS_NAME", "OBJID"],
+# )
 
-    # df = pd.read_parquet("output12.parquet")
-    # print(df.head())
+# df = pd.read_parquet("output12.parquet")
+# print(df.head())
 
-    # export_time_series_from_pg(
-    #     engine,
-    #     table_name="opendata.bkg_nuts250_n3",
-    #     export_path="output13.parquet",
-    # )
+# export_time_series_from_pg(
+#     engine,
+#     table_name="opendata.bkg_nuts250_n3",
+#     export_path="output13.parquet",
+# )
 
-    # df = pd.read_parquet("output13.parquet")
-    # print(df.head())
+# df = pd.read_parquet("output13.parquet")
+# print(df.head())
 
-    # export_geospatial_from_pg(
-    #     engine,
-    #     table_name="opendata.bkg_nuts250_n3",
-    #     geom_col="geometry",
-    #     export_path="output2.geojson",
-    # )
+# export_geospatial_from_pg(
+#     engine,
+#     table_name="opendata.bkg_nuts250_n3",
+#     geom_col="geometry",
+#     export_path="output2.geojson",
+# )
 
-    # export_geospatial_from_pg(
-    #     engine,
-    #     table_name="opendata.bkg_nuts250_n3",
-    #     geom_col="geometry",
-    #     export_path="./output3.parquet",
-    # )
-    # gdf = gpd.read_parquet("output3.parquet")
-    # print(gdf.head())
+# export_geospatial_from_pg(
+#     engine,
+#     table_name="opendata.bkg_nuts250_n3",
+#     geom_col="geometry",
+#     export_path="./output3.parquet",
+# )
+# gdf = gpd.read_parquet("output3.parquet")
+# print(gdf.head())
 
-    # export_geospatial_from_pg(
-    #     engine,
-    #     table_name="opendata.bkg_nuts250_n3",
-    #     geom_col="geometry",
-    #     export_path="./output4.gpkg",
-    # )
+# export_geospatial_from_pg(
+#     engine,
+#     table_name="opendata.bkg_nuts250_n3",
+#     geom_col="geometry",
+#     export_path="./output4.gpkg",
+# )
 
-    # export_geospatial_from_pg(
-    #     engine,
-    #     table_name="opendata.bkg_nuts250_n3",
-    #     geom_col="geometry",
-    #     export_path="output4.gpkg",
-    #     mode="a",
-    #     layer_name="municipalities",
-    # )
+# export_geospatial_from_pg(
+#     engine,
+#     table_name="opendata.bkg_nuts250_n3",
+#     geom_col="geometry",
+#     export_path="output4.gpkg",
+#     mode="a",
+#     layer_name="municipalities",
+# )
 
-    # path = "./output4.gpkg"
-    # for layer in fiona.listlayers(path):
-    #     print(f"\n--- Layer: {layer} ---")
-    #     gdf = gpd.read_file(path, layer=layer)
-    #     print(gdf.head())
+# path = "./output4.gpkg"
+# for layer in fiona.listlayers(path):
+#     print(f"\n--- Layer: {layer} ---")
+#     gdf = gpd.read_file(path, layer=layer)
+#     print(gdf.head())

@@ -51,17 +51,19 @@ def get_path(keys):
     path = get_value(keys)
     if not os.path.isabs(path):
         path = os.path.join(".", path)
-    #path = os.path.abspath(path)
+    # path = os.path.abspath(path)
     return path
 
 
 def get_root_path():
     # Get project root path
-    root_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    root_path = os.path.dirname(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    )
     return root_path
 
 
-def flatten_dict(d, parent_key='', sep="/"):
+def flatten_dict(d, parent_key="", sep="/"):
     """Flatten nested dictionary with keys joined by /."""
     items = {}
     for k, v in d.items():
@@ -80,7 +82,7 @@ def replace_placeholders(data, flat_map):
     elif isinstance(data, list):
         return [replace_placeholders(item, flat_map) for item in data]
     elif isinstance(data, str):
-        pattern = re.compile(r'{([^{}]+)}')
+        pattern = re.compile(r"{([^{}]+)}")
         while True:
             match = pattern.search(data)
             if not match:
@@ -110,6 +112,6 @@ def get_config():
 
 
 def write_yaml(output_yaml, output_path):
-    #output_path = os.path.join(output_path)
+    # output_path = os.path.join(output_path)
     with open(output_path, "w") as f:
         yaml.dump(output_yaml, f, default_flow_style=False, sort_keys=False)

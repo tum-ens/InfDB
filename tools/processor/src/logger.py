@@ -5,7 +5,9 @@ from . import config
 
 
 def setup_main_logger(log_queue):
-    formatter = logging.Formatter('%(asctime)s | %(processName)s | %(levelname)s: %(message)s')
+    formatter = logging.Formatter(
+        "%(asctime)s | %(processName)s | %(levelname)s: %(message)s"
+    )
 
     # Logging to console
     console_handler = logging.StreamHandler(sys.stdout)

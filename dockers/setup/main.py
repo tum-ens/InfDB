@@ -27,19 +27,16 @@ def write_env_file(file_path=".env"):
 
 # This function auto generates the docker compose file for us.
 def write_compose_file(output_path):
-
     output = {
         "name": "infdb",
         "include": [],  # loader by default should exist
-        "volumes": {
-            "pgadmin_data": None
-        },
+        "volumes": {"pgadmin_data": None},
         "networks": {
             config.get_value(["base", "network_name"]): {
                 "name": config.get_value(["base", "network_name"]),
-                "driver": "bridge"
+                "driver": "bridge",
             }
-        }
+        },
     }
 
     services = config.get_value(["services"])
@@ -70,11 +67,11 @@ def setup_pgadmin_servers(output_path):
             "Username": config.get_value(["services", service, "user"]),
             "SSLMode": "prefer",
             "Password": config.get_value(["services", service, "password"]),
-            "PassFile": "/pgadmin4/.pgpass"
+            "PassFile": "/pgadmin4/.pgpass",
         }
 
         pgpass_entries.append(
-            f"{config.get_value(["services", service, "host"])}:{PORT}:{service}:{config.get_value(["services", service, "user"])}:{config.get_value(["services", service, "password"])}"
+            f"{config.get_value(['services', service, 'host'])}:{PORT}:{service}:{config.get_value(['services', service, 'user'])}:{config.get_value(['services', service, 'password'])}"
         )
 
     # Save to servers.json
@@ -95,7 +92,7 @@ def write_pg_service_conf(output_path):
     Write a pg_service.conf file to enable PostgreSQL connection shortcuts.
     Example usage with psql: `psql service=infdb_citydb`
     """
-    services = ["citydb"]   # , "timescaledb"
+    services = ["citydb"]  # , "timescaledb"
     port = 5432
 
     lines = []
