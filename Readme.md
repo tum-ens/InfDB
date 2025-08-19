@@ -64,7 +64,7 @@ Integrated, preconfigured services extending the 3D City Database:
 - [PostgREST](https://postgrest.org/): Auto-generated REST API over PostgreSQL schemas (tables, views, RPC) using DB roles for auth; rapid, lightweight data access without extra backend code.
 - [pygeoapi](https://pygeoapi.io/): OGC API (Features/Coverages/Processes) server exposing PostGIS data via standards-based JSON & HTML endpoints for interoperable geospatial discovery and querying.
 
-These services reduce setup time and provide core functionalities support a seamless path from ingestion to analysis and visualization.
+These services provide core functionalities and support a seamless path from ingestion to analysis and visualization.
 
 ### Tools
 Tools are external software that is already adopted to the infDB.
@@ -82,7 +82,29 @@ More community or domain-specific tools can be attached through the standardized
 To get started, follow these steps below. For more information in detail read the [https://infdb.readthedocs.io/](https://infdb.readthedocs.io/).
 
 ### Setup infDB
-You need to generate the configurations files once you changed any of the config yaml files in configs directory.
+The configuration can be done via [configs/config-infdb.yml](configs/config-infdb.yml)
+```yaml
+base:
+    name: infdb-munich
+    path:
+        base: "data-infdb/"
+    network_name: infdb_network
+services:
+    citydb:
+        user: citydb_user
+        password: infdb
+        db: citydb
+        host: citydb
+        exposed_port: 5432
+        epsg: 25832 # 3035 (Europe)
+        path: 
+            base: "{base/path/base}/{base/name}/citydb/"
+            compose_file: "dockers/citydb.yml"
+        status: active
+
+        ...
+```
+After doing the configuration you need to generate the configurations files with the following command:
 ```bash
     # on linux and macos
     docker compose -f dockers/setup/compose.yml up
@@ -90,18 +112,22 @@ You need to generate the configurations files once you changed any of the config
     # on windows
 ```
 
-### Start infDB
+Once you generated the configuration files with the command above, you need to finally start the infDB:
+
+### Run infDB
 ```bash
     # on linux and macos
      docker compose -f compose.yml up -d
 
     # on windows
 ```
-Hint: If compose.yml is not found, you either forgot to run the command above or something went wrong. 
+The infDB will be run as long as you stop it manually as described below even when the machine is restarted.
+
+**Hint:** If compose.yml is not found, you either forgot to run the command above or something went wrong. 
 Please check the logs of the setup service.
 
 
-### Remove infDB
+### Stop infDB
 ```bash
     # on linux and macos
     docker compose -f compose.yml down -v
