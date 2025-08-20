@@ -1,7 +1,7 @@
 services:
     timescaledb:
         image: timescale/timescaledb:latest-pg17
-        container_name: timescaledb
+        # container_name: timescaledb
         restart: unless-stopped
         environment:
             POSTGRES_DB: ${SERVICES_TIMESCALEDB_DB}

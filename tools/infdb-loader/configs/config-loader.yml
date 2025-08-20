@@ -2,8 +2,8 @@ loader:
     name: bayern_M-ND-FO-LA
     scope:  # AGS (Amtlicher Gemeindeschlüssel)
         # - 09162000  # Munich
-        # - 09780139  # Sonthofen
-        # - 09780116  # Bolsterlang
+        # - "09780139"  # Sonthofen
+        # - "09780116"  # Bolsterlang
         - "09162000" # M
         - "07334021" # ND
         - "08316013" # FO

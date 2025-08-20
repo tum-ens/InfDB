@@ -3,7 +3,7 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
-        container_name: citydb
+        # container_name: citydb
         restart: unless-stopped
         environment:
             POSTGRES_DB: ${SERVICES_CITYDB_DB}
