@@ -17,3 +17,6 @@ processor:
             db: None
             host: host.docker.internal
             exposed_port: None
+    data:
+        input_schema: opendata
+        output_schema: pylovo_input
