@@ -221,23 +221,24 @@ def zensus_to_postgis(bundle_todo):
             table_name = table_name.replace(key, value)
         table_name = prefix + "_" + resolution + "_" + table_name
 
-        # gdf_clipped.to_postgis(table_name, engine, if_exists='replace', schema=schema, index=False)
+        gdf_clipped.to_postgis(table_name, engine, if_exists='replace', schema=schema, index=False)
 
-        output_path = config.get_path(
-            ["loader", "sources", "zensus_2022", "path", "processed"]
-        )
-        log.debug(f"Output path: {output_path}")
-        os.makedirs(output_path, exist_ok=True)
+        # # Save clipped data locally
+        # output_path = config.get_path(
+        #     ["loader", "sources", "zensus_2022", "path", "processed"]
+        # )
+        # log.debug(f"Output path: {output_path}")
+        # os.makedirs(output_path, exist_ok=True)
 
-        gdf_clipped.to_file(
-            os.path.join(output_path, f"zenus-2022_{resolution}.gpkg"),
-            layer=table_name,
-            driver="GPKG",
-        )
-        gdf_clipped.to_csv(
-            os.path.join(output_path, f"zenus-2022_{resolution}_{table_name}.csv"),
-            index=False,
-        )
+        # gdf_clipped.to_file(
+        #     os.path.join(output_path, f"zenus-2022_{resolution}.gpkg"),
+        #     layer=table_name,
+        #     driver="GPKG",
+        # )
+        # gdf_clipped.to_csv(
+        #     os.path.join(output_path, f"zenus-2022_{resolution}_{table_name}.csv"),
+        #     index=False,
+        # )
 
         log.info(f"Processed sucessfully {file}")
 
