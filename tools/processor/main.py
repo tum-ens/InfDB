@@ -10,9 +10,11 @@ log = logging.getLogger(__name__)
 listener = logger.setup_main_logger(None)
 
 # Schema configuration
+
+
 SCHEMA_CONFIG = {
-    'input_schema': 'opendata',
-    'output_schema': 'pylovo_input'
+    'input_schema': config.get_value(["processor", "data", "input_schema"]),
+    'output_schema': config.get_value(["processor", "data", "output_schema"])
 }
 
 # SQL files directory and list of files to execute in order
