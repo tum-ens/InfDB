@@ -3,7 +3,7 @@ services:
     build:
       context: ../..
       dockerfile: Dockerfile
-    container_name: infdb-app
+    # container_name: infdb-app
     ports:
       - "8000:8000"
     networks:

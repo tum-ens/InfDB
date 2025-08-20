@@ -32,7 +32,7 @@ def write_compose_file(output_path):
     output = {
         "name": f"infdb-{config.get_value(["base", "name"])}",
         "include": [],  # loader by default should exist
-        "volumes": {"pgadmin_data": None},
+        "volumes": {},
         "networks": {
             config.get_value(["base", "network_name"]): {
                 "name": config.get_value(["base", "network_name"]),

@@ -1,7 +1,7 @@
 services:
     jupyter:
         image: jupyter/scipy-notebook:latest
-        container_name: jupyter
+        # container_name: jupyter
         restart: unless-stopped
         ports:
             - ${SERVICES_JUPYTER_EXPOSED_PORT}:8888
