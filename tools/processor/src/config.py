@@ -128,7 +128,7 @@ def write_yaml(output_yaml, output_path):
 
 
 def get_db_parameters(service_name: str):
-    parameters_loader = get_value(["processor", "hosts", service_name])
+    parameters_loader = get_value(["loader", "hosts", service_name])
 
     # Adopt settings if config-infdb exists
     dict_config = get_config()
@@ -137,13 +137,14 @@ def get_db_parameters(service_name: str):
         log.debug(f"Using infdb configuration for: {service_name}")
 
         # Override config-infdb by config-loader
-        for key in parameters_loader.keys():
-            if parameters_loader[key] == "None":
-                if key == "host":
-                    parameters[key] = "host.docker.internal"    # default on localhost
-                else:
-                    parameters[key] = parameters_loader[key]
-                log.debug("Key overridden: key = {parameters_loader[key]}")
+        keys = parameters_loader.keys()
+        for key in keys:
+            if key == "host":
+                parameters[key] = "host.docker.internal"  # default to localhost
+
+            if parameters_loader[key] != "None":
+                parameters[key] = parameters_loader[key]
+                log.debug(f"Key overridden: key = {parameters_loader[key]}")
     else:
         # Use settings from config-loader
         parameters = parameters_loader
