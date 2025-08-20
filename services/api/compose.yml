@@ -8,7 +8,6 @@ services:
       - "8000:8000"
     networks:
       - infdb_network
-========
 name: infdb
 include:
 - dockers/services/citydb.yml
