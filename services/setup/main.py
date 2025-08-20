@@ -14,9 +14,11 @@ def write_env_file(file_path=".env"):
             env_key = key.upper()
             if "PATH" in env_key:
                 if not os.path.isabs(value):
+                    # Relative from where the compose file is located here services/*/compose.yml
                     if "SERVICE" in env_key and "COMPOSE_FILE" not in env_key:
-                        value = os.path.join("..", value)
+                        value = os.path.join("..", "..", value)
                     else:
+                        # Relative from where main compase file is located here project root folder
                         value = os.path.join(".", value)
             f.write(f"{env_key}={value}\n")
 
