@@ -114,6 +114,25 @@ def write_pg_service_conf(output_path):
         lines.append(f"password={password}")
         lines.append("")  # empty line between entries
 
+    # Append additional static service configurations
+    lines.append("[qwc_configdb]")
+    lines.append("host=qwc-postgis")
+    lines.append("port=5432")
+    lines.append("dbname=qwc_services")
+    lines.append("user=qwc_admin")
+    lines.append("password=qwc_admin")
+    lines.append("sslmode=disable")
+    lines.append("")
+
+    lines.append("[qwc_geodb]")
+    lines.append("host=qwc-postgis")
+    lines.append("port=5432")
+    lines.append("dbname=qwc_services")
+    lines.append("user=qwc_service_write")
+    lines.append("password=qwc_service_write")
+    lines.append("sslmode=disable")
+    lines.append("")
+    
     # Write file to output path
     pg_service_path = os.path.join(output_path, "pg_service.conf")
     with open(pg_service_path, "w") as f:
