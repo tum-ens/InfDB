@@ -1,6 +1,6 @@
 FROM 3dcitydb/citydb-tool
 
-WORKDIR /tools/loader/
+WORKDIR /app
 
 ## Install uv on Ubuntu
 # The installer requires curl (and certificates) to download the release archive
@@ -21,12 +21,13 @@ ENV PATH="/root/.local/bin/:$PATH"
 
 ## Run python scripts with uv
 # COPY requiremets into the container
-COPY pyproject.toml /tools/loader/pyproject.toml
-#COPY config-loader.yml /tools/loader/config-loader.yml
+COPY pyproject.toml /app/pyproject.toml
+#COPY config-loader.yml /app/config-loader.yml
 RUN uv sync
 
 # Copy the source code into the container
-#OPY src /tools/loader/src
+COPY src /app/src
+COPY main.py /app/main.py
 
 # Reset entrypoint to the default because of citydb-tool image
 ENTRYPOINT []

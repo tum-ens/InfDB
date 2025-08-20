@@ -22,7 +22,10 @@ def _merge_configs():
         "configs", "config-loader.yml"
     )  # hardcoded in compose.yml btw. .env file
     logging.debug(f"Loading configuration from '{base_path}'")
-    logging.debug(f"File in '{base_path}': '{os.listdir(os.path.dirname(base_path))}'")
+    logging.debug(
+        f"File in '{base_path}': "
+        f"'{os.listdir(os.path.dirname(base_path))}'"
+    )
 
     # first get the base config
     configs = _load_config(base_path)
@@ -30,7 +33,7 @@ def _merge_configs():
     # Load sub configs defined under config.yaml configs field
     filename = configs["loader"]["config-infdb"]
     path_infdb_config = os.path.join(
-        "configs-infdb", filename
+        "mnt", "configs-infdb", filename
     )  # hardcoded in compose.yml btw. env file
 
     log.debug(f"Loading configuration from '{path_infdb_config}'")
@@ -64,7 +67,7 @@ def get_value(keys):
 def get_path(keys):
     path = get_value(keys)
     if not os.path.isabs(path):
-        path = os.path.join("/tools/loader/data-loader", path)
+        path = os.path.join("mnt", "data", path)
     path = os.path.abspath(path)
     return path
 
