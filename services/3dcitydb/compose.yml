@@ -2,7 +2,7 @@ services:
     citydb:
         build:
             context: .
-            dockerfile: Dockerfile-citydb
+            dockerfile: Dockerfile
         container_name: citydb
         restart: unless-stopped
         environment:
