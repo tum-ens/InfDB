@@ -81,6 +81,15 @@ More community or domain-specific tools can be attached through the standardized
 ## Getting Started
 To get started, follow these steps below. For more information in detail read the [https://infdb.readthedocs.io/](https://infdb.readthedocs.io/).
 
+### Clone infDB
+```bash
+    # ssh
+     git clone git@gitlab.lrz.de:tum-ens/need/infdb.git
+
+    # https
+    git clone https://gitlab.lrz.de/tum-ens/need/infdb.git
+```
+
 ### Setup infDB
 The configuration can be done via [configs/config-infdb.yml](configs/config-infdb.yml)
 ```yaml
