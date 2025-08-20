@@ -2,7 +2,7 @@ import os
 import logging
 from . import utils, config, logger
 import pandas as pd
-import requests
+import json
 
 log = logging.getLogger(__name__)
 
@@ -21,9 +21,6 @@ def load(log_queue):
 
     material_path = utils.get_file(base_path, "material", ".json")
     type_elements_path = utils.get_file(base_path, "TypeElements", ".json")
-
-    import json
-    import pandas as pd
 
     # --- JSON-Dateien laden ---
     with open(type_elements_path, "r") as f:
