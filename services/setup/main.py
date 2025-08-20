@@ -103,7 +103,7 @@ def write_pg_service_conf(output_path):
         host = config.get_value(["services", service, "host"])
         db = config.get_value(["services", service, "db"])
         user = config.get_value(["services", service, "user"])
-        # password = config.get_value(["services", service, "password"])
+        password = config.get_value(["services", service, "password"])
         service_name = f"infdb_{service}"
 
         lines.append(f"[{service_name}]")
@@ -111,6 +111,7 @@ def write_pg_service_conf(output_path):
         lines.append(f"port={port}")
         lines.append(f"dbname={db}")
         lines.append(f"user={user}")
+        lines.append(f"password={password}")
         lines.append("")  # empty line between entries
 
     # Write file to output path
@@ -125,6 +126,7 @@ write_compose_file("infdb-root/compose.yml")
 
 os.makedirs("infdb-root/.generated/", exist_ok=True)
 setup_pgadmin_servers("infdb-root/.generated/")
-write_pg_service_conf("infdb-root/.generated/")
+# write_pg_service_conf("infdb-root/.generated/")
+write_pg_service_conf("infdb-root/services/qgis_webclient/")
 
 print("Setup completed successfully. Configuration files generated.")
