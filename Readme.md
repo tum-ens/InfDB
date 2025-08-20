@@ -107,7 +107,7 @@ services:
 After doing the configuration you need to generate the configurations files with the following command:
 ```bash
     # on linux and macos
-    docker compose -f dockers/setup/compose.yml up
+    docker compose -f services/setup/compose.yml up
 
     # on windows
 ```

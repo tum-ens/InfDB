@@ -1,0 +1,16 @@
+services:
+    pgadmin:
+        image: dpage/pgadmin4
+        container_name: pgadmin
+        restart: unless-stopped
+        environment:
+            PGADMIN_DEFAULT_EMAIL: ${SERVICES_PGADMIN_DEFAULT_EMAIL}
+            PGADMIN_DEFAULT_PASSWORD: ${SERVICES_PGADMIN_DEFAULT_PASSWORD}
+        ports:
+            - ${SERVICES_PGADMIN_EXPOSED_PORT}:80
+        volumes:
+            - ../.generated/servers.json:/pgadmin4/servers.json
+            - ../.generated/.pgpass:/pgadmin4/.pgpass
+            - pgadmin_data:/var/lib/pgadmin
+        networks:
+            - ${BASE_NETWORK_NAME}

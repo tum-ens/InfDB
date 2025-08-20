@@ -1,0 +1,24 @@
+services:
+  app:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+    container_name: infdb-app
+    ports:
+      - "8000:8000"
+    networks:
+      - infdb_network
+========
+name: infdb
+include:
+- dockers/services/citydb.yml
+- dockers/services/timescaledb.yml
+- dockers/services/pgadmin.yml
+volumes:
+  timescale_data: null
+  citydb_data: null
+  pgadmin_data: null
+networks:
+  network:
+    driver: bridge
+
