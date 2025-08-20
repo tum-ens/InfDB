@@ -30,7 +30,7 @@ def write_env_file(file_path=".env"):
 # This function auto generates the docker compose file for us.
 def write_compose_file(output_path):
     output = {
-        "name": "infdb",
+        "name": f"infdb-{config.get_value(["base", "name"])}",
         "include": [],  # loader by default should exist
         "volumes": {"pgadmin_data": None},
         "networks": {
