@@ -155,10 +155,10 @@ cython_debug/
 .log
 
 # Generated config files
-.generated
+.generated/*
 infdb-data
 .env
-compose.yml
+./compose.yml
 configs/config-infdb.yml
 
 # uv
