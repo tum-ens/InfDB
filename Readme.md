@@ -214,7 +214,7 @@ Once you adjusted the configuration files with the command above, you need to fi
 ### Run infDB-loader
 ```bash
     # on linux and macos
-     docker compose -f compose.yml up -d
+     docker compose -f tools/infdb-loader/compose.yml up
 
     # on windows
 ```
