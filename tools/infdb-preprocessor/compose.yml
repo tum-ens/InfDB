@@ -1,0 +1,10 @@
+services:
+    infdb-preprocessor:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        volumes:
+            - ${CONFIG_INFDB_PATH}:/mnt/configs-infdb:ro # for infdb configs
+            - /app/.venv
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
