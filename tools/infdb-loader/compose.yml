@@ -6,7 +6,7 @@ services:
         volumes:
             - ${CONFIG_INFDB_PATH}:/app/mnt/configs-infdb:ro # for *.yml configs and generated files
             - ${LOADER_DATA_PATH}:/app/mnt/data # for overall docker-compose.yml
-            - ./configs:/app/configs:ro # for additional configs
+            - ./configs:/app/configs:ro # for configs
             - /app/.venv # Exclude .venv from volume mount
         extra_hosts:
             - "host.docker.internal:host-gateway"

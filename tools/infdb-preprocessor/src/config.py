@@ -17,7 +17,9 @@ def _load_config(path: str):
 
 
 def _merge_configs():
-    base_path = os.path.join("mnt", "configs-infdb", "config-infdb.yml")
+    base_path = os.path.join(
+        "configs", "config-preprocessor.yml"
+    )  # hardcoded in compose.yml btw. .env file
     logging.debug(f"Loading configuration from '{base_path}'")
     logging.debug(f"File in '{base_path}': '{os.listdir(os.path.dirname(base_path))}'")
 
@@ -26,9 +28,9 @@ def _merge_configs():
 
     # Load sub configs defined under config.yaml configs field
     # dir_infdb_config = os.environ.get("CONFIG_INFDB_PATH", "")
-    filename = configs["processor"]["config-infdb"]
+    filename = configs["preprocessor"]["config-infdb"]
     path_infdb_config = os.path.join(
-        "configs-infdb", filename
+        "mnt", "configs-infdb", filename
     )  # hardcoded because of docker mount in compose.yml
     log.debug(f"Loading configuration from '{path_infdb_config}'")
     if os.path.exists(path_infdb_config):
@@ -128,7 +130,7 @@ def write_yaml(output_yaml, output_path):
 
 
 def get_db_parameters(service_name: str):
-    parameters_loader = get_value(["processor", "hosts", service_name])
+    parameters_loader = get_value(["preprocessor", "hosts", service_name])
 
     # Adopt settings if config-infdb exists
     dict_config = get_config()

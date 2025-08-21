@@ -14,7 +14,7 @@ def setup_main_logger(log_queue):
     console_handler.setFormatter(formatter)
 
     # Logging to file
-    file_path = config.get_value(["processor", "logging", "path"])
+    file_path = config.get_value(["preprocessor", "logging", "path"])
     # if os.path.exists(file_path):
     #     os.remove(file_path)    # for debugging
     file_handler = logging.FileHandler(file_path)
@@ -22,7 +22,7 @@ def setup_main_logger(log_queue):
 
     # Get the root logger and set its level and handlers
     root_logger = logging.getLogger()
-    level_string = config.get_value(["processor", "logging", "level"])
+    level_string = config.get_value(["preprocessor", "logging", "level"])
     level = logging._nameToLevel.get(level_string.upper(), logging.INFO)
     root_logger.setLevel(level)
     root_logger.handlers.clear()

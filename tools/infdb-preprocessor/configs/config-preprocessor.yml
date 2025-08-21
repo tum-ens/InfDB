@@ -1,7 +1,7 @@
-processor:
+preprocessor:
     config-infdb: "config-infdb.yml" # only filename - change path in ".env" file "CONFIG_INFDB_PATH"
     logging:
-        path: "processor.log"
+        path: "preprocessor.log"
         level: "INFO" # ERROR, WARNING, INFO, DEBUG
     hosts:
         citydb:
