@@ -1,6 +1,6 @@
 FROM python:latest
 
-WORKDIR /tools/processor/
+WORKDIR /app
 
 ## Install uv on Ubuntu
 # The installer requires curl (and certificates) to download the release archive
@@ -16,10 +16,15 @@ RUN sh /uv-installer.sh && rm /uv-installer.sh
 ENV PATH="/root/.local/bin/:$PATH"
 
 # COPY requiremets into the container
-COPY pyproject.toml /tools/processor/pyproject.toml
+COPY pyproject.toml /app/pyproject.toml
 
 ## Install venv with uv
 RUN uv sync
+
+# Copy the source code into the container
+COPY src /app/src
+COPY sql /app/sql
+COPY main.py /app/main.py
 
 # Run main.py with uv and environment defined in pyproject.toml
 CMD ["uv", "run", "python", "main.py"]
