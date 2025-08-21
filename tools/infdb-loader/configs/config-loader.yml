@@ -5,8 +5,8 @@ loader:
         # - "09780139"  # Sonthofen
         # - "09780116"  # Bolsterlang
         - "09162000" # M
-        - "07334021" # ND
-        - "08316013" # FO
+        - "09185149" # ND
+        - "09474126" # FO
         - "09261000" # LA
     multiproccesing: 
         status: active
