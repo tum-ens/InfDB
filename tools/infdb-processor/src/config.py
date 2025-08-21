@@ -128,7 +128,7 @@ def write_yaml(output_yaml, output_path):
 
 
 def get_db_parameters(service_name: str):
-    parameters_loader = get_value(["loader", "hosts", service_name])
+    parameters_loader = get_value(["processor", "hosts", service_name])
 
     # Adopt settings if config-infdb exists
     dict_config = get_config()
