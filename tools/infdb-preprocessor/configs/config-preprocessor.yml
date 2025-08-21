@@ -8,14 +8,14 @@ preprocessor:
             user: None
             password: None
             db: None
-            host: host.docker.internal
+            host: None
             exposed_port: None
             epsg: None # 3035 (Europe)
         timescaledb:
             user: None
             password: None
             db: None
-            host: host.docker.internal
+            host: None
             exposed_port: None
     data:
         input_schema: opendata
