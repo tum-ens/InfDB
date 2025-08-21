@@ -1,16 +1,16 @@
 loader:
-    name: bayern_M-ND-FO-LA
+    name: demo-sonthofen
     scope:  # AGS (Amtlicher Gemeindeschlüssel)
         # - 09162000  # Munich
-        # - "09780139"  # Sonthofen
+        - "09780139"  # Sonthofen
         # - "09780116"  # Bolsterlang
-        - "09162000" # M
-        - "09185149" # ND
-        - "09474126" # FO
-        - "09261000" # LA
+        # - "09162000" # M
+        # - "09185149" # ND
+        # - "09474126" # FO
+        # - "09261000" # LA
     multiproccesing: 
         status: active
-        max_cores: 10
+        max_cores: 2    # max cores since of memory limitations to 2
     config-infdb: "config-infdb.yml" # only filename - change path in ".env" file "CONFIG_INFDB_PATH"
     path:
         base: "data" # only foldername - change path in ".env" file "LOADER_DATA_PATH"

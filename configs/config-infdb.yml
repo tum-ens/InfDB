@@ -2,7 +2,7 @@
 # Relative paths are relative to the project directory
 
 base:
-    name: bayern_M-ND-FO-LA
+    name: demo
     path:
         base: "data/{base/name}/"
     network_name: "infdb-{base/name}_network"
