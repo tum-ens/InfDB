@@ -1,7 +1,7 @@
-processor:
+ro-heat:
     config-infdb: "config-infdb.yml" # only filename - change path in ".env" file "CONFIG_INFDB_PATH"
     logging:
-        path: "processor.log"
+        path: "ro-heat.log"
         level: "INFO" # ERROR, WARNING, INFO, DEBUG
     hosts:
         citydb:
@@ -17,3 +17,6 @@ processor:
             db: None
             host: host.docker.internal
             exposed_port: None
+    data:
+        input_schema: opendata
+        output_schema: pylovo_input

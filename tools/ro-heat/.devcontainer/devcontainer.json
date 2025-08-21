@@ -12,12 +12,12 @@
 
 	// The 'service' property is the name of the service for the container that VS Code should
 	// use. Update this value and .devcontainer/docker-compose.yml to the real service name.
-	"service": "data-processor",
+	"service": "ro-heat",
 
 	// The optional 'workspaceFolder' property is the path VS Code should open by default when
 	// connected. This is typically a file mount in .devcontainer/docker-compose.yml
 	//"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
-	"workspaceFolder": "/tools/processor",
+	"workspaceFolder": "/app",
 	"features": {
 		"ghcr.io/devcontainers/features/python:1": {}
 	},
@@ -40,7 +40,7 @@
 	"customizations": {
 		"vscode": {
 			"settings": {
-				"python.defaultInterpreterPath": "/tools/processor/.venv/bin/python",
+				"python.defaultInterpreterPath": ".venv/bin/python",
 				"python.terminal.activateEnvironment": true
 			}
 		}

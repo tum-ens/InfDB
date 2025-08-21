@@ -1,4 +1,4 @@
-# Process data
+# Compute heat
 
 ## Prequires
 - Docker
@@ -18,3 +18,17 @@ docker compose -f compose.yml up
   - `way_names` (street names of ways)
   - `building_addresses` (addresses assigned to buildings)
 
+
+
+### Process data
+Paths in .env
+```yml
+CONFIG_INFDB_PATH=../../configs # Path to the configs directory of infDB
+```
+Settings in /tools/processor/configs/config-processor.yml
+```bash
+    # on linux and macos
+    docker compose -f tools/processor/compose.yml up 
+
+    # on windows
+```

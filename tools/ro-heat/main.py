@@ -2,27 +2,28 @@ import os
 
 import numpy as np
 import pandas as pd
-from sqlalchemy import create_engine
+# from sqlalchemy import create_engine
 
 from src import basic_refurbishment
+from src import config, utils, logger
 
-host = os.environ["host"]
-database = os.environ["database"]
-port = os.environ["port"]
-user = os.environ["user"]
-password = os.environ["password"]
+# host = os.environ["host"]
+# database = os.environ["database"]
+# port = os.environ["port"]
+# user = os.environ["user"]
+# password = os.environ["password"]
 
 rng = np.random.default_rng(seed=42)
 end_of_simulation_year = 2025
 
-engine = create_engine(
-    f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{database}"
-)
-
+# engine = create_engine(
+#     f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{database}"
+# )
+engine = config.get_db_engine("citydb")
 
 construction_year_col = "construction_year"
 
-sql_file = "create_rc_temp_table.sql"
+sql_file = "00_create_rc_temp_table.sql"
 
 with open(f"./sql/{sql_file}", "r", encoding="utf-8") as file:
     sql_content = file.read()
@@ -79,5 +80,8 @@ refurbed_df = basic_refurbishment.simulate_refurbishment(
 
 with engine.connect() as connection:
     refurbed_df.to_sql(
-        "buildings_rc", connection, if_exists="replace", schema="pylovo_input"
+        "buildings_rc", connection, if_exists="replace", schema="pylovo_input", index=False
     )
+
+# Run 01_calculate_r_values
+utils.run_sql_script_pg(engine, "sql/01_calculate_r_values.sql")

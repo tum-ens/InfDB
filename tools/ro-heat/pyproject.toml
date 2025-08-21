@@ -1,9 +1,10 @@
 [project]
-name = "processor"
+name = "ro-heat"
 version = "1"
 requires-python="==3.12.*"
 dependencies = [
-    "psycopg2-binary",
+    "pandas",
+    "sqlalchemy",
     "PyYAML",
-    "dotenv"
+    "psycopg2-binary",
 ]

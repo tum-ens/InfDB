@@ -1,6 +1,6 @@
-DROP TABLE IF EXISTS temp_rc_calculation;
+DROP TABLE IF EXISTS pylovo_input.temp_rc_calculation;
 
-CREATE TEMP TABLE temp_rc_calculation AS
+CREATE TABLE pylovo_input.temp_rc_calculation AS
 WITH wall_data AS (
     SELECT
         building_objectid,
@@ -49,5 +49,6 @@ SELECT
 FROM pylovo_input.buildings b
 LEFT JOIN wall_data wd ON b.objectid = wd.building_objectid
 LEFT JOIN roof_data rd ON b.objectid = rd.building_objectid;
-SELECT * from temp_rc_calculation
+
+SELECT * from pylovo_input.temp_rc_calculation
 WHERE building_type IS NOT NULL
