@@ -22,15 +22,16 @@ class WeatherRouter:
     weatherService = WeatherService()
 
     @router.post("/weather-data/{resolution}", tags=["Weather Data"])
-    async def postWeatherData(self, resolution: int, dateRange: DateRange, sensorNames: list[str]):
+    async def postWeatherData(
+        self, resolution: int, dateRange: DateRange, sensorNames: list[str]
+    ):
         try:
-            self.weatherService.insertHistoricalData(resolution, dateRange.startDate, dateRange.endDate, sensorNames)
+            self.weatherService.insertHistoricalData(
+                resolution, dateRange.startDate, dateRange.endDate, sensorNames
+            )
             return {"message": "Data processed"}
         except InvalidWeatherParameterError as e:
-            return {
-                "error": str(e),
-                "details": e.details
-            }
+            return {"error": str(e), "details": e.details}
 
     @router.get("/weather-data/{resolution}", tags=["Weather Data"])
     async def getBuildingData(
@@ -38,6 +39,6 @@ class WeatherRouter:
         resolution: int,
         buildingId: str = Query(...),
         startTime: Optional[datetime] = Query(None),
-        endTime: Optional[datetime] = Query(None)
+        endTime: Optional[datetime] = Query(None),
     ):
         return self.weatherService.getData(resolution, buildingId, startTime, endTime)

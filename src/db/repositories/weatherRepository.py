@@ -26,11 +26,15 @@ class WeatherRepository:
                         statement = statement.where(WeatherReading.timestamp >= value)
                     elif key == "timestamp__lte":
                         statement = statement.where(WeatherReading.timestamp <= value)
-                    elif (hasattr(WeatherReading, key)):
-                        statement = statement.where(getattr(WeatherReading, key) == value)
+                    elif hasattr(WeatherReading, key):
+                        statement = statement.where(
+                            getattr(WeatherReading, key) == value
+                        )
 
                 sensor_readings = session.exec(statement).all()
                 return sensor_readings
 
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Database query failed: {str(e)}")
+            raise HTTPException(
+                status_code=500, detail=f"Database query failed: {str(e)}"
+            )

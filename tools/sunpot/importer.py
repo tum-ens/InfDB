@@ -26,10 +26,18 @@ def import_to_v5():
             for col in geometry_cols:
                 df[col] = gpd.GeoSeries.from_wkt(df[col])
 
-            gdf = gpd.GeoDataFrame(df, geometry=geometry_cols[0], crs=f"EPSG:{config.get_value(['services', 'citydb', 'epsg'])}")
-            gdf.to_postgis(table_name, engine, schema=SCHEMA, if_exists="replace", index=False)
+            gdf = gpd.GeoDataFrame(
+                df,
+                geometry=geometry_cols[0],
+                crs=f"EPSG:{config.get_value(['services', 'citydb', 'epsg'])}",
+            )
+            gdf.to_postgis(
+                table_name, engine, schema=SCHEMA, if_exists="replace", index=False
+            )
         else:
-            df.to_sql(table_name, engine, schema=SCHEMA, if_exists="replace", index=False)
+            df.to_sql(
+                table_name, engine, schema=SCHEMA, if_exists="replace", index=False
+            )
 
         print(f"Imported {len(df)} rows into '{SCHEMA}.{table_name}'")
 

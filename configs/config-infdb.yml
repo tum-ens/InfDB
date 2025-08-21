@@ -2,10 +2,10 @@
 # Relative paths are relative to the project directory
 
 base:
-    name: infdb-munich
+    name: demo
     path:
-        base: "data-infdb/"
-    network_name: infdb_network
+        base: "data/{base/name}/"
+    network_name: "infdb-{base/name}_network"
 services:
     citydb:
         user: citydb_user
@@ -16,7 +16,7 @@ services:
         epsg: 25832 # 3035 (Europe)
         path: 
             base: "{base/path/base}/{base/name}/citydb/"
-            compose_file: "dockers/citydb.yml"
+            compose_file: "services/3dcitydb/compose.yml"
         status: active
 
     timescaledb:
@@ -28,7 +28,7 @@ services:
         status: active
         path: 
             base: "{base/path/base}/{base/name}/timescaledb/"
-            compose_file: "dockers/timescaledb.yml"
+            compose_file: "services/timescaledb/compose.yml"
 
     pgadmin:
         default_email: admin@admin.com
@@ -36,7 +36,7 @@ services:
         exposed_port: 81
         status: active
         path:
-            compose_file: "dockers/pgadmin.yml"
+            compose_file: "services/pgadmin/compose.yml"
 
     jupyter:
         exposed_port: 8888
@@ -44,7 +44,7 @@ services:
         status: not-active
         path:
             base: "{base/path/base}/{base/name}/notebooks/"
-            compose_file: "dockers/juypter.yml"
+            compose_file: "services/juypter/compose.yml"
 
     qwc:
         status: active
@@ -52,4 +52,4 @@ services:
         exposed_port_db: 5434
         postgres_password: infdb
         path:
-            compose_file: "dockers/qgis_webclient/docker-compose.yml"
+            compose_file: "services/qgis_webclient/docker-compose.yml"
