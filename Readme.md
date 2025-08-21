@@ -81,6 +81,13 @@ More community or domain-specific tools can be attached through the standardized
 ## Getting Started
 To get started, follow these steps below. For more information in detail read the [https://infdb.readthedocs.io/](https://infdb.readthedocs.io/).
 
+If you are happy with the preconfiguration and default passwords, then just follow these four steps (see detailed instructions in the corresponding sections below):
+
+1. [Clone infDB](#clone-infdb)
+2. [Setup infDB](#setup-infdb)
+3. [Run infDB](#run-infdb)
+4. Optional: [Run infDB-loader](#run-infdb-loader)
+
 ### Clone infDB
 ```bash
     # ssh
@@ -203,7 +210,7 @@ loader:
         ...
 ```
 
-**Hint:** Paths to the data and to configs folder need to be defined in [.env](.env)
+**Hint:** In case you move the infdb-loader source folder outside of the folder tools in repo or want to change the location where the downloaded data is stored, the paths to data and to configs folder need to be defined in [.env](.env)
 ```bash
     CONFIG_INFDB_PATH=../infdb/configs  # Change if you moved the "configs" folder
     LOADER_DATA_PATH=./     # Change if you moved the "data" folder
