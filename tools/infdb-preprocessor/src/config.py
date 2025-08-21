@@ -17,7 +17,7 @@ def _load_config(path: str):
 
 
 def _merge_configs():
-    base_path = os.path.join("mnt", "configs-infdb", "config-processor.yml")
+    base_path = os.path.join("mnt", "configs-infdb", "config-infdb.yml")
     logging.debug(f"Loading configuration from '{base_path}'")
     logging.debug(f"File in '{base_path}': '{os.listdir(os.path.dirname(base_path))}'")
 
