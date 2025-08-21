@@ -1,5 +1,5 @@
 services:
-    loader:
+    infdb-loader:
         build:
             context: .
             dockerfile: Dockerfile
