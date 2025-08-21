@@ -13,8 +13,8 @@ listener = logger.setup_main_logger(None)
 
 
 SCHEMA_CONFIG = {
-    'input_schema': config.get_value(["processor", "data", "input_schema"]),
-    'output_schema': config.get_value(["processor", "data", "output_schema"])
+    'input_schema': config.get_value(["preprocessor", "data", "input_schema"]),
+    'output_schema': config.get_value(["preprocessor", "data", "output_schema"])
 }
 
 # SQL files directory and list of files to execute in order
