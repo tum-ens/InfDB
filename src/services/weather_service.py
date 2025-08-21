@@ -13,7 +13,9 @@ class WeatherService:
         self.cityDbService = CityDBService()
         self.repository = WeatherRepository()
 
-    def insertHistoricalData(self, resolution: int, start_date: date, end_date: date, sensorNames: list[str]):
+    def insertHistoricalData(
+        self, resolution: int, start_date: date, end_date: date, sensorNames: list[str]
+    ):
         centers = self.cityDbService.getRasterCenters(resolution)
 
         for center in centers:
@@ -22,7 +24,7 @@ class WeatherService:
                 "longitude": center.longitude,
                 "start_date": start_date.strftime("%Y-%m-%d"),
                 "end_date": end_date.strftime("%Y-%m-%d"),
-                "hourly": sensorNames
+                "hourly": sensorNames,
             }
 
             weather_data = json.loads(self.api.getHourlyWeatherData(params))
@@ -31,7 +33,9 @@ class WeatherService:
                 for sensor in sensorNames:
                     reading = WeatherReading(
                         raster_id=str(center.rasterid),
-                        timestamp=datetime.strptime(entry["date"], "%Y-%m-%dT%H:%M:%S.%fZ"),
+                        timestamp=datetime.strptime(
+                            entry["date"], "%Y-%m-%dT%H:%M:%S.%fZ"
+                        ),
                         sensor_name=sensor,
                         value=entry[sensor],
                     )
@@ -39,7 +43,13 @@ class WeatherService:
 
                 self.repository.insertSensorData(readings)
 
-    def getData(self, resolution: int, building_id: str, start: datetime | None, end: datetime | None):
+    def getData(
+        self,
+        resolution: int,
+        building_id: str,
+        start: datetime | None,
+        end: datetime | None,
+    ):
         center = self.cityDbService.getRasterCenter(building_id, resolution)
         if not center:
             raise HTTPException(status_code=404, detail="Raster center not found")

@@ -7,17 +7,23 @@ from fastapi import HTTPException
 # in this repository we have to write our sqls by hand instead of using ORM tools
 # sql codes can be removed to a var in sql file and then be imported here as well.
 class CityDBRepository:
-    def generateRasterRelatedTables(self, resolution: int, idPrefix: str, idSuffixLength: int):
+    def generateRasterRelatedTables(
+        self, resolution: int, idPrefix: str, idSuffixLength: int
+    ):
         with Session(citydb_engine) as session:
             try:
-                rasters = self._generateRasters(session, resolution, idPrefix, idSuffixLength)
+                rasters = self._generateRasters(
+                    session, resolution, idPrefix, idSuffixLength
+                )
                 mappings = self._generateBuilding2RasterMappings(session, resolution)
                 session.commit()
                 return {"rasters": rasters, "mappings": mappings}
             except Exception as e:
                 print(e)
                 session.rollback()
-                raise HTTPException(status_code=500, detail=f"Transaction failed: {str(e)}")
+                raise HTTPException(
+                    status_code=500, detail=f"Transaction failed: {str(e)}"
+                )
 
     # Important information regarding our dataset:
     # currently we keep citydb data in 4326 SRID format. it returns us lat and lon in meters not in degrees.
@@ -31,11 +37,17 @@ class CityDBRepository:
             """)
 
             with Session(citydb_engine) as session:
-                result = session.execute(sqlSelect, params={"resolution": resolution}).mappings().fetchall()
+                result = (
+                    session.execute(sqlSelect, params={"resolution": resolution})
+                    .mappings()
+                    .fetchall()
+                )
             return result
 
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Database query failed: {str(e)}")
+            raise HTTPException(
+                status_code=500, detail=f"Database query failed: {str(e)}"
+            )
 
     def getRasterCenter(self, buildingId: int, resolution: int):
         try:
@@ -47,14 +59,25 @@ class CityDBRepository:
             """)
 
             with Session(citydb_engine) as session:
-                result = session.execute(sqlSelect, params={"buildingId": buildingId, "resolution": resolution}).mappings().fetchone()
+                result = (
+                    session.execute(
+                        sqlSelect,
+                        params={"buildingId": buildingId, "resolution": resolution},
+                    )
+                    .mappings()
+                    .fetchone()
+                )
 
             return result
 
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Database query failed: {str(e)}")
+            raise HTTPException(
+                status_code=500, detail=f"Database query failed: {str(e)}"
+            )
 
-    def _generateRasters(self, session: Session, resolution: int, idPrefix: str, idSuffixLength: int):
+    def _generateRasters(
+        self, session: Session, resolution: int, idPrefix: str, idSuffixLength: int
+    ):
         sql = text("""
                     INSERT INTO general.raster
                     SELECT
@@ -75,7 +98,18 @@ class CityDBRepository:
                         generate_series(2600000, 3500000, :resolution) AS y
                     RETURNING id;
         """)
-        return session.execute(sql, {"resolution": resolution, "idPrefix": idPrefix, "idSuffixLength": idSuffixLength}).mappings().all()
+        return (
+            session.execute(
+                sql,
+                {
+                    "resolution": resolution,
+                    "idPrefix": idPrefix,
+                    "idSuffixLength": idSuffixLength,
+                },
+            )
+            .mappings()
+            .all()
+        )
 
     def _generateBuilding2RasterMappings(self, session: Session, resolution: int):
         sql = text("""
