@@ -207,7 +207,7 @@ def import_layers(input_file, layers, schema, prefix="", layer_names=None, scope
 
     for layer, layer_name in zip(layers, layer_names):
         log.info(f"Importing layer: {layer} into {schema}")
-        gdf = gpd.read_file(input_file, layer=layer, bbox=gdf_scope)
+        gdf = gpd.read_file(input_file, layer=layer, mask=gdf_scope)
         gdf.to_crs(epsg=epsg, inplace=True)
         # gdf.to_file(output_file, layer=layer, driver="GPKG")
         gdf.to_postgis(
