@@ -13,6 +13,8 @@ from src import config, utils, logger
 # user = os.environ["user"]
 # password = os.environ["password"]
 
+print("Starting refurbishment simulation...")
+
 rng = np.random.default_rng(seed=42)
 end_of_simulation_year = 2025
 
@@ -84,4 +86,5 @@ with engine.connect() as connection:
     )
 
 # Run 01_calculate_r_values
+print("Running SQL script to calculate R values...")
 utils.run_sql_script_pg(engine, "sql/01_calculate_r_values.sql")
