@@ -18,6 +18,7 @@ ALGORITHM OVERVIEW:
 4. Use traffic direction info to assign appropriate `reverse_cost`:
     - High penalty (1,000,000) for one-way restricted segments
     - Equal to forward cost for bidirectional or undefined direction
+5. Store name and name_kurz for potential address matching
 
 INPUT REQUIREMENTS:
 -------------------
@@ -45,13 +46,17 @@ INSERT INTO {output_schema}.ways (
     verkehrslinie_id_basemap,
     clazz,
     geom,
-    cost
+    cost,
+    name,
+    name_kurz
 )
 SELECT
     v.id AS verkehrslinie_id_basemap,
     c.clazz,
     ST_Transform(v.geometry, 3035) AS geom, 
-    ST_Length(ST_Transform(v.geometry, 3035)) / 1000.0 / NULLIF(c.kmh, 0) AS cost
+    ST_Length(ST_Transform(v.geometry, 3035)) / 1000.0 / NULLIF(c.kmh, 0) AS cost,
+    v.name AS name,
+    v.name_kurz AS name_kurz
 FROM {input_schema}.bmp_verkehrslinie v,
      LATERAL {output_schema}.map_strasse_klasse_to_class_kmh(v.klasse) AS c
 WHERE v.geometry IS NOT NULL AND c.clazz NOT IN (99);
