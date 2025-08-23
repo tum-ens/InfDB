@@ -26,9 +26,8 @@ WAYS_SQL_FILES = [
     '01_create_functions.sql',
     '02_create_ways_table.sql',
     '03_fill_id_ways_table.sql',
-    '04_create_names_table.sql',
-    '05_create_postcode_table.sql',
-    '06_assign_postcode_to_ways.sql'
+    '04_create_postcode_table.sql',
+    '05_assign_postcode_to_ways.sql'
 ]
 BUILDINGS_SQL_FILES = [
     "00_cleanup.sql",
@@ -45,9 +44,8 @@ BUILDINGS_SQL_FILES = [
     "11_fill_construction_year.sql",
     "12_fill_building_type.sql",
     "13_assign_postcode_to_buildings.sql",
-    "14_create_address_table.sql",
-    "15_assign_streets_to_buildings.sql",
-    "16_add_constraints.sql",
+    "14_assign_streets_to_buildings.sql",
+    "15_add_constraints.sql",
 ]
 
 
