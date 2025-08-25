@@ -1,4 +1,6 @@
+
 import os
+import logging
 
 import numpy as np
 import pandas as pd
@@ -7,84 +9,94 @@ import pandas as pd
 from src import basic_refurbishment
 from src import config, utils, logger
 
-# host = os.environ["host"]
-# database = os.environ["database"]
-# port = os.environ["port"]
-# user = os.environ["user"]
-# password = os.environ["password"]
+if __name__ == "__main__":
+    # Initialize logging
+    print("aaa")
+    logger.setup_main_logger(None)
+    log = logging.getLogger(__name__)
 
-print("Starting refurbishment simulation...")
+    # host = os.environ["host"]
+    # database = os.environ["database"]
+    # port = os.environ["port"]
+    # user = os.environ["user"]
+    # password = os.environ["password"]
+    # log.info("test")
+    # log.info("Starting refurbishment simulation...")
 
-rng = np.random.default_rng(seed=42)
-end_of_simulation_year = 2025
+    rng = np.random.default_rng(seed=42)
+    end_of_simulation_year = 2025
 
-# engine = create_engine(
-#     f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{database}"
-# )
-engine = config.get_db_engine("citydb")
+    # engine = create_engine(
+    #     f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{database}"
+    # )
+    engine = config.get_db_engine("citydb")
 
-construction_year_col = "construction_year"
+    construction_year_col = "construction_year"
 
-sql_file = "00_create_rc_temp_table.sql"
+    sql_file = "00_create_rc_temp_table.sql"
 
-with open(f"./sql/{sql_file}", "r", encoding="utf-8") as file:
-    sql_content = file.read()
+    with open(f"./sql/{sql_file}", "r", encoding="utf-8") as file:
+        sql_content = file.read()
 
+    with engine.connect() as connection:
+        buildings = pd.read_sql(sql_content, connection)
 
-with engine.connect() as connection:
-    buildings = pd.read_sql(sql_content, connection)
+    log.debug(f"Loaded {len(buildings)} buildings from the database.")
+    log.debug(buildings.head())
 
-random_years = np.full(len(buildings), np.nan)
+    random_years = np.full(len(buildings), np.nan)
 
-# Define class-to-range mapping
-age_class_ranges = {
-    "-1919": (1860, 1918),
-    "1919-1948": (1919, 1948),
-    "1949-1978": (1949, 1978),
-    "1979-1990": (1979, 1990),
-    "1991-2000": (1991, 2000),
-    "2001-2010": (2001, 2010),
-    "2011-2019": (2011, 2019),
-    "2020-": (2020, end_of_simulation_year),
-}
+    # Define class-to-range mapping
+    age_class_ranges = {
+        "-1919": (1860, 1918),
+        "1919-1948": (1919, 1948),
+        "1949-1978": (1949, 1978),
+        "1979-1990": (1979, 1990),
+        "1991-2000": (1991, 2000),
+        "2001-2010": (2001, 2010),
+        "2011-2019": (2011, 2019),
+        "2020-": (2020, end_of_simulation_year),
+    }
 
-# For each class, find matching rows and assign random years
-for age_class, (start, end) in age_class_ranges.items():
-    mask = buildings[construction_year_col] == age_class
-    count = sum(mask)
-    random_years[mask] = rng.integers(start, end, size=count, endpoint=True)
+    # For each class, find matching rows and assign random years
+    for age_class, (start, end) in age_class_ranges.items():
+        mask = buildings[construction_year_col] == age_class
+        count = sum(mask)
+        random_years[mask] = rng.integers(start, end, size=count, endpoint=True)
 
-buildings[construction_year_col] = random_years.astype(int)
+    buildings[construction_year_col] = random_years.astype(int)
 
-refurbishment_parameters = {
-    "outer_wall": {
-        "distribution": lambda gen, parameters: gen.normal(**parameters),
-        "distribution_parameters": {"loc": 40, "scale": 10},
-    },
-    "rooftop": {
-        "distribution": lambda gen, parameters: gen.normal(**parameters),
-        "distribution_parameters": {"loc": 50, "scale": 10},
-    },
-    "window": {
-        "distribution": lambda gen, parameters: gen.normal(**parameters),
-        "distribution_parameters": {"loc": 30, "scale": 10},
-    },
-}
+    refurbishment_parameters = {
+        "outer_wall": {
+            "distribution": lambda gen, parameters: gen.normal(**parameters),
+            "distribution_parameters": {"loc": 40, "scale": 10},
+        },
+        "rooftop": {
+            "distribution": lambda gen, parameters: gen.normal(**parameters),
+            "distribution_parameters": {"loc": 50, "scale": 10},
+        },
+        "window": {
+            "distribution": lambda gen, parameters: gen.normal(**parameters),
+            "distribution_parameters": {"loc": 30, "scale": 10},
+        },
+    }
 
-refurbed_df = basic_refurbishment.simulate_refurbishment(
-    buildings,
-    end_of_simulation_year,
-    refurbishment_parameters,
-    rng,
-    age_column=construction_year_col,
-    provide_last_refurb_only=True,
-)
-
-with engine.connect() as connection:
-    refurbed_df.to_sql(
-        "buildings_rc", connection, if_exists="replace", schema="pylovo_input", index=False
+    refurbed_df = basic_refurbishment.simulate_refurbishment(
+        buildings,
+        end_of_simulation_year,
+        refurbishment_parameters,
+        rng,
+        age_column=construction_year_col,
+        provide_last_refurb_only=True,
     )
 
-# Run 01_calculate_r_values
-print("Running SQL script to calculate R values...")
-utils.run_sql_script_pg(engine, "sql/01_calculate_r_values.sql")
+    with engine.connect() as connection:
+        refurbed_df.to_sql(
+            "buildings_rc", connection, if_exists="replace", schema="pylovo_input", index=False
+        )
+
+    # Run 01_calculate_r_values
+    log.info("Running SQL script to calculate R values...")
+    utils.run_sql_script_pg(engine, "sql/01_calculate_r_values.sql")
+
+    log.info("Processes done")

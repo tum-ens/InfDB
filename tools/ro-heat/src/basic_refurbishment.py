@@ -1,6 +1,9 @@
 import pandas as pd
 from numpy.random import Generator
 from pandas import DataFrame, Series
+import logging
+
+log = logging.getLogger(__name__)
 
 
 def simulate_refurbishment(

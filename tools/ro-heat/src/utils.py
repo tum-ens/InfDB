@@ -1,5 +1,6 @@
 from sqlalchemy.engine import Engine
 
+
 def run_sql_script_pg(engine: Engine, path: str) -> None:
     """
     Execute a .sql file as-is using psycopg2 via SQLAlchemy's raw connection.
