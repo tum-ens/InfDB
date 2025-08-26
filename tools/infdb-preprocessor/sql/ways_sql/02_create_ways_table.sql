@@ -12,7 +12,8 @@ COLUMN DESCRIPTIONS:
 - cost/reverse_cost: Forward and backward traversal costs
 - geom: LineString geometry representing the road segment
 - postcode: Integer postal code associated with the street segment
-
+- name: Full street name
+- name_kurz: Shortened street name or abbreviation
 COORDINATE SYSTEM:
 ------------------
 - EPSG:3035 – Projected European coordinate system used for accurate distance
@@ -29,6 +30,8 @@ CREATE TABLE IF NOT EXISTS {output_schema}.ways (
     target                     INTEGER,
     cost                       DOUBLE PRECISION,
     reverse_cost               DOUBLE PRECISION,
+    name  TEXT,
+    name_kurz  TEXT,
     geom                       geometry(LineString, 3035),
     postcode                 INTEGER
 );
