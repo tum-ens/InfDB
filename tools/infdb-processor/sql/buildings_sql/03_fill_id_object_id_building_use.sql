@@ -6,8 +6,8 @@ SELECT f.id,
        p.val_string                                     as building_use_id
 FROM feature f
          JOIN property p ON f.id = p.feature_id
-WHERE f.objectclass_id = 901
-  AND p.namespace_id = 10
+WHERE f.objectclass_id = 901 -- =building
+  AND p.namespace_id = 10 -- =bldg (redundant?)
   AND p.name = 'function'
   AND p.val_string LIKE '31001_%'  -- only allow buildings
   AND p.val_string <> '31001_2463' -- exclude garages
