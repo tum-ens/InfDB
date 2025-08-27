@@ -96,13 +96,23 @@ The folder structure of the infdb as shown is recommend since all of the data of
   - ...
   - instanceN
 
+```bash
+# linux
+mkdir infdb
+cd infdb
+```
 ### Clone infDB
 ```bash
 # ssh
-git clone git@gitlab.lrz.de:tum-ens/need/infdb.git
+# Replace "demo" by name of instance 
+git clone git@gitlab.lrz.de:tum-ens/need/infdb.git demo 
 
 # https
-git clone https://gitlab.lrz.de/tum-ens/need/infdb.git
+# Replace "demo" by name of instance 
+git clone https://gitlab.lrz.de/tum-ens/need/infdb.git demo
+
+# Change directory into repo
+cd demo
 ```
 
 ### Setup infDB
