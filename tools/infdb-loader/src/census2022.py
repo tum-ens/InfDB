@@ -1,6 +1,7 @@
 import os
 import logging
 import multiprocessing
+import chardet
 import pandas as pd
 import geopandas as gpd
 from . import utils, config, logger
@@ -39,9 +40,11 @@ def load(log_queue):
     sql = f"CREATE SCHEMA IF NOT EXISTS {schema};"
     utils.sql_query(sql)
     
-    # Process census data
-    for dataset in datasets:
-        continue
+    # Create folders
+    zip_path = config.get_path(["loader", "sources", "zensus_2022", "path", "zip"])
+    os.makedirs(zip_path, exist_ok=True)
+    unzip_path = config.get_path(["loader", "sources", "zensus_2022", "path", "unzip"])
+    os.makedirs(unzip_path, exist_ok=True)
 
     number_processes = utils.get_number_processes()
     with multiprocessing.Pool(
@@ -93,8 +96,6 @@ def process_dataset(dataset):
 
         try:
             csv_path = file
-
-            import chardet
 
             with open(csv_path, "rb") as f:
                 raw_bytes = f.read(1000)
