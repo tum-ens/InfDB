@@ -13,5 +13,5 @@ dependencies = [
     "geoalchemy2==0.17.1",
     "PyYAML",
     "chardet",
-    "tqdm"
+    "pysmartdl"
 ]
