@@ -25,9 +25,23 @@ def load(log_queue):
 
     for filter in filters:
         urls = utils.get_links(site_url, ending, filter)
+        if len(urls) == 1:
+            url = urls[0]
+        else:
+            log.warning(f"No or multiple link found for filter({filter}): {urls}")
 
-        log.debug(urls)
-        download_files = utils.download_files(urls, base_path)
+        
+        log.debug(url)
+
+        filename, name, extension = utils.get_file_from_url(url)
+
+        # remove the two lines below if you want to keep the full date in the filename
+        name = name.rsplit("-", 1)[0]   # remove day -> year and month only
+        # name = name.rsplit("-", 2)[0]   # remove day and month -> year only
+
+        file_path = os.path.join(base_path, name + extension)
+        print(file_path)
+        download_files = utils.download_files(url, file_path)
         log.debug(f"Download_files: {download_files}")
 
         # Create schema if it doesn't exist
