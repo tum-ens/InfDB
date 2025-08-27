@@ -10,7 +10,7 @@ loader:
         # - "09261000" # LA
     multiproccesing: 
         status: active
-        max_cores: 4    # max cores since of memory limitations to 2
+        max_cores: 2    # max cores since of memory limitations to 2
     config-infdb: "config-infdb.yml" # only filename - change path in ".env" file "CONFIG_INFDB_PATH"
     path:
         base: "data" # only foldername - change path in ".env" file "LOADER_DATA_PATH"
@@ -35,14 +35,15 @@ loader:
             exposed_port: None
     sources:
         package:
-            status: active
+            status: not-active
             url: http://ds1.need.energy:8123/opendata.zip
             path: 
                 base: "{loader/path/base}"
                 processed: "{loader/path/opendata}"
 
         lod2:
-            status: not-active
+            status: active
+            import-mode: skip # delete
             url:
                 - "https://geodaten.bayern.de/odd/a/lod2/citygml/meta/metalink/#scope.meta4"    #scope placeholder for AGS
             path:
@@ -76,8 +77,8 @@ loader:
                     - "nuts250_n3"
             geogitter:
                 resolutions:
-                    - 100m
-                    - 1km
+                    # - 100m
+                    # - 1km
                     - 10km
 
         basemap:
@@ -150,7 +151,7 @@ loader:
                 - 100m
             years:
                 - 2022
-                - 2011
+                # - 2011
             path:
                 base: "{loader/path/opendata}/zensus/"
                 zip: "{loader/sources/zensus_2022/path/base}/zip/"
@@ -420,7 +421,7 @@ loader:
                   url: https://www.destatis.de/static/DE/zensus/gitterdaten/Gebaeude_nach_Baujahresklassen_in_Gitterzellen.zip
 
                 - name: Shapefile Zensus 2022
-                  status: active
+                  status: not-active
                   table_name: shapefile_2022
                   year: 2022
                   url: https://www.destatis.de/static/DE/zensus/gitterdaten/Shapefile_Zensus2022.zip

@@ -30,6 +30,8 @@ def load(log_queue):
     # Run citydb tool to import the downloaded GML files
     params = utils.get_db_parameters("citydb")
 
+    import_mode = config.get_value(["loader", "sources", "lod2", "import-mode"])
+    
     cmd = [
         "citydb import citygml",
         "-H",
@@ -42,7 +44,8 @@ def load(log_queue):
         params["password"],
         "-P",
         str(params["exposed_port"]),
-        "--import-mode=delete",  # deletes existing data before import # skip as alternative
+        # "--import-mode=delete",  # deletes existing data before import
+        f"--import-mode={import_mode}",
         str(gml_path),
     ]
     cmd_str = " ".join(str(arg) for arg in cmd)
