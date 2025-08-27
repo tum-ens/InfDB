@@ -15,7 +15,7 @@ services:
         exposed_port: 5432
         epsg: 25832 # 3035 (Europe)
         path: 
-            base: "{base/path/base}/{base/name}/citydb/"
+            base: "{base/path/base}/citydb/"
             compose_file: "services/3dcitydb/compose.yml"
         status: active
 
@@ -27,7 +27,7 @@ services:
         exposed_port: 5433
         status: active
         path: 
-            base: "{base/path/base}/{base/name}/timescaledb/"
+            base: "{base/path/base}/timescaledb/"
             compose_file: "services/timescaledb/compose.yml"
 
     pgadmin:
@@ -43,7 +43,7 @@ services:
         enable_lab: yes
         status: not-active
         path:
-            base: "{base/path/base}/{base/name}/notebooks/"
+            base: "{base/path/base}/notebooks/"
             compose_file: "services/juypter/compose.yml"
 
     qwc:
