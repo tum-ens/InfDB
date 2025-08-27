@@ -38,6 +38,24 @@ services:
         path:
             compose_file: "services/pgadmin/compose.yml"
 
+    api:
+        port: 8000
+        status: active
+        path:
+            compose_file: "services/api/api.yml"
+
+    pygeoapi:
+        port: 5000
+        status: active
+        path:
+            compose_file: "services/api/pygeoapi.yml"
+
+    postgrest:
+        port: 3000
+        status: active
+        path:
+            compose_file: "services/api/postgrest.yml"
+
     jupyter:
         exposed_port: 8888
         enable_lab: yes

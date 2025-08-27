@@ -1,0 +1,14 @@
+services:
+  postgrest:
+    build:
+      context: ./postgrest              # folder that contains the Dockerfile
+      dockerfile: Dockerfile            # optional if the file is named Dockerfile
+    container_name: cityapi-postgrest
+    environment:
+      - DATABASE_URL=postgresql://${SERVICES_CITYDB_USER}:${SERVICES_CITYDB_PASSWORD}@${SERVICES_CITYDB_DB}:5432/${SERVICES_CITYDB_DB}
+    ports:
+      - "${SERVICES_POSTGREST_PORT}:${SERVICES_POSTGREST_PORT}"
+    depends_on:
+      - citydb
+    networks:
+      - ${BASE_NETWORK_NAME}

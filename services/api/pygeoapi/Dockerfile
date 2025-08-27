@@ -1,0 +1,1 @@
+FROM geopython/pygeoapi:latest
