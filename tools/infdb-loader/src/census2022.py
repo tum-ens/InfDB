@@ -26,14 +26,15 @@ def load(log_queue):
 
     missing_in_yaml = original_set - yaml_links
     extra_in_yaml = yaml_links - original_set
+    if missing_in_yaml:
+        log.warning("Links in original list but NOT in YAML:")
+        for l in sorted(missing_in_yaml):
+            log.warning(f" - {l}")
 
-    log.warning("Links in original list but NOT in YAML:")
-    for l in sorted(missing_in_yaml):
-        log.warning(f" - {l}")
-
-    log.warning("Links in YAML but NOT in original list:")
-    for l in sorted(extra_in_yaml):
-        log.warning(f" - {l}")
+    if extra_in_yaml:
+        log.warning("Links in YAML but NOT in original list:")
+        for l in sorted(extra_in_yaml):
+            log.warning(f" - {l}")
 
     # Create schema if it doesn't exist
     schema = config.get_value(["loader", "sources", "zensus_2022", "schema"])
