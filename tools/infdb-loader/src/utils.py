@@ -1,19 +1,19 @@
 import os
-import psycopg2
+import subprocess
+import requests
+import multiprocessing
+import chardet
+from zipfile import ZipFile, BadZipFile
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 import sqlalchemy
-from . import config
-from zipfile import ZipFile, BadZipFile
+import psycopg2
 import geopandas as gpd
-import chardet
 from urllib.parse import urlparse
-import subprocess
-import requests
-from tqdm import tqdm
-import multiprocessing
-
+from . import config
+from pySmartDL import SmartDL
 import logging
+
 
 log = logging.getLogger(__name__)
 
@@ -65,48 +65,29 @@ def get_links(url, ending, filter):
     return zip_links
 
 
-log = logging.getLogger(__name__)
-
-
-def download_files(urls, base_path, chunk_size=1024):
-    os.makedirs(base_path, exist_ok=True)
-    files = []
+def download_files(urls, base_path):
+    if os.path.isdir(base_path):
+        os.makedirs(base_path, exist_ok=True)
 
     if isinstance(urls, str):
         urls = [urls]
-
+    
+    objs = []
     for url in urls:
-        # ToDo Mulitprocessing with Pools as in census2022.py
-        filename = url.split("/")[-1]
-        path_file = os.path.join(base_path, filename)
-
-        if os.path.exists(path_file):
-            log.info(f"File {path_file} already exists.")
+        obj = SmartDL(url, base_path, progress_bar=True)
+        target_path = obj.get_dest()
+        if os.path.exists(target_path):
+            log.info(f"File {target_path} already exists.")
         else:
-            log.info(f"File {path_file} will be downloaded from {url}")
+            log.info(f"File {target_path} downloading ...")
+            obj.start(blocking=False)   # non-blocking start
+            objs.append(obj)
 
-            with requests.get(url, stream=True) as response:
-                response.raise_for_status()
-                total_size = int(response.headers.get("content-length", 0))
-
-                with (
-                    open(path_file, "wb") as file,
-                    tqdm(
-                        total=total_size,
-                        unit="B",
-                        unit_scale=True,
-                        desc=filename,
-                        disable=(total_size == 0),
-                    ) as pbar,
-                ):
-                    for chunk in response.iter_content(chunk_size=chunk_size):
-                        if chunk:  # filter out keep-alive chunks
-                            file.write(chunk)
-                            pbar.update(len(chunk))
-
-            log.info(f"{path_file} downloaded.")
-
-        files.append(path_file)
+    # Wait for all to finish
+    files = []
+    for obj in objs:
+        obj.wait()
+        files.append(obj.get_dest())
 
     return files
 
@@ -299,7 +280,7 @@ def ensure_utf8_encoding(filepath: str) -> str:
 
 def get_all_files(folder_path, ending):
     """
-    Recursively finds all .csv files in the given folder and its subfolders.
+    Recursively finds all ending files in the given folder and its subfolders.
 
     Parameters:
         folder_path (str): Path to the top-level folder.
@@ -317,6 +298,15 @@ def get_all_files(folder_path, ending):
 
 
 def get_file(folder_path, filename, ending):
+    """
+    Recursively finds all ending files in the given folder and its subfolders.
+
+    Parameters:
+        folder_path (str): Path to the top-level folder.
+
+    Returns:
+        List[str]: List of full paths to .csv files.
+    """
     files = get_all_files(folder_path, ending)
 
     # Filter files that contain the filename
@@ -326,7 +316,7 @@ def get_file(folder_path, filename, ending):
         log.error(
             f"No files found containing '{filename}' with ending '{ending}' in {folder_path}"
         )
-        return ""
+        return None
 
     # Pick the newest by modification time
     newest_file = max(matching_files, key=os.path.getmtime)
@@ -352,7 +342,7 @@ def get_website_links(url):
 
     # Gefundene Links ausgeben
     for zip_link in zip_links:
-        log.info(zip_link)
+        log.debug(zip_link)
 
     return zip_links
 

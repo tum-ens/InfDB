@@ -4,7 +4,7 @@
 base:
     name: demo
     path:
-        base: "data/{base/name}/"
+        base: "../data-infdb/{base/name}/"
     network_name: "infdb-{base/name}_network"
 services:
     citydb:

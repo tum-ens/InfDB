@@ -1,6 +1,6 @@
 import multiprocessing as mp
 from src import utils
-from src import bkg, basemap, lod2, census2022, plz, tabula
+from src import bkg, basemap, lod2, census2022, plz, tabula, package
 from src.logger import setup_main_logger
 import multiprocessing
 import logging
@@ -15,6 +15,10 @@ if __name__ == "__main__":
     log.info("-------------------------------------------------------------")
     log.info("-------------------------------------------------------------")
 
+    # Download opendata package for development directly
+    if utils.if_active("package"):
+        package.load()
+    
     # Ensure that administrative areas are
     bkg.load_envelop()
 
