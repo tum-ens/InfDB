@@ -57,45 +57,46 @@ def load(log_queue):
 
 
 def process_dataset(dataset):
-    log.info(f"Working on {dataset["name"]}")
+    try:
+        log.info(f"Working on {dataset["name"]}")
 
-    # Check for status
-    status = dataset["status"]
-    if status == "active":
-        log.info(f"Loading {dataset["name"]} ...")
-    else:
-        log.info(f"{dataset["name"]} skips, status not active")
-        return True
-    
-    # Check for year 
-    years = config.get_value(["loader", "sources", "zensus_2022", "years"])
-    if dataset["year"] not in years:
-        log.info(f"{dataset["name"]} skips, not in years list")
-        return True
+        # Check for status
+        status = dataset["status"]
+        if status == "active":
+            log.info(f"Loading {dataset["name"]} ...")
+        else:
+            log.info(f"{dataset["name"]} skips, status not active")
+            return True
         
-    # Download
-    zip_path = config.get_path(["loader", "sources", "zensus_2022", "path", "zip"])
-    download_path = os.path.join(zip_path, dataset["table_name"] + ".zip")
-    link = dataset["url"]
-    utils.download_files(link, download_path)
+        # Check for year 
+        years = config.get_value(["loader", "sources", "zensus_2022", "years"])
+        if dataset["year"] not in years:
+            log.info(f"{dataset["name"]} skips, not in years list")
+            return True
+            
+        # Download
+        zip_path = config.get_path(["loader", "sources", "zensus_2022", "path", "zip"])
+        download_path = os.path.join(zip_path, dataset["table_name"] + ".zip")
+        link = dataset["url"]
+        utils.download_files(link, download_path)
 
-    # Unzip
-    unzip_path = config.get_path(["loader", "sources", "zensus_2022", "path", "unzip"])
-    folder_path = os.path.join(unzip_path, dataset["table_name"])
-    utils.unzip(download_path, folder_path)
+        # Unzip
+        unzip_path = config.get_path(["loader", "sources", "zensus_2022", "path", "unzip"])
+        folder_path = os.path.join(unzip_path, dataset["table_name"])
+        utils.unzip(download_path, folder_path)
 
-    # Export to postgis
-    resolutions = config.get_value(["loader", "sources", "zensus_2022", "resolutions"])
-    for resolution in resolutions:
-        log.info(f"Processing {dataset["name"]} with {resolution} ...")
+        # Export to postgis
+        resolutions = config.get_value(["loader", "sources", "zensus_2022", "resolutions"])
+        for resolution in resolutions:
+            log.info(f"Processing {dataset["name"]} with {resolution} ...")
 
-        # Search for corresponding file within source folder
-        file = utils.get_file(folder_path, resolution, ".csv")
-        if not file:
-            log.warning(f"No file for {dataset["name"]} with resolution {resolution} found")
-            continue
+            # Search for corresponding file within source folder
+            file = utils.get_file(folder_path, resolution, ".csv")
+            if not file:
+                log.warning(f"No file for {dataset["name"]} with resolution {resolution} found")
+                continue
 
-        try:
+
             csv_path = file
 
             with open(csv_path, "rb") as f:
@@ -166,8 +167,8 @@ def process_dataset(dataset):
 
             log.info(f"Processed sucessfully {file}")
 
-        except Exception as err:
-            log.exception("An error occurred while processing file: %s", file)
-            return False
+    except Exception as err:
+        log.exception(f"An error occurred while processing file: {dataset["name"]} {str(err)}")
+        return False
     
     return True
