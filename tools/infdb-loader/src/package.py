@@ -8,8 +8,6 @@ def load():
     archive_path = config.get_path(["loader", "sources", "package", "path", "base"])             
     url = config.get_value(["loader", "sources", "package", "url"])
     log.info(f"Download opendata package from {url} to {archive_path}")
-
-    # file = utils.download_files(url, archive_path)
     file = utils.download_files(url, archive_path)
 
     # Unzip opendata package
