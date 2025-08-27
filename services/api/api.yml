@@ -1,0 +1,17 @@
+services:
+  api:
+    build:
+      context: ../..                 # <- INFDB project root as build context
+      dockerfile: services/api/Dockerfile
+    container_name: infdb-api
+    ports:
+      - ${SERVICES_API_PORT}:${SERVICES_API_PORT}
+    environment:
+      - PYGEOAPI_INTERNAL=http://cityapi-pygeoapi:${SERVICES_PYGEOAPI_PORT}/ 
+      - POSTGREST_INTERNAL=http://cityapi-postgrest:${SERVICES_POSTGREST_PORT}/ 
+    depends_on:
+      - ${SERVICES_CITYDB_DB}
+      # - ${SERVICES_TIMESCALEDB_DB}
+    networks:
+      - ${BASE_NETWORK_NAME}
+    restart: unless-stopped
