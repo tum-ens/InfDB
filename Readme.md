@@ -88,23 +88,31 @@ If you are happy with the preconfiguration and default passwords, then just foll
 3. [Run infDB](#run-infdb)
 4. Optional: [Run infDB-loader](#run-infdb-loader)
 
+### Suggested folder structure of infDB
+The folder structure of the infdb as shown is recommend since all of the data of all instances are stored in 'data' automatically by default:
+- infdb
+  - data
+  - instance1
+  - ...
+  - instanceN
+
 ### Clone infDB
 ```bash
-    # ssh
-     git clone git@gitlab.lrz.de:tum-ens/need/infdb.git
+# ssh
+git clone git@gitlab.lrz.de:tum-ens/need/infdb.git
 
-    # https
-    git clone https://gitlab.lrz.de/tum-ens/need/infdb.git
+# https
+git clone https://gitlab.lrz.de/tum-ens/need/infdb.git
 ```
 
 ### Setup infDB
 The configuration can be done via [configs/config-infdb.yml](configs/config-infdb.yml)
 ```yaml
 base:
-    name: infdb-munich
+    name: demo
     path:
-        base: "data-infdb/"
-    network_name: infdb_network
+        base: "../data/{base/name}/"
+    network_name: "infdb-{base/name}_network"
 services:
     citydb:
         user: citydb_user
@@ -115,27 +123,27 @@ services:
         epsg: 25832 # 3035 (Europe)
         path: 
             base: "{base/path/base}/{base/name}/citydb/"
-            compose_file: "dockers/citydb.yml"
+            compose_file: "services/3dcitydb/compose.yml"
         status: active
 
         ...
 ```
 After doing the configuration you need to generate the configurations files with the following command:
 ```bash
-    # on linux and macos
-    docker compose -f services/setup/compose.yml up
+# on linux and macos
+docker compose -f services/setup/compose.yml up
 
-    # on windows
+# on windows
 ```
 
 Once you generated the configuration files with the command above, you need to finally start the infDB:
 
 ### Run infDB
 ```bash
-    # on linux and macos
-     docker compose -f compose.yml up -d
+# on linux and macos
+  docker compose -f compose.yml up -d
 
-    # on windows
+# on windows
 ```
 The infDB will be run as long as you stop it manually as described below even when the machine is restarted.
 
@@ -145,10 +153,10 @@ Please check the logs of the setup service.
 
 ### Stop infDB
 ```bash
-    # on linux and macos
-    docker compose -f compose.yml down -v
+# on linux and macos
+docker compose -f compose.yml down -v
 
-    # on windows
+# on windows
 ```
 
 ### Setup infDB-loader
@@ -156,14 +164,18 @@ Please check the logs of the setup service.
 The configuration can be done via [configs/config-loader.yml](configs/config-loader.yml)
 ```yaml
 loader:
-    name: oberallgaeu
+    name: demo-sonthofen
     scope:  # AGS (Amtlicher Gemeindeschlüssel)
         # - 09162000  # Munich
-        - 09780139  # Sonthofen
-        - 09780116  # Bolsterlang
+        - "09780139"  # Sonthofen
+        # - "09780116"  # Bolsterlang
+        # - "09162000" # M
+        # - "09185149" # ND
+        # - "09474126" # FO
+        # - "09261000" # LA
     multiproccesing: 
         status: active
-        max_cores: 10
+        max_cores: 4    # max cores since of memory limitations to 2
     config-infdb: "config-infdb.yml" # only filename - change path in ".env" file "CONFIG_INFDB_PATH"
     path:
         base: "data" # only foldername - change path in ".env" file "LOADER_DATA_PATH"
@@ -187,43 +199,37 @@ loader:
             host: None
             exposed_port: None
     sources:
-        zensus_2022:
+        package:
             status: active
-            resolutions:
-                #- 10km
-                #- 1km
-                - 100m
-            path:
-                base: "{loader/path/opendata}/zensus_2022/"
-                zip: "{loader/sources/zensus_2022/path/base}/zip/"
-                unzip: "{loader/sources/zensus_2022/path/base}/unzip/"
-                processed: "{loader/path/processed}/zensus_2022/"
-            url: "https://www.zensus2022.de/DE/Ergebnisse-des-Zensus/_inhalt.html"
-            schema: opendata
-            prefix: cns22
-            layer:
-                - alter_in_10er-jahresgruppen
-                - alter_in_5_altersklassen
-                - alter_infr
-                - anteil_auslaender
+            url: http://ds1.need.energy:8123/opendata.zip
+            path: 
+                base: "{loader/path/base}"
+                processed: "{loader/path/opendata}"
 
+        lod2:
+            status: not-active
+            url:
+                - "https://geodaten.bayern.de/odd/a/lod2/citygml/meta/metalink/#scope.meta4"    #scope placeholder for AGS
+            path:
+                lod2: "{loader/path/opendata}/lod2/"
+                gml: "{loader/path/opendata}/lod2/{loader/name}"
         ...
 ```
 
 **Hint:** In case you move the infdb-loader source folder outside of the folder tools in repo or want to change the location where the downloaded data is stored, the paths to data and to configs folder need to be defined in [.env](.env)
 ```bash
-    CONFIG_INFDB_PATH=../infdb/configs  # Change if you moved the "configs" folder
-    LOADER_DATA_PATH=./     # Change if you moved the "data" folder
+CONFIG_INFDB_PATH=../infdb/configs  # Change if you moved the "configs" folder
+LOADER_DATA_PATH=./     # Change if you moved the "data" folder
 ```
 
 Once you adjusted the configuration files with the command above, you need to finally start the infDB-loader and start importing:
 
 ### Run infDB-loader
 ```bash
-    # on linux and macos
-     docker compose -f tools/infdb-loader/compose.yml up
+# on linux and macos
+  docker compose -f tools/infdb-loader/compose.yml up
 
-    # on windows
+# on windows
 ```
 The infDB will be run as long as you stop it manually as described below even when the machine is restarted.
 
@@ -233,18 +239,18 @@ Please check the logs of the setup service.
 
 ### Remove LOD2 data
 ```bash
-    # on linux and macos
-    docker run --rm --add-host=host.docker.internal:host-gateway 3dcitydb/citydb-tool delete --delete-mode=delete -H host.docker.internal -d citydb -u citydb_user -p citydb_password -P 5432
+# on linux and macos
+docker run --rm --add-host=host.docker.internal:host-gateway 3dcitydb/citydb-tool delete --delete-mode=delete -H host.docker.internal -d citydb -u citydb_user -p citydb_password -P 5432
 
-    # on windows
+# on windows
 ```
 
 ### PSQL Connection to infDB
 ```bash
-    # on linux and macos
-    PGPASSWORD='citydb_password' psql -h localhost -p 5432 -U citydb_user -d citydb
+# on linux and macos
+PGPASSWORD='citydb_password' psql -h localhost -p 5432 -U citydb_user -d citydb
 
-    # on windows
+# on windows
 ```
 
 ### Configurations (only in addition for QGIS Desktop)
@@ -265,32 +271,32 @@ sslmode=disable
 
 ### Local development environment for InfDB for developers
 ```bash
-    # on linux and macos by installation script
-    curl -LsSf https://astral.sh/uv/install.sh | sh
-    # or by pip
-    pip install uv
+# on linux and macos by installation script
+curl -LsSf https://astral.sh/uv/install.sh | sh
+# or by pip
+pip install uv
 ```
 
 ### Create environment (only once)
 ```bash
-    # linux and macos
-    uv sync
+# linux and macos
+uv sync
 ```
 
 ### Activate environment
 ```bash
-    # linux and macos
-    source .venv/bin/activate
-    # windows
-    venv\Scripts\activate
+# linux and macos
+source .venv/bin/activate
+# windows
+venv\Scripts\activate
 ```
 ### Clean repo
 ```bash
-    # linux and macos
-    git fetch origin
-    git reset --hard origin/develop
-    git clean -fdx
-    # windows
+# linux and macos
+git fetch origin
+git reset --hard origin/develop
+git clean -fdx
+# windows
 ```
 
 ## Repository Structure

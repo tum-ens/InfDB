@@ -13,7 +13,7 @@ loader:
         max_cores: 4    # max cores since of memory limitations to 2
     config-infdb: "config-infdb.yml" # only filename - change path in ".env" file "CONFIG_INFDB_PATH"
     path:
-        base: "data-infdb" # only foldername - change path in ".env" file "LOADER_DATA_PATH"
+        base: "data" # only foldername - change path in ".env" file "LOADER_DATA_PATH"
         opendata: "{loader/path/base}/opendata/"
         processed: "{loader/path/base}/{loader/name}"
     logging:
