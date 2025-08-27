@@ -1,7 +1,7 @@
-preprocessor:
+ro-heat:
     config-infdb: "config-infdb.yml" # only filename - change path in ".env" file "CONFIG_INFDB_PATH"
     logging:
-        path: "preprocessor.log"
+        path: "ro-heat.log"
         level: "INFO" # ERROR, WARNING, INFO, DEBUG
     hosts:
         citydb:
