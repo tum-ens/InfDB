@@ -1,16 +1,16 @@
 loader:
-    name: demo-sonthofen
+    name: neuburg
     scope:  # AGS (Amtlicher Gemeindeschlüssel)
         # - 09162000  # Munich
-        - "09780139"  # Sonthofen
+        # - "09780139"  # Sonthofen
         # - "09780116"  # Bolsterlang
         # - "09162000" # M
-        # - "09185149" # ND
+        - "09185149" # ND
         # - "09474126" # FO
         # - "09261000" # LA
     multiproccesing: 
         status: active
-        max_cores: 2    # max cores since of memory limitations to 2
+        max_cores: 20    # max cores since of memory limitations to 2
     config-infdb: "config-infdb.yml" # only filename - change path in ".env" file "CONFIG_INFDB_PATH"
     path:
         base: "data" # only foldername - change path in ".env" file "LOADER_DATA_PATH"
@@ -18,7 +18,7 @@ loader:
         processed: "{loader/path/base}/{loader/name}"
     logging:
         path: "{loader/path/base}/loader.log"
-        level: "DEBUG" # ERROR, WARNING, INFO, DEBUG
+        level: "INFO" # ERROR, WARNING, INFO, DEBUG
     hosts:
         citydb:
             user: None
@@ -77,9 +77,9 @@ loader:
                     - "nuts250_n3"
             geogitter:
                 resolutions:
-                    # - 100m
+                    - 100m
                     # - 1km
-                    - 10km
+                    # - 10km
 
         basemap:
             status: active
@@ -218,13 +218,13 @@ loader:
 
                 - name: Altersgruppen (5 Klassen)
                   status: active
-                  table_name: alter_5klassen
+                  table_name: altersgruppen_5klassen
                   year: 2022
                   url: https://www.destatis.de/static/DE/zensus/gitterdaten/Alter_in_5_Altersklassen.zip
 
                 - name: Altersgruppen (10 Jahre)
                   status: active
-                  table_name: alter_10jahre
+                  table_name: altersgruppen_10jahre
                   year: 2022
                   url: https://www.destatis.de/static/DE/zensus/gitterdaten/Alter_in_10er-Jahresgruppen.zip
 
@@ -242,7 +242,7 @@ loader:
 
                 - name: Altersgruppen Infrastruktur
                   status: active
-                  table_name: alter_infrastruktur
+                  table_name: altersgruppen_infrastruktur
                   year: 2022
                   url: https://www.destatis.de/static/DE/zensus/gitterdaten/Alter_in_infrastrukturellen_Altersgruppen.zip
 
@@ -260,13 +260,13 @@ loader:
 
                 - name: Durchschnittliche Haushaltsgroesse
                   status: active
-                  table_name: haushaltsgroesse
+                  table_name: durchschnittliche_haushaltsgroesse
                   year: 2022
                   url: https://www.destatis.de/static/DE/zensus/gitterdaten/Durchschnittliche_Haushaltsgroesse_in_Gitterzellen.zip
 
                 - name: Haushaltsgroesse
                   status: active
-                  table_name: privathaushalt_groesse
+                  table_name: haushaltsgroesse
                   year: 2022
                   url: https://www.destatis.de/static/DE/zensus/gitterdaten/Zensus2022_Groesse_des_privaten_Haushalts_in_Gitterzellen.zip
 
@@ -308,7 +308,7 @@ loader:
 
                 - name: Nettokaltmiete + Anzahl Wohnungen
                   status: active
-                  table_name: nettokaltmiete_wohnungen
+                  table_name: nettokaltmiete_anzahl_wohnungen
                   year: 2022
                   url: https://www.destatis.de/static/DE/zensus/gitterdaten/Durchschnittliche_Nettokaltmiete_und_Anzahl_der_Wohnungen.zip
 
