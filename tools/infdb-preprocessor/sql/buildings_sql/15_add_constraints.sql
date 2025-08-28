@@ -2,7 +2,7 @@ ALTER TABLE {output_schema}.buildings ALTER COLUMN objectid SET NOT NULL;
 ALTER TABLE {output_schema}.buildings ADD CONSTRAINT objectid_unique UNIQUE (objectid);
 
 ALTER TABLE {output_schema}.buildings ALTER COLUMN building_use SET NOT NULL;
-ALTER TABLE {output_schema}.buildings ADD CONSTRAINT building_use_check CHECK (building_use IN ('Residential', 'Industrial', 'Commercial', 'Public'));
+ALTER TABLE {output_schema}.buildings ADD CONSTRAINT building_use_check CHECK (building_use IN ('Residential', 'Industrial', 'Commercial', 'Public', 'Transformer'));
 
 ALTER TABLE {output_schema}.buildings ALTER COLUMN building_use_id SET NOT NULL;
 

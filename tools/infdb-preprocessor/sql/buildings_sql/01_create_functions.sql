@@ -10,17 +10,16 @@ BEGIN
 
     -- Industrial Buildings
         WHEN '31001_2000' THEN RETURN 'Industrial'; -- Gebäude für Wirtschaft oder Gewerbe
-        WHEN '31001_2523' THEN RETURN 'Industrial'; -- Umformer
         WHEN '31001_2513' THEN RETURN 'Industrial'; -- Wasserbehälter
 
     -- Commercial Buildings, stores and caffes
         WHEN '31001_2072' THEN RETURN 'Commercial'; -- Jugendherberge
         WHEN '31001_2461' THEN RETURN 'Commercial'; -- Parkhaus
         WHEN '31001_2465' THEN RETURN 'Commercial'; -- Tiefgarage
-        WHEN '31001_3091' THEN RETURN 'Commercial'; -- Bahnhofsgebäude
         WHEN '31001_3290' THEN RETURN 'Commercial'; -- Touristisches Informationszentrum
 
     -- Public Buildings, buildings by governments
+        WHEN '31001_3091' THEN RETURN 'Public'; -- Bahnhofsgebäude
         WHEN '31001_3000' THEN RETURN 'Public'; -- Gebäude für öffentliche Zwecke
         WHEN '31001_3012' THEN RETURN 'Public'; -- Rathaus
         WHEN '31001_3017' THEN RETURN 'Public'; -- Kreisverwaltung
@@ -42,6 +41,9 @@ BEGIN
         WHEN '31001_3073' THEN RETURN 'Public'; -- Kaserne
         WHEN '31001_3075' THEN RETURN 'Public'; -- Justizvollzugsanstalt
         WHEN '31001_3242' THEN RETURN 'Public'; -- Sanatorium
+
+    -- Transformer Positions
+        WHEN '31001_2523' THEN RETURN 'Transformer'; -- Umformer (Transformer & Wechselsrichter)
 
     -- Infrastructure or Misc (not classified, so raise error)
     --WHEN '31001_9998' THEN RAISE EXCEPTION 'Unspecified building type: %', funktion;
