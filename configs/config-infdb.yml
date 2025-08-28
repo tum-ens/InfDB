@@ -2,7 +2,7 @@
 # Relative paths are relative to the project directory
 
 base:
-    name: demo
+    name: neuburg
     path:
         base: "../data/{base/name}/"
     network_name: "infdb-{base/name}_network"
@@ -12,7 +12,7 @@ services:
         password: infdb
         db: citydb
         host: citydb
-        exposed_port: 5432
+        exposed_port: 54325
         epsg: 25832 # 3035 (Europe)
         path: 
             base: "{base/path/base}/citydb/"
@@ -24,7 +24,7 @@ services:
         password: infdb
         db: timescaledb
         host: timescaledb
-        exposed_port: 5433
+        exposed_port: 54335
         status: active
         path: 
             base: "{base/path/base}/timescaledb/"
@@ -33,7 +33,7 @@ services:
     pgadmin:
         default_email: admin@admin.com
         default_password: infdb
-        exposed_port: 81
+        exposed_port: 815
         status: active
         path:
             compose_file: "services/pgadmin/compose.yml"
@@ -57,7 +57,7 @@ services:
             compose_file: "services/api/postgrest.yml"
 
     jupyter:
-        exposed_port: 8888
+        exposed_port: 88885
         enable_lab: yes
         status: not-active
         path:
@@ -66,8 +66,8 @@ services:
 
     qwc:
         status: active
-        exposed_port_gui: 80
-        exposed_port_db: 5434
+        exposed_port_gui: 805
+        exposed_port_db: 54345
         postgres_password: infdb
         path:
             compose_file: "services/qgis_webclient/docker-compose.yml"
