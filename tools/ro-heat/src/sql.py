@@ -107,3 +107,17 @@ class PostgreSQLExecutor:
             raise e
         finally:
             self.disconnect()
+
+    def execute_sql_query(self, query, params=None):
+        """Execute a single SQL query"""
+        try:
+            self.connect()
+            self.cursor.execute(query, params)
+            self.connection.commit()
+            log.info(f"Successfully executed SQL query: {query}")
+        except Exception as e:
+            log.error(f"Error executing SQL query: {str(e)}")
+            self.connection.rollback()
+            raise e
+        finally:
+            self.disconnect()

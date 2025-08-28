@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS pylovo_input.r_values;
-CREATE TABLE pylovo_input.r_values AS
+DROP TABLE IF EXISTS ro_heat.r_values;
+CREATE TABLE ro_heat.r_values AS
 -- Calculation of r values according to DIN EN ISO 6946:2018-03
 -- See table 7 for r_si and r_se values
 -- Simplified consideration of thermal bridges, delta_U_WB = 0.1, according to DIN V 18599-2:2018-09, see section 6.2.5
