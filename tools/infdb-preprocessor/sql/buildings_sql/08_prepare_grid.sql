@@ -26,12 +26,12 @@ CREATE INDEX grid_buildings_spatial_coords_idx
 
 -- Add all census columns to the existing buildings_grid table
 ALTER TABLE {output_schema}.buildings_grid
--- cns22_100m_bevoelkerungszahl
+-- cns_22_100m_bevoelkerungszahl
 ADD COLUMN einwohner bigint,
--- cns22_100m_durchschn_haushaltsgroesse
+-- cns_22_100m_durchschn_haushaltsgroesse
 ADD COLUMN durchschnhhgroesse double precision,
 ADD COLUMN werterlaeuternde_zeichen text,
--- cns22_100m_geb_gbdtyp_groesse
+-- cns_22_100m_gebaeude_typ_groesse
 ADD COLUMN insgesamt_gebaeude bigint,
 ADD COLUMN freiefh double precision,
 ADD COLUMN efh_dhh double precision,
@@ -43,7 +43,7 @@ ADD COLUMN mfh_3bis6wohnungen double precision,
 ADD COLUMN mfh_7bis12wohnungen double precision,
 ADD COLUMN mfh_13undmehrwohnungen double precision,
 ADD COLUMN anderergebaeudetyp double precision,
--- cns22_100m_gbd_nach_baujahr_in_mz_klassen
+-- cns_22_100m_gebaeude_baujahr_mikrozensus
 ADD COLUMN vor1919 double precision,
 ADD COLUMN a1919bis1948 double precision,
 ADD COLUMN a1949bis1978 double precision,
@@ -56,7 +56,7 @@ ADD COLUMN a2020undspaeter double precision;
 -- Update with population data
 UPDATE {output_schema}.buildings_grid
 SET einwohner = pop.einwohner
-FROM {input_schema}.cns22_100m_bevoelkerungszahl pop
+FROM {input_schema}.cns_22_100m_bevoelkerungszahl pop
 WHERE buildings_grid.x_mp = pop.x_mp_100m
   AND buildings_grid.y_mp = pop.y_mp_100m;
 
@@ -64,7 +64,7 @@ WHERE buildings_grid.x_mp = pop.x_mp_100m
 UPDATE {output_schema}.buildings_grid
 SET durchschnhhgroesse = hh.durchschnhhgroesse,
     werterlaeuternde_zeichen = hh.werterlaeuternde_zeichen
-FROM {input_schema}.cns22_100m_durchschn_haushaltsgroesse hh
+FROM {input_schema}.cns_22_100m_durchschnittliche_haushaltsgroesse hh
 WHERE buildings_grid.x_mp = hh.x_mp_100m
   AND buildings_grid.y_mp = hh.y_mp_100m;
 
@@ -81,7 +81,7 @@ SET insgesamt_gebaeude = bld.insgesamt_gebaeude,
     mfh_7bis12wohnungen = bld.mfh_7bis12wohnungen,
     mfh_13undmehrwohnungen = bld.mfh_13undmehrwohnungen,
     anderergebaeudetyp = bld.anderergebaeudetyp
-FROM {input_schema}.cns22_100m_geb_gbdtyp_groesse bld
+FROM {input_schema}.cns_22_100m_gebaeude_typ_groesse bld
 WHERE buildings_grid.x_mp = bld.x_mp_100m
   AND buildings_grid.y_mp = bld.y_mp_100m;
 
@@ -95,6 +95,6 @@ SET vor1919 = bauj.vor1919,
     a2001bis2010 = bauj.a2001bis2010,
     a2011bis2019 = bauj.a2011bis2019,
     a2020undspaeter = bauj.a2020undspaeter
-FROM {input_schema}.cns22_100m_gbd_nach_baujahr_in_mz_klassen bauj
+FROM {input_schema}.cns_22_100m_gebaeude_baujahr_mikrozensus bauj
 WHERE buildings_grid.x_mp = bauj.x_mp_100m
   AND buildings_grid.y_mp = bauj.y_mp_100m;
