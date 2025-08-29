@@ -91,7 +91,7 @@ loader:
                 base: "{loader/path/opendata}/basemap/"
                 processed: "{loader/path/processed}/basemap/"
             schema: opendata
-            prefix: bmp
+            prefix: basemap
             layer:
                 - barrierenlinie
                 - bauwerksflaeche
@@ -142,7 +142,7 @@ loader:
             path:
                 base: "{loader/path/opendata}/tabula/"
             schema: opendata
-            prefix: tba
+            prefix: tabula
         zensus_2022:
             status: active
             resolutions:
@@ -159,7 +159,7 @@ loader:
                 processed: "{loader/path/processed}/zensus_2022/"
             url: "https://www.zensus2022.de/DE/Ergebnisse-des-Zensus/_inhalt.html"
             schema: opendata
-            prefix: cns
+            prefix: census
             save_local: not-active
             datasets:
                 - name: Bevoelkerungszahl
