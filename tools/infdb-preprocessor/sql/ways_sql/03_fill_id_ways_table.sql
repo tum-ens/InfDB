@@ -57,7 +57,7 @@ SELECT
     ST_Length(ST_Transform(v.geometry, 3035)) / 1000.0 / NULLIF(c.kmh, 0) AS cost,
     v.name AS name,
     v.name_kurz AS name_kurz
-FROM {input_schema}.bmp_verkehrslinie v,
+FROM {input_schema}.basemap_verkehrslinie v,
      LATERAL {output_schema}.map_strasse_klasse_to_class_kmh(v.klasse) AS c
 WHERE v.geometry IS NOT NULL AND c.clazz NOT IN (99);
 
@@ -71,5 +71,5 @@ SET reverse_cost =
     WHEN v.richtung = '1' THEN 1000000.0  -- one-way
     WHEN v.richtung = '0' OR v.richtung IS NULL THEN w.cost  -- bidirectional
   END
-FROM {input_schema}.bmp_verkehrslinie AS v
+FROM {input_schema}.basemap_verkehrslinie AS v
 WHERE w.verkehrslinie_id_basemap = v.id;

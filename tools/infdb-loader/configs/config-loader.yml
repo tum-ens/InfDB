@@ -159,7 +159,7 @@ loader:
                 processed: "{loader/path/processed}/zensus_2022/"
             url: "https://www.zensus2022.de/DE/Ergebnisse-des-Zensus/_inhalt.html"
             schema: opendata
-            prefix: census
+            prefix: zensus
             save_local: not-active
             datasets:
                 - name: Bevoelkerungszahl
@@ -260,7 +260,7 @@ loader:
 
                 - name: Durchschnittliche Haushaltsgroesse
                   status: active
-                  table_name: durchschnittliche_haushaltsgroesse
+                  table_name: durschn_haushaltsgroesse
                   year: 2022
                   url: https://www.destatis.de/static/DE/zensus/gitterdaten/Durchschnittliche_Haushaltsgroesse_in_Gitterzellen.zip
 

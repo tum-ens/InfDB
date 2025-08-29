@@ -52,5 +52,5 @@ performance in both preprocessing and query-time execution.
 
 CREATE INDEX IF NOT EXISTS idx_ways_geom ON {output_schema}.ways USING GIST (geom);
 CREATE INDEX IF NOT EXISTS idx_ways_verkehrslinie_id ON {output_schema}.ways (verkehrslinie_id_basemap);
-CREATE INDEX IF NOT EXISTS idx_verkehrslinie_id ON {input_schema}.bmp_verkehrslinie (id);
+CREATE INDEX IF NOT EXISTS idx_verkehrslinie_id ON {input_schema}.basemap_verkehrslinie (id);
 
