@@ -1,0 +1,16 @@
+services:
+  pygeoapi:
+    build: ./pygeoapi
+    container_name: cityapi-pygeoapi
+    environment:
+      PYGEOAPI_CONFIG: /pygeoapi/local.config.yml
+      SERVICES_PYGEOAPI_PORT: ${SERVICES_PYGEOAPI_PORT}     # only used in server.url; optional
+      CONTAINER_PORT: ${SERVICES_PYGEOAPI_PORT}
+    volumes:
+      - ./pygeoapi/pygeoapi-config.yml:/pygeoapi/local.config.yml:ro
+    ports:
+      - "${SERVICES_PYGEOAPI_PORT}:${SERVICES_PYGEOAPI_PORT}"
+    depends_on:
+      - citydb
+    networks:
+      - ${BASE_NETWORK_NAME}

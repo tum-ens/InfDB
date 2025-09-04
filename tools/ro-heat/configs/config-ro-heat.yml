@@ -1,0 +1,22 @@
+ro-heat:
+    config-infdb: "config-infdb.yml" # only filename - change path in ".env" file "CONFIG_INFDB_PATH"
+    logging:
+        path: "ro-heat.log"
+        level: "INFO" # ERROR, WARNING, INFO, DEBUG
+    hosts:
+        citydb:
+            user: None
+            password: None
+            db: None
+            host: None
+            exposed_port: None
+            epsg: None # 3035 (Europe)
+        timescaledb:
+            user: None
+            password: None
+            db: None
+            host: None
+            exposed_port: None
+    data:
+        input_schema: opendata
+        output_schema: pylovo_input

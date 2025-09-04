@@ -155,10 +155,11 @@ cython_debug/
 .log
 
 # Generated config files
-.generated
+.generated/*
 infdb-data
 .env
 compose.yml
+configs/config-infdb.yml
 
 # uv
 uv.lock
@@ -170,6 +171,9 @@ uv.lock
 *.gml
 *.zip
 *.csv
+data-infdb
 
-
-
+# QWC Data
+services/qgis_webclient/volumes/solr/data/*
+services/qgis_webclient/volumes/db/*
+services/qgis_webclient/pg_service.conf

@@ -1,0 +1,9 @@
+cff-version: 0.1.0
+message: "If you use this software, please leave your name for reference. 
+authors:
+  - family-names: "Doepfert"
+    given-names: "Markus"
+    alias: "@mdoepfert"
+    affiliation: "Technical University of Munich"
+    orcid: "https://orcid.org/0000-0001-8720-2585"
+    

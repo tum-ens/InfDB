@@ -1,0 +1,489 @@
+loader:
+    name: demo-sonthofen
+    scope:  # AGS (Amtlicher Gemeindeschlüssel)
+        # - 09162000  # Munich
+        - "09780139"  # Sonthofen
+        # - "09780116"  # Bolsterlang
+        # - "09162000" # M
+        # - "09185149" # ND
+        # - "09474126" # FO
+        # - "09261000" # LA
+    multiproccesing: 
+        status: active
+        max_cores: 10    # max cores since of memory limitations to 2
+    config-infdb: "config-infdb.yml" # only filename - change path in ".env" file "CONFIG_INFDB_PATH"
+    path:
+        base: "data" # only foldername - change path in ".env" file "LOADER_DATA_PATH"
+        opendata: "{loader/path/base}/opendata/"
+        processed: "{loader/path/base}/{loader/name}"
+    logging:
+        path: "{loader/path/base}/loader.log"
+        level: "DEBUG" # ERROR, WARNING, INFO, DEBUG
+    hosts:
+        citydb:
+            user: None
+            password: None
+            db: None
+            host: None
+            exposed_port: None
+            epsg: None # 3035 (Europe)
+        timescaledb:
+            user: None
+            password: None
+            db: None
+            host: None
+            exposed_port: None
+    sources:
+        package:
+            status: not-active
+            url: http://ds1.need.energy:8123/opendata.zip
+            path: 
+                base: "{loader/path/base}"
+                processed: "{loader/path/opendata}"
+
+        lod2:
+            status: active
+            import-mode: skip # delete
+            url:
+                - "https://geodaten.bayern.de/odd/a/lod2/citygml/meta/metalink/#scope.meta4"    #scope placeholder for AGS
+            path:
+                lod2: "{loader/path/opendata}/lod2/"
+                gml: "{loader/path/opendata}/lod2/{loader/name}"
+
+        bkg:
+            status: active
+            path:
+                base: "{loader/path/opendata}/bkg/"
+                zip: "{loader/sources/bkg/path/base}/zip/"
+                unzip: "{loader/sources/bkg/path/base}/unzip/"
+                processed: "{loader/path/processed}/bkg/"
+            prefix: bkg
+            schema: opendata
+            vg5000:
+                url: "https://daten.gdz.bkg.bund.de/produkte/vg/vg5000_1231/aktuell/vg5000_12-31.utm32s.gpkg.ebenen.zip"
+                layer:
+                    - "vg5000_gem"
+                    - "vg5000_krs"
+                    - "vg5000_lan"
+                    - "vg5000_li"
+                    - "vg5000_rbz"
+                    - "vg5000_sta"
+                    - "vg5000_vwg"
+            nuts:
+                url: "https://daten.gdz.bkg.bund.de/produkte/vg/nuts250_1231/aktuell/nuts250_12-31.utm32s.gpkg.zip"
+                layer:
+                    - "nuts250_n1"
+                    - "nuts250_n2"
+                    - "nuts250_n3"
+            geogitter:
+                resolutions:
+                    # - 100m
+                    # - 1km
+                    - 10km
+
+        basemap:
+            status: active
+            url: "https://basemap.de/dienste/opendata/basisviews/"
+            ending: ".gpkg"
+            filter:
+                - by
+            path:
+                base: "{loader/path/opendata}/basemap/"
+                processed: "{loader/path/processed}/basemap/"
+            schema: opendata
+            prefix: bmp
+            layer:
+                - barrierenlinie
+                - bauwerksflaeche
+                - bauwerkslinie
+                - bauwerkspunkt
+                - besondere_flaeche
+                - besondere_linie
+                - besonderer_punkt
+                - gewaesserflaeche
+                - gewaesserlinie
+                - gewaesserpunkt
+                - grenze_flaeche
+                - grenze_linie
+                - grenze_punkt
+                - historische_flaeche
+                - historische_linie
+                - historischer_punkt
+                - name_flaeche
+                - name_punkt
+                - reliefflaeche
+                - relieflinie
+                - reliefpunkt
+                - siedlungsflaeche
+                - vegetationsflaeche
+                - vegetationslinie
+                - vegetationspunkt
+                - verkehrsflaeche
+                - verkehrslinie
+                - verkehrspunkt
+                - versorgungslinie
+                - versorgungspunkt
+                - weitere_nutzung_flaeche
+        plz:
+            status: active
+            url: "https://downloads.suche-postleitzahl.org/v2/public/plz-5stellig.geojson"
+            path:
+                base: "{loader/path/opendata}/plz/"
+                processed: "{loader/path/processed}/plz/"
+            schema: opendata
+            prefix: plz
+            layer:
+                - plz-5stellig
+        tabula:
+            status: active
+            url:
+                - "https://raw.githubusercontent.com/RWTH-EBC/TEASER/refs/heads/main/teaser/data/input/inputdata/TypeElements_TABULA_DE.json"
+                - "https://raw.githubusercontent.com/RWTH-EBC/TEASER/refs/heads/main/teaser/data/input/inputdata/MaterialTemplates.json"
+            path:
+                base: "{loader/path/opendata}/tabula/"
+            schema: opendata
+            prefix: tba
+        zensus_2022:
+            status: active
+            resolutions:
+                # - 10km
+                # - 1km
+                - 100m
+            years:
+                - 2022
+                # - 2011
+            path:
+                base: "{loader/path/opendata}/zensus/"
+                zip: "{loader/sources/zensus_2022/path/base}/zip/"
+                unzip: "{loader/sources/zensus_2022/path/base}/unzip/"
+                processed: "{loader/path/processed}/zensus_2022/"
+            url: "https://www.zensus2022.de/DE/Ergebnisse-des-Zensus/_inhalt.html"
+            schema: opendata
+            prefix: cns
+            save_local: not-active
+            datasets:
+                - name: Bevoelkerungszahl
+                  status: active
+                  table_name: bevoelkerungszahl
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Zensus2022_Bevoelkerungszahl.zip
+
+                - name: Deutsche Staatsangehoerige 18+
+                  status: active
+                  table_name: deutsche_staatsangehoerige_18plus
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Deutsche_Staatsangehoerige_ab_18_Jahren.zip
+  
+                - name: Auslaenderanteil
+                  status: active
+                  table_name: auslaenderanteil
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Auslaenderanteil_in_Gitterzellen.zip
+
+                - name: Auslaenderanteil 18+
+                  status: active
+                  table_name: auslaenderanteil_18plus
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Auslaenderanteil_ab_18_Jahren.zip
+
+                - name: Geburtsland Gruppen
+                  status: active
+                  table_name: geburtsland_gruppen
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Zensus2022_Geburtsland_Gruppen_in_Gitterzellen.zip
+
+                - name: Staatsangehoerigkeit
+                  status: active
+                  table_name: staatsangehoerigkeit
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Zensus2022_Staatsangehoerigkeit_in_Gitterzellen.zip
+
+                - name: Staatsangehoerigkeit Gruppen
+                  status: active
+                  table_name: staatsangehoerigkeit_gruppen
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Zensus2022_Staatsangehoerigkeit_Gruppen_in_Gitterzellen.zip
+
+                - name: Zahl der Staatsangehoerigkeiten
+                  status: active
+                  table_name: staatsangehoerigkeiten_zahl
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Zahl_der_Staatsangehoerigkeiten.zip
+
+                - name: Durchschnittsalter
+                  status: active
+                  table_name: durchschnittsalter
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Durchschnittsalter_in_Gitterzellen.zip
+
+                - name: Altersgruppen (5 Klassen)
+                  status: active
+                  table_name: alter_5klassen
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Alter_in_5_Altersklassen.zip
+
+                - name: Altersgruppen (10 Jahre)
+                  status: active
+                  table_name: alter_10jahre
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Alter_in_10er-Jahresgruppen.zip
+
+                - name: Anteil unter 18
+                  status: active
+                  table_name: anteil_unter18
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Anteil_unter_18-jaehrige_in_Gitterzellen.zip
+
+                - name: Anteil ab 65
+                  status: active
+                  table_name: anteil_ab65
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Anteil_ab_65-jaehrige_in_Gitterzellen.zip
+
+                - name: Altersgruppen Infrastruktur
+                  status: active
+                  table_name: alter_infrastruktur
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Alter_in_infrastrukturellen_Altersgruppen.zip
+
+                - name: Familienstand
+                  status: active
+                  table_name: familienstand
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Familienstand_in_Gitterzellen.zip
+
+                - name: Religion
+                  status: active
+                  table_name: religion
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Religion.zip
+
+                - name: Durchschnittliche Haushaltsgroesse
+                  status: active
+                  table_name: haushaltsgroesse
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Durchschnittliche_Haushaltsgroesse_in_Gitterzellen.zip
+
+                - name: Haushaltsgroesse
+                  status: active
+                  table_name: privathaushalt_groesse
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Zensus2022_Groesse_des_privaten_Haushalts_in_Gitterzellen.zip
+
+                - name: Kernfamilie nach Kindern
+                  status: active
+                  table_name: kernfamilie_kinder
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Typ_der_Kernfamilie_nach_Kindern.zip
+
+                - name: Kernfamilie Groesse
+                  status: active
+                  table_name: kernfamilie_groesse
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Groesse_der_Kernfamilie.zip
+
+                - name: Privathaushalt Lebensform
+                  status: active
+                  table_name: privathaushalt_lebensform
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Typ_des_privaren_Haushalts_Lebensform.zip
+
+                - name: Privathaushalt Familie
+                  status: active
+                  table_name: privathaushalt_familien
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Typ_des_privaten_Haushalts_Familien.zip
+
+                - name: Seniorenstatus im Privathaushalt
+                  status: active
+                  table_name: seniorenstatus
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Seniorenstatus_eines_privaten_Haushalts.zip
+
+                - name: Nettokaltmiete
+                  status: active
+                  table_name: nettokaltmiete
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Zensus2022_Durchschn_Nettokaltmiete.zip
+
+                - name: Nettokaltmiete + Anzahl Wohnungen
+                  status: active
+                  table_name: nettokaltmiete_wohnungen
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Durchschnittliche_Nettokaltmiete_und_Anzahl_der_Wohnungen.zip
+
+                - name: Eigentuemerquote
+                  status: active
+                  table_name: eigentuemerquote
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Eigentuemerquote_in_Gitterzellen.zip
+
+                - name: Leerstandsquote
+                  status: active
+                  table_name: leerstandsquote
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Leerstandsquote_in_Gitterzellen.zip
+
+                - name: Marktaktive Leerstandsquote
+                  status: active
+                  table_name: leerstandsquote_marktaktiv
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Marktaktive_Leerstandsquote_in_Gitterzellen.zip
+
+                - name: Wohnflaeche je Bewohner
+                  status: active
+                  table_name: wohnflaeche_bewohner
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Durchschnittliche_Wohnflaeche_je_Bewohner_in_Gitterzellen.zip
+
+                - name: Flaeche je Wohnung
+                  status: active
+                  table_name: wohnflaeche_wohnung
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Durchschnittliche_Flaeche_je_Wohnung_in_Gitterzellen.zip
+
+                - name: Flaeche Wohnung 10m2 Intervalle
+                  status: active
+                  table_name: wohnflaeche_wohnung_intervalle
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Flaeche_der_Wohnung_10m2_Intervalle.zip
+
+                - name: Wohnungen nach Gebaeudetyp
+                  status: active
+                  table_name: wohnungen_gebaeudetyp
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Wohnungen_nach_Gebaeudetyp_Groesse.zip
+
+                - name: Wohnungen nach Raeumen
+                  status: active
+                  table_name: wohnungen_raeume
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Wohnungen_nach_Zahl_der_Raeume.zip
+
+                - name: Gebaeude nach Baujahr (Jahrzehnte)
+                  status: active
+                  table_name: gebaeude_baujahr_jahrzehnte
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Gebaeude_nach_Baujahr_Jahrzehnte.zip
+
+                - name: Gebaeude nach Baujahr (Mikrozensus)
+                  status: active
+                  table_name: gebaeude_baujahr_mikrozensus
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Gebaeude_nach_Baujahr_in_Mikrozensus_Klassen.zip
+
+                - name: Gebaeude nach Anzahl Wohnungen
+                  status: active
+                  table_name: gebaeude_anzahl_wohnungen
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Gebaeude_nach_Anzahl_der_Wohnungen_im_Gebaeude.zip
+
+                - name: Gebaeude nach Typ und Groesse
+                  status: active
+                  table_name: gebaeude_typ_groesse
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Gebaeude_mit_Wohnraum_nach_Gebaeudetyp_Groesse.zip
+
+                - name: Heizungsart
+                  status: active
+                  table_name: heizungsart
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Zensus2022_Heizungsart.zip
+
+                - name: Heizungsart (ueberwiegend)
+                  status: active
+                  table_name: heizungsart_ueberwiegend
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Gebaeude_mit_Wohnraum_nach_ueberwiegender_Heizungsart.zip
+
+                - name: Energietraeger
+                  status: active
+                  table_name: energietraeger
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Zensus2022_Energietraeger.zip
+
+                - name: Energietraeger der Heizung
+                  status: active
+                  table_name: energietraeger_heizung
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Gebaeude_mit_Wohnraum_nach_Energietraeger_der_Heizung.zip
+
+                - name: Auslaenderanteil EU/nichtEU
+                  status: active
+                  table_name: auslaenderanteil_eu_nichteu
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Auslaenderanteil_EU_nichtEU_Gitterzellen.zip
+
+                - name: Gebaeude nach Baujahresklassen
+                  status: active
+                  table_name: gebaeude_baujahresklassen
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Gebaeude_nach_Baujahresklassen_in_Gitterzellen.zip
+
+                - name: Shapefile Zensus 2022
+                  status: not-active
+                  table_name: shapefile_2022
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Shapefile_Zensus2022.zip
+
+                - name: Bevoelkerung (100m Raster)
+                  status: active
+                  table_name: bevoelkerung_100m
+                  year: 2011
+                  url: http://www.destatis.de/static/DE/zensus/2011_gitterdaten/Download-Tabelle_Bevoelkerung_im_100_Meter-Gitter.zip
+
+                - name: Demographie (100m Raster)
+                  status: active
+                  table_name: demographie_100m
+                  year: 2011
+                  url: http://www.destatis.de/static/DE/zensus/2011_gitterdaten/Demographie_100_Meter-Gitter.zip
+
+                - name: Familien (100m Raster)
+                  status: active
+                  table_name: familien_100m
+                  year: 2011
+                  url: http://www.destatis.de/static/DE/zensus/2011_gitterdaten/Download-Tabelle_Familien_im_100_Meter-Gitter.zip
+
+                - name: Haushalte (100m Raster)
+                  status: active
+                  table_name: haushalte_100m
+                  year: 2011
+                  url: http://www.destatis.de/static/DE/zensus/2011_gitterdaten/Tabelle_Haushalt_im_100_Meter-Gitter.zip
+
+                - name: Wohnungen (100m Raster)
+                  status: active
+                  table_name: wohnungen_100m
+                  year: 2011
+                  url: http://www.destatis.de/static/DE/zensus/2011_gitterdaten/Wohnungen_im_100_Meter-Gitter.zip
+
+                - name: Gebaeude und Wohnungen (100m Raster)
+                  status: active
+                  table_name: gebaeude_wohnungen_100m
+                  year: 2011
+                  url: http://www.destatis.de/static/DE/zensus/2011_gitterdaten/Gebaeude_und_Wohnungen_im_100_Meter-Gitter.zip
+
+                - name: Klassierte Werte (1km Raster)
+                  status: active
+                  table_name: klassierte_werte_1km
+                  year: 2011
+                  url: http://www.destatis.de/static/DE/zensus/2011_gitterdaten/Tabelle_und_Datensatzbeschreibung_Klassierte_Werte_im_ein_Kilometer-Gitter.zip
+
+                - name: Spitze Werte (1km Raster)
+                  status: active
+                  table_name: spitze_werte_1km
+                  year: 2011
+                  url: http://www.destatis.de/static/DE/zensus/2011_gitterdaten/Tabelle_und_Datensatzbeschreibung_Spitze_Werte_im_ein_Kilometer-Gitter.zip
+
+                - name: Shapefile 1km Raster
+                  status: active
+                  table_name: shapefile_1km
+                  year: 2011
+                  url: http://www.destatis.de/static/DE/zensus/2011_gitterdaten/Shapefile_eines_ein_Kilometer-Gitters_fuer_Deutschland_INSPIRE_konform.zip
+
+                - name: Shapefile Zensus 2011
+                  status: active
+                  table_name: shapefile_2011
+                  year: 2011
+                  url: https://www.destatis.de/static/DE/zensus/2011_gitterdaten/Shapefile_Zensus2011.zip
+
+                        

@@ -1,95 +1,138 @@
 Solar Potential Calculation
 ===========================
 
-InfDB includes a solar potential analysis service that estimates how much sunlight each roof surface receives.
-
-This is an **optional feature** and is useful for users who want to assess solar energy potential using their own 3D building data (LOD2).
+InfDB includes a solar potential analysis service (Sunpot) that estimates how much sunlight each roof surface receives.  
+This is an **optional module**, ideal for users working with LOD2 3D building data.
 
 When the solar pipeline runs:
 
-1. LOD2 geometry is loaded into a temporary CityDB v4 instance.
+1. LOD2 geometry is loaded into a temporary **CityDB v4** instance.
 2. Sunlight exposure is simulated using predefined parameters.
-3. Results are exported and written into a persistent CityDB v5 schema for further use.
+3. Results are exported and stored in the **CityDB v5** schema for long-term use.
 
-You can enable this workflow after the loader setup is complete and 3DCityDB services are running.
+You can enable this module **after the Data Loader setup is complete** and all 3DCityDB services are up and running.
 
-#. **Generate .env File for Sunpot**
+Step 1: Generate the `.env` File for Sunpot
+-------------------------------------------
 
-    Before launching the service, generate the `.env` file that defines database and directory settings.
+Before launching the solar potential service, generate the required ``.env`` file for Docker Compose:
 
-    .. code-block:: bash
+.. code-block:: bash
 
-        # Linux/macOS
-        python3 -m dockers.sunpot.generate-env
+    # Linux/macOS
+    python3 -m dockers.sunpot.generate-env
 
-        # Windows
-        python -m dockers.sunpot.generate-env
+    # Windows
+    python -m dockers.sunpot.generate-env
 
-    This script pulls values from two configuration files:
+This script pulls values from your existing configuration files:
 
-    - ``configs/configs-sunpot.yml`` (database connection):
+- **Database connection (CityDB v4)** — defined in ``configs/config-sunpot.yml``:
 
-        .. code-block:: yaml
+  .. code-block:: yaml
 
-            CITYDBV4_DB: citydb
-            CITYDBV4_USER: citydb_user
-            CITYDBV4_PASSWORD: citydb_password
-            CITYDBV4_EPSG: 25832
-            CITYDBV4_HOST: citydbv4
-    
-    - ``configs/config.yml``:
+        CITYDBV4_DB: citydb
+        CITYDBV4_USER: citydb_user
+        CITYDBV4_PASSWORD: citydb_password
+        CITYDBV4_EPSG: 25832
+        CITYDBV4_HOST: citydbv4
 
-        .. code-block:: yaml
+- **Base output directory** — from ``base`` in ``configs/config.yml``:
 
-            base:
-                name: sonthofen
-                path:
-                    base: "infdb-data/"
-                base_sunset_dir: "{base/path/base}/sunset/"
+  .. code-block:: yaml
 
-    - ``configs/config-loader.yml`` (shared paths):
+    base:
+      name: sonthofen
+      path:
+        base: "infdb-data/"
+      base_sunset_dir: "{base/path/base}/sunset/"
 
-        .. code-block:: yaml
+- **LOD2 input directories** — from ``loader.paths`` in ``configs/config-loader.yml``:
 
-            lod2:
-                path:
-                    lod2: "{loader/path/base}/lod2/"
-                    gml: "{loader/path/processed}/lod2/"
+  .. code-block:: yaml
 
-    These ensure:
+    loader:
+      path:
+        base: "{base/path/base}/lod2/"
+        processed: "{base/path/base}/{base/name}/lod2/"
 
-    - Input geometry is read from: ``{loader/path/base}/lod2/``
-    - Output results are stored in: ``{base/path/base}/sunset/``
+These values ensure:
 
-#. **Run the Sunpot Service**
+- LOD2 input geometry is read from: ``{loader/path/base}`` → e.g., ``infdb-data/lod2/``
+- Results are stored in: ``{base/base_sunset_dir}`` → e.g., ``infdb-data/sunset/``
 
-    Once the `.env` file is created and CityDB v4 is running:
 
-    .. code-block:: bash
+Step 2: Run the Sunpot Service
+------------------------------
 
-        docker-compose -f ./dockers/sunpot/docker-compose.yml up
+Once the ``.env`` file is created and CityDB v4 is running, launch the solar service:
 
-    This will:
+.. code-block:: bash
 
-    - Connect to CityDB v4 using credentials in the `.env` file
-    - Perform solar potential calculations on the loaded LOD2 data
-    - Store results in the `sunpot` schema of CityDB v4
+    docker-compose -f ./dockers/sunpot/docker-compose.yml up
 
-#. **Rebuild if You Modify Sunpot Code**
+This will:
 
-    If you make changes to ``src/services/sunpot/`` or its dependencies:
+- Connect to **CityDB v4** using the credentials from the ``.env`` file
+- Perform **solar potential simulations** on the LOD2 data
+- Export and transfer results into the ``sunpot`` schema of CityDB v4
 
-    .. code-block:: bash
+If you are **not running in detached mode**, the terminal output will show the sequential creation of containers:
 
-        docker-compose -f ./dockers/sunpot/docker-compose.yml up --build
+.. code-block:: text
 
-#. **CityDB v5 Sync Workflow**
+    ✔ Container sunpot-citydbv4-1                 Created                                  0.4s 
+    ✔ Container sunpot-import-to-v4-1             Created                                  0.5s 
+    ✔ Container sunpot-sunpot-core-1              Created                                  0.4s 
+    ✔ Container sunpot-sunpot-texture-1           Created                                  0.4s 
+    ✔ Container solarpotential-export-and-import  Created                                  0.5s 
 
-    By default, results are written to **CityDB v4**.
+.. note::
 
-    To move the results into **CityDB v5**, the system runs an internal export/import pipeline:
+   The **solar pipeline is sequential** — only one service runs at a time (except `citydbv4`, which stays up).  
+   Some steps depend on `citydbv4`.
 
-    1. Make sure CityDB v5 is running (via loader setup)
-    2. The Sunpot pipeline will:
-        - Export results from CityDB v4 into CSVs in ``base_sunset_dir`` which will be resolved as ``infdb-data/sunset/``
-        - Import those CSVs into CityDB v5 using the script under ``src/services/sunpot/``
+To see real-time status of the Sunpot pipeline, run:
+
+.. code-block:: bash
+
+    watch -n 2 "docker-compose -f ./dockers/sunpot/docker-compose.yml ps"
+
+This refreshes the status table every 2 seconds.
+
+Example snapshot:
+
+.. code-block:: text
+
+    Every 2.0s: docker-compose -f ./dockers/sunpot/docker-compose.yml ps
+
+    NAME                    IMAGE                               COMMAND                  SERVICE        CREATED         STATUS         PORTS
+    sunpot-citydbv4-1       3dcitydb/3dcitydb-pg:13-3.2-4.4.0   "docker-entrypoint.s…"   citydbv4       2 minutes ago   Up 2 minutes   0.0.0.0:5435->5432/tcp
+    sunpot-import-to-v4-1   3dcitydb/impexp                     "impexp import /data…"   import-to-v4   1 minute ago    Up 10 seconds
+
+.. tip::
+
+   If you modify the Sunpot code in ``src/services/sunpot/``, rebuild the containers using:
+
+   .. code-block:: bash
+
+       docker-compose -f ./dockers/sunpot/docker-compose.yml up --build
+
+
+Step 3: CityDB v5 Sync Workflow
+-------------------------------
+
+By default, results are stored in **CityDB v4**.  
+To make them accessible through the unified InfDB API, they must be **migrated to CityDB v5**.
+
+This step is automatic:
+
+1. Ensure **CityDB v5** is running (already done during Data Loader setup)
+2. Sunpot will:
+   - Export CSV results into: ``{base/base_sunset_dir}``
+   - Import those CSVs into the ``sunpot`` schema of **CityDB v5**
+
+.. note::
+
+   This transfer allows downstream services (e.g., solar dashboards or APIs)  
+   to query solar results from the same CityDB v5 instance as other geospatial data.

@@ -1,0 +1,10 @@
+[project]
+name = "ro-heat"
+version = "1"
+requires-python="==3.12.*"
+dependencies = [
+    "pandas",
+    "sqlalchemy",
+    "PyYAML",
+    "psycopg2-binary",
+]

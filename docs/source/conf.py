@@ -6,20 +6,24 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'InfDB'
-copyright = '2025, Patrick Buchenberg, Ali Yildirim, Markus Doepfert'
-author = 'Patrick Buchenberg, Ali Yildirim, Markus Doepfert'
+project = "InfDB"
+copyright = "2025, Patrick Buchenberg, Ali Yildirim, Markus Doepfert"
+author = "Patrick Buchenberg, Ali Yildirim, Markus Doepfert"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = []
 
-templates_path = ['_templates']
+templates_path = ["_templates"]
 exclude_patterns = []
 
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
+html_static_path = ['css']
 html_theme = "sphinx_rtd_theme"
+html_css_files = [
+    'extra.css',
+]

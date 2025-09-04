@@ -15,7 +15,9 @@ class CityDbRouter:
     async def generateRasterTable(self, resolution: ResolutionEnum = Query):
         result = self.cityDbService.getRasterCenters(resolution)
         if result:
-            raise HTTPException(status_code=404, detail="Table was initialized before, skipping")
+            raise HTTPException(
+                status_code=404, detail="Table was initialized before, skipping"
+            )
 
         self.cityDbService.generateRasterRelatedTables(resolution)
         return {
