@@ -3,7 +3,7 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
-        # container_name: citydb
+        shm_size: "1g" # increase shared memory within docker container
         restart: unless-stopped
         environment:
             POSTGRES_DB: ${SERVICES_CITYDB_DB}

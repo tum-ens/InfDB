@@ -10,13 +10,27 @@ from src.sql import PostgreSQLExecutor
 rng = np.random.default_rng(seed=42)
 end_of_simulation_year = 2025
 construction_year_col = "construction_year"
+schema = "ro_heat"
 
 
 def main():
     try:
         # Initialize logging
         logger.setup_main_logger(None)
-        log = logging.getLogger(__name__)   
+        log = logging.getLogger(__name__)
+
+        # Database configuration
+        parameters = config.get_db_parameters("citydb")
+        # Initialize database executor
+        db_executor = PostgreSQLExecutor(
+            host=parameters["host"],
+            port=parameters["exposed_port"],
+            database=parameters["db"],
+            username=parameters["user"],
+            password=parameters["password"],
+        )
+        sql = f"CREATE SCHEMA IF NOT EXISTS {schema};"
+        db_executor.execute_sql_query(sql)
     
         SQL_QUERY = """
                     DROP TABLE IF EXISTS pylovo_input.temp_rc_calculation;
@@ -130,19 +144,8 @@ def main():
 
         with engine.connect() as connection:
             refurbed_df.to_sql(
-                "buildings_rc", connection, if_exists="replace", schema="pylovo_input", index=False
+                "buildings_rc", connection, if_exists="replace", schema=schema, index=False
             )
-
-        # Database configuration
-        parameters = config.get_db_parameters("citydb")
-        # Initialize database executor
-        db_executor = PostgreSQLExecutor(
-            host=parameters["host"],
-            port=parameters["exposed_port"],
-            database=parameters["db"],
-            username=parameters["user"],
-            password=parameters["password"],
-        )
 
         # Run SQL: 01_calculate_r_values
         db_executor.execute_sql_scripts("sql", "01_calculate_r_values.sql")

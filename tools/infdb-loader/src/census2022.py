@@ -142,7 +142,7 @@ def process_dataset(dataset):
                 gdf_clipped = gdf
 
             table_name = dataset["table_name"]
-            table_name = prefix + "_" + str(dataset["year"])[-2:] + "_" + resolution + "_" + dataset["table_name"]
+            table_name = prefix + "_" + str(dataset["year"]) + "_" + resolution + "_" + dataset["table_name"]
 
             gdf_clipped.to_postgis(table_name, engine, if_exists='replace', schema=schema, index=False)
 

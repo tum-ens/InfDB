@@ -160,6 +160,7 @@ The infDB will be run as long as you stop it manually as described below even wh
 **Hint:** If compose.yml is not found, you either forgot to run the command above or something went wrong. 
 Please check the logs of the setup service.
 
+**Hint:** The infDB will be run as long as you stop it manually as described below even when the machine is restarted.
 
 ### Stop infDB
 ```bash
@@ -241,11 +242,14 @@ Once you adjusted the configuration files with the command above, you need to fi
 
 # on windows
 ```
-The infDB will be run as long as you stop it manually as described below even when the machine is restarted.
 
-**Hint:** If compose.yml is not found, you either forgot to run the command above or something went wrong. 
-Please check the logs of the setup service.
+### Run infDB-preprocessor
+```bash
+# on linux and macos
+  docker compose -f tools/infdb-preprocessor/compose.yml up
 
+# on windows
+```
 
 ### Remove LOD2 data
 ```bash

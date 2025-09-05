@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS pylovo_input.r_values;
-CREATE TABLE pylovo_input.r_values AS
+DROP TABLE IF EXISTS ro_heat.r_values;
+CREATE TABLE ro_heat.r_values AS
 -- Calculation of r values according to DIN EN ISO 6946:2018-03
 -- See table 7 for r_si and r_se values
 -- Simplified consideration of thermal bridges, delta_U_WB = 0.1, according to DIN V 18599-2:2018-09, see section 6.2.5
@@ -22,9 +22,9 @@ WITH element_vars AS (SELECT 'OuterWall'::text  AS element_name,
                              -- sum (R_i); see formula (4) in DIN EN ISO 6946:2018-03
                              SUM(l.thickness / m.thermal_conduc) AS r_layers
                       FROM element_vars v
-                               JOIN opendata.tba_type_elements t
+                               JOIN opendata.tabula_type_elements t
                                     ON t.element_name = v.element_name
-                               JOIN pylovo_input.buildings_rc b ON TRUE
+                               JOIN ro_heat.buildings_rc b ON TRUE
                                JOIN LATERAL (
                           SELECT (to_jsonb(b) ->> v.year_col)::int     AS year_val,
                                  (to_jsonb(b) ->> v.area_col)::numeric AS area_val,
@@ -36,9 +36,9 @@ WITH element_vars AS (SELECT 'OuterWall'::text  AS element_name,
                                      ELSE 'tabula_de_retrofit_1_' || b.building_type
                                      END                               AS construction_match
                           ) vals ON TRUE
-                               JOIN opendata.tba_layers l
+                               JOIN opendata.tabula_layers l
                                     ON t.element_id = l.element_id
-                               JOIN opendata.tba_materials m
+                               JOIN opendata.tabula_materials m
                                     ON l.material_id = m.material_id
                       WHERE vals.year_val BETWEEN t.start_year AND t.end_year
                         AND t.construction_data = vals.construction_match
