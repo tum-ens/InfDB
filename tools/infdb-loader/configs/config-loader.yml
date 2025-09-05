@@ -51,7 +51,7 @@ loader:
                 gml: "{loader/path/opendata}/lod2/{loader/name}"
 
         bkg:
-            status: active
+            status: not-active
             path:
                 base: "{loader/path/opendata}/bkg/"
                 zip: "{loader/sources/bkg/path/base}/zip/"
@@ -82,7 +82,7 @@ loader:
                     - 10km
 
         basemap:
-            status: active
+            status: not-active
             url: "https://basemap.de/dienste/opendata/basisviews/"
             ending: ".gpkg"
             filter:
@@ -125,7 +125,7 @@ loader:
                 - versorgungspunkt
                 - weitere_nutzung_flaeche
         plz:
-            status: active
+            status: not-active
             url: "https://downloads.suche-postleitzahl.org/v2/public/plz-5stellig.geojson"
             path:
                 base: "{loader/path/opendata}/plz/"
@@ -135,7 +135,7 @@ loader:
             layer:
                 - plz-5stellig
         tabula:
-            status: active
+            status: not-active
             url:
                 - "https://raw.githubusercontent.com/RWTH-EBC/TEASER/refs/heads/main/teaser/data/input/inputdata/TypeElements_TABULA_DE.json"
                 - "https://raw.githubusercontent.com/RWTH-EBC/TEASER/refs/heads/main/teaser/data/input/inputdata/MaterialTemplates.json"
