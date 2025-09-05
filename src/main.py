@@ -16,6 +16,11 @@ def _env(key: str, default: str) -> str:
 PYGEOAPI_URL = _env("PYGEOAPI_INTERNAL", os.getenv("PYGEOAPI_URL", "http://cityapi-pygeoapi:5000/"))
 POSTGREST_URL = _env("POSTGREST_INTERNAL", os.getenv("POSTGREST_URL", "http://cityapi-postgrest:3000/"))
 
+def _env(key: str, default: str) -> str:
+    v = os.getenv(key, default)
+    if (key.upper().startswith("PYGEOAPI") or key.upper().startswith("POSTGREST")) and not v.endswith("/"):
+        v = v + "/"
+    return v
 
 schema = "our_schema"  # <-- Replace with our schema name
 create_common_data_table(schema)

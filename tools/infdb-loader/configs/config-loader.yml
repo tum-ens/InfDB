@@ -144,7 +144,7 @@ loader:
             schema: opendata
             prefix: tba
         zensus_2022:
-            status: not-active
+            status: active
             resolutions:
                 # - 10km
                 # - 1km
