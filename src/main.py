@@ -3,6 +3,9 @@ from fastapi import FastAPI, Request, HTTPException, Response
 import httpx
 from urllib.parse import urljoin
 from typing import Optional, Mapping, Iterable, Tuple, List
+from db.models.common_data import create_common_data_table
+from db.models.energy_assets import energy_assets
+from db.models.electricity_components import electricity_network_components
 
 def _env(key: str, default: str) -> str:
     v = os.getenv(key, default)
@@ -12,6 +15,18 @@ def _env(key: str, default: str) -> str:
 
 PYGEOAPI_URL = _env("PYGEOAPI_INTERNAL", os.getenv("PYGEOAPI_URL", "http://cityapi-pygeoapi:5000/"))
 POSTGREST_URL = _env("POSTGREST_INTERNAL", os.getenv("POSTGREST_URL", "http://cityapi-postgrest:3000/"))
+
+def _env(key: str, default: str) -> str:
+    v = os.getenv(key, default)
+    if (key.upper().startswith("PYGEOAPI") or key.upper().startswith("POSTGREST")) and not v.endswith("/"):
+        v = v + "/"
+    return v
+
+schema = "our_schema"  # <-- Replace with our schema name
+create_common_data_table(schema)
+energy_assets(schema)
+electricity_network_components(schema)
+
 
 app = FastAPI(title="cityAPI Gateway", version="1.0.0")
 
