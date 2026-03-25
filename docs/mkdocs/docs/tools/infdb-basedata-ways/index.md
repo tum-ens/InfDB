@@ -1,26 +1,22 @@
-# Infdb-basedata-ways
-This guide explains how to use the `pyinfdb` python package to interact with your infDB instance.
+# InfDB-basedata-buildings
+The tool `infDB-basedata-ways` processes ways-related data as fundamental data basis for various applications and analyses.
 
-## Contents
-
+<!-- ## Contents
 - Objective (Scope, Motivation)
-- Usage (Quick Start, Requirements, Configuration)
 - Architecture (Design, Implementation)
     - Structure (Project/Code)
     - Data Pipeline
     - Code (Classes and Functions)
     - Dependencies
+- Usage (Quick Start, Requirements, Configuration) -->
 
-## Structure
-The `pyinfdb` package consists of a superior class InfDB based on the internal classes InDBConfig, InfDBClient, InfDBLogger and InfDBIO as shown in the following figure:
-![alt text](demo-figure.png)
-The user only interacts with the superior InfDB class, the internal classes are not directly accessible. This abstraction ensures the python interface is consistent despite changes in the internal structure of the package.
-It provides functions for database access, configuration management, logging and data handling. The central idea is to provide standard methods to interact with infDB in order to simplify the interaction with infDB.
 
-## Installation
-pyinfdb is available on [PyPI](https://pypi.org/project/infdb/) and can be installed via pip:
-```bash
-uv pip install pyinfdb
-```
+## Usage
+Details on how to use the tool can be found in the [Usage](usage.md) section.
 
-## Quick Start
+## Architecture
+The architecture of the `infDB-basedata-buildings` tool is based on the InfDB Dev Container template as described in the [Tools Template](../dev-container/index.md) section. The tool is implemented in Python and utilizes the `pyinfdb` package for interaction with infDB. The database operations are executed using SQL queries. More details can be found in the [Architecture](architecture.md) section.
+
+## Data Pipeline
+More details can be found in the [Data Pipeline](data-pipeline.md) section.
+

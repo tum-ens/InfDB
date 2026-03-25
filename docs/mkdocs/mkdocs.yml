@@ -94,6 +94,8 @@ nav:
     - infdb-basedata (old): tools/infdb-basedata.md
     - infdb-basedata-ways: 
       - tools/infdb-basedata-ways/index.md
+      - Usage: tools/infdb-basedata-ways/usage.md
+      - Architecture: tools/infdb-basedata-ways/architecture.md
       - Data Pipeline: tools/infdb-basedata-ways/data-pipeline.md
     - infdb-basedata-buildings: 
       - tools/infdb-basedata-buildings/index.md
