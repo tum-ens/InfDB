@@ -34,6 +34,8 @@ The tool writes the processed results into global output tables:
 - `basedata.nodes_per_junction`: Stores the nodes of the way network contained in `basedata.ways_per_junction`.
 - `basedata.connection_lines`: Stores the generated connection lines between buildings and their assigned ways.
 
+![output tables infdb-basedata-ways](output-tables.png)
+
 ## Functions
 
 The main logic of the tool is implemented through SQL scripts and database functions. These components support assignment updates, segmentation, splitting operations, and connection generation.
