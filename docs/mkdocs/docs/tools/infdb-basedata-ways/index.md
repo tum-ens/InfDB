@@ -1,4 +1,4 @@
-# InfDB-basedata-buildings
+# InfDB-basedata-ways
 The tool `infDB-basedata-ways` processes ways-related data as fundamental data basis for various applications and analyses.
 
 <!-- ## Contents

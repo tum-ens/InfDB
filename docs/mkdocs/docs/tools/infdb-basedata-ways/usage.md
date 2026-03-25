@@ -49,7 +49,7 @@ infdb-basedata-ways:
 
 - `input_schema`: Name of the database schema from which the input data is read.
 - `output_schema`: Name of the database schema to which the output tables are written.
-- `use_address_information`: Boolean flag that enables the use of address information during processing.
+- `use_address_information`: Boolean flag that enables the use of buildings address information during processing.
 - `klasse_filter`: List of allowed `klasse` values that are kept in the input road network.
 - `klasse_objektart_filter`: Mapping from `klasse` to a list of allowed `objektart` values. This allows more specific filtering for selected road classes.
 - `apply_length_filter`: Boolean flag that enables filtering of segments shorter than the configured minimum length.
