@@ -28,11 +28,11 @@ During processing, the tool creates and updates temporary or intermediate tables
 
 The tool writes the processed results into global output tables:
 
-- `basedata.ways_per_connection`: Stores the final way network designed for the Pylovo tool. In this network, ways are additionally segmented at building-to-way connection points.
-- `basedata.nodes_per_connection`: Stores the nodes of the way network contained in `basedata.ways_per_connection`.
-- `basedata.ways_per_junction`: Stores the final way network designed for the linear heat density tool. In this network, ways are segmented at way junctions but not additionally at building-to-way connection points.
+- `basedata.ways_per_junction`: Stores the final way network designed for tools such as the linear heat density tool which requires that the ways are segmented at way junctions but not additionally at building-to-way connection points.
 - `basedata.nodes_per_junction`: Stores the nodes of the way network contained in `basedata.ways_per_junction`.
 - `basedata.connection_lines`: Stores the generated connection lines between buildings and their assigned ways.
+- `basedata.ways_per_connection`: Stores the final way network designed for tools such as the pylovo tool which requires that the ways are additionally segmented at building-to-way connection intersections.
+- `basedata.nodes_per_connection`: Stores the nodes of the way network contained in `basedata.ways_per_connection`. These nodes include the buildings, the street-to-street intersections and street-to-connection_line connection points.
 
 ![output tables infdb-basedata-ways](output-tables.png)
 
@@ -74,7 +74,7 @@ The SQL-based processing is organized into multiple sequential scripts. These sc
 #### 4. `building_address.sql`  
   Matches buildings to nearby named ways based on their parsed street address and stores the result in `buildings.address_street_id`. If multiple matching ways exist, the nearest one is selected.
 #### 5. `assign_buildings_to_ways.sql`  
-  Assigns each building to a suitable way and writes the result to `buildings.assigned_way_id`. Depending on the configuration, it prefers a direct match via address information and otherwise falls back to the nearest suitable way.
+  Assigns each building to a suitable way and writes the result to `buildings.assigned_way_id`. Depending on the configuration, it prefers a more efficient direct match via the address information added in the last step or otherwise falls back to the nearest suitable way using postgis distance operators.
 #### 6. `merge_candidates.sql`  
   Creates temporary merge candidate data for `ways_tem` by analyzing neighbouring line endpoints within a distance tolerance. It identifies adjacent way segments and stores the required information for later way-merging steps.
 #### 7. `merge_chain.sql`  
@@ -82,7 +82,7 @@ The SQL-based processing is organized into multiple sequential scripts. These sc
 #### 8. `merge_ways.sql`  
   Merges connected way segments in `ways_tem` into single way geometries based on the previously generated chain candidates. It uses `update_assigned_way_id_after_merge` to update affected building-to-way assignments after the merge.
 #### 9. `filter_isolated_loop_short.sql`  
-  Filters selected ways from `ways_tem` by removing loops, isolated ways, and short segments depending on the configured rules. After filtering, it uses `update_assigned_way_id` to update affected building-to-way assignments and, where applicable, transfers the removed way length to a replacement way.
+  Filters selected ways from `ways_tem` by removing loops, isolated ways, and short segments depending on the configured rules. After filtering, it uses `update_assigned_way_id` to update affected building-to-way assignments to be connected to the adjacent street of the filtered street and, where applicable, transfers the removed way length to a replacement way.
 #### 10. `segment_intersecting_ways.sql`  
   Splits intersecting ways in `ways_tem` at their intersection points and reinserts the resulting segments. This step ensures that crossings are represented as separate connected way segments for later network generation.
 #### 11. `generate_building_to_way_connection.sql`  
