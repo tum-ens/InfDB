@@ -82,7 +82,7 @@ The SQL-based processing is organized into multiple sequential scripts. These sc
 #### 8. `merge_ways.sql`  
   Merges connected way segments in `ways_tem` into single way geometries based on the previously generated chain candidates. It uses `update_assigned_way_id_after_merge` to update affected building-to-way assignments after the merge.
 #### 9. `filter_isolated_loop_short.sql`  
-  Filters selected ways from `ways_tem` by removing loops, isolated ways, and short segments depending on the configured rules. After filtering, it uses `update_assigned_way_id` to update affected building-to-way assignments to be connected to the adjacent street of the filtered street and, where applicable, transfers the removed way length to a replacement way.
+  Filters selected ways from `ways_tem` by removing loops, isolated ways, and short segments depending on the configured rules. After filtering, it uses `update_assigned_way_id` to update affected building-to-way assignments to be connected to the adjacent street of the filtered street and, where applicable, adds the filtered way’s length to the adjacent street that takes over its connections, so the total length from filtered ways can be tracked.
 #### 10. `segment_intersecting_ways.sql`  
   Splits intersecting ways in `ways_tem` at their intersection points and reinserts the resulting segments. This step ensures that crossings are represented as separate connected way segments for later network generation.
 #### 11. `generate_building_to_way_connection.sql`  
