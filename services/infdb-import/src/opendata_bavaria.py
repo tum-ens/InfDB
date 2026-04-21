@@ -1,5 +1,7 @@
 import json
 import logging
+import multiprocessing as mp
+import os
 import subprocess
 from pathlib import Path
 from typing import Dict, List
@@ -33,6 +35,236 @@ def _get_gpkg_layers(gpkg: Path) -> list[str]:
         # Expected format: "1: layer_name (Geometry Type)"
         out = subprocess.check_output(["ogrinfo", "-ro", "-q", str(gpkg)], text=True, stderr=subprocess.STDOUT)
         return [line.split(":", 1)[1].split("(")[0].strip() for line in out.splitlines() if ":" in line and "(" in line]
+
+
+def _urls_to_local_paths(
+    urls: list[str],
+    base_dir: str | Path,
+    log,
+    *,
+    expected_suffix: str | None = None,
+) -> list[str]:
+    """Resolve current-run URLs to existing local file paths in base_dir."""
+    base_dir = str(base_dir)
+    local_files = []
+    missing_files = []
+
+    for url in urls:
+        filename = os.path.basename(url)
+        local_path = os.path.join(base_dir, filename)
+
+        if expected_suffix and not filename.lower().endswith(expected_suffix.lower()):
+            log.warning("Skipping unexpected file extension for URL: %s", url)
+            continue
+
+        if os.path.isfile(local_path):
+            local_files.append(local_path)
+        else:
+            missing_files.append(local_path)
+
+    if missing_files:
+        log.warning("Expected %d downloaded files are missing locally.", len(missing_files))
+        for path in missing_files[:20]:
+            log.warning("Missing file: %s", path)
+        if len(missing_files) > 20:
+            log.warning("... and %d more missing files.", len(missing_files) - 20)
+
+    return sorted(set(local_files))
+
+
+def _chunk_list(items: list[str], chunk_size: int) -> list[list[str]]:
+    """Split items into fixed-size chunks."""
+    if chunk_size <= 0:
+        raise ValueError("chunk_size must be > 0")
+    return [items[i:i + chunk_size] for i in range(0, len(items), chunk_size)]
+
+
+def _write_file_list(file_paths: list[str], list_path: Path) -> None:
+    """Write one file path per line for GDAL input_file_list usage."""
+    with open(list_path, "w", encoding="utf-8") as f:
+        for path in file_paths:
+            f.write(f"{path}\n")
+
+
+def _cleanup_paths(paths: list[Path], log) -> None:
+    """Delete generated helper/output files if they exist."""
+    for path in paths:
+        try:
+            path.unlink(missing_ok=True)
+        except Exception:
+            log.warning("Could not remove temporary file: %s", path)
+
+
+def _process_dgm1_batch_and_append(
+    batch_files: list[str],
+    tool_name: str,
+    source_srid: int,
+    target_res: float,
+    target_table: str,
+    mask_path_str: str,
+    work_dir: str,
+    batch_index: int,
+    total_batches: int,
+) -> bool:
+    try:
+        infdb = InfDB(tool_name=tool_name, config_path="../configs/config-infdb-import.yml")
+        log = infdb.get_worker_logger()
+
+        if not batch_files:
+            log.info("DGM1 batch %d/%d: empty batch, skipping.", batch_index, total_batches)
+            return True
+
+        work_dir = Path(work_dir)
+        mask_path = Path(mask_path_str)
+
+        file_list_path = work_dir / f"dgm1_batch_{batch_index:04d}.txt"
+        vrt_path = work_dir / f"dgm1_batch_{batch_index:04d}.vrt"
+        clipped_tif = work_dir / f"dgm1_batch_{batch_index:04d}.tif"
+
+        _write_file_list(batch_files, file_list_path)
+
+        rc = utils.do_cmd(
+            infdb,
+            [
+                "gdalbuildvrt",
+                "-input_file_list",
+                str(file_list_path),
+                str(vrt_path),
+            ],
+        )
+        if rc != 0:
+            log.error("DGM1 batch %d/%d: gdalbuildvrt failed.", batch_index, total_batches)
+            return False
+
+        rc = utils.do_cmd(
+            infdb,
+            [
+                "gdalwarp",
+                "-overwrite",
+                "-of",
+                "GTiff",
+                "-co",
+                "TILED=YES",
+                "-co",
+                "COMPRESS=DEFLATE",
+                "-co",
+                "PREDICTOR=2",
+                "-co",
+                "BIGTIFF=IF_SAFER",
+                "-co",
+                "BLOCKXSIZE=512",
+                "-co",
+                "BLOCKYSIZE=512",
+                "-r",
+                "bilinear",
+                "-multi",
+                "-wo",
+                "NUM_THREADS=ALL_CPUS",
+                "-t_srs",
+                f"EPSG:{source_srid}",
+                "-tr",
+                str(target_res),
+                str(target_res),
+                "-srcnodata",
+                "-9999",
+                "-dstnodata",
+                "-9999",
+                "-cutline",
+                str(mask_path),
+                "-cl",
+                "mask",
+                "-crop_to_cutline",
+                str(vrt_path),
+                str(clipped_tif),
+            ],
+        )
+        if rc != 0:
+            log.error("DGM1 batch %d/%d: gdalwarp failed.", batch_index, total_batches)
+            return False
+
+        if not clipped_tif.exists() or clipped_tif.stat().st_size == 0:
+            log.warning("DGM1 batch %d/%d: clipped TIFF is empty, skipping append.", batch_index, total_batches)
+            return True
+
+        pgurl = utils._pg_connstring_for_psql(infdb)
+        psql_cmd = f'psql --no-psqlrc -q -v ON_ERROR_STOP=1 -X "{pgurl}"'
+
+        import_pipeline = (
+            f'raster2pgsql -q -a -s {source_srid} -N -9999 -t 100x100 "{clipped_tif}" {target_table} | {psql_cmd}'
+        )
+
+        rc = utils.do_cmd(infdb, import_pipeline, shell=True)
+        if rc != 0:
+            log.error("DGM1 batch %d/%d: raster2pgsql append failed.", batch_index, total_batches)
+            return False
+
+        return True
+
+    except Exception:
+        if "log" in locals():
+            log.exception("DGM1 batch %d/%d failed unexpectedly.", batch_index, total_batches)
+        return False
+
+
+def _append_dgm1_batches_in_parallel(
+    infdb: InfDB,
+    tile_paths: list[str],
+    source_srid: int,
+    target_res: float,
+    target_table: str,
+    mask_path: Path,
+    work_dir: str | Path,
+    batch_size: int = 200,
+    processes: int | None = None,
+) -> None:
+    log = infdb.get_worker_logger()
+
+    if not tile_paths:
+        log.warning("DGM1: no TIFF tiles to process.")
+        return
+
+    batches = _chunk_list(tile_paths, batch_size)
+    total_batches = len(batches)
+
+    if processes is None:
+        processes = utils.get_number_processes(infdb)
+
+    processes = max(1, min(processes, total_batches))
+
+    with mp.Pool(processes=processes) as pool:
+        results = pool.starmap(
+            _process_dgm1_batch_and_append,
+            [
+                (
+                    batch,
+                    infdb.get_toolname(),
+                    source_srid,
+                    target_res,
+                    target_table,
+                    str(mask_path),
+                    str(work_dir),
+                    i + 1,
+                    total_batches,
+                )
+                for i, batch in enumerate(batches)
+            ],
+        )
+
+    if not all(results):
+        raise RuntimeError("DGM1: one or more batch append jobs failed.")
+
+
+def _finalize_dgm1_raster_table(infdb: InfDB, target_table: str) -> None:
+    """Finalize raster table after parallel appends without using AddRasterConstraints."""
+    table_name = target_table.split(".", 1)[1]
+    index_name = f"{table_name}_st_convexhull_idx"
+
+    with infdb.connect() as db:
+        db.execute_query(
+            f"CREATE INDEX IF NOT EXISTS {index_name} "
+            f"ON {target_table} USING GIST (ST_ConvexHull(rast));"
+        )
+        db.execute_query(f"ANALYZE {target_table};")
 
 
 # ====================================================================================
@@ -91,7 +323,7 @@ def load(infdb: InfDB) -> bool:
 
     except Exception as err:
         log.exception(f"An error occurred in OpenData Bavaria loader: {str(err)}")
-        return False
+        sys.exit(1)
 
 
 # ====================================================================================
@@ -159,25 +391,11 @@ def _load_dgm1(infdb: InfDB, base_path: Path, target_epsg: int):
     utils.download_aria2c_many(infdb, urls, output_dir=str(dgm1_base_dir))
 
     # ---------- 5. Collect all downloaded TIFF tiles ----------
-    raster_source_files = subprocess.check_output(
-        [
-            "find",
-            str(dgm1_base_dir),
-            "-type",
-            "f",
-            "-iname",
-            "*.tif",
-            "-print",
-        ],
-        text=True,
-    ).strip()
+    tile_paths = _urls_to_local_paths(urls, dgm1_base_dir, log, expected_suffix=".tif")
 
-    if not raster_source_files:
+    if not tile_paths:
         log.warning("DGM1: no .tif tiles found after download; skipping.")
         return
-
-    tile_paths = raster_source_files.splitlines()
-    src_files = " ".join(f'"{p}"' for p in tile_paths)
 
     log.info("DGM1: %d raster tiles available for clipping.", len(tile_paths))
 
@@ -202,53 +420,57 @@ def _load_dgm1(infdb: InfDB, base_path: Path, target_epsg: int):
     gdf.to_file(mask_path, layer="mask", driver="GPKG")
 
     # ---------- 8. Clip / merge all tiles into one raster ----------
-    output_tif = dgm1_base_dir / f"dgm1_{target_res}m_clipped.tif"
-
-    gdalwarp_opts = (
-        "-overwrite "
-        "-of GTiff "
-        "-co TILED=YES -co COMPRESS=DEFLATE -co PREDICTOR=2 "
-        "-co BIGTIFF=IF_SAFER -co BLOCKXSIZE=512 -co BLOCKYSIZE=512 "
-        "-r bilinear "
-        "-multi -wo NUM_THREADS=ALL_CPUS "
-        f"-t_srs EPSG:{source_srid} "
-        f"-tr {target_res} {target_res} "
-        "-srcnodata -9999 -dstnodata -9999 "
-        f'-cutline "{mask_path}" -cl mask -crop_to_cutline '
-    )
-
-    utils.do_cmd(infdb, f'gdalwarp {gdalwarp_opts} {src_files} "{output_tif}"')
-
-    # ---------- 9. Validate output ----------
-    try:
-        size_mb = output_tif.stat().st_size / 1_000_000
-    except FileNotFoundError:
-        log.error("DGM1: clipped raster not found at %s", output_tif)
-        return
-
-    if size_mb <= 0:
-        log.warning("DGM1: clipped raster is empty; skipping import.")
-        output_tif.unlink(missing_ok=True)
-        return
-
-    log.info("DGM1: created clipped raster (%.1f MB)", size_mb)
-
-    # ---------- 10. Import into PostGIS ----------
     target_table = f"{schema}.{table_base}"
+    generated_paths: list[Path] = []
 
-    with infdb.connect() as db:
-        db.execute_query(f"DROP TABLE IF EXISTS {target_table};")
+    try:
+        batch_size = 200
+        batch_processes = 2
 
-    pgurl = utils._pg_connstring_for_psql(infdb)
-    psql_cmd = f'psql --no-psqlrc -q -v ON_ERROR_STOP=1 -X "{pgurl}"'
+        total_batches = len(_chunk_list(tile_paths, batch_size))
+        for i in range(1, total_batches + 1):
+            generated_paths.extend(
+                [
+                    dgm1_base_dir / f"dgm1_batch_{i:04d}.txt",
+                    dgm1_base_dir / f"dgm1_batch_{i:04d}.vrt",
+                    dgm1_base_dir / f"dgm1_batch_{i:04d}.tif",
+                ]
+            )
 
-    import_pipeline = (
-        f'raster2pgsql -q -s {source_srid} -I -C -M -N -9999 -t 100x100 -l 4,8,16 "{output_tif}" {target_table} | {psql_cmd}'
-    )
+        with infdb.connect() as db:
+            db.execute_query(f"DROP TABLE IF EXISTS {target_table};")
 
-    log.info("DGM1: importing into %s", target_table)
-    utils.do_cmd(infdb, import_pipeline, shell=True)
-    log.info("DGM1: import finished.")
+        pgurl = utils._pg_connstring_for_psql(infdb)
+        psql_cmd = f'psql --no-psqlrc -q -v ON_ERROR_STOP=1 -X "{pgurl}"'
+
+        prepare_pipeline = (
+            f'raster2pgsql -q -p -s {source_srid} -N -9999 -t 100x100 "{tile_paths[0]}" {target_table} | {psql_cmd}'
+        )
+        utils.do_cmd(infdb, prepare_pipeline, shell=True)
+
+        log.info("DGM1: starting parallel batch clip + append import into %s", target_table)
+
+        _append_dgm1_batches_in_parallel(
+            infdb=infdb,
+            tile_paths=tile_paths,
+            source_srid=source_srid,
+            target_res=target_res,
+            target_table=target_table,
+            mask_path=mask_path,
+            work_dir=dgm1_base_dir,
+            batch_size=batch_size,
+            processes=batch_processes,
+        )
+
+        log.info("DGM1: all batch appends completed. Finalizing raster table.")
+
+        _finalize_dgm1_raster_table(infdb, target_table)
+
+        log.info("DGM1: import finished.")
+
+    finally:
+        generated_paths.append(mask_path)
+        _cleanup_paths(generated_paths, log)
 
 
 # ====================================================================================
