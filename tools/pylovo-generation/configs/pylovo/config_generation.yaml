@@ -1,8 +1,8 @@
 # =============================================================================
 # Version CONFIGURATION
 # =============================================================================
-VERSION_ID: "1" # Change version if you changed any grid parameters or queries (e.g. transformer query)
-VERSION_COMMENT: base version # State here which parameters, queries are used to compute the grids with current VERSION_ID
+VERSION_ID: "2-infdb" # Changed to verify PYLOVO_CONFIG_DIR override from infdb repo is working
+VERSION_COMMENT: infdb-managed config override via PYLOVO_CONFIG_DIR
 
 # =============================================================================
 # EXECUTION CONFIGURATION

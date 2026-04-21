@@ -69,8 +69,20 @@ def main() -> None:
         log.error("No AGS defined. Set the AGS environment variable or configure 'data.ags_list' in the config file.")
         sys.exit(1)
 
-    # Run pylovo
-    run_pylovo_setup(infdb)
+    # Run pylovo-setup only if the output schema doesn't exist yet
+    with infdb.connect() as db:
+        rows = db.execute_query(
+            "SELECT EXISTS(SELECT 1 FROM information_schema.schemata WHERE schema_name = %s)",
+            (output_schema,),
+        )
+        schema_exists = rows[0][0] if rows else False
+
+    if schema_exists:
+        log.info("Schema '%s' already exists, skipping pylovo-setup", output_schema)
+    else:
+        log.info("Schema '%s' not found, running pylovo-setup", output_schema)
+        run_pylovo_setup(infdb)
+
     run_pylovo_generate(infdb, ags_selection)
     log.info("Successfully finished %s tool", infdb.get_toolname())
     infdb.stop_logger()
