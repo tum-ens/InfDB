@@ -22,7 +22,7 @@ WITH src AS (
   FROM {input_schema}.basemap_verkehrslinie v
   JOIN {input_schema}.bkg_vg5000_gem g
     ON g.ags = '{ags}'                  -- restrict to target AGS
-   AND ST_Intersects(v.geom, g.geom)    -- keep features intersecting the AGS polygon
+   AND ST_Within(ST_Centroid(v.geom), g.geom)    -- keep features whose centroid is within the AGS polygon
 ),
 dumped AS (
   SELECT
@@ -76,29 +76,22 @@ CREATE INDEX IF NOT EXISTS ways_tem_ags_bix ON ways_tem (ags);             -- AG
 
 
 DROP TABLE IF EXISTS connection_lines_tem; -- ensure clean temp table for this session
-CREATE TEMP TABLE connection_lines_tem AS
-SELECT
-    ags,        -- AGS tag for downstream scoping
-    id,         -- same id type/shape as ways_tem for consistent downstream handling
-    klasse,     -- preserved class attribute
-    objektart,  -- preserved type attribute
-    geom        -- geometry column with same SRID/type expectations as ways_tem
-FROM ways_tem
-WHERE false;  -- create table structure only
 
-ALTER TABLE connection_lines_tem
-  ADD COLUMN IF NOT EXISTS postcode integer;  -- filled later after postcode enrichment/join
+CREATE TEMP TABLE connection_lines_tem (
+    ags text,                               -- AGS tag for downstream scoping
+    id text,                                -- stable segment id / connection line id
+    connected_way_id text,                  -- id of the way in ways_tem this connection belongs to
+    klasse text,                            -- preserved class attribute
+    objektart text,                         -- preserved type attribute
+    geom geometry,                          -- geometry column with same general type style as existing table
 
-ALTER TABLE connection_lines_tem
-  ADD COLUMN IF NOT EXISTS length_geo double precision
-    GENERATED ALWAYS AS (ST_Length(geom)) STORED; -- geometric length of the segment (native SRID units)
-
-ALTER TABLE connection_lines_tem
-  ADD COLUMN IF NOT EXISTS length_filter double precision; -- length accumulator used in merge/delete bookkeeping
-
-ALTER TABLE connection_lines_tem
-  ADD COLUMN IF NOT EXISTS length_connection_line double precision; -- length accumulator used for connection line accounting
+    postcode integer,                       -- filled later after postcode enrichment/join
+    length_geo double precision GENERATED ALWAYS AS (ST_Length(geom)) STORED, -- geometric length of the segment
+    length_filter double precision,         -- length accumulator used in merge/delete bookkeeping
+    length_connection_line double precision -- length accumulator used for connection line accounting
+);
 
 CREATE INDEX IF NOT EXISTS connection_lines_tem_geom_gix ON connection_lines_tem USING gist (geom); -- spatial predicates (intersects/within/nn)
 CREATE INDEX IF NOT EXISTS connection_lines_tem_id_bix ON connection_lines_tem (id);               -- id lookup/join index
 CREATE INDEX IF NOT EXISTS connection_lines_tem_ags_bix ON connection_lines_tem (ags);             -- AGS scoped filtering
+CREATE INDEX IF NOT EXISTS connection_lines_tem_connected_way_id_bix ON connection_lines_tem (connected_way_id); -- connected way lookup/join index

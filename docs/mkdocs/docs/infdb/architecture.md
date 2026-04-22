@@ -1,11 +1,11 @@
 ---
 icon: material/domain
 ---
-# infDB Architecture :material-domain:
+# InfDB Architecture :material-domain:
 
-The architecture of infDB is designed to be modular, scalable, and flexible, allowing for easy integration of various data sources and tools. This architecture is implemented using Docker Compose to orchestrate multiple services, including the core database, data importers, and various processing tools.
+The architecture of InfDB is designed to be modular, scalable, and flexible, allowing for easy integration of various data sources and tools. This architecture is implemented using Docker Compose to orchestrate multiple services, including the core database, data importers, and various processing tools.
 
-![infDB Architecture](infdb-architecture.png)
+![InfDB Architecture](infdb-architecture.png)
 
 ## Core Components
 

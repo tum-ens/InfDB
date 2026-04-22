@@ -61,10 +61,11 @@ WHERE ags = '{ags}';         -- copy only rows for the current AGS
 DELETE FROM {output_schema}.connection_lines
 WHERE ags = '{ags}'; -- restrict delete to current AGS scope
 
-INSERT INTO {output_schema}.connection_lines (ags, id, klasse, objektart, geom, postcode, length_geo, length_filter, length_connection_line, changelog_id)
+INSERT INTO {output_schema}.connection_lines (ags, id, connected_way_id, klasse, objektart, geom, postcode, length_geo, length_filter, length_connection_line, changelog_id)
 SELECT
   ags,                      -- municipality/region id (AGS) as text
   id,                       -- segment id as text
+  connected_way_id,        -- id of the way in ways_tem this connection belongs to
   klasse,                   -- feature class
   objektart,                -- feature type
   geom,                     -- segment geometry

@@ -5,7 +5,7 @@ The project guidelines establish consistent standards and best practices for dev
 We are happy for all feedback and contributions!
 
 ## How to contribute
-If you are interested in contributing to the infDB project, please refer to the [Workflow](workflow.md) for a step-by-step guide on how to get started.
+If you are interested in contributing to the InfDB project, please refer to the [Workflow](workflow.md) for a step-by-step guide on how to get started.
 
 !!! tip
     We recommend Visual Studio Code as IDE, especially because of the integrated support for development container.

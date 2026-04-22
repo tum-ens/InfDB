@@ -1,5 +1,5 @@
 # Workflow
-Please follow the development workflow outlined below when contributing to the infDB project:
+Please follow the development workflow outlined below when contributing to the InfDB project:
 
 0. **Set up the environment** following the installation instructions in [Usage -> Get Software](../usage/get-software.md).
 1. **Open an issue** to discuss new features, bugs, or changes.
@@ -29,7 +29,7 @@ The CI/CD workflow is set up using GitLab CI/CD. The workflow runs tests, checks
 !!! warning "Troubleshooting on Windows"
     To open the repository in Visual Studio Code (VSC) click the two arrowheads in the lower left corner of VSC and select "Connect to WSL". Then you can open the repository folder from for Linux home directory.
 
-This section summarizes some problems encountered during the first installation and startup of infDB on Windows, along with their solutions.
+This section summarizes some problems encountered during the first installation and startup of InfDB on Windows, along with their solutions.
 
 **1. Ubuntu launched as root instead of Normal User**
 

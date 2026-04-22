@@ -1,5 +1,7 @@
 # Repository Strucuture
 
+![Repository Structure](repository-structure.png)
+
 <!-- ### Root Directory
 - **Configuration Files**: `.env`, `.env.template`, `pyproject.toml`, `pytest.ini`, `uv.lock`
 - **Docker Files**: `compose.yml`, `.dockerignore`
@@ -17,17 +19,17 @@ GitHub-specific configurations including issue templates, pull request templates
 GitLab-specific configurations including issue templates, merge request templates, and CI workflows.
 
 #### `configs/`
-Configuration files for infDB initialization:
+Configuration files for InfDB initialization:
 
 - `config-infdb-import.yml`: Configuration for infdb-import to import opendata sources
 
 #### `docs/`
 
-- **mkdocs/**: MkDocs-based documentation with comprehensive guides on API, development, infDB architecture, tools, usage, and welcome information
+- **mkdocs/**: MkDocs-based documentation with comprehensive guides on API, development, InfDB architecture, tools, usage, and welcome information
 - **data-bugs.md**: Collection of known data issues and bugs
 
 #### `services/`
-infDB services, each with Docker configurations:
+InfDB services, each with Docker configurations:
 
 - **infdb-api/**: API services (FastAPI, PostgREST, pygeoapi)
 - **infdb-db/**: PostgreSQL database with 3DCityDB extension
@@ -41,7 +43,7 @@ infDB services, each with Docker configurations:
 #### `src/`
 Main application package:
 
-- **infdb_package/**: Python package with core infDB functionality
+- **infdb_package/**: Python package with core InfDB functionality
     - **infdb/**: Core modules (client, config, logger, utils)
     - **scripts/**: Utility scripts for documentation and API generation
     - **docs/** & **documentation/**: Package-specific documentation

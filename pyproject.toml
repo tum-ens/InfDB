@@ -1,7 +1,7 @@
 [project]
 name = "infdb-workspace"
-version = "0.1.0"
-description = "Infrastructure database and tools for kommunale Wärmeplanung"
+version = "4.0.0"
+description = "Infrastructure and Energy Database"
 authors = [
   { name = "Patrick Buchenberg", email = "patrick.buchenberg@tum.de" }
 ]

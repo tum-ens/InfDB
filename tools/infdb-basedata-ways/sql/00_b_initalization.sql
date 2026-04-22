@@ -119,7 +119,8 @@ BEGIN
             CREATE OR REPLACE FUNCTION {output_schema}.insert_way_segment(
                 p_ags text,       -- AGS tag for inserted segment
                 p_klasse text,    -- class determining target table (connection_line vs segmented_way vs road)
-                p_geom geometry   -- segment geometry in expected SRID/type
+                p_geom geometry,  -- segment geometry in expected SRID/type
+                p_connected_way_id text DEFAULT NULL
             ) RETURNS void
             LANGUAGE plpgsql
             AS $func$
@@ -145,8 +146,8 @@ BEGIN
                 v_new := md5(random()::text || clock_timestamp()::text); -- generate unique-ish text id
 
                 IF p_klasse = 'connection_line' THEN -- route connection lines to their temp table
-                    INSERT INTO connection_lines_tem (ags, id, klasse, objektart, geom, postcode)
-                    VALUES (p_ags, v_new, p_klasse, NULL, p_geom, NULL);
+                    INSERT INTO connection_lines_tem (ags, id, connected_way_id, klasse, objektart, geom, postcode)
+                    VALUES (p_ags, v_new, p_connected_way_id, p_klasse, NULL, p_geom, NULL);
                 ELSIF p_klasse = 'segmented_way' THEN -- route segmented ways to ways_tem_connection
                     INSERT INTO ways_tem_connection (ags, id, klasse, objektart, geom, postcode)
                     VALUES (p_ags, v_new, p_klasse, NULL, p_geom, NULL);
@@ -376,12 +377,13 @@ BEGIN
             -- --------------------------------------------------------
             -- Table: connection_lines (global output table)
             -- --------------------------------------------------------
-            -- Create empty table with the same column layout as ways_tem
+            -- Create empty table with the same column layout as connection_lines_tem
             DROP TABLE IF EXISTS {output_schema}.connection_lines; -- ensure clean table for this session
             CREATE TABLE {output_schema}.connection_lines AS
             SELECT
                 ags,                   -- municipality/region id (AGS) as text
                 id,                    -- segment id as text
+                connected_way_id,      -- id of the way in ways_tem this connection belongs to
                 klasse,                -- feature class
                 objektart,             -- feature type
                 geom,                  -- segment geometry
@@ -389,8 +391,8 @@ BEGIN
                 length_geo,            -- stored geometric length
                 length_filter,         -- bookkeeping accumulator
                 length_connection_line -- bookkeeping accumulator for connection lines
-            FROM ways_tem
-            WHERE false;  -- Creates structure only, no data
+            FROM connection_lines_tem
+            WHERE false;  -- creates structure only, no data
 
             ALTER TABLE {output_schema}.connection_lines
             ADD COLUMN changelog_id BIGINT REFERENCES public.changelog(id) ON DELETE SET NULL;
@@ -406,6 +408,9 @@ BEGIN
 
             CREATE INDEX connection_lines_geom_gix
                 ON {output_schema}.connection_lines USING GIST (geom);
+
+            CREATE INDEX connection_lines_connected_way_id_idx
+                ON {output_schema}.connection_lines (connected_way_id);
 
             -- Prevent duplicates per AGS+id
             CREATE UNIQUE INDEX connection_lines_ags_id_ux

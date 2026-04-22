@@ -13,6 +13,10 @@ def create_tabula_structure(tabula_rows: DataFrame) -> DataFrame:
     def _as_float(value: Any) -> float:
         return float(value)
 
+    # Explicitly sort by layer_index according to EUReCA specification
+    # EUReCA requires Materials sorted from outside (highest layer_index) to inside (lowest layer_index)
+    tabula_rows = tabula_rows.sort_values('layer_index', ascending=False)
+
     materials = [
         eureca_code.Material(
             _as_str(row.material_name),
@@ -25,7 +29,6 @@ def create_tabula_structure(tabula_rows: DataFrame) -> DataFrame:
     ]
     tabula_rows["materials"] = Series(materials, index=tabula_rows.index, dtype="object")
 
-    # TODO: Explicitly sort by layer_index according to EUReCA specification
     constructions = (
         tabula_rows.groupby(["building_type", "element_name", "construction_data", "start_year", "end_year"])[
             "materials"

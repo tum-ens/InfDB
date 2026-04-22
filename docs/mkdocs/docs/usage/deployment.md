@@ -3,22 +3,22 @@ icon: material/rocket-launch
 ---
 # Deployment :material-rocket-launch:
 
-The infDB platform is designed for easy deployment using provided bash scripts that abstract complex Docker Compose commands.
+The InfDB platform is designed for easy deployment using provided bash scripts that abstract complex Docker Compose commands.
 
 !!! warning "Prerequisite"
     Ensure that **Docker** and **Docker Compose** are installed and running on your system.
 
 ## Management Commands
 
-### Start infDB
-To start the configured infDB services:
+### Start InfDB
+To start the configured InfDB services:
 
 ```bash
 bash infdb.sh start
 ```
 
 !!! info "Persistence"
-    infDB services will continue running in the background until manually stopped, even if the terminal is closed.
+    InfDB services will continue running in the background until manually stopped, even if the terminal is closed.
 
 ## Data Import
 
@@ -28,14 +28,14 @@ The **infdb-import** service usually runs automatically on startup if configured
 bash infdb.sh import
 ```
 
-### Stop infDB
+### Stop InfDB
 To stop all running services **without** deleting data:
 
 ```bash
 bash infdb.sh stop
 ```
 
-### Remove infDB
+### Remove InfDB
 To stop services **and** delete all stored data (reset):
 
 ```bash

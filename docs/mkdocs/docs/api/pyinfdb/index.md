@@ -1,11 +1,11 @@
 # Python Package pyinfdb
-This guide explains how to use the `pyinfdb` python package to interact with your infDB instance.
+This guide explains how to use the `pyinfdb` python package to interact with your InfDB instance.
 
 ## Structure
 The `pyinfdb` package consists of a superior class InfDB based on the internal classes InDBConfig, InfDBClient, InfDBLogger and InfDBIO as shown in the following figure:
 ![alt text](pyinfdb.png)
 The user only interacts with the superior InfDB class, the internal classes are not directly accessible. This abstraction ensures the python interface is consistent despite changes in the internal structure of the package.
-It provides functions for database access, configuration management, logging and data handling. The central idea is to provide standard methods to interact with infDB in order to simplify the interaction with infDB.
+It provides functions for database access, configuration management, logging and data handling. The central idea is to provide standard methods to interact with InfDB in order to simplify the interaction with InfDB.
 
 ## Installation
 pyinfdb is available on [PyPI](https://pypi.org/project/infdb/) and can be installed via pip:
@@ -21,7 +21,7 @@ The typical workflow involves three steps:
 3.  **Usage**: Use the instance to get a database connection and log messages.
 
 ### 1. Configuration
-The infDB class uses system environment variables and YAML configuration files to load the database credentials, settings and parameters. If no path is given, no configuration will be loaded and the configuration will rely solely on environment variables. Otherwise, the configuration file path needs to be given as the argument `config_path` while initializing the InfDB class. A typical config file (e.g., `configs/config-my-tool.yml`) looks like this:
+The InfDB class uses system environment variables and YAML configuration files to load the database credentials, settings and parameters. If no path is given, no configuration will be loaded and the configuration will rely solely on environment variables. Otherwise, the configuration file path needs to be given as the argument `config_path` while initializing the InfDB class. A typical config file (e.g., `configs/config-my-tool.yml`) looks like this:
 ```yaml title="config-my-tool.yml"
 db:
   host: None        #(1)
@@ -40,7 +40,7 @@ logging:
 
 Configuration paramters that should be not overridden can be set to "None" in the config file. This ensures that these parameters are not accidentally changed and that the system environment variables are used instead. This is especially useful for sensitive information such as database credentials.
 
-Environment variables can be set in a `.env` file or directly in the system environment. The excerpt below shows the central .env file for infDB, which contains the database credentials and connection parameters.
+Environment variables can be set in a `.env` file or directly in the system environment. The excerpt below shows the central .env file for InfDB, which contains the database credentials and connection parameters.
 ```bash title=".env"
 # ==============================================================================
 # POSTGRESQL DATABASE (Db Service)

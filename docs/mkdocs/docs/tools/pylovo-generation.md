@@ -45,7 +45,7 @@ The main output of the tool is:
 - Grid geometries for visualization
 - Grid metrics for analysis
 
-The output datasets are stored in the `pylovo` schema of the infDB PostgreSQL database. The most important tables  are:
+The output datasets are stored in the `pylovo` schema of the InfDB PostgreSQL database. The most important tables  are:
 
 - version: Tracks a dataset version incl. comment, creation timestamp, and serialized parameters used for a run.
 - equipment_data: Versioned catalog of electrical equipment (e.g. transformers/cables) with technical parameters and costs.

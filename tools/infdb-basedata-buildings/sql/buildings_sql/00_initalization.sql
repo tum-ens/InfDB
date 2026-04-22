@@ -410,6 +410,99 @@ BEGIN
                 END IF;
             END;
 
+            -- Function 3: safe_area_fallback
+            BEGIN
+                -- ============================================================
+                -- Function: {output_schema}.safe_area_fallback(geometry)
+                -- Purpose:
+                --   - Provides a resilient, multi-stage calculation for 3D surface area.
+                --   - Specifically designed to handle "dirty" architectural data (walls, roofs).
+                --   - Bypasses strict SFCGAL planarity requirements while maintaining accuracy.
+                -- Logic Flow:
+                --   1. PRIMARY ATTEMPT: CG_3DArea (SFCGAL)
+                --      - Uses the high-precision SFCGAL kernel for mathematically exact results.
+                --      - Fails Case: If a 3D polygon is "non-planar" (warped). Even a microscopic
+                --        floating-point deviation prevents SFCGAL from identifying a single flat plane.
+                --   2. SECONDARY ATTEMPT: Newell's Method (Vector Cross Product)
+                --      - Fallback for non-planar geometries. It calculates the "Vector Area" by
+                --        summing the cross products of all edges in 3D space.
+                --      - Fails Case: Perfectly vertical walls that are "zero-thickness" in the XY
+                --        plane (collinear). In this orientation, the 3D vector components can
+                --        mathematically collapse to zero, even if the wall has significant height.
+                --   3. FINAL FALLBACK: 2D Plane Projection
+                --      - Used when 3D calculations return zero for shapes that clearly have area.
+                --      - Logic: "Tips" the geometry onto its side (XZ or YZ planes) using rotation.
+                --      - This forces the database to see the "face" of a vertical wall as a 2D
+                --        surface, allowing a standard ST_Area calculation to capture the area.
+                -- Safety:
+                --   - Uses EXCEPTION blocks to prevent "Invalid Geometry" errors from crashing queries.
+                --   - Handles MultiPolygons by decomposing them and summing individual part areas.
+                --   - Returns 0.0 only if the geometry is truly a point or a line.
+                -- ============================================================
+                CREATE OR REPLACE FUNCTION {output_schema}.safe_area_fallback(geom geometry)
+                RETURNS double precision AS $func$
+                DECLARE
+                    total_area double precision := 0;
+                    poly_part geometry;
+                    cp_x double precision; cp_y double precision; cp_z double precision;
+                    pt record;
+                BEGIN
+                    -- 1. Try SFCGAL (Best for valid planar shapes)
+                    BEGIN
+                        total_area := CG_3DArea(geom);
+                        IF total_area > 0 THEN RETURN ROUND(total_area::numeric, 3)::double precision; END IF;
+                    EXCEPTION WHEN OTHERS THEN 
+                        -- Continue to manual
+                    END;
+
+                    -- 2. Loop through parts for MultiPolygons
+                    FOR poly_part IN SELECT (ST_Dump(geom)).geom LOOP
+                        cp_x := 0; cp_y := 0; cp_z := 0;
+
+                        FOR pt IN (
+                            SELECT 
+                                ST_X(p) as x, ST_Y(p) as y, ST_Z(p) as z,
+                                lead(ST_X(p)) OVER () as next_x,
+                                lead(ST_Y(p)) OVER () as next_y,
+                                lead(ST_Z(p)) OVER () as next_z
+                            FROM (SELECT (ST_DumpPoints(poly_part)).geom as p) AS d
+                        ) LOOP
+                            IF pt.next_x IS NOT NULL THEN
+                                cp_x := cp_x + (pt.y * pt.next_z - pt.z * pt.next_y);
+                                cp_y := cp_y + (pt.z * pt.next_x - pt.x * pt.next_z);
+                                cp_z := cp_z + (pt.x * pt.next_y - pt.y * pt.next_x);
+                            END IF;
+                        END LOOP;
+                        
+                        total_area := total_area + (0.5 * SQRT(POW(cp_x, 2) + POW(cp_y, 2) + POW(cp_z, 2)));
+                    END LOOP;
+
+                    -- 3. FINAL FALLBACK: If still 0, it's a perfectly vertical wall on a line.
+                    -- We project to the XZ or YZ plane to catch the "missing" area.
+                    IF total_area = 0 THEN
+                        RETURN ROUND(
+                            GREATEST(
+                                ST_Area(ST_Force2D(ST_SnapToGrid(geom, 0.0001))),
+                                ST_Area(ST_Force2D(ST_RotateX(geom, pi()/2))),
+                                ST_Area(ST_Force2D(ST_RotateY(geom, pi()/2)))
+                            )::numeric,
+                            3
+                        )::double precision;
+                    END IF;
+
+                    RETURN ROUND(total_area::numeric, 3)::double precision;
+                END;
+                $func$ LANGUAGE plpgsql IMMUTABLE;
+
+                RAISE NOTICE '[Init] ✓ Created safe_area_fallback function';
+            EXCEPTION WHEN OTHERS THEN
+                IF SQLERRM LIKE '%concurrently updated%' THEN
+                    RAISE NOTICE '[Init] ✓ safe_area_fallback created by another worker';
+                ELSE
+                    RAISE WARNING '[Init] Error creating safe_area_fallback: %', SQLERRM;
+                END IF;
+            END;
+
             -- ============================================================
             -- SCRIPT 2: Buildings Table
             -- ============================================================
@@ -543,6 +636,32 @@ BEGIN
                 RAISE WARNING '[Init] Error creating buildings_grid_1km: %', SQLERRM;
             END;
 
+            -- ============================================================
+            -- SCRIPT: Building Surface Table
+            -- ============================================================
+
+            BEGIN
+                CREATE TABLE IF NOT EXISTS {output_schema}.building_surface_area AS
+                SELECT
+                    bs.building_objectid,
+                    bs.objectclass_id,
+                    bs.classname,
+                    bs.area,
+                    bs.gemeindeschluessel,
+                    false AS is_synthetic
+                FROM {input_schema}.building_surface bs
+                WHERE false;
+
+                -- Indexes on the target table
+                CREATE INDEX IF NOT EXISTS building_surface_building_objectid_idx ON {output_schema}.building_surface_area (building_objectid);
+
+                RAISE NOTICE '[Init] ✓ Created building_surface_area table with indexes';
+            EXCEPTION WHEN duplicate_table THEN
+                RAISE NOTICE '[Init] ✓ building_surface_area table already exists';
+            WHEN OTHERS THEN
+                RAISE WARNING '[Init] Error creating building_surface_area table: %', SQLERRM;
+            END;
+
             -- bld2ts table
             BEGIN
                 CREATE TABLE IF NOT EXISTS {output_schema}.bld2ts
@@ -619,6 +738,15 @@ BEGIN
           AND tablename  = 'buildings'
     ) THEN
         RAISE EXCEPTION '[Init] FATAL ERROR: buildings table does not exist after initialization. Check logs for errors.';
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_tables
+        WHERE schemaname = '{output_schema}'
+          AND tablename  = 'building_surface_area'
+    ) THEN
+        RAISE EXCEPTION '[Init] FATAL ERROR: building_surface_area table does not exist after initialization. Check logs for errors.';
     END IF;
 
     IF NOT EXISTS (

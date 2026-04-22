@@ -4,12 +4,13 @@ icon: material/cloud-download
 
 # infdb-import :material-cloud-download:
 
-The **infdb-import** service facilitates the ingestion of external data into the infDB platform. It automates the process of importing various open data formats, ensuring that new datasets are properly structured and integrated into the core database for immediate use.
+The **infdb-import** service facilitates the ingestion of external data into the InfDB platform. It automates the process of importing various open data formats, ensuring that new datasets are properly structured and integrated into the core database for immediate use.
+![infdb-import Overview](infdb-import.png)
 
 ## Architecture
-The specialized microservice interacts directly with the infDB database. It leverages containerization to ensure consistent deployment and operation across different environments. The service can be configured to connect to various data sources, retrieve datasets, and transform them into the required format for storage in the database.
+The specialized microservice interacts directly with the InfDB database. It leverages containerization to ensure consistent deployment and operation across different environments. The service can be configured to connect to various data sources, retrieve datasets, and transform them into the required format for storage in the database.
 
-![alt text](infdb-import.png)
+![Data Modell](import-data-modell.png)
 
 ## Supported Data Formats and Sources
 The infdb-import supports a wide range of data formats and sources, including but not limited to:

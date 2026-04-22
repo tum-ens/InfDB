@@ -1,6 +1,6 @@
-site_name: "infDB Documentation"
-site_description: "Documentation for infDB - An Open-Source Data Ecosystem for Urban Energy Infrastructure Modelling and Planning"
-repo_name: "infDB/infDB"
+site_name: "InfDB Documentation"
+site_description: "Documentation for InfDB - An Open-Source Data Ecosystem for Urban Energy Infrastructure Modelling and Planning"
+repo_name: "InfDB/InfDB"
 copyright: "2026, Patrick Buchenberg"
 theme:
   name: material
@@ -58,7 +58,7 @@ nav:
     - Services: usage/services.md
     - Tools: usage/tools.md
 
-  - infDB: 
+  - InfDB: 
     - Introduction: infdb/index.md
     - Architecture: infdb/architecture.md
     # - Core: infdb/core.md
@@ -86,8 +86,19 @@ nav:
 
   - Tools: 
     - Introduction: tools/index.md
-    - Dev Container Tool Template: tools/template.md
-    - infdb-basedata: tools/infdb-basedata.md
+    - Tool Template: 
+      - tools/dev-container/index.md
+      - Structure: tools/dev-container/structure.md
+      - Workflow: tools/dev-container/workflow.md
+      - Data Pipeline: tools/dev-container/data-pipeline.md
+    - infdb-basedata-ways: 
+      - tools/infdb-basedata-ways/index.md
+      - Data Pipeline: tools/infdb-basedata-ways/data-pipeline.md
+    - infdb-basedata-buildings: 
+      - tools/infdb-basedata-buildings/index.md
+      - Usage: tools/infdb-basedata-buildings/usage.md
+      - Architecture: tools/infdb-basedata-buildings/architecture.md
+      - Data Pipeline: tools/infdb-basedata-buildings/data-pipeline.md
     - pylovo-generation: tools/pylovo-generation.md
   - Linear Heat Density: 
     - Introduction: linear-heat-density/index.md

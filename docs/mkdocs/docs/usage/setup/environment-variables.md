@@ -4,18 +4,18 @@ icon: material/file-cog
 
 # Environment Variables
 
-All central configurations of the infDB services are stored in the environment file `.env` in the project root. This enables modular configuration of the infDB services.
+All central configurations of the InfDB services are stored in the environment file `.env` in the project root. This enables modular configuration of the InfDB services.
 
 !!! note
     If you're using the default configuration, you can skip creating and editing the `.env` configuration file.
 
-Before starting infDB, you need to create the `.env` configuration file by copying from the template `.env.template`:
+Before starting InfDB, you need to create the `.env` configuration file by copying from the template `.env.template`:
 
 ```bash
 cp .env.template .env
 ```
 
-Edit the environment file `.env` to customize your infDB instance settings (database credentials, ports, paths, etc.):
+Edit the environment file `.env` to customize your InfDB instance settings (database credentials, ports, paths, etc.):
 
 ```bash title=".env"
 # ==============================================================================

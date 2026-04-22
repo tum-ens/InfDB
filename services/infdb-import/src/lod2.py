@@ -26,9 +26,30 @@ def _iter_tile_origins_for_geom(geom, tile_size_m: int):
 
 
 def _build_urls_for_region(region_name: str, region_cfg: dict, infdb: InfDB, log) -> list[str]:
-    """Build all LoD2 tile URLs for one region based on the scoped geometry."""
+    """Build all tiled dataset URLs for one region based on the scoped geometry.
+
+    This helper is intentionally generic so it can be reused for multiple
+    tiled OpenData sources, for example:
+      - LoD2 NRW
+      - LoD2 Bavaria
+      - DGM1 Bavaria
+
+    Expected config keys in region_cfg:
+      - status: "active" / "not-active"
+      - state_prefix: AGS prefix used to resolve the clip geometry
+      - base_url: URL prefix of the tiled dataset
+      - tile_size_m: tile size in meters (e.g. 1000 or 2000)
+      - filename_template: filename pattern using:
+            {e_km} = easting in km
+            {n_km} = northing in km
+
+    Example filename_template values:
+      - LoD2 NRW:     "LoD2_32_{e_km}_{n_km}_1_NW.gml"
+      - LoD2 Bavaria: "{e_km}_{n_km}.gml"
+      - DGM1 Bavaria: "{e_km}_{n_km}.tif"
+    """
     if region_cfg.get("status") != "active":
-        log.info("LoD2 %s: inactive, skipping.", region_name)
+        log.info("%s: inactive, skipping.", region_name)
         return []
 
     state_prefix = region_cfg.get("state_prefix")
@@ -37,19 +58,23 @@ def _build_urls_for_region(region_name: str, region_cfg: dict, infdb: InfDB, log
     template = region_cfg.get("filename_template")
 
     if not state_prefix or not base_url or not tile_size_m or not template:
-        log.warning("LoD2 %s: incomplete configuration, skipping.", region_name)
+        log.warning("%s: incomplete tiled dataset configuration, skipping.", region_name)
         return []
 
+    # Resolve the scoped geometry once for the configured state/region.
+    # We use EPSG:25832 because the tile grids for these Bavaria/NRW datasets
+    # are aligned in meter-based projected coordinates.
     clip_wkt, _, _ = utils.get_clip_geometry(target_crs=25832, infdb=infdb, state_prefix=state_prefix)
     if not clip_wkt:
-        log.info("LoD2 %s: no scope geometry resolved for state prefix %s, skipping.", region_name, state_prefix)
+        log.info("%s: no scope geometry resolved for state prefix %s, skipping.", region_name, state_prefix)
         return []
 
     scope_geom = shapely_wkt.loads(clip_wkt)
 
     urls = []
     for x, y in _iter_tile_origins_for_geom(scope_geom, tile_size_m=tile_size_m):
-        # x/y are tile origin coordinates in meters
+        # Convert tile origin coordinates from meters to kilometer indices,
+        # because Bavaria/NRW filenames are based on km grid references.
         fname = template.format(
             e_km=x // 1000,
             n_km=y // 1000,
@@ -57,7 +82,7 @@ def _build_urls_for_region(region_name: str, region_cfg: dict, infdb: InfDB, log
         urls.append(base_url + fname)
 
     urls = sorted(set(urls))
-    log.info("LoD2 %s: %d intersecting tiles resolved.", region_name, len(urls))
+    log.info("%s: %d intersecting tiles resolved.", region_name, len(urls))
     return urls
 
 
