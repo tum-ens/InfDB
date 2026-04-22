@@ -530,25 +530,43 @@ def materialize_scope_table(infdb: InfDB) -> None:
 
 
 def get_envelop(infdb: InfDB) -> gpd.GeoDataFrame:
-    """Returns ONE combined GeoDataFrame for the configured scope, loaded from DB."""
+    """Returns one combined GeoDataFrame for the configured scope, loaded from DB.
+
+    Uses a short-lived psycopg2 connection and closes it explicitly to avoid
+    keeping SQLAlchemy engine/pool connections alive in multiprocessing code.
+    """
     log = infdb.get_worker_logger()
-    engine = infdb.get_db_engine()
+    params = infdb.get_db_parameters_dict() or {}
 
     ags_list = fetch_scope_ags_from_db(infdb)
     if not ags_list:
         log.warning("Scope resolved to 0 AGS rows. Returning empty GeoDataFrame.")
         return gpd.GeoDataFrame()
 
-    # Use = ANY(%s) to pass a list safely.
     sql = """
         SELECT *
         FROM opendata.bkg_vg5000_gem
         WHERE ags = ANY(%s)
     """
 
-    # geopandas.read_postgis works with SQLAlchemy engine too
-    gdf_scope = gpd.read_postgis(sql, con=engine, geom_col="geom", params=(ags_list,))
-    return gdf_scope
+    conn = psycopg2.connect(
+        dbname=params["db"],
+        user=params["user"],
+        password=params["password"],
+        host=params["host"],
+        port=params["exposed_port"],
+    )
+
+    try:
+        gdf_scope = gpd.read_postgis(
+            sql,
+            con=conn,
+            geom_col="geom",
+            params=(ags_list,),
+        )
+        return gdf_scope
+    finally:
+        conn.close()
 
 
 # ============================== file helpers ==============================
