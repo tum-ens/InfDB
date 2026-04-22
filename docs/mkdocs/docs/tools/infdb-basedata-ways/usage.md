@@ -22,10 +22,10 @@ infdb-basedata-ways:
             exposed_port: None
             epsg: 3035
     data:
-        input_schema: opendata
-        output_schema: basedata
-        use_address_information: true
-        klasse_filter:
+        input_schema: opendata                  # (1)
+        output_schema: basedata                 # (2)
+        use_address_information: true           # (3)
+        klasse_filter:                          # (4)
             - "Wirtschaftsweg"
             - "Hauptwirtschaftsweg"
             - "Gemeindestraße"
@@ -33,29 +33,27 @@ infdb-basedata-ways:
             - "Bundesstraße"
             - "Bundesautobahn"
             - "Kreisstraße"
-        klasse_objektart_filter:
+        klasse_objektart_filter:                # (5)
             "Bundesstraße":
                 - "Strassenachse"
                 - "Fahrbahnachse"   
             "Bundesautobahn":
                 - "Strassenachse"
-        apply_length_filter: True
-        min_length_meter: 10
-        apply_loop_filter: True
-        apply_isolated_filter: True
+        apply_length_filter: True               # (6)
+        min_length_meter: 10                    # (7)
+        apply_loop_filter: True                 # (8)
+        apply_isolated_filter: True             # (9)
 ```
 
-### Configuration parameters
-
-- `input_schema`: Name of the database schema from which the input data is read.
-- `output_schema`: Name of the database schema to which the output tables are written.
-- `use_address_information`: Boolean flag that enables the use of buildings address information during processing.
-- `klasse_filter`: List of allowed `klasse` values that are kept in the input road network.
-- `klasse_objektart_filter`: Mapping from `klasse` to a list of allowed `objektart` values. This allows more specific filtering for selected road classes.
-- `apply_length_filter`: Boolean flag that enables filtering of segments shorter than the configured minimum length.
-- `min_length_meter`: Minimum segment length in meters. Segments shorter than this value are removed when `apply_length_filter` is enabled.
-- `apply_loop_filter`: Boolean flag that enables filtering of loop geometries.
-- `apply_isolated_filter`: Boolean flag that enables filtering of isolated road segments that are not connected to the main network.
+1. `input_schema`: Name of the database schema from which the input data is read.
+2. `output_schema`: Name of the database schema to which the output tables are written.
+3. `use_address_information`: Boolean flag that enables the use of buildings address information during processing.
+4. `klasse_filter`: List of allowed `klasse` values that are kept in the input road network.
+5. `klasse_objektart_filter`: Mapping from `klasse` to a list of allowed `objektart` values. This allows more specific filtering for selected road classes.
+6. `apply_length_filter`: Boolean flag that enables filtering of segments shorter than the configured minimum length.
+7. `min_length_meter`: Minimum segment length in meters. Segments shorter than this value are removed when `apply_length_filter` is enabled.
+8. `apply_loop_filter`: Boolean flag that enables filtering of loop geometries.
+9. `apply_isolated_filter`: Boolean flag that enables filtering of isolated road segments that are not connected to the main network.
 
 ## Run Single AGS
 To run the tool for a single AGS, you can use the bash script `tools/tools.sh`:
