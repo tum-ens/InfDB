@@ -90,7 +90,7 @@ BEGIN
                 WHERE w2.id::text <> r.way_id
                   AND w2.geom IS NOT NULL
                   AND ST_DWithin(w2.geom, r.geom, v_snap_tol)   -- loop point proximity
-                ORDER BY ST_Distance(w2.geom, r.start_pt) ASC        -- nearest connected geometry first
+                ORDER BY ST_Distance(w2.geom, r.geom) ASC        -- nearest connected geometry first
                 LIMIT 1;
             END IF;
 
