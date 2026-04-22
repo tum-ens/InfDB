@@ -13,14 +13,14 @@ Please follow the development workflow outlined below when contributing to the I
 
 
 ## Developing in a Container
-We recommend using Visual Studio Code with the Remote - Containers extension for development. This allows you to work in a consistent environment that matches the production setup.
+We recommend using Visual Studio Code with the Remote - Containers extension for development of the services. This allows you to work in a consistent environment that matches the production setup.
 
 1. Install the [Remote - Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) in Visual Studio Code.
-2. Open the InfDB project folder btw. corresponding tool folder in Visual Studio Code.
+2. Open the corresponding tool or service folder in Visual Studio Code.
 3. Click on the green icon in the bottom-left corner and select "Reopen in Container".
 4. The development container will be built and launched, providing you with a ready-to-use environment for development.
 !!! hint
-    If you want to develop a tool, you need to open the specific tool folder (e.g., `services/infdb-api/`) instead of the root project folder.
+    If you want to develop a tool or a service, you need to open the specific tool or service folder (e.g., `services/infdb-api/`) instead of the root project folder.
 
 <!-- ## CI/CD Workflow
 
