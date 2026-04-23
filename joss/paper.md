@@ -26,7 +26,7 @@ authors:
     - name: Martin Stengel
       orcid: 0009-0006-2721-3227
       equal-contrib: false
-      affiliation: 1,5
+      affiliation: "1,5"
     - name: Marvin Wen Huang
       orcid: 0009-0002-3988-2138
       equal-contrib: false
@@ -119,7 +119,7 @@ The *Tools* layer (depicted in the right box in the architecture diagram) consis
 * **pyinfdb:** To facilitate the development of custom tools, the platform provides the `pyinfdb` Python package. This library abstracts database connections, logging, and configuration management, allowing researchers to rapidly develop Python-based analysis scripts that integrate seamlessly with the InfDB ecosystem.
 * **Extensible Ecosystem:** Importantly, InfDB does not prescribe specific modeling approaches, optimization methods, or planning workflows. Its role is limited to providing a stable and reproducible data infrastructure that can be reused across different analytical contexts. Therefore, users can integrate existing third-party simulation software or develop proprietary tools that plug into the `InfDB` backend without modifying the core services.
 
-# Research Relevance
+# Research impact statement
 The research relevance of `InfDB` lies in its role as a reusable data infrastructure that supports transparent and reproducible energy system analysis workflows. By separating data management from analysis logic, `InfDB` contributes to several recurring methodological requirements in energy research:
 
 * **Reproducibility:** Containerized deployment and configuration-based data ingestion allow complete data pipelines to be rerun and inspected. This enables studies to be reproduced or updated when new data becomes available, without reimplementing preprocessing steps.
