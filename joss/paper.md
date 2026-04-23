@@ -38,7 +38,7 @@ authors:
     - name: Laura Kuper
       orcid: ''
       equal-contrib: false
-      affiliation: 2,3
+      affiliation: "2,3"
     - name: Carolin Ayasse
       orcid: 0009-0006-8478-216X
       equal-contrib: false
