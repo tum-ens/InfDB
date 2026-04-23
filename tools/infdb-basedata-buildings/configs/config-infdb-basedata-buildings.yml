@@ -1,0 +1,18 @@
+infdb-basedata-buildings:
+    config-infdb: "config-infdb.yml" # only filename - change path in ".env" file "CONFIG_INFDB_PATH"
+    logging:
+        path: "infdb-basedata-buildings.log"
+        level: "INFO" # ERROR, WARNING, INFO, DEBUG
+    hosts:
+        postgres:
+            user: None
+            password: None
+            db: None
+            host: None
+            exposed_port: None
+            epsg: None # 3035 (Europe)
+    data:
+        input_schema: opendata
+        output_schema: basedata
+        census_building_type_resolution: 1km #1km, 100m
+        random_seed: 0.98 # Seed value used for the random assignment of construction periods

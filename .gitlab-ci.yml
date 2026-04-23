@@ -1,10 +1,19 @@
 # .gitlab-ci.yml
-image: python:3.12-slim
 
 # Global variables
 variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
   UV_CACHE_DIR: "$CI_PROJECT_DIR/.cache/uv"
+
+# Default tags for all jobs
+default:
+  image: ghcr.io/astral-sh/uv:python3.12-trixie-slim
+
+  tags:
+    - infdb-feature
+    - docker
+    - python
+
 
 # Cache configuration
 cache:
@@ -16,22 +25,15 @@ cache:
 # Stages
 stages:
   - setup
-  - test
+#  - test
   - lint
-
-# Install uv and dependencies
-.install_uv: &install_uv
-  before_script:
-    - pip install uv
+  - docs
 
 # Setup job
 setup:
   stage: setup
-  <<: *install_uv
   script:
-    - uv venv
-    - source .venv/bin/activate
-    - uv pip install -e .
+    - uv sync --group=test
   artifacts:
     paths:
       - .venv/
@@ -57,41 +59,78 @@ setup:
 #      - htmlcov/
 #    expire_in: 1 week
 
+pre-commit-hook:
+  stage: lint
+  dependencies:
+    - setup
+  script:
+    - apt-get update && apt-get install -y git
+    - source .venv/bin/activate
+    - pre-commit run --all-files
+  allow_failure: true
+
 # Linting job
 lint:
   stage: lint
-  <<: *install_uv
   dependencies:
     - setup
   script:
     - source .venv/bin/activate
-    - uv pip install ruff
     - ruff check .
     - ruff format --check .
-    # - mypy src/
   allow_failure: true
 
 # Type checking
 type-check:
   stage: lint
-  <<: *install_uv
   dependencies:
     - setup
   script:
     - source .venv/bin/activate
-    - uv pip install mypy
-    - mypy src/
+    - mypy src
+    - mypy tests
+    - mypy services/infdb-api/fastapi
+    - mypy services/infdb-api/postgrest
+    - mypy services/infdb-api/pygeoapi
+    - mypy tools/infdb-basedata
+    #- mypy tools/infdb-import
+    #- mypy tools/infdb-metadata
+    #- mypy tools/buildings-to-street
+    # - mypy tools/kwp
+    - mypy tools/ro-heat
+    - mypy tools/linear-heat-density
+    #- mypy tools/sunpot
+
   allow_failure: true
 
 # Security check
+# Bandit:
+#  - Low level issues should not block but can  .
+ # - Some options only exist in CLI, thus not stored in pyprojct.toml
+# B608: SQL strings in Python is used a lot, ideally should be refactored: https://bandit.readthedocs.io/en/latest/plugins/b608_hardcoded_sql_expressions.html
+
 security:
   stage: lint
-  <<: *install_uv
   dependencies:
     - setup
   script:
     - source .venv/bin/activate
-    - uv pip install bandit safety
-    - bandit -r src/
-    - safety check
+    - bandit -r **/*.py --severity-level medium --exclude build --skip "B608"
+    - safety scan
   allow_failure: true
+
+
+pages:
+  stage: docs
+  dependencies:
+    - setup
+  script:
+    - source .venv/bin/activate
+    - mkdocs build -f docs/mkdocs/mkdocs.yml --site-dir ../../public
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - ~/.cache/ 
+  artifacts:
+    paths:
+      - public

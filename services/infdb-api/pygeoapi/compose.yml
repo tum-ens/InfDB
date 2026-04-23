@@ -1,0 +1,49 @@
+services:
+  pygeowatch:
+    profiles:
+      - api
+    image: infdb/pygeowatch:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./workspaces/pygeowatch/:/workspaces/pygeowatch # only for development
+      - infdb-pygeoapi-data:/workspaces/pygeoapi # shared volume with pygeoapi
+      - ../../../src/infdb_package:/workspaces/infdb_package # only for development and until infdb_package is published to PyPI
+    env_file:
+        - ./env_pygeowatch.list
+    healthcheck:
+      test: [ "CMD-SHELL", "test -s /workspaces/pygeoapi/pygeoapi-config.yml" ]
+      interval: 2s
+      timeout: 2s
+      retries: 120
+      start_period: 2s
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - infdb_network
+
+  pygeoapi:
+    profiles:
+      - api
+    image: geopython/pygeoapi:latest
+    env_file:
+        - ./env_pygeoapi.list
+    volumes:
+      - infdb-pygeoapi-data:/workspaces/pygeoapi:ro
+    ports:
+      - "${SERVICES_PYGEOAPI_PORT}:${SERVICES_PYGEOAPI_PORT}"
+    command: run-with-hot-reload
+    depends_on:
+      pygeowatch:
+        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - infdb_network
+
+volumes:
+  infdb-pygeoapi-data:
+    name: ${BASE_NAME}-pygeoapi-data
+    driver: local

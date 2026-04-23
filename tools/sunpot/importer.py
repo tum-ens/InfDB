@@ -1,6 +1,7 @@
 import os
-import pandas as pd
+
 import geopandas as gpd
+import pandas as pd
 from sqlalchemy import text
 from src.core import config
 
@@ -31,13 +32,9 @@ def import_to_v5():
                 geometry=geometry_cols[0],
                 crs=f"EPSG:{config.get_value(['services', 'citydb', 'epsg'])}",
             )
-            gdf.to_postgis(
-                table_name, engine, schema=SCHEMA, if_exists="replace", index=False
-            )
+            gdf.to_postgis(table_name, engine, schema=SCHEMA, if_exists="replace", index=False)
         else:
-            df.to_sql(
-                table_name, engine, schema=SCHEMA, if_exists="replace", index=False
-            )
+            df.to_sql(table_name, engine, schema=SCHEMA, if_exists="replace", index=False)
 
         print(f"Imported {len(df)} rows into '{SCHEMA}.{table_name}'")
 

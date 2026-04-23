@@ -1,1 +1,0 @@
-There are two files since we are currently updating the infdb-loader. Both are currently in use and need to be changed.

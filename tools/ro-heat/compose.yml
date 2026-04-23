@@ -1,13 +1,20 @@
 services:
     ro-heat:
+        profiles: [ "linear", "heat" ]
+        image: infdb/ro-heat:latest
         build:
             context: .
             dockerfile: Dockerfile
         volumes:
-            - ${CONFIG_INFDB_PATH}:/app/mnt/configs-infdb #:ro # for infdb configs
-            - ./configs:/app/configs #:ro # for configs
-            - ./:/app
-            - ../../src/infdb-package:/app/mnt/infdb-package
-            - /app/.venv
+            - ./configs:/workspaces/ro-heat/configs #:ro # for configs
+            - ./:/workspaces/ro-heat # for development only
+            - ../../src/infdb_package:/workspaces/infdb_package
+            # - /workspaces/ro-heat/.venv
+            - .vscode:/workspaces/.vscode:ro # for development only
         extra_hosts:
             - "host.docker.internal:host-gateway"
+        env_file:
+            - ro-heat.env
+        depends_on:
+            infdb-basedata-buildings:
+                condition: service_completed_successfully

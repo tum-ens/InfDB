@@ -1,0 +1,41 @@
+exclude_docs: |
+  api/SUMMARY.md
+
+site_name: infdb docs
+
+theme:
+  name: material
+  features:
+    - content.code.copy
+    - navigation.sections
+    - navigation.indexes
+    - toc.follow
+
+plugins:
+  - search
+  - literate-nav:
+      nav_file: api/SUMMARY.md
+  - section-index
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: google
+            show_source: false
+            show_signature_annotations: true
+            members_order: source
+            inherited_members: true
+
+nav:
+  - Home: infdb.md
+  - Getting started: getting-started.md
+  - API Reference: api/infdb.md
+
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
+  - attr_list
+  - pymdownx.superfences
+  - pymdownx.highlight
+  - pymdownx.details

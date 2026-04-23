@@ -1,0 +1,105 @@
+id: https://id.need.energy/dataschema
+name: dataschema
+description: A LinkML model for relational database metadata (Database → Schema → Table → Column).
+prefixes:
+  schema: http://schema.org/
+  linkml: https://w3id.org/linkml/
+  dataschema: https://id.need.energy/dataschema/
+default_curi_maps: 
+  - semweb_context
+default_prefix: dataschema
+default_range: string
+imports:
+  - linkml:types
+id_prefixes:
+  - dataschema
+
+########################
+#      CLASSES         #
+########################
+
+classes:
+  Database:
+    description: A relational database that contains one or more schemas.
+    attributes:
+      id:
+        identifier: true
+        range: uriorcurie
+        description: IRI of this database instance.
+      name:
+        range: string
+      schemas:
+        range: Schema
+        multivalued: true
+        inlined: true
+        description: Schemas included in the database.
+
+  Schema:
+    description: A schema inside a database that groups related tables.
+    attributes:
+      id:
+        identifier: true
+        range: uriorcurie
+        description: IRI of this schema instance.
+      catalog_name:
+        range: string
+      schema_name:
+        range: string
+      tables:
+        range: Table
+        multivalued: true
+        inlined: true
+        description: Tables defined in this schema.
+
+  Table:
+    description: A table within a schema.
+    attributes:
+      id:
+        identifier: true
+        range: uriorcurie
+        description: IRI of this table instance.
+      table_name:
+        range: string
+      columns:
+        range: Column
+        multivalued: true
+        inlined: true
+        description: Columns of the table.
+      primary_key:
+        range: Column
+        multivalued: true
+        required: false
+        inlined: true
+        description: PK columns of the table.
+      table_type:
+        range: string
+        description: Type of the table (e.g., BASE TABLE, VIEW).
+
+  Column:
+    description: A column inside a table.
+    attributes:
+      id:
+        identifier: true
+        range: uriorcurie
+        description: IRI of this column instance.
+      table_catalog:
+        range: string
+      table_schema:
+        range: string
+      table_name:
+        range: string
+        description: The name of the table this column belongs to.
+      column_name:
+        range: string
+      data_type:
+        range: string
+        description: The data type of the column (e.g., INTEGER, VARCHAR).
+      is_nullable:
+        range: boolean
+        description: Indicates if the column can contain null values.
+      column_default:
+        range: string
+        required: false
+      ordinal_position:
+        range: integer
+        description: The position of the column in the table (1-based index).

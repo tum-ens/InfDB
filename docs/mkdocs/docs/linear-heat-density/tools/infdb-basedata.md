@@ -1,0 +1,2 @@
+# infdb-basedata
+For the generation of the base data used within the linear heat density toolchain, the `infdb-basedata` tool is applied. More information about the tool and its functionalities can be found at Tools -> **[infdb-basedata](../../tools/infdb-basedata.md)**.

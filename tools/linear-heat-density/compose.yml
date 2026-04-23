@@ -1,0 +1,23 @@
+services:
+    linear-heat-density:
+        profiles: [ "linear" ]
+        image: infdb/linear-heat-density:latest
+        build:
+            context: .
+            dockerfile: Dockerfile
+        volumes:
+            - ${CONFIG_INFDB_PATH}:/app/mnt/configs-infdb #:ro # for *.yml configs and generated files
+            - ./configs:/app/configs #:ro # for configs
+            - .:/app/ #:ro # for source code # for development only
+            - ../../src/infdb_package:/app/mnt/infdb_package
+            # - /app/.venv # Exclude .venv from volume mount
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        env_file:
+            - ../../.env
+            - .env
+        depends_on:
+            ro-heat:
+                condition: service_completed_successfully
+            infdb-basedata-ways:
+                condition: service_completed_successfully

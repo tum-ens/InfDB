@@ -1,0 +1,43 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "infdb"
+version = "0.2.0"
+authors = [
+  { name="Patrick Buchenberg", email="patrick.buchenberg@tum.de" },
+]
+description = "InfDB wrapper for python"
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering",
+]
+dependencies = [
+    "psycopg2-binary",
+    "PyYAML",
+    "dotenv",
+    "SQLAlchemy",
+    "geopandas",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["infdb"]
+
+keywords = ["infrastructure", "energy", "database", "data handling"]
+
+
+[project.urls]
+Homepage = "https://github.com/tum-ens/InfDB"
+Issues = "https://github.com/tum-ens/InfDB/issues"
+"Documentation" = "https://infdb.readthedocs.io"

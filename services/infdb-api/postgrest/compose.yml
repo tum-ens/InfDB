@@ -1,0 +1,49 @@
+services:
+  pgrstwatch:
+    profiles:
+      - api
+    image: infdb/pgrstwatch:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./workspaces/pgrstwatch/:/workspaces/pgrstwatch # only for development
+      - infdb-postgrest-data:/workspaces/postgrest # shared volume with postgrest
+      - ../../../src/infdb_package:/workspaces/infdb_package # only for development and until infdb_package is published to PyPI
+    env_file:
+        - ./env_pgrstwatch.list
+    healthcheck:
+      test: [ "CMD-SHELL", "test -s /workspaces/postgrest/postgrest.conf" ]
+      interval: 5s
+      timeout: 5s
+      retries: 60
+      start_period: 90s
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - infdb_network
+
+  postgrest:
+    profiles:
+      - api
+    image: postgrest/postgrest:latest
+    command:
+      - postgrest
+      - /workspaces/postgrest/postgrest.conf
+    volumes:
+      - infdb-postgrest-data:/workspaces/postgrest:ro
+    ports:
+      - "${SERVICES_POSTGREST_PORT}:${SERVICES_POSTGREST_PORT}"
+    depends_on:
+      pgrstwatch:
+        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - infdb_network
+
+volumes:
+  infdb-postgrest-data:
+    name: ${BASE_NAME}-postgrest-data
+    driver: local

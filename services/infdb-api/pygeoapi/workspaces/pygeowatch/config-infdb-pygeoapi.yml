@@ -1,0 +1,3 @@
+logging:
+        logfile: "infdb-pygeoapi.log"
+        level: ${LOG_LEVEL:-INFO} # ERROR, WARNING, INFO, DEBUG

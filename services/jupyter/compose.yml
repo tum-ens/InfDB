@@ -1,19 +1,32 @@
 services:
-    jupyter:
-        build:
-            context: .
-            dockerfile: Dockerfile
-        working_dir: /app
-        restart: unless-stopped
-        ports:
-            - "${SERVICES_JUPYTER_EXPOSED_PORT}:8888"
-        environment:
-            SERVICES_JUPYTER_TOKEN: ${SERVICES_JUPYTER_TOKEN}
-        volumes:
-            - ../../configs:/app/mnt/configs-infdb #:ro # for *.yml configs and generated files
-            - ${SERVICES_JUPYTER_PATH_BASE}:/app
-            - /app/.venv
-        networks:
-            - ${BASE_NETWORK_NAME}
-        extra_hosts:
-            - "host.docker.internal:host-gateway"
+  jupyter:
+    profiles:
+      - notebook
+    image: quay.io/jupyter/base-notebook:python-3.11
+    
+    # Change this to linux/amd64 if you are on a Windows/Intel machine.
+    # platform: linux/arm64 
+    
+    restart: unless-stopped
+    ports:
+      - "${SERVICES_JUPYTER_EXPOSED_PORT:-8888}:8888"
+    environment:
+      JUPYTER_TOKEN: ${SERVICES_JUPYTER_TOKEN:-infdb}
+    env_file:
+      - ../../.env
+
+    volumes:
+      - infdb-jupyter-data:/home/jovyan/work
+      - ./notebooks/:/home/jovyan/demo
+      - ./README.md:/home/jovyan/Readme.md
+    
+    command: start-notebook.py --ServerApp.allow_origin='*' --ServerApp.ip='0.0.0.0'
+    
+    networks:
+      - infdb_network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  infdb-jupyter-data:
+    name: ${BASE_NAME:-infdb}-jupyter-data

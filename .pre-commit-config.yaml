@@ -1,0 +1,12 @@
+repos:
+  - repo: local
+    hooks:
+      - id: check-utf8
+        name: "Check UTF-8 encoding"
+        entry: python tests/ci/encoding_check.py
+        language: system
+        files: \.py$
+        args:
+          - --exclude-dirs
+          - ".cache"
+          - ".venv"

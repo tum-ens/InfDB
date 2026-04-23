@@ -5,8 +5,8 @@ export LANG=C
 
 # Check if a name argument is provided
 if [ $# -eq 0 ]; then
-    echo "Usage: bash rename.sh <new-name>"
-    echo "Example: bash rename.sh my-new-tool"
+    echo "Usage: bash create_new_tool.sh <new-name>"
+    echo "Example: bash create_new_tool.sh my-new-tool"
     exit 1
 fi
 
@@ -40,9 +40,18 @@ find "$TARGET_DIR" -depth -name "*choose-a-name*" -o -name "*choose_a_name*" | w
     mv "$file" "$new_file"
 done
 
-# Remove the rename.sh script from the new directory
-if [ -f "$TARGET_DIR/rename.sh" ]; then
-    rm "$TARGET_DIR/rename.sh"
+# Rename Readme.md to Readme-DevContainer.md
+if [ -f "$TARGET_DIR/Readme.md" ]; then
+    mv "$TARGET_DIR/Readme.md" "$TARGET_DIR/Readme-DevContainer.md"
+fi
+# Rename Readme_template.md to Readme.md
+if [ -f "$TARGET_DIR/Readme_template.md" ]; then
+    mv "$TARGET_DIR/Readme_template.md" "$TARGET_DIR/Readme.md"
+fi
+
+# Remove the create_new_tool.sh script from the new directory
+if [ -f "$TARGET_DIR/create_new_tool.sh" ]; then
+    rm "$TARGET_DIR/create_new_tool.sh"
 fi
 
 echo "Done! Created new tool at $TARGET_DIR"

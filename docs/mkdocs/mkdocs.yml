@@ -1,0 +1,148 @@
+site_name: "InfDB Documentation"
+site_description: "Documentation for InfDB - An Open-Source Data Ecosystem for Urban Energy Infrastructure Modelling and Planning"
+repo_name: "InfDB/InfDB"
+copyright: "2026, Patrick Buchenberg"
+theme:
+  name: material
+  site_url: https://example.com
+  logo:  assets/img/logo_infdb.png
+  favicon: assets/img/logo_infdb.png
+  # repo_url: https://github.com/squidfunk/mkdocs-material
+  features:
+    # - navigation.instant
+    - content.code.copy
+    - content.code.select
+    - content.code.annotate
+    - navigation.tabs
+    - navigation.tabs.sticky
+    # - navigation.sections
+    - navigation.expand
+    - navigation.path
+    - navigation.instant.progress
+    - navigation.top
+    - navigation.indexes
+    - navigation.footer
+
+plugins:
+  - search
+  - awesome-pages
+  - glightbox
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: ["../../src/"]
+          options:
+            docstring_style: google
+            show_source: false
+            show_signature_annotations: true
+            members_order: source
+            inherited_members: true
+
+
+nav:
+  - Welcome:
+    - Introduction: index.md
+    # - Getting Started: getting-started.md
+    - License: welcome/license.md
+    - Citation: welcome/citation.md
+    - Contact: welcome/contact.md
+  - Usage: 
+    - Introduction: usage/index.md
+    - Requirements: usage/requirements.md
+    - Get Software: usage/get-software.md
+    - Setup: 
+      - usage/setup/index.md
+      - Environment Variables: usage/setup/environment-variables.md
+      - YAML Configuration: usage/setup/yaml-configuration.md
+    - Deployment: usage/deployment.md
+    - Services: usage/services.md
+    - Tools: usage/tools.md
+
+  - InfDB: 
+    - Introduction: infdb/index.md
+    - Architecture: infdb/architecture.md
+    # - Core: infdb/core.md
+    - Database: infdb/database.md
+    - Services:
+      - infdb/services/index.md
+      - infdb-db: infdb/services/infdb-db.md
+      - infdb-import: infdb/services/infdb-import.md
+      - pgAdmin: infdb/services/pgadmin.md
+      - Jupyter Notebook: infdb/services/jupyter.md
+      - QGIS Webclient: infdb/services/qwc2.md
+      - FastAPI: infdb/services/fastapi.md
+      - PostgREST: infdb/services/postgrest.md
+      - pygeoapi: infdb/services/pygeoapi.md
+      - OpenCloud: infdb/services/opencloud.md
+  - API: 
+    - Introduction: api/index.md
+    - pyinfdb: 
+      - api/pyinfdb/index.md
+      - InfDB Class: api/pyinfdb/infdb.md
+      - InfDBClient Class: api/pyinfdb/client.md
+      - InfDBConfig Class: api/pyinfdb/config.md
+      - InfDBLogger Class: api/pyinfdb/logger.md
+      - infDBIO Class: api/pyinfdb/io.md
+
+  - Tools: 
+    - Introduction: tools/index.md
+    - Tool Template: 
+      - tools/dev-container/index.md
+      - Structure: tools/dev-container/structure.md
+      - Workflow: tools/dev-container/workflow.md
+      - Data Pipeline: tools/dev-container/data-pipeline.md
+    - infdb-basedata-ways: 
+      - tools/infdb-basedata-ways/index.md
+      - Usage: tools/infdb-basedata-ways/usage.md
+      - Architecture: tools/infdb-basedata-ways/architecture.md
+      - Data Pipeline: tools/infdb-basedata-ways/data-pipeline.md
+    - infdb-basedata-buildings: 
+      - tools/infdb-basedata-buildings/index.md
+      - Usage: tools/infdb-basedata-buildings/usage.md
+      - Architecture: tools/infdb-basedata-buildings/architecture.md
+      - Data Pipeline: tools/infdb-basedata-buildings/data-pipeline.md
+    - pylovo-generation: tools/pylovo-generation.md
+  - Linear Heat Density: 
+    - Introduction: linear-heat-density/index.md
+    - Tools:
+      - infdb-basedata: linear-heat-density/tools/infdb-basedata.md
+      - ro-heat: linear-heat-density/tools/ro-heat.md
+      - process-streets: linear-heat-density/tools/process-streets.md
+      - linear-heat-density: linear-heat-density/tools/linear-heat-density.md
+  - Development: 
+    - Introduction: development/index.md
+    - Workflow: development/workflow.md
+    - Repository: development/repository.md
+    - Guidelines:
+      - Coding Standards: development/guidelines/coding-standards.md
+      - Database: development/guidelines/database.md
+      - Process: development/guidelines/process.md
+      - Best Practices: development/guidelines/best-practices.md
+    - Documentation: development/documentation.md
+    - Code of Conduct: development/code-of-conduct.md
+    - Tips & Tricks: development/tips-and-tricks.md
+
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - def_list
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - toc:
+        permalink: true      # Adds a paragraph symbol (¶) to headers for linking
+        toc_depth: 2-3       # Only show levels 2 through 3 (## and ###)
+        title: Content  # Rename the TOC title (Material theme only)

@@ -1,0 +1,73 @@
+# ==============================================================================
+# InfDB Docker Compose - Root Configuration
+# ==============================================================================
+# This is the main Docker Compose file that orchestrates all InfDB services.
+# Services are organized by profiles for flexible deployment options.
+#
+# ==============================================================================
+
+name: ${BASE_NAME}
+
+include:
+  # ==============================================================================
+  # DATABASE SERVICES (Profile: db)
+  # ==============================================================================
+  # PostgreSQL Database (includes 3DCityDB initialization)
+  - path: services/infdb-db/compose.yml
+
+  # ==============================================================================
+  # DATABASE SERVICES (Profile: opendata)
+  # ==============================================================================
+  # infdB Data Importer and Loader
+  - path: services/infdb-import/compose.yml
+
+  # ==============================================================================
+  # ADMIN SERVICES (Profile: admin)
+  # ==============================================================================
+  # pgAdmin - Database administration interface
+  - path: services/pgadmin/compose.yml
+
+  # ==============================================================================
+  # API SERVICES (Profile: api)
+  # ==============================================================================
+  # FastAPI - REST API service
+  - path: services/infdb-api/fastapi/compose.yml
+
+  # PyGeoAPI - OGC API service
+  - path: services/infdb-api/pygeoapi/compose.yml
+
+  # PostgREST - PostgreSQL REST API
+  - path: services/infdb-api/postgrest/compose.yml
+
+  # ==============================================================================
+  # JUPYTER SERVICES (Profile: notebook)
+  # ==============================================================================
+  # Jupyter - Interactive development environment
+  - path: services/jupyter/compose.yml
+
+  # ==============================================================================
+  # QGIS WEB CLIENT (Profile: qwc)
+  # ==============================================================================
+  # QGIS Web Client - Complete web mapping solution
+  - path: services/infdb-qwc/compose.yml
+
+  # ==============================================================================
+  # LIZMAP WEB CLIENT (Profile: lizmap)
+  # ==============================================================================
+  # Lizmap Web Client - Complete web mapping solution
+  - path: services/infdb-lizmap/docker-compose.yml
+
+  # ==============================================================================
+  # OPENCLOUD Web Storage (Profile: opencloud)
+  # ==============================================================================
+  # OpenCloud - Web-based file storage and sharing platform
+  - path: services/infdb-opencloud/docker-compose.yml
+
+
+# ==============================================================================
+# NETWORKS
+# ==============================================================================
+networks:
+  infdb_network:
+    name: infdb-${BASE_NAME}_network
+    driver: bridge

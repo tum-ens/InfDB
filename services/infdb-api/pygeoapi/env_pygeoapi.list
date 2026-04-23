@@ -1,0 +1,3 @@
+PYGEOAPI_CONFIG=/workspaces/pygeoapi/pygeoapi-config.yml
+CONTAINER_PORT=${SERVICES_PYGEOAPI_PORT}
+PYTHONUNBUFFERED=1

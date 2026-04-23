@@ -1,7 +1,0 @@
-[project]
-name = "kwp"
-version = "1"
-requires-python = "==3.12.*"
-dependencies = [
-"infdb @ file:/app/mnt/infdb-package",
-]

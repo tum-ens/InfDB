@@ -1,253 +1,235 @@
-import numpy as np
-import pandas as pd
-from infdb import InfDB
-from entise.core.generator import TimeSeriesGenerator
-
-from src import basic_refurbishment
-from src import eureca_code
-from src import timedata
 import os
 
+import numpy as np
+import pandas as pd
+# entise package has to type stubs
+from entise.core.generator import Generator  # type: ignore
+from infdb import InfDB
+
+from src import refurbishment, tabula_handling, timedata
+
 # Parameters
-rng = np.random.default_rng(seed=42)
-end_of_simulation_year = 2025
 construction_year_col = "construction_year"
-schema = "ro_heat"
 
 
 def main():
-
     # Load InfDB handler
-    infdbhandler = InfDB(tool_name="ro-heat")
+    infdbhandler = InfDB(tool_name="ro-heat", config_path="configs/config-ro-heat.yml")
+    ags = infdbhandler.get_env_variable("AGS")
 
     # Database connection
     infdbclient_citydb = infdbhandler.connect()
 
     # Logger setup
-    infdblog = infdbhandler.get_log()
+    infdblog = infdbhandler.get_logger()
 
     # Start message
     infdblog.info(f"Starting {infdbhandler.get_toolname()} tool")
+    infdblog.info("AGS environment variable: %s", ags)
 
     # Setup database engine
     engine = infdbclient_citydb.get_db_engine()
 
     # Get configuration values
-    input_schema = infdbhandler.get_config_value(["ro-heat", "data", "input_schema"])
-    output_schema = infdbhandler.get_config_value(["ro-heat", "data", "output_schema"])
+    input_schema = infdbhandler.get_config_value(["ro-heat", "data", "input", "schema"])
+    output_schema = infdbhandler.get_config_value(["ro-heat", "data", "output", "schema"])
+    simulation_year = infdbhandler.get_config_value(["ro-heat", "data", "input", "simulation_year"])
+    refurbishment_config = infdbhandler.get_config_value(["ro-heat", "data", "refurbishment"])
+    method = infdbhandler.get_config_value(["ro-heat", "data", "input", "method"])
+    random_seed = infdbhandler.get_config_value(["ro-heat", "data", "input", "random_seed"])
+    heating_setpoint = infdbhandler.get_config_value(["ro-heat", "data", "input", "heating_setpoint"])
+    heated_area_ratio = infdbhandler.get_config_value(["ro-heat", "data", "input", "Heated_Area_Ratio"])
+    rng = np.random.default_rng(seed=random_seed)
 
     try:
-
-        sql = f"DROP SCHEMA IF EXISTS {output_schema} CASCADE;"
-        infdbclient_citydb.execute_query(sql)
+        # Create output schema if it does not exist
         sql = f"CREATE SCHEMA IF NOT EXISTS {output_schema};"
         infdbclient_citydb.execute_query(sql)
         infdblog.info(f"output schema: {output_schema} created successfully")
 
-        SQL_QUERY = f"""
-                    DROP TABLE IF EXISTS {output_schema}.temp_rc_calculation CASCADE;
-
-                    CREATE TABLE {output_schema}.temp_rc_calculation AS
-                    WITH wall_data AS (SELECT building_objectid,
-                                              SUM(area) AS wall_surface_area
-                                       FROM (SELECT regexp_replace(f.objectid, '_[^_]*-.*$', '') AS building_objectid,
-                                                    CAST(p.val_string AS double precision)       AS area
-                                             FROM feature f
-                                                      JOIN geometry_data gd ON f.id = gd.feature_id
-                                                      JOIN property p ON gd.feature_id = p.feature_id
-                                             WHERE f.objectclass_id = 709 -- WallSurface
-                                               AND p.name = 'Flaeche') sub
-                                       GROUP BY building_objectid),
-                         roof_data AS (SELECT building_objectid,
-                                              SUM(area) AS roof_surface_area
-                                       FROM (SELECT regexp_replace(f.objectid, '_[^_]*-.*$', '') AS building_objectid,
-                                                    CAST(p.val_string AS double precision)       AS area
-                                             FROM feature f
-                                                      JOIN geometry_data gd ON f.id = gd.feature_id
-                                                      JOIN property p ON gd.feature_id = p.feature_id
-                                             WHERE f.objectclass_id = 712 -- RoofSurface
-                                               AND p.name = 'Flaeche') sub
-                                       GROUP BY building_objectid)
-
-                    SELECT b.objectid                                                            AS building_objectid,
-                           b.floor_area,
-                           b.floor_number,
-                           b.building_type,
-                           b.construction_year,
-                           -- Reduce wall surface by the assumed window area, see below
-                           wd.wall_surface_area - b.floor_area * b.floor_number * 0.75 * 0.2 AS wall_area,
-                           rd.roof_surface_area                                              AS roof_area,
-                           -- Assume heated area = b.floor_area * b.floor_number * 0.75
-                           -- Assume window area to be 0.2 m² per heated area ()
-                           b.floor_area * b.floor_number * 0.75 * 0.2                        AS window_area
-                    FROM {input_schema}.buildings b
-                             LEFT JOIN wall_data wd ON b.objectid = wd.building_objectid
-                             LEFT JOIN roof_data rd ON b.objectid = rd.building_objectid;
-
-                    SELECT *
-                    from {output_schema}.temp_rc_calculation
-                    WHERE building_type IS NOT NULL \
-                    """
-
-        buildings = pd.read_sql(SQL_QUERY, engine)
-
-        infdblog.debug(f"Loaded {len(buildings)} buildings from the database.")
-        infdblog.debug(buildings.head())
-
-        random_years = np.full(len(buildings), np.nan)
-
-        # Define class-to-range mapping
-        age_class_ranges = {
-            "-1919": (1860, 1918),
-            "1919-1948": (1919, 1948),
-            "1949-1978": (1949, 1978),
-            "1979-1990": (1979, 1990),
-            "1991-2000": (1991, 2000),
-            "2001-2010": (2001, 2010),
-            "2011-2019": (2011, 2019),
-            "2020-": (2020, end_of_simulation_year),
+        # Get building data from database
+        full_path = os.path.join("sql", "01_get_building_surface_data.sql")
+        format_params = {
+            "ags": ags,
+            "input_schema": input_schema,
         }
+        buildings = infdbclient_citydb.get_pandas_sqlfile(full_path, format_params=format_params)
 
-        # For each class, find matching rows and assign random years
-        for age_class, (start, end) in age_class_ranges.items():
-            mask = buildings[construction_year_col] == age_class
-            count = sum(mask)
-            random_years[mask] = rng.integers(start, end, size=count, endpoint=True)
+        if len(buildings) == 0:
+            infdblog.warning(f"No buildings found for AGS {ags}. Returning without result")
+            return
 
-        buildings[construction_year_col] = random_years.astype(int)
+        infdblog.info(f"Loaded {len(buildings)} buildings from the database.")
 
-        refurbishment_parameters = {
-            "outer_wall": {
+        # Sample construction years for buildings
+        buildings[construction_year_col] = refurbishment.sample_construction_year(
+            buildings, simulation_year, construction_year_col, rng
+        )
+
+        # Sample refurbishment status for buildings
+        infdblog.info("Starting refurbishment simulation")
+        refurbishment_simulation_parameters = {
+            n: {
                 "distribution": lambda gen, parameters: gen.normal(**parameters),
-                "distribution_parameters": {"loc": 40, "scale": 10},
-            },
-            "rooftop": {
-                "distribution": lambda gen, parameters: gen.normal(**parameters),
-                "distribution_parameters": {"loc": 50, "scale": 10},
-            },
-            "window": {
-                "distribution": lambda gen, parameters: gen.normal(**parameters),
-                "distribution_parameters": {"loc": 30, "scale": 10},
-            },
+                "distribution_parameters": {"loc": i["lifespan_mean"], "scale": i["lifespan_spread"]},
+            }
+            for n, i in refurbishment_config.items()
         }
-
-        infdblog.debug("Starting refurbishment simulation")
-        refurbed_df = basic_refurbishment.simulate_refurbishment(
+        refurbed_df = refurbishment.simulate_refurbishment(
             buildings,
-            end_of_simulation_year,
-            refurbishment_parameters,
+            simulation_year,
+            refurbishment_simulation_parameters,
             rng,
             age_column=construction_year_col,
-            provide_last_refurb_only=True,
         )
+        refurbishment_quotas = {n: {"refurbed_fraction": i["quota"]} for n, i in refurbishment_config.items()}
         infdblog.debug("Refurbishment simulation completed")
-        infdblog.debug(refurbed_df.info())
-        infdblog.debug(refurbed_df.head())
 
-        infdbclient_citydb.execute_query("DROP TABLE IF EXISTS ro_heat.buildings_rc CASCADE")
-        refurbed_df.to_sql(
-                "buildings_rc", engine, if_exists="replace", schema=schema, index=False
-            )
-        infdblog.debug("Refurbished data writing to database")
-
-        infdblog.debug("Starting construction of building elements")
-        # Run SQL: 02_create_layer_view
-        infdbclient_citydb.execute_sql_files("sql", ["02_create_layer_view.sql"])
-
-        elements = pd.read_sql("""SELECT * FROM v_element_layer_data""", engine)
-
-        # TODO: sort by layer_index according to EUReCA specification
-        # TODO: Handling of windows
-        infdblog.debug("Starting construction of building elements")
-        elements = elements[elements["element_name"] != "Window"]
-
-        elements["materials"] = elements.apply(
-            lambda x: eureca_code.Material(
-                x["name"], x["thickness"], x["thermal_conduc"], x["heat_capac"], x["density"]
-            ),
-            axis=1,
+        # Harmonize refurbishment status with quotas
+        infdblog.info("Starting harmonization with refurbishment quotas")
+        harmonized_df = refurbishment.harmonize_with_quota(
+            refurbed_df,
+            refurbishment_quotas,
+            rng,
+            infdblog,
+            age_column=construction_year_col,
         )
+        infdblog.debug("Harmonization with refurbishment quotas completed")
 
-        constructions = (
-            elements.groupby(["building_objectid", "element_name", "area"])["materials"]
-            .apply(list)
-            .reset_index()
+        infdblog.info("Writing harmonized refurbishment data to database")
+        harmonized_df.to_sql(
+            f"temp_buildings_refurbished_status_{ags}", engine, if_exists="replace", schema=output_schema, method="multi",
+            index=False,
+            index_label="building_objectid",
         )
-
-        # Map tabula to EUReCA names
-        tabula_eureca_element_name_mapping = {
-            "GroundFloor": "GroundFloor",
-            "OuterWall": "ExtWall",
-            "Rooftop": "Roof",
+        format_params_output_schema = {
+            "output_schema": output_schema,
+            "ags": ags,
+            "tool_name": infdbhandler.get_toolname(),
+            "process_id": os.getpid(),
         }
+        infdbclient_citydb.execute_sql_file(os.path.join("sql", "upsert_buildings_refurbished_status.sql"),
+                                            format_params_output_schema)
 
-        constructions["construction_obj"] = constructions.apply(
-            lambda row: eureca_code.Construction(
-                name=f"B{row['building_objectid']}_{row['element_name']}",
-                materials_list=row["materials"],
-                construction_type=tabula_eureca_element_name_mapping[row["element_name"]],
-            ),
-            axis=1,
-        )
-
-        constructions["resistance"] = constructions.apply(
-            lambda row: 1 / ((1 / row["construction_obj"].thermal_resistance) * row["area"]),
-            axis=1,
-        )
-
-        constructions["capacitance"] = constructions.apply(
-            lambda row: row["construction_obj"].k_int * row["area"], axis=1
-        )
-
-        rc_values = (
-            constructions.groupby("building_objectid")[["capacitance", "resistance"]].sum().sort_values("building_objectid")
-        )
-
-        # Preparation for EnTiSe
-        entise_input = rc_values.reset_index().rename(columns={"building_objectid": "id"})
-        entise_input["hvac"] = "1R1C"
-        entise_input["temp_min"] = 20.0
-        entise_input["temp_max"] = 24.0
-
-        # Initialize the generator
-        gen = TimeSeriesGenerator()
-        gen.add_objects(entise_input)
-
-        # TODO: change datetime range to year
-        df_hourly_temperature2m = timedata.get_hourly_temperature_2m(objectid="DEBY_LOD2_107940731", database_connection=engine, start_time="2023-01-01", end_time="2023-01-02")
-
-        data = {
-            "weather": pd.DataFrame(
-                {
-                    "temp_out": df_hourly_temperature2m["value"].values,
-                    "datetime": df_hourly_temperature2m.index,
-                }
-            )
-        }
-
-        # Generate time series
-        # TODO: Handle and save time series
-        summary, df = gen.generate(data, workers=os.cpu_count())
-
-        summary.index.name = "building_objectid"
+        # Calculate R & C values by constructing building elements
+        infdblog.info("Starting construction of building elements")
         
-        summary.to_sql(
-            "entise_output",
+        full_path = os.path.join("sql", "02_get_tabula_elements.sql")
+        tabula_elements = infdbclient_citydb.get_pandas_sqlfile(full_path, format_params=format_params_output_schema)
+        infdblog.debug(f"Loaded {len(tabula_elements)} building elements from the database.")
+        tabula_structure = tabula_handling.create_tabula_structure(tabula_elements)
+        infdblog.debug("Tabula structure created")
+        
+        harmonized_df[["resistance", "capacitance"]] = harmonized_df.apply(
+            lambda row: tabula_handling.calculate_rc_values(tabula_structure, row, heated_area_ratio), axis=1, result_type="expand"
+        )
+        infdblog.debug("Done with construction of building elements")
+
+        infdblog.info("Writing R & C values")
+        rc_values = harmonized_df[["building_objectid", "resistance", "capacitance"]]
+        rc_values.to_sql(
+            f"temp_buildings_rc_{ags}",
             con=engine,
             if_exists="replace",
             schema=output_schema,
-        index=True,
-        method="multi",
-        # chunksize=1000,
-    )
-        
+            method="multi",
+            index=False,
+            index_label="building_objectid",
+        )
+        infdbclient_citydb.execute_sql_file(os.path.join("sql", "upsert_buildings_rc.sql"), format_params_output_schema)
+        infdblog.debug("Done writing R & C values")
 
-        infdblog.info(summary.head())
+        # Start heat demand calculation
+        infdblog.info(f"Running heat demand calculation with method {method}")
+        start_time = f"{simulation_year}-01-01"
+        end_time = f"{simulation_year}-12-31"
 
-        infdblog.info("Ro-heat sucessfully completed")
+        if method == "1R0C_internal":
+            format_params = {
+                "output_schema": output_schema,
+                "ags": ags,
+                "start_time": start_time,
+                "end_time": end_time,
+                "temp_in": heating_setpoint,
+                "tool_name": infdbhandler.get_toolname(),
+                "process_id": os.getpid(),
+            }
+            infdbclient_citydb.execute_sql_file(
+                os.path.join("sql", "03_heat-demand-r.sql"), format_params=format_params
+            )
+            infdbclient_citydb.execute_sql_file(os.path.join("sql", "04_debug_demand.sql"), format_params=format_params)
+
+            # Summary
+            # # TODO: Adapt output format to EnTiSe format
+            # sql = f"CREATE TABLE IF NOT EXISTS {output_schema};"
+            # infdbclient_citydb.execute_query(sql)
+
+        elif method == "1R1C" or method == "1R0C":
+            bld2ts = timedata.get_bld2ts(database_connection=engine)
+
+            all_ts_df = timedata.get_all_timeseries_data(
+                database_connection=engine,
+                start=pd.Timestamp(start_time),
+                end=pd.Timestamp(end_time),
+            )
+            all_ts_df.index.name = "datetime"
+            all_ts_df.rename(columns={"value": "air_temperature[C]"}, inplace=True)
+            data = {x: y.sort_index().reset_index() for x, y in all_ts_df.groupby("ts_metadata_id")}
+
+            # Preparation for EnTiSe
+            entise_input = rc_values.reset_index().rename(columns={"building_objectid": "id"})
+            entise_input = entise_input.rename(
+                columns={"resistance": "resistance[K W-1]", "capacitance": "capacitance[J K-1]"}, errors=True
+            )
+            entise_input["hvac"] = method
+            entise_input["min_temperature[C]"] = heating_setpoint
+            entise_input["max_temperature[C]"] = 24.0
+            entise_input["init_temperature[C]"] = heating_setpoint
+            entise_input["gains_solar"] = 0.0
+            entise_input["ventilation[W K-1]"] = 0.0
+
+            entise_input = entise_input.merge(
+                bld2ts[["bld_objectid", "ts_metadata_id"]].rename(columns={"ts_metadata_id": "weather"}),
+                left_on="id",
+                right_on="bld_objectid",
+                how="left",
+            ).drop(columns=["bld_objectid"])
+
+            # Initialize the generator
+            gen = Generator()
+            gen.add_objects(entise_input)
+
+            # Generate time series and summary
+            summary, dict_df = gen.generate(data, workers=os.cpu_count())
+
+            # Summary
+            summary.index.name = "building_objectid"
+            summary.to_sql(
+                f"temp_entise_summary_{ags}",
+                con=engine,
+                if_exists="replace",
+                schema=output_schema,
+                index=True,
+                method="multi",
+            )
+            infdbclient_citydb.execute_sql_file(os.path.join("sql", "upsert_entise_summary.sql"),
+                                                format_params_output_schema)
+
+            infdblog.info(summary.head())
+
+            # Time Series
+            write_timeseries = False
+            if not write_timeseries:
+                infdblog.info("Skipping EnTiSe output time series writing to database as per configuration")
+                return
+
+            timedata.write_ts_data(dict_df, engine, infdbclient_citydb, infdbhandler, infdblog, output_schema)
+        else:
+            raise ValueError("Method must be 1R0C or 1R1C")
 
     except Exception as e:
-        infdblog.error(f"Something went wrong: {str(e)}")
+        infdblog.exception()
+        infdbhandler.stop_logger()
         raise e
 
 

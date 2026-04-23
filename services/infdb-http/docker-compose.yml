@@ -1,0 +1,11 @@
+services:
+  infdb-http:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      - BASIC_AUTH_USER=${BASIC_AUTH_USER:-infdb_user}
+      - BASIC_AUTH_PASSWORD=${BASIC_AUTH_PASSWORD:-password}
+    volumes:
+      - ./data:/usr/share/nginx/html

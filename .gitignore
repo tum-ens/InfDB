@@ -154,13 +154,6 @@ cython_debug/
 *.zip
 .log
 
-# Generated config files
-.generated/*
-infdb-data
-/.env
-/compose.yml
-config-infdb.yml
-
 # uv
 uv.lock
 
@@ -169,14 +162,24 @@ uv.lock
 *.gpkg
 *.gpkg.ebenen
 *.gml
+*.meta4
 *.zip
 *.csv
-data-infdb
+*.geojson
+*.shp
+*.shx
+*.dbf
+*.prj
+*.cpg
+*.qpj
+*.sld
+*.qml
+*.aux.xml
+*.tif
 
 # QWC Data
 services/qgis_webclient/volumes/solr/data/*
 services/qgis_webclient/volumes/db/*
-services/qgis_webclient/pg_service.conf
 
 # APIs configuration
 services/api/postgrest/postgrest.conf
@@ -185,3 +188,18 @@ services/api/pygeoapi/pygeoapi-config.yml
 # Jupyter Notebook
 src/notebooks/.Jupyter
 src/notebooks/.local
+
+#infdb_package mkdoc folders
+src/infdb_package/docs
+src/infdb_package/site
+
+.env
+configs/config-infdb-import.yml
+
+docs/mkdocs/site
+
+# JOSS compilation files
+jats/*
+
+# # QGIS Web Client generated configurations
+# services/qgis_webclient/volumes/config/default/*

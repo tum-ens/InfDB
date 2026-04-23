@@ -1,0 +1,14 @@
+cff-version: 0.0.0
+message: "If you use this software, please cite it using this metadata."
+authors:
+  - family-names: "Reveron Baecker"
+    given-names: "Beneharo"
+    alias: "@bereba"
+    affiliation: "Technical University of Munich"
+    orcid: "https://orcid.org/0000-0001-6560-134X"
+title: "pylovo-generation"
+type: software
+license: MIT
+version: 1.0.0
+date-released: 2026-25-01
+url: "https://github.com/tum-ens/pylovo"

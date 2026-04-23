@@ -1,35 +1,15 @@
-FROM python:3.12-slim
-
-WORKDIR /app
-
-## Install uv on Ubuntu
-# The installer requires curl (and certificates) to download the release archive
-RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates
-
-# Download the latest uv installer
-ADD https://astral.sh/uv/install.sh /uv-installer.sh
-
-# Run the installer then remove it
-RUN sh /uv-installer.sh && rm /uv-installer.sh
-
-# Ensure the installed binary is on the `PATH`
-ENV PATH="/root/.local/bin/:$PATH"
+FROM ghcr.io/astral-sh/uv:python3.12-trixie-slim
+RUN apt-get update && apt-get install -y git
+WORKDIR /workspaces/ro-heat
 
 # COPY requiremets into the container
-COPY pyproject.toml /app/pyproject.toml
-# COPY uv.lock /app/uv.lock
-
-## Install venv with uv
-# RUN uv sync
-
-## Install infdb package in editable mode
-# COPY infdb-package /app/infdb-package
-# RUN uv pip install -e /app/infdb-package
+COPY pyproject.toml pyproject.toml
+# COPY uv.lock uv.lock
 
 # Copy the source code into the container
-COPY src /app/src
-COPY sql /app/sql
-COPY main.py /app/main.py
+COPY src src
+COPY sql sql
+COPY main.py main.py
 
 # Run main.py with uv and environment defined in pyproject.toml
 CMD ["uv", "run", "python", "main.py"]

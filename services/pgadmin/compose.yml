@@ -1,5 +1,7 @@
 services:
     pgadmin:
+        profiles:
+            - admin
         image: dpage/pgadmin4
         # container_name: pgadmin
         restart: unless-stopped
@@ -8,12 +10,20 @@ services:
             PGADMIN_DEFAULT_PASSWORD: ${SERVICES_PGADMIN_DEFAULT_PASSWORD}
             PGADMIN_CONFIG_SERVER_MODE: "False"
             PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+            # Postgres connection details for dynamic config generation
+            #POSTGRES_HOST: postgres
+            #POSTGRES_PORT: 5432
+            #POSTGRES_DB: ${SERVICES_POSTGRES_DB}
+            #POSTGRES_USER: ${SERVICES_POSTGRES_USER}
+            POSTGRES_PASSWORD: ${SERVICES_POSTGRES_PASSWORD}
         ports:
             - ${SERVICES_PGADMIN_EXPOSED_PORT}:80
         volumes:
-            - ../../.generated/servers.json:/pgadmin4/servers.json:ro
-            - ../../.generated/.pgpass:/pgadmin4/.pgpass:ro
-            # - pgadmin_data:/var/lib/pgadmin
+            - ./servers.json:/pgadmin4/servers.json:ro
+            #- infdb-pgadmin-data:/var/lib/pgadmin
         networks:
-            - ${BASE_NETWORK_NAME}
-        # entrypoint: /bin/sh -c "chmod 600 pgadmin4/.pgpass; /entrypoint.sh;"
+            - infdb_network
+
+#volumes:
+#    infdb-pgadmin-data:
+#        name: ${BASE_NAME}-pgadmin-data

@@ -1,5 +1,6 @@
 services:
   citydbv4:
+    profiles: [ "sunpot", "all" ]
     image: 3dcitydb/3dcitydb-pg:13-3.2-4.4.0
     environment:
       POSTGRES_DB: ${CITYDBV4_DB}
@@ -11,7 +12,7 @@ services:
     ports:
       - "5435:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${CITYDBV4_USER} -d ${CITYDBV4_DB}"]
+      test: [ "CMD-SHELL", "pg_isready -U ${CITYDBV4_USER} -d ${CITYDBV4_DB}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -19,6 +20,7 @@ services:
       - infdb_network
 
   import-to-v4:
+    profiles: [ "sunpot", "all" ]
     image: 3dcitydb/impexp
     user: 0:0
     environment:
@@ -30,7 +32,7 @@ services:
       CITYDB_PASSWORD: ${CITYDBV4_PASSWORD}
     volumes:
       - ../../${GML_DIR}:/data
-    command: ["import", "/data/*.gml"]
+    command: [ "import", "/data/*.gml" ]
     # helps for the first time to wait citydb is ready
     restart: on-failure
     stdin_open: true
@@ -42,11 +44,12 @@ services:
       - infdb_network
 
   sunpot-core:
+    profiles: [ "sunpot", "all" ]
     image: gitlab.lrz.de:5005/sunpot/sunpot-core
     volumes:
       - ../../src/services/sunpot/sunpotConfig.xml:/sunpotConfig.xml
     environment:
-      - CITYDBV4_DB        
+      - CITYDBV4_DB
       - CITYDBV4_USER
       - CITYDBV4_PASSWORD
       - CITYDBV4_HOST
@@ -54,14 +57,7 @@ services:
     command:
       - -c
       - >
-        /sunpot/bin/sunpot-core -r
-        -h ${CITYDBV4_HOST}
-        -p 5432
-        -d ${CITYDBV4_DB}
-        -u ${CITYDBV4_USER}
-        -pw ${CITYDBV4_PASSWORD}
-        /sunpotConfig.xml;
-        exit 0
+        /sunpot/bin/sunpot-core -r -h ${CITYDBV4_HOST} -p 5432 -d ${CITYDBV4_DB} -u ${CITYDBV4_USER} -pw ${CITYDBV4_PASSWORD} /sunpotConfig.xml; exit 0
     stdin_open: true
     tty: true
     depends_on:
@@ -72,20 +68,14 @@ services:
       - infdb_network
 
   sunpot-texture:
+    profiles: [ "sunpot", "all" ]
     image: gitlab.lrz.de:5005/sunpot/sunpot-texture
     environment:
-      - CITYDBV4_DB        
+      - CITYDBV4_DB
       - CITYDBV4_USER
       - CITYDBV4_PASSWORD
       - CITYDBV4_HOST
-    command: [
-      "-h", "${CITYDBV4_HOST}",
-      "-p", "5432",
-      "-d", "${CITYDBV4_DB}",
-      "-u", "${CITYDBV4_USER}",
-      "-pw", "${CITYDBV4_PASSWORD}",
-      "-y"
-    ]
+    command: [ "-h", "${CITYDBV4_HOST}", "-p", "5432", "-d", "${CITYDBV4_DB}", "-u", "${CITYDBV4_USER}", "-pw", "${CITYDBV4_PASSWORD}", "-y" ]
     stdin_open: true
     tty: true
     depends_on:
@@ -96,6 +86,7 @@ services:
       - infdb_network
 
   export-and-import:
+    profiles: [ "sunpot", "all" ]
     build:
       context: ../..
       dockerfile: ../../tools/sunpot/Dockerfile

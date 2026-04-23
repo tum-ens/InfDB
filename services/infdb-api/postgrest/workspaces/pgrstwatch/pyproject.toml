@@ -1,0 +1,12 @@
+[project]
+name = "infdb-pgrstwatch"
+version = "1"
+requires-python="==3.12.*"
+dependencies = [
+  "pyyaml>=6.0.3",
+  "psycopg[binary]==3.3.0",
+  "infdb"
+]
+
+[tool.uv.sources]
+infdb = { path = "/workspaces/infdb_package", editable = true }

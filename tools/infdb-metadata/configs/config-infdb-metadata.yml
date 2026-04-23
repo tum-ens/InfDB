@@ -1,0 +1,29 @@
+# Configuration file for infdb-metadata
+#
+# This configuration file contains tool-specific settings and database connection parameters.
+#
+# Database Connection Parameters:
+# - Parameters set to 'None' will be automatically replaced with values from the central
+#   configuration file specified in 'config-infdb' (config-infdb.yml by default)
+# - This approach allows you to run locally using centralized database settings
+# - To connect to a remote infdb instance, replace 'None' values with your specific
+#   connection parameters (user, password, db, host, exposed_port, epsg)
+#
+infdb-metadata:
+    config-infdb: "config-infdb.yml" # only filename - change path in ".env" file "CONFIG_INFDB_PATH"
+    logging:
+        path: "infdb-metadata.log"
+        level: "INFO" # ERROR, WARNING, INFO, DEBUG
+    hosts:
+        postgres:
+            user: infdb_user
+            password: infdb
+            db: infdb-dev
+            host: need.energy
+            exposed_port: 5432
+            epsg: None
+    data:
+        input_schema: basedata
+        output_schema: infdb_metadata 
+    schemas:
+        # List of specific schemas to include in metadata extraction, default is all schemas except those in exclude_schemas

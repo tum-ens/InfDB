@@ -1,0 +1,15 @@
+services:
+  api:
+    profiles:
+      - api
+    image: infdb/fastapi:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${SERVICES_API_PORT}:8000"
+    env_file:
+        - ./env_fastapi.list
+    restart: unless-stopped
+    networks:
+      - infdb_network

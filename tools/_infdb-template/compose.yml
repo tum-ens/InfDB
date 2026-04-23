@@ -1,13 +1,20 @@
 services:
     choose-a-name:
+        profiles:
+            - choose-a-name
+        image: infdb/choose-a-name:latest
         build:
             context: .
             dockerfile: Dockerfile
         volumes:
-            - ${CONFIG_INFDB_PATH}:/app/mnt/configs-infdb #:ro # for *.yml configs and generated files
-            - ./configs:/app/configs #:ro # for configs
-            - .:/app/ #:ro # for source code # for development only
-            - ../../src/infdb-package:/app/mnt/infdb-package
-            - /app/.venv # Exclude .venv from volume mount
+            # - ./configs:/workspaces/choose-a-name/configs:ro  # for production
+            - .:/workspaces/choose-a-name # for development only
+            - ../../src/infdb_package:/workspaces/infdb_package
+            # - /workspaces/choose-a-name/.venv # Exclude .venv from volume mount
+            - .vscode:/workspaces/.vscode:ro
         extra_hosts:
             - "host.docker.internal:host-gateway"
+        env_file:
+            - .env
+        environment:
+            - UV_LINK_MODE=copy

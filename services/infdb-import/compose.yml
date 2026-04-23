@@ -1,0 +1,26 @@
+services:
+    infdb-import:
+        profiles:
+            - import
+        image: infdb/infdb-import:latest
+        build:
+            context: .
+            dockerfile: Dockerfile
+        volumes:
+            - infdb-import-data:/workspaces/data
+            #- ./configs:/workspaces/infdb-import/configs:ro  # for production
+            - .:/workspaces/infdb-import # for development only
+            - ../../src/infdb_package:/workspaces/infdb_package
+            # - /workspaces/infdb-import/.venv # for development only: exclude .venv from volume mount
+            - .vscode:/workspaces/.vscode:ro # for development only
+            - ../../configs:/workspaces/configs:ro
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        env_file:
+            - ../../.env
+        environment:
+            - UV_LINK_MODE=copy
+
+volumes:
+    infdb-import-data:
+        name: infdb-import-data

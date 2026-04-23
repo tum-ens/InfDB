@@ -1,0 +1,24 @@
+# Master Docker Compose Orchestration for infDB Tools
+# This file includes all individual tool compose files and orchestrates them using profiles
+#
+# Available profiles:
+#   - linear: Linear heat density toolchain
+#   - pylovo: Pylovo generation
+
+include:
+  - infdb-metadata/compose.yml
+  - linear-heat-density/compose.yml
+  # - process-streets/compose.yml
+  - pylovo-generation/compose.yml
+  - ro-heat/compose.yml
+  - buildings-to-street/compose.yml
+  - sunpot/docker-compose.yml
+  - infdb-basedata-buildings/compose.yml
+  - infdb-basedata-ways/compose.yml
+
+networks:
+  default:
+    name: ${INFDB_NETWORK:-infdb-infdb-demo_network}
+    external: true
+
+# Note: Individual tool dependencies are defined in their respective compose files.

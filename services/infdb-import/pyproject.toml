@@ -1,0 +1,29 @@
+[project]
+name = "loader"
+version = "1"
+requires-python = "==3.12.*"
+dependencies = [
+    "geopandas",
+    "pandas",
+    "psycopg2-binary",
+    "sqlalchemy",
+    "requests",
+    "beautifulsoup4",
+    "python-dotenv==1.0.1",
+    "geoalchemy2==0.17.1",
+    "PyYAML",
+    "chardet",
+    "pysmartdl",
+    "openmeteo-requests",
+    "requests-cache",
+    "retry-requests",
+    "numpy",
+    "wetterdienst==0.87.0",
+    "duckdb>=1.0.0",
+    "marshmallow>=3.13,<4",
+    "charset-normalizer",
+    "infdb",
+]
+
+[tool.uv.sources]
+infdb = { path = "/workspaces/infdb_package", editable = true }

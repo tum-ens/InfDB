@@ -1,0 +1,15 @@
+services:
+    infdb-metadata:
+        profiles: [ "metadata", "all" ]
+        build:
+            context: .
+            dockerfile: Dockerfile
+        volumes:
+            - ${CONFIG_INFDB_PATH}:/app/mnt/configs-infdb #:ro # for *.yml configs and generated files
+            - ./configs:/app/configs #:ro # for configs
+            - .:/app/ #:ro # for source code # for development only
+            - ./mnt/data:/app/mnt/data:rw # for runtime data
+            - ../../src/infdb_package:/app/mnt/infdb_package
+            - /app/.venv # Exclude .venv from volume mount
+        extra_hosts:
+            - "host.docker.internal:host-gateway"

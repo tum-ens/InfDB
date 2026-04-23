@@ -1,8 +1,8 @@
-import yaml
 import os
-from src.core.config import get_value
 import subprocess
 
+import yaml
+from src.core.config import get_value
 
 base_dir = os.path.dirname(__file__)
 input_path = os.path.join(base_dir, "config-sunpot.yml")

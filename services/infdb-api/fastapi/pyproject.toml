@@ -1,0 +1,10 @@
+[project]
+name = "infdb-fastapi"
+version = "1"
+requires-python="==3.12.*"
+dependencies = [
+  "fastapi>=0.121.3",
+  "uvicorn[standard]>=0.38.0",
+  "httpx>= 0.28.1",
+  "shapely>=2.1.2"
+]

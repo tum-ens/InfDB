@@ -1,0 +1,16 @@
+services:
+    infdb-basedata-buildings:
+        profiles: [ "linear", "pylovo", "basedata-buildings", "basedata-ways" ]
+        image: infdb/basedata-buildings:latest
+        build:
+            context: .
+            dockerfile: Dockerfile
+        volumes:
+            - .:/app/ #:ro # for source code # for development only
+            - ../../src/infdb_package:/app/mnt/infdb_package
+            # - /app/.venv # Exclude .venv from volume mount # for development only
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        env_file:
+            - ../../.env  # Load root environment variables first
+            - env_infdb_basedata_buildings.env

@@ -1,0 +1,14 @@
+[project]
+name = "infdb-basedata-buildings"
+version = "1"
+requires-python="==3.12.*"
+dependencies = [
+    "psycopg2-binary",
+    "PyYAML",
+    "dotenv",
+    "SQLAlchemy",
+    "infdb",
+]
+
+[tool.uv.sources]
+infdb = { path = "/app/mnt/infdb_package", editable = true }

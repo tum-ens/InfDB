@@ -1,4 +1,4 @@
-# Compute heat
+# Estimate residential heating and cooling demands
 
 ## Prequires
 - Docker
@@ -13,7 +13,7 @@ ro-heat:
         path: "ro-heat.log"
         level: "INFO" # ERROR, WARNING, INFO, DEBUG
     hosts:
-        citydb:
+        infdb:
             user: None
             password: None
             db: None
@@ -28,9 +28,9 @@ ro-heat:
             exposed_port: None
     data:
         input_schema: opendata
-        output_schema: pylovo_input
+        output_schema: ro_heat
 ```
-**Hint:** In case you move the infdb-loader source folder outside of the folder tools in repo or want to change the location where the downloaded data is stored, the paths to data and to configs folder need to be defined in [.env](.env)
+**Hint:** In case you move the infdb-import source folder outside of the folder tools in repo or want to change the location where the downloaded data is stored, the paths to data and to configs folder need to be defined in [.env](.env)
 ```bash
     CONFIG_INFDB_PATH=../infdb/configs  # Change if you moved the "configs" folder
 ```
@@ -47,7 +47,6 @@ From the root project folder you can start the processor by executing these comm
 ```
 
 ## Source Code
-- The folder contains source code to create three tables in the `pylovo_input`:
-    - `src`: Contains the source code.
-    - `sql`: Contains SQL scripts.
-    - `main.py`: Entry point for running the ro-heat.
+- `main.py`: Entry point for running ro-heat.
+- `src`: Contains the source code.
+- `sql`: Contains SQL scripts.
