@@ -2,6 +2,8 @@
 
 A reusable template for creating Docker-based development containers that interact with the InfDB infrastructure. This template provides a standardized structure for importing (eg. infdb-laoder) data,  processing tools (eg infdb-basedata), and analysis scripts (kwp) that work with the InfDB PostgreSQL/PostGIS database.
 
+![Tool Framework](tool-framework.png)
+
 This template enables you to:
 
 - Quickly scaffold new InfDB tools with consistent structure

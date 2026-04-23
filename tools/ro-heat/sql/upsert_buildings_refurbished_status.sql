@@ -1,3 +1,11 @@
+DO $$
+DECLARE
+    v_changelog_id BIGINT;
+BEGIN
+
+-- create a new changelog id and store it in a variable for later reference in the insert statements
+SELECT public.fn_begin_changelog('{tool_name}', 'no comment', session_user::TEXT, '{ags}', '{process_id}') INTO v_changelog_id;
+
 CREATE TABLE IF NOT EXISTS {output_schema}.buildings_refurbished_status
 (
     building_objectid TEXT PRIMARY KEY,
@@ -10,7 +18,8 @@ CREATE TABLE IF NOT EXISTS {output_schema}.buildings_refurbished_status
     window_area DOUBLE PRECISION,
     outer_wall BIGINT,
     rooftop BIGINT,
-    "window" BIGINT
+    "window" BIGINT,
+    changelog_id      BIGINT REFERENCES public.changelog(id) ON DELETE SET NULL
 );
 
 INSERT INTO {output_schema}.buildings_refurbished_status (
@@ -24,7 +33,8 @@ INSERT INTO {output_schema}.buildings_refurbished_status (
     window_area,
     outer_wall,
     rooftop,
-    "window"
+    "window",
+    changelog_id
 )
 SELECT building_objectid,
     floor_area,
@@ -36,7 +46,8 @@ SELECT building_objectid,
     window_area,
     outer_wall,
     rooftop,
-    "window"
+    "window",
+    v_changelog_id
 FROM {output_schema}.temp_buildings_refurbished_status_{ags}
 ON CONFLICT (building_objectid)
 DO UPDATE SET floor_area = EXCLUDED.floor_area,
@@ -48,6 +59,10 @@ roof_area = EXCLUDED.roof_area,
 window_area = EXCLUDED.window_area,
 outer_wall = EXCLUDED.outer_wall,
 rooftop = EXCLUDED.rooftop,
-"window" = EXCLUDED."window";
+"window" = EXCLUDED."window",
+changelog_id = EXCLUDED.changelog_id;
 
 DROP table {output_schema}.temp_buildings_refurbished_status_{ags};
+
+END;
+$$;

@@ -3,13 +3,13 @@ icon: material/database-edit
 ---
 
 # Database Structure
-The infDB database as service infdb-db is organized into multiple schemas to separate different types of data and functionalities:
+The InfDB database as service infdb-db is organized into multiple schemas to separate different types of data and functionalities:
 
 - `public`: Default schema for extensions and general-purpose tables.
 - `citydb`: Dedicated schema for 3DCityDB data.
 - `opendata`: Imported open datasets in their raw format.
 - `need`: Retrieved data from the NEED platform.
-- `choose_a_name`: Each infDB tool uses its own schema to store processed data, views, and functions.
+- `choose_a_name`: Each InfDB tool uses its own schema to store processed data, views, and functions.
 
 ## ERD Diagram
 ![alt text](erd.png)

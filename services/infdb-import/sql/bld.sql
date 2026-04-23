@@ -1,3 +1,8 @@
+DO $$
+DECLARE
+    v_changelog_id BIGINT;
+BEGIN
+
 -- ANALYZE feature;
 -- ANALYZE property;
 
@@ -11,11 +16,14 @@ CREATE TABLE IF NOT EXISTS {output_schema}.{table_name}
     PARTITION OF opendata.building_lod2 
     FOR VALUES IN ('{ags_id}');
 
+SELECT public.fn_begin_changelog('infdb-import'::TEXT, 'no comment'::TEXT, session_user::TEXT, NULL::TEXT, NULL::BIGINT) INTO v_changelog_id;
+
 -- INSERT without re-joining property
 INSERT INTO {output_schema}.{table_name} (
     ags_id, feature_id, objectid, gemeindeschluessel, objectclass_id,
     height, storeysaboveground, building_function_code, zip_code, street, 
-    house_number, city, country, state
+    house_number, city, country, state,
+    changelog_id  -- ← added
 )
 WITH base_buildings AS (
     SELECT
@@ -53,7 +61,10 @@ SELECT
     (regexp_match(trim(adr.street), '\s*(\d+[\w,]*)$'))[1] AS house_number,
     adr.city, 
     adr.country, 
-    adr.state
+    adr.state,
+    v_changelog_id  -- ← all rows get the same changelog_id
 FROM base_buildings bb
     LEFT JOIN citydb.address adr ON bb.address_id = adr.id;
--- WHERE bb.gemeindeschluessel IN ({ags});  -- either or test what performs better with the filter on the base_buildings CTE or here on the final result
+
+END;
+$$;

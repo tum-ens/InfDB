@@ -546,38 +546,9 @@ def get_envelop(infdb: InfDB) -> gpd.GeoDataFrame:
         WHERE ags = ANY(%s)
     """
 
-    # geopandas.read_postgis works with SQLAlchemy engine too (you already use it elsewhere)
+    # geopandas.read_postgis works with SQLAlchemy engine too
     gdf_scope = gpd.read_postgis(sql, con=engine, geom_col="geom", params=(ags_list,))
     return gdf_scope
-
-
-def get_all_envelops(infdb: InfDB) -> List[gpd.GeoDataFrame]:
-    """Returns list[GeoDataFrame], one per municipality AGS in resolved scope.
-
-    Perfect for your create_geogitter loop.
-    """
-    log = infdb.get_worker_logger()
-    engine = infdb.get_db_engine()
-
-    ags_list = fetch_scope_ags_from_db(infdb)
-    if not ags_list:
-        log.warning("Scope resolved to 0 AGS rows. Returning empty list.")
-        return []
-
-    sql = """
-        SELECT *
-        FROM opendata.bkg_vg5000_gem
-        WHERE ags = ANY(%s)
-        ORDER BY ags
-    """
-
-    gdf = gpd.read_postgis(sql, con=engine, geom_col="geom", params=(ags_list,))
-    if gdf.empty:
-        return []
-
-    envelops = [sub for _, sub in gdf.groupby("ags", sort=False)]
-    log.info("Scope resolved to %d municipalities", len(envelops))
-    return envelops
 
 
 # ============================== file helpers ==============================
@@ -954,11 +925,11 @@ def get_clip_geometry(target_crs: int, infdb: InfDB, state_prefix: Optional[str]
 
 
 def get_clip_geometries_per_scope(target_crs: int, infdb: InfDB):
-    """Returns one exact clipping geometry per configured scope.
+    """Returns one exact clipping geometry per resolved municipality AGS.
 
     Returns a list of dicts:
       {
-        "scope": "<AGS prefix from config>",
+        "scope": "<resolved AGS>",
         "landkreis": "<first 5 digits>",
         "geom": shapely geometry (in target_crs),
         "bbox": (minx, miny, maxx, maxy),
@@ -967,29 +938,29 @@ def get_clip_geometries_per_scope(target_crs: int, infdb: InfDB):
     For DGM1: build a separate -te + -cutline + output raster for each AGS.
     That avoids one huge raster with a lot of NoData; you get one small raster per municipality.
     """
-    scope_cfg = infdb.get_config_value([infdb.get_toolname(), "scope"]) or []
     log = infdb.get_worker_logger()
 
-    if isinstance(scope_cfg, str):
-        scope_cfg = [scope_cfg]
-
-    # get_all_envelops() already returns a list of GDFs per scope prefix, in the same order
-    envelopes = get_all_envelops(infdb)
+    gdf = get_envelop(infdb)
+    if gdf is None or gdf.empty:
+        log.info("No valid per-scope clip geometries; no clipping will be applied.")
+        return []
 
     results = []
-    for scope_prefix, gdf in zip(scope_cfg, envelopes, strict=True):
-        if gdf is None or gdf.empty:
-            log.warning("No envelope polygons found for scope %s", scope_prefix)
+    for ags, sub in gdf.groupby("ags", sort=False):
+        if sub is None or sub.empty:
+            log.warning("No envelope polygons found for scope %s", ags)
             continue
 
-        gdf_tr = gdf.to_crs(epsg=target_crs)
+        gdf_tr = sub.to_crs(epsg=target_crs)
         geom = gdf_tr.unary_union
         minx, miny, maxx, maxy = geom.bounds
 
+        ags = str(ags).strip()
+
         results.append(
             {
-                "scope": scope_prefix,
-                "landkreis": scope_prefix[:5],
+                "scope": ags,
+                "landkreis": ags[:5],
                 "geom": geom,
                 "bbox": (minx, miny, maxx, maxy),
             }

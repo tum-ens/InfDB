@@ -63,17 +63,19 @@ infdb-import:
             schema: opendata
             prefix: bavaria
             path: 
-                base: "{infdb-import/path/opendata}/opendata_bavaria/{infdb-import/name}"
+                base: "{infdb-import/path/opendata}/opendata_bavaria"
             datasets:
                 gelaendemodell_1m:
                     status: not-active
                     name: Geländemodell Bayern 1m
                     table_name: gelaendemodell_1m
-                    # - Lower values (1-5m): High detail, large files, slower queries
-                    # - Medium values (10-20m): Good balance for most applications
-                    # - Higher values (50-100m): Coarse terrain, small files, fast queries
                     target_resolution: 10.0
-                    url: "https://geodaten.bayern.de/odd/a/dgm/dgm1/meta/metalink/#scope.meta4"
+                    srid: 25832
+                    
+                    state_prefix: "09"
+                    base_url: "https://download2.bayernwolke.de/a/dgm/dgm1/"
+                    tile_size_m: 1000
+                    filename_template: "{e_km}_{n_km}.tif"
                 tatsaechliche_nutzung:
                     status: not-active
                     name: Tatsächliche Nutzung (TN) 

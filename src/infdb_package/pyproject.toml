@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "infdb"
-version = "0.1.1"
+version = "0.2.0"
 authors = [
   { name="Patrick Buchenberg", email="patrick.buchenberg@tum.de" },
 ]

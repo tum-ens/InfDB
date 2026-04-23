@@ -10,6 +10,11 @@ The tool `infDB-basedata-ways` processes ways-related data as fundamental data b
     - Dependencies
 - Usage (Quick Start, Requirements, Configuration) -->
 
+## Structure
+The `pyinfdb` package consists of a superior class InfDB based on the internal classes InDBConfig, InfDBClient, InfDBLogger and InfDBIO as shown in the following figure:
+![alt text](demo-figure.png)
+The user only interacts with the superior InfDB class, the internal classes are not directly accessible. This abstraction ensures the python interface is consistent despite changes in the internal structure of the package.
+It provides functions for database access, configuration management, logging and data handling. The central idea is to provide standard methods to interact with InfDB in order to simplify the interaction with InfDB.
 
 ## Usage
 Details on how to use the tool can be found in the [Usage](usage.md) section.

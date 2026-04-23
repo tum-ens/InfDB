@@ -78,7 +78,10 @@ def main():
                 infdb.get_config_value([infdb.get_toolname(), "data", "input", "heat-demand", "heat-demand-column"])
             }"',
             "output_schema": infdb.get_config_value([infdb.get_toolname(), "data", "output", "schema"]),
-            "output_table": infdb.get_config_value([infdb.get_toolname(), "data", "output", "table"]),
+            "output_table": infdb.get_config_value([infdb.get_toolname(), "data", "output", "table"]), 
+            "tool_name": infdb.get_toolname(),
+            "process_id": os.getpid(),
+            
         }
         SQL_DIR = os.path.join("sql")  # add subfolders here if needed ("sql/subfolder")
         infdb.connect().execute_sql_files(SQL_DIR, format_params=format_params)

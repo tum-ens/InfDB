@@ -3,7 +3,7 @@ icon: material/api
 ---
 # FastAPI :material-api:
 
-The infDB platform provides a FastAPI service for secure access to data through simple web requests (e.g., city information, weather data).
+The InfDB platform provides a FastAPI service for secure access to data through simple web requests (e.g., city information, weather data).
 
 ## Configuration
 

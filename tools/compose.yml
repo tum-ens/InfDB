@@ -6,7 +6,6 @@
 #   - pylovo: Pylovo generation
 
 include:
-  - infdb-basedata/compose.yml
   - infdb-metadata/compose.yml
   - linear-heat-density/compose.yml
   # - process-streets/compose.yml

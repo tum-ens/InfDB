@@ -8,6 +8,11 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 pip install uv
 ```
 
+### Git update with submodules
+```bash
+git submodule update --init --recursive
+```
+
 ### Create environment (only once)
 ```bash
 # linux and macos
@@ -59,7 +64,7 @@ uv build
 uv publish --token YOUR_PYPI_TOKEN
 ```
 
-### PSQL Connection to infDB
+### PSQL Connection to InfDB
 ```bash
 # on linux and macos
 PGPASSWORD='citydb_password' psql -h localhost -p 5432 -U citydb_user -d citydb

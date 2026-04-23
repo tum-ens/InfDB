@@ -105,6 +105,8 @@ def main():
             "objektart_filter_enabled": str(objektart_filter_enabled).lower(),  # 'true' / 'false'
             "classes_with_obj_filter_tuple": _sql_in_tuple(classes_with_obj_filter),
             "objektart_filter_conditions": _build_objektart_conditions(klasse_objektart_filter),
+            "tool_name": infdb.get_toolname(),
+            "process_id": os.getpid(),           
         }
 
         log.info("Running SQL scripts ...")

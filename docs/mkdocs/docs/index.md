@@ -1,10 +1,10 @@
-# Welcome to infDB :simple-rocket:
+# Welcome to InfDB :simple-rocket:
 
 <p align="center">
-  <img src="assets/img/logo_infdb_text.png" alt="infDB logo" width="100"/>
+  <img src="assets/img/logo_infdb.png" alt="InfDB logo" width="100"/>
 </p>
 
-**infDB - Infrastructure and Energy Database** provides a modular and easy-to-configure open-source data and tool infrastructure. It is equipped with essential services, designed to minimize the effort required for data management. We follow a platform-independent containerized approach that streamlines collaboration in energy modeling and analysis, empowering the growth of an ecosystem by offering standardized interfaces and APIs, and by allowing users to dedicate their focus to generating insights rather than handling data logistics.
+**InfDB - Infrastructure and Energy Database** provides a modular and easy-to-configure open-source data and tool infrastructure. It is equipped with essential services, designed to minimize the effort required for data management. We follow a platform-independent containerized approach that streamlines collaboration in energy modeling and analysis, empowering the growth of an ecosystem by offering standardized interfaces and APIs, and by allowing users to dedicate their focus to generating insights rather than handling data logistics.
 
 
 ## Key Features
@@ -18,9 +18,9 @@
 
 ## Why use it?
 
-The infDB platform addresses common challenges in energy system planning and research, particularly those related to data management. By providing a standardized and modular infrastructure, infDB reduces the time and effort required to set up and maintain data systems. This allows researchers and planners to focus on their core tasks of modeling and analysis, rather than being bogged down by data logistics.
+InfDB addresses common challenges in energy system planning and research, particularly those related to data management. By providing a standardized and modular infrastructure, InfDB reduces the time and effort required to set up and maintain data systems. This allows researchers and planners to focus on their core tasks of modeling and analysis, rather than being bogged down by data logistics.
 
-The infDB can be used effectively wherever geospatial and time series information is required. Possible applications include:
+The InfDB can be used effectively wherever geospatial and time series information is required. Possible applications include:
 
 -   Infrastructure planning such as municipal heat or grid planning activities
 -   Research on energy system optimization on energy transition scenarios
@@ -28,12 +28,12 @@ The infDB can be used effectively wherever geospatial and time series informatio
 
 ## Architecture
 
-The architecture of infDB as shown in figure below is composed of two main components:
+The architecture of InfDB as shown in figure below is composed of two main components:
 
 : :fontawesome-solid-gears: **[Services](usage/services.md)** – Dockerized core functionalities.
 : :material-tools: **[Tools](tools/index.md)** – Dockerized software and tools for specific use cases and data processing tasks.
 
-![infDB Overview](assets/img/infdb-overview.png)
+![InfDB Overview](assets/img/infdb-overview.png)
 
 
 ## Getting Started
@@ -41,7 +41,7 @@ The architecture of infDB as shown in figure below is composed of two main compo
 Check out the **[Usage Guide](usage/index.md)** to install, configure and run your instance.
 
 ## Demo
-The **[Linear Heat Density](linear-heat-density/index.md)** use case demonstrates the capabilities of infDB in the context of municipal heat planning (KWP). 
+The **[Linear Heat Density](linear-heat-density/index.md)** use case demonstrates the capabilities of InfDB in the context of municipal heat planning (KWP). 
 ![](linear-heat-density/liz-browser.png)
 
 ## Contribution
@@ -50,4 +50,4 @@ Check out the **[Developer Guide](development/index.md)** to learn how to contri
 
 ## Feedback and contributions
 
-The content of this documentation is brand new! If you encounter a mistake, notice missing content, or have any other input, please get in touch on [GitHub discussions](https://github.com/infDB/infDB/discussions), or submit an issue.
+The content of this documentation is brand new! If you encounter a mistake, notice missing content, or have any other input, please get in touch on [GitHub discussions](https://github.com/InfDB/InfDB/discussions), or submit an issue.

@@ -1,3 +1,11 @@
+DO $$
+DECLARE
+    v_changelog_id BIGINT;
+BEGIN
+
+-- create a new changelog id and store it in a variable for later reference in the insert statements
+SELECT public.fn_begin_changelog('{tool_name}', 'no comment', session_user::TEXT, '{ags}', '{process_id}') INTO v_changelog_id;
+
 -- Calculate linear heat density for street segments
 -- This table stores the heat demand per unit length for each street
 CREATE SCHEMA IF NOT EXISTS {output_schema};
@@ -7,7 +15,8 @@ CREATE TABLE IF NOT EXISTS {output_schema}.{output_table} (
     total_heat_demand NUMERIC,
     street_length NUMERIC,
     linear_heat_density NUMERIC,
-    gemeindeschluessel TEXT
+    gemeindeschluessel TEXT,
+    changelog_id      BIGINT REFERENCES public.changelog(id) ON DELETE SET NULL
 );
 
 -- Pre-calculate street lengths to avoid repeated ST_Length calls
@@ -48,7 +57,8 @@ SELECT
     CASE WHEN sl.street_length > 0 
         THEN COALESCE(shd.total_heat_demand, 0) / sl.street_length 
         ELSE 0 END,
-    '{ags}' 
+    '{ags}',
+    v_changelog_id
 
 FROM
     street_lengths AS sl
@@ -59,8 +69,12 @@ ON CONFLICT (street_id) DO UPDATE SET
     total_heat_demand = EXCLUDED.total_heat_demand,
     street_length = EXCLUDED.street_length,
     linear_heat_density = EXCLUDED.linear_heat_density,
-    gemeindeschluessel = EXCLUDED.gemeindeschluessel;
+    gemeindeschluessel = EXCLUDED.gemeindeschluessel,
+    changelog_id = EXCLUDED.changelog_id;
 
 -- Create spatial index for efficient geometric queries
 CREATE INDEX IF NOT EXISTS idx_{output_table}_geom ON {output_schema}.{output_table} USING GIST (geom);
 CREATE INDEX IF NOT EXISTS idx_{output_table}_gemeindeschluessel ON {output_schema}.{output_table} (gemeindeschluessel);
+
+END;
+$$;

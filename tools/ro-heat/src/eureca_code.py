@@ -403,7 +403,7 @@ class Construction(object):
         materials_list : list
             list of Materials or AirGapMaterials objects (Outside -> Inside)
         construction_type : string
-            Choose from ["ExtWall", "Roof", "GroundFloor", "IntWall", "IntCeiling"]
+            Choose from ["ExtWall", "Window", "Roof", "GroundFloor", "IntWall", "IntCeiling"]
 
         """
 
@@ -475,8 +475,15 @@ class Construction(object):
     def _ISO13790_params(self):
         """Calculates ISO13790 params: k_int, k_est"""
 
-        # Set some parameters from the standard
+        # Windows do not contribute to thermal capacity
+        if self.construction_type == "Window":
+            self.k_est = 0
+            self.k_int = 0
+            self.k_mean = 0
+            # Return to prevent divide by zero
+            return
 
+        # Set some parameters from the standard
         T = 86400
         sigma_2 = (T / np.pi) * (self.conductivities / (self.densities * self.spec_heats))
         # Depth of penetration
@@ -484,7 +491,6 @@ class Construction(object):
         eps = self.thicknesses / sigma
 
         # Thermal transfer matrix
-
         Z = np.zeros((2, 2, self.number_of_layers), complex)
 
         for i in range(self.number_of_layers):

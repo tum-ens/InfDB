@@ -61,8 +61,13 @@ def create_geogitter(resolutions: Union[Sequence[str], str], infdb: InfDB, clear
         db.execute_query(ddl)
 
         utils.materialize_scope_table(infdb)  # Ensure opendata.scope exists
-        all_envelops = utils.get_all_envelops(infdb)
-        for envelop in all_envelops:
+        all_envelops = utils.get_envelop(infdb)
+
+        if all_envelops is None or all_envelops.empty:
+            log.warning("No scope envelopes found; skipping geogitter creation.")
+            return
+
+        for _, envelop in all_envelops.groupby("ags", sort=False):
             log.debug("Envelop: %s", envelop)
 
             wkt = envelop.to_crs(3035).unary_union.wkt  # Use LAEA (EPSG:3035) for grid generation

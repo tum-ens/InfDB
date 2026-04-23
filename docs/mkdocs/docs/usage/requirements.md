@@ -1,6 +1,6 @@
 # Requirements
 
-Before installing infDB, ensure your capabilities meet the following requirements.
+Before installing InfDB, ensure your capabilities meet the following requirements.
 
 ## System Requirements
 
@@ -11,7 +11,7 @@ Before installing infDB, ensure your capabilities meet the following requirement
 
 ## Software Prerequisites
 
-The infDB runs primarily on containerized infrastructure. You need:
+The InfDB runs primarily on containerized infrastructure. You need:
 
 1.  **[Git](https://git-scm.com/)**: To clone the repository.
 2.  **[Docker](https://docs.docker.com/get-docker/)**: Engine version 20.10+ recommended.

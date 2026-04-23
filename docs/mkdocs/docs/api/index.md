@@ -1,9 +1,9 @@
 # API Reference
 
-The infDB platform offers several APIs to interact with the database and its services. Below is an overview of the main APIs available:
+The InfDB platform offers several APIs to interact with the database and its services. Below is an overview of the main APIs available:
 
 ## [Python Package pyinfdb](pyinfdb/index.md)
-The python package `pyinfdb` provides set of modules, classes and functions for database access, configuration management, logging and data handling. The central idea is to provide standard methods to interact with infDB in order to simplify the interaction with infDB.
+The python package `pyinfdb` provides set of modules, classes and functions for database access, configuration management, logging and data handling. The central idea is to provide standard methods to interact with InfDB in order to simplify the interaction with InfDB.
 
 See [API -> pyinfdb](pyinfdb/index.md) for detailed usage instructions.
 

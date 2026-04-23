@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS {output_schema}.{table_name}
     state            text,
     -- geom              geometry,
     -- centroid          geometry,
+    changelog_id      BIGINT REFERENCES public.changelog(id) ON DELETE SET NULL,
     PRIMARY KEY (id, ags_id)
 ) PARTITION BY LIST (ags_id);
 
@@ -35,3 +36,4 @@ CREATE INDEX IF NOT EXISTS building_lod2_feature_id_idx ON {output_schema}.{tabl
 CREATE INDEX IF NOT EXISTS building_lod2_gks_objectid_idx ON {output_schema}.{table_name} (gemeindeschluessel);
 CREATE INDEX IF NOT EXISTS building_lod2_objectid_idx ON {output_schema}.{table_name} (objectid);
 CREATE INDEX IF NOT EXISTS building_lod2_ags_id_idx ON {output_schema}.{table_name} (ags_id);
+CREATE INDEX IF NOT EXISTS building_lod2_changelog_id_idx ON {output_schema}.{table_name} (changelog_id);

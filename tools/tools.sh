@@ -9,9 +9,9 @@ set -a
 [ -f $(dirname "$0")/../.env ] && . $(dirname "$0")/../.env
 set +a
 
-echo "Loading environment variables from local .env file..."
+echo "Loading environment variables from local tools.env file..."
 set -a
-[ -f $(dirname "$0")/.env ] && . $(dirname "$0")/.env
+[ -f $(dirname "$0")/tools.env ] && . $(dirname "$0")/tools.env
 set +a
 
 usage() {
@@ -32,7 +32,7 @@ AGS="$3"
 OPTIONS="$4"
 
 # Use the shared infdb network for all tool runs
-export INFDB_NETWORK="${INFDB_NETWORK:-infdb-infdb-demo_network}"
+export INFDB_NETWORK="${INFDB_NETWORK:-infdb-${BASE_NAME}_network}"
 
 # Get 
 PROJECT="infdb_${AGS}"

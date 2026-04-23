@@ -1,26 +1,3 @@
--- Create function for safe area calculation with fallback
-CREATE OR REPLACE FUNCTION public.safe_area_fallback(geom geometry) 
-RETURNS double precision AS $$
-BEGIN
-    -- ATTEMPT 1: Exact 3D calculation (scientifically correct)
-    -- Attempts to decompose the polygon into triangles.
-    RETURN GC_3DArea(ST_Tesselate(ST_MakeValid(geom)));
-
-EXCEPTION WHEN OTHERS THEN
-    -- EMERGENCY FALLBACK: If 3D crashes (InternalError), we use the 2D area.
-    -- ST_Area(geom) ignores Z-values, but NEVER crashes.
-    -- This is better than no value at all.
-    RETURN 0;
-END;
-$$ LANGUAGE plpgsql IMMUTABLE;
-
--------------------------------------------------------------
--- Create the final surface table with area and geometry
--------------------------------------------------------------
-
--- Add PostGIS SFCGAL extension for 3D area calculation
-CREATE EXTENSION IF NOT EXISTS postgis_sfcgal;
-
 -- Analysis helps the query planner understand statistics for the join
 --ANALYZE tmp_bld.{table_name}_ids;
 
@@ -33,8 +10,8 @@ SELECT
     sid2.building_objectid,
     sid.objectclass_id,
     oc.classname,
-    -- safe_area_fallback(gd.geometry) AS area, --- area needs to be caluclated if not available as property.
-    MAX(CASE WHEN p.name = 'Flaeche' THEN p.val_string END)::double precision AS area, -- works only for bavaria
+    MAX(CASE WHEN p_ged.name = 'Flaeche' THEN p_ged.val_string END)::double precision AS area, -- works only for bavaria
+    MAX(CASE WHEN p_bld.name = 'Gemeindeschluessel' THEN p_bld.val_string END) AS gemeindeschluessel,
     ST_Multi(gd.geometry) AS geom
 FROM tmp_bld.{table_name}_ids sid
     JOIN tmp_bld.{table_name}_ids sid2 
@@ -43,7 +20,9 @@ FROM tmp_bld.{table_name}_ids sid
         AND sid2.objectclass_id = 901 -- sid2 is the surface
     JOIN objectclass oc ON oc.id = sid.objectclass_id
     JOIN geometry_data gd ON gd.id = sid.geometry_data_id
-    JOIN property p ON p.feature_id = gd.feature_id
+    JOIN property p_ged ON p_ged.feature_id = gd.feature_id
+    JOIN feature f ON f.objectid = sid2.building_objectid AND f.objectclass_id = 901
+    JOIN property p_bld ON p_bld.feature_id = f.id AND p_bld.name = 'Gemeindeschluessel'
 WHERE sid.objectclass_id IN (709, 710, 712) -- sid is the building
 GROUP BY sid2.building_objectid, sid.objectclass_id, oc.classname, gd.geometry;
 

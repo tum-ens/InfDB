@@ -27,7 +27,7 @@ CREATE INDEX ON filtered_ways (old_way_id); -- lookup by deleted way id
 DO $$
 DECLARE
     v_min_length       double precision := {min_length_meter}::double precision; -- minimum length threshold (meters)
-    v_snap_tol         double precision := 30.0;   -- snap/proximity tolerance for endpoint connections
+    v_snap_tol         double precision := 10.0;   -- snap/proximity tolerance for endpoint connections
     v_apply_loop       boolean          := {apply_loop_filter}::boolean;         -- enable loop filter
     v_apply_isolated   boolean          := {apply_isolated_filter}::boolean;     -- enable isolated filter
     v_apply_length     boolean          := {apply_length_filter}::boolean;       -- enable short-way filter
@@ -89,8 +89,8 @@ BEGIN
                 FROM ways_tem w2
                 WHERE w2.id::text <> r.way_id
                   AND w2.geom IS NOT NULL
-                  AND ST_DWithin(w2.geom, r.start_pt, v_snap_tol)   -- loop point proximity
-                ORDER BY ST_Distance(w2.geom, r.start_pt) ASC        -- nearest connected geometry first
+                  AND ST_DWithin(w2.geom, r.geom, v_snap_tol)   -- loop point proximity
+                ORDER BY ST_Distance(w2.geom, r.geom) ASC        -- nearest connected geometry first
                 LIMIT 1;
             END IF;
 

@@ -86,6 +86,11 @@ def main() -> None:
         db.execute_query("DROP SCHEMA IF EXISTS opendata CASCADE;")
         db.execute_query("DROP SCHEMA IF EXISTS tmp_bld CASCADE;")
 
+    # Run sql script to create changelog table and function
+    log.info("Setting up changelog table and function...")
+    with infdb.connect() as db:
+        db.execute_sql_file("sql/changelog.sql")
+
     # Ensure that administrative areas are loaded for scope
     bkg.load(infdb)
 

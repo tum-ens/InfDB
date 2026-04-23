@@ -3,7 +3,7 @@ icon: material/code-braces
 ---
 # Setup
 
-The setup of the infDB platform involves configuring environment variables for services and YAML files for data import.
+The setup of the InfDB platform involves configuring environment variables for services and YAML files for data import.
 
 Please select a configuration topic:
 

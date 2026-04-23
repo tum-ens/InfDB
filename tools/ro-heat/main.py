@@ -38,6 +38,7 @@ def main():
     method = infdbhandler.get_config_value(["ro-heat", "data", "input", "method"])
     random_seed = infdbhandler.get_config_value(["ro-heat", "data", "input", "random_seed"])
     heating_setpoint = infdbhandler.get_config_value(["ro-heat", "data", "input", "heating_setpoint"])
+    heated_area_ratio = infdbhandler.get_config_value(["ro-heat", "data", "input", "Heated_Area_Ratio"])
     rng = np.random.default_rng(seed=random_seed)
 
     try:
@@ -103,7 +104,9 @@ def main():
         )
         format_params_output_schema = {
             "output_schema": output_schema,
-                "ags": ags,
+            "ags": ags,
+            "tool_name": infdbhandler.get_toolname(),
+            "process_id": os.getpid(),
         }
         infdbclient_citydb.execute_sql_file(os.path.join("sql", "upsert_buildings_refurbished_status.sql"),
                                             format_params_output_schema)
@@ -118,7 +121,7 @@ def main():
         infdblog.debug("Tabula structure created")
         
         harmonized_df[["resistance", "capacitance"]] = harmonized_df.apply(
-            lambda row: tabula_handling.calculate_rc_values(tabula_structure, row), axis=1, result_type="expand"
+            lambda row: tabula_handling.calculate_rc_values(tabula_structure, row, heated_area_ratio), axis=1, result_type="expand"
         )
         infdblog.debug("Done with construction of building elements")
 
@@ -148,6 +151,8 @@ def main():
                 "start_time": start_time,
                 "end_time": end_time,
                 "temp_in": heating_setpoint,
+                "tool_name": infdbhandler.get_toolname(),
+                "process_id": os.getpid(),
             }
             infdbclient_citydb.execute_sql_file(
                 os.path.join("sql", "03_heat-demand-r.sql"), format_params=format_params
@@ -179,10 +184,7 @@ def main():
             entise_input["hvac"] = method
             entise_input["min_temperature[C]"] = heating_setpoint
             entise_input["max_temperature[C]"] = 24.0
-            if method == "1R1C":
-                entise_input["init_temperature[C]"] = 18.0
-            elif method == "1R0C":
-                entise_input["init_temperature[C]"] = heating_setpoint
+            entise_input["init_temperature[C]"] = heating_setpoint
             entise_input["gains_solar"] = 0.0
             entise_input["ventilation[W K-1]"] = 0.0
 

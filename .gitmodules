@@ -1,12 +1,16 @@
 [submodule "tools/pylovo-generation/src/pylovo"]
 	path = tools/pylovo-generation/src/pylovo
 	url = https://github.com/tum-ens/pylovo.git
+	branch = feature/flexible-configs
 [submodule "services/infdb-qwc"]
 	path = services/infdb-qwc
 	url = https://github.com/tum-ens/infDB-qwc.git
+    branch = infdb
 [submodule "services/infdb-opencloud"]
 	path = services/infdb-opencloud
 	url = https://github.com/tum-ens/infDB-opencloud.git
+	branch = infdb
 [submodule "services/infdb-lizmap"]
 	path = services/infdb-lizmap
 	url = https://github.com/tum-ens/infDB-lizmap.git
+	branch = infdb

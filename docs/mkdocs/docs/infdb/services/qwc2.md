@@ -3,7 +3,7 @@ icon: material/map-legend
 ---
 # QGIS Webclient (QWC2) :material-map-legend:
 
-The **QGIS Web Client 2 (QWC2)** service provides a modern, responsive web application for visualizing and interacting with QGIS projects. It allows users to publish geospatial data stored in the infDB database to the web, offering capabilities such as layer management, feature information, searching, and map printing. More information can be found on the official [Github Repo](https://github.com/qgis/qwc2/).
+The **QGIS Web Client 2 (QWC2)** service provides a modern, responsive web application for visualizing and interacting with QGIS projects. It allows users to publish geospatial data stored in the InfDB database to the web, offering capabilities such as layer management, feature information, searching, and map printing. More information can be found on the official [Github Repo](https://github.com/qgis/qwc2/).
 
 ## Configuration
 

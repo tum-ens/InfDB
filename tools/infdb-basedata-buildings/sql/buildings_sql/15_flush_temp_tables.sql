@@ -1,4 +1,9 @@
-BEGIN;
+DO $$
+DECLARE
+    v_changelog_id BIGINT;
+BEGIN
+-- create a new changelog id and store it in a variable for later reference in the insert statements
+SELECT public.fn_begin_changelog('{tool_name}', 'no comment', session_user::TEXT, '{ags}', '{process_id}') INTO v_changelog_id;
 
 -- =========================================================
 -- buildings (global)
@@ -8,6 +13,19 @@ WHERE b.gemeindeschluessel = '{ags}';
 
 INSERT INTO {output_schema}.buildings
 SELECT * FROM temp_buildings;
+
+UPDATE {output_schema}.buildings
+SET changelog_id = v_changelog_id
+WHERE gemeindeschluessel = '{ags}';
+
+-- =========================================================
+-- building_surface_area (global)
+-- =========================================================
+DELETE FROM {output_schema}.building_surface_area b
+WHERE b.gemeindeschluessel = '{ags}';
+
+INSERT INTO {output_schema}.building_surface_area
+SELECT * FROM temp_building_surface;
 
 -- =========================================================
 -- buildings_grid_100m (global) UPSERT
@@ -40,7 +58,8 @@ SET
     a1991bis2000 = EXCLUDED.a1991bis2000,
     a2001bis2010 = EXCLUDED.a2001bis2010,
     a2011bis2019 = EXCLUDED.a2011bis2019,
-    a2020undspaeter = EXCLUDED.a2020undspaeter;
+    a2020undspaeter = EXCLUDED.a2020undspaeter,
+    changelog_id = v_changelog_id;
 
 -- =========================================================
 -- buildings_grid_1km (global) UPSERT
@@ -73,7 +92,8 @@ SET
     a1991bis2000 = EXCLUDED.a1991bis2000,
     a2001bis2010 = EXCLUDED.a2001bis2010,
     a2011bis2019 = EXCLUDED.a2011bis2019,
-    a2020undspaeter = EXCLUDED.a2020undspaeter;
+    a2020undspaeter = EXCLUDED.a2020undspaeter,
+    changelog_id = v_changelog_id;
 
 -- -- =========================================================
 -- -- bld2grid (global) UPSERT
@@ -87,14 +107,15 @@ SET
 -- =========================================================
 -- bld2ts (global) UPSERT
 -- =========================================================
-INSERT INTO {output_schema}.bld2ts (bld_objectid, ts_metadata_id, ts_metadata_name, dist, geom)
-SELECT bld_objectid, ts_metadata_id, ts_metadata_name, dist, geom
+INSERT INTO {output_schema}.bld2ts (bld_objectid, ts_metadata_id, ts_metadata_name, dist, geom, changelog_id)
+SELECT bld_objectid, ts_metadata_id, ts_metadata_name, dist, geom, v_changelog_id
 FROM temp_bld2ts
 ON CONFLICT (bld_objectid, ts_metadata_name) DO UPDATE
 SET
     ts_metadata_id = EXCLUDED.ts_metadata_id,
     dist           = EXCLUDED.dist,
-    geom           = EXCLUDED.geom;
+    geom           = EXCLUDED.geom,
+    changelog_id   = v_changelog_id;
 
 
 -- =========================================================
@@ -105,5 +126,7 @@ DROP TABLE IF EXISTS temp_buildings_grid_100m;
 DROP TABLE IF EXISTS temp_buildings_grid_1km;
 -- DROP TABLE IF EXISTS temp_bld2grid;
 DROP TABLE IF EXISTS temp_bld2ts;
+DROP TABLE IF EXISTS temp_building_surface;
 
-COMMIT;
+END;
+$$;

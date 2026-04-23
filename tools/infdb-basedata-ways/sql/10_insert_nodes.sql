@@ -1,3 +1,10 @@
+DO $$
+DECLARE
+    v_changelog_id BIGINT;
+BEGIN
+-- create a new changelog id and store it in a variable for later reference in the insert statements
+SELECT public.fn_begin_changelog('{tool_name}', 'no comment', session_user::TEXT, '{ags}', '{process_id}') INTO v_changelog_id;
+
 -- ============================================================
 -- Build nodes at connection points between ways in ways_tem and ways_tem_connection
 --
@@ -72,12 +79,13 @@ cluster_stats AS (
 )
 
 -- Insert aggregated clusters as nodes_per_junction
-INSERT INTO {output_schema}.nodes_per_junction (ags, id, geom, way_ids)
+INSERT INTO {output_schema}.nodes_per_junction (ags, id, geom, way_ids, changelog_id)
 SELECT
     ags,                                     -- municipality/region id (AGS) as text
     md5(node_pt::text || cluster_id::text) AS id, -- deterministic-ish node id from geometry+cluster
     node_pt                                AS geom, -- node point geometry
-    way_ids                                AS way_ids -- associated way ids
+    way_ids                                AS way_ids, -- associated way ids
+    v_changelog_id                         AS changelog_id -- changelog reference
 FROM cluster_stats;
 
 
@@ -134,10 +142,14 @@ cluster_stats AS (
 )
 
 -- Insert aggregated clusters as nodes_per_connection
-INSERT INTO {output_schema}.nodes_per_connection (ags, id, geom, way_ids)
+INSERT INTO {output_schema}.nodes_per_connection (ags, id, geom, way_ids, changelog_id)
 SELECT
     ags,                                     -- municipality/region id (AGS) as text
     md5(node_pt::text || cluster_id::text) AS id, -- deterministic-ish node id from geometry+cluster
     node_pt                                AS geom, -- node point geometry
-    way_ids                                AS way_ids -- associated way ids
+    way_ids                                AS way_ids, -- associated way ids
+    v_changelog_id                         AS changelog_id -- changelog reference
 FROM cluster_stats;
+
+END;
+$$;

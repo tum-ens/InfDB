@@ -5,7 +5,7 @@ DROP MATERIALIZED VIEW IF EXISTS {output_schema}.{bld_table_name}_view; -- Drop 
 DROP TABLE IF EXISTS {output_schema}.{bld_table_name}_view;
 
 -- Wir nutzen CREATE TABLE statt Materialized View für bessere Performance beim Erstellen
-CREATE UNLOGGED TABLE {output_schema}.{bld_table_name}_view AS
+CREATE TABLE {output_schema}.{bld_table_name}_view AS
 SELECT 
     bld.*,
     sur.area AS groundsurface_flaeche,

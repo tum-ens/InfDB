@@ -1,5 +1,5 @@
 # Workflow
-Please follow the development workflow outlined below when contributing to the infDB project:
+Please follow the development workflow outlined below when contributing to the InfDB project:
 
 0. **Set up the environment** following the installation instructions in [Usage -> Get Software](../usage/get-software.md).
 1. **Open an issue** to discuss new features, bugs, or changes.
@@ -13,14 +13,14 @@ Please follow the development workflow outlined below when contributing to the i
 
 
 ## Developing in a Container
-We recommend using Visual Studio Code with the Remote - Containers extension for development. This allows you to work in a consistent environment that matches the production setup.
+We recommend using Visual Studio Code with the Remote - Containers extension for development of the services. This allows you to work in a consistent environment that matches the production setup.
 
 1. Install the [Remote - Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) in Visual Studio Code.
-2. Open the infDB project folder btw. corresponding tool folder in Visual Studio Code.
+2. Open the corresponding tool or service folder in Visual Studio Code.
 3. Click on the green icon in the bottom-left corner and select "Reopen in Container".
 4. The development container will be built and launched, providing you with a ready-to-use environment for development.
 !!! hint
-    If you want to develop a tool, you need to open the specific tool folder (e.g., `services/infdb-api/`) instead of the root project folder.
+    If you want to develop a tool or a service, you need to open the specific tool or service folder (e.g., `services/infdb-api/`) instead of the root project folder.
 
 <!-- ## CI/CD Workflow
 
@@ -29,7 +29,7 @@ The CI/CD workflow is set up using GitLab CI/CD. The workflow runs tests, checks
 !!! warning "Troubleshooting on Windows"
     To open the repository in Visual Studio Code (VSC) click the two arrowheads in the lower left corner of VSC and select "Connect to WSL". Then you can open the repository folder from for Linux home directory.
 
-This section summarizes some problems encountered during the first installation and startup of infDB on Windows, along with their solutions.
+This section summarizes some problems encountered during the first installation and startup of InfDB on Windows, along with their solutions.
 
 **1. Ubuntu launched as root instead of Normal User**
 
