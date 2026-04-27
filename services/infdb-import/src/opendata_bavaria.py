@@ -354,7 +354,7 @@ def _load_tatsaechliche_nutzung(infdb: InfDB, cfg: dict, base_path: Path, pgurl:
             )
         conn.commit()
 
-    # ==================== 7. FINALIZATION ====================
+    # ==================== 8. FINALIZATION ====================
     # Get final row count and create spatial index if there is data
     total_rows_imported = 0
     with engine.connect() as conn:
