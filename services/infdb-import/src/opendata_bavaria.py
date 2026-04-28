@@ -3,10 +3,19 @@ import logging
 import multiprocessing as mp
 import subprocess
 from pathlib import Path
+from typing import Dict, List
+import sys
 
+<<<<<<< HEAD
 from pyinfdb import InfDB
 from sqlalchemy import text
 import shlex
+=======
+import geopandas as gpd
+from infdb import InfDB
+from sqlalchemy import text
+from shapely import wkt as shapely_wkt
+>>>>>>> f30ea441 (resampling logic is parallelized)
 
 from . import utils
 from .lod2 import _build_urls_for_region
@@ -50,181 +59,252 @@ def _cleanup_paths(paths: list[Path], log) -> None:
             log.warning("Could not remove temporary file: %s", path)
 
 
-def _build_dgm1_single_ags_raster(
-    ags_code: str,
-    tool_name: str,
-    config_path: str,
-    dgm1_region_cfg: dict,
-    dgm1_base_dir: str,
-    source_srid: int,
-    target_res: float,
-) -> str | None:
-    """Build one clipped raster for a single AGS from already-downloaded source tiles."""
-    worker_log = log
-
-    try:
-        infdb = InfDB(tool_name=tool_name, config_path=config_path)
-        worker_log = infdb.get_worker_logger()
-
-        work_dir = Path(dgm1_base_dir)
-
-        # Resolve AGS-specific URLs and corresponding local TIFFs
-        urls = _build_urls_for_single_ags("DGM1 Bavaria", dgm1_region_cfg, ags_code, infdb, worker_log)
-        if not urls:
-            worker_log.info("DGM1 AGS %s: no URLs resolved, skipping.", ags_code)
-            return None
-
-        tile_paths = []
-        for url in urls:
-            tif_path = work_dir / Path(url).name
-            if tif_path.exists() and tif_path.is_file():
-                tile_paths.append(str(tif_path))
-
-        tile_paths = sorted(set(tile_paths))
-
-        if not tile_paths:
-            worker_log.info("DGM1 AGS %s: no local TIFF files found, skipping.", ags_code)
-            return None
-
-        # Resolve AGS-specific exact clip geometry
-        clip_wkt, _, _ = utils.get_clip_geometry(target_crs=source_srid, infdb=infdb, state_prefix=ags_code)
-        if not clip_wkt:
-            worker_log.info("DGM1 AGS %s: no clip geometry found, skipping.", ags_code)
-            return None
-
-        scope_geom = shapely_wkt.loads(clip_wkt)
-
-        file_list_path = work_dir / f"dgm1_{ags_code}.txt"
-        vrt_path = work_dir / f"dgm1_{ags_code}.vrt"
-        mask_path = work_dir / f"mask_dgm1_{ags_code}.gpkg"
-        clipped_tif = work_dir / f"dgm1_{ags_code}.tif"
-
-        try:
-            _write_file_list(tile_paths, file_list_path)
-
-            rc = utils.do_cmd(
-                infdb,
-                [
-                    "gdalbuildvrt",
-                    "-input_file_list",
-                    str(file_list_path),
-                    str(vrt_path),
-                ],
-            )
-            if rc != 0:
-                worker_log.error("DGM1 AGS %s: gdalbuildvrt failed.", ags_code)
-                return None
-
-            gdf = gpd.GeoDataFrame(
-                {"id": [1]},
-                geometry=[scope_geom],
-                crs=f"EPSG:{source_srid}",
-            )
-            gdf.to_file(mask_path, layer="mask", driver="GPKG")
-
-            rc = utils.do_cmd(
-                infdb,
-                [
-                    "gdalwarp",
-                    "-overwrite",
-                    "-of",
-                    "GTiff",
-                    "-co",
-                    "TILED=YES",
-                    "-co",
-                    "COMPRESS=DEFLATE",
-                    "-co",
-                    "PREDICTOR=2",
-                    "-co",
-                    "BIGTIFF=IF_SAFER",
-                    "-co",
-                    "BLOCKXSIZE=512",
-                    "-co",
-                    "BLOCKYSIZE=512",
-                    "-r",
-                    "bilinear",
-                    "-multi",
-                    "-wo",
-                    "NUM_THREADS=ALL_CPUS",
-                    "-t_srs",
-                    f"EPSG:{source_srid}",
-                    "-tr",
-                    str(target_res),
-                    str(target_res),
-                    "-srcnodata",
-                    "-9999",
-                    "-dstnodata",
-                    "-9999",
-                    "-cutline",
-                    str(mask_path),
-                    "-cl",
-                    "mask",
-                    "-crop_to_cutline",
-                    str(vrt_path),
-                    str(clipped_tif),
-                ],
-            )
-            if rc != 0:
-                worker_log.error("DGM1 AGS %s: gdalwarp failed.", ags_code)
-                return None
-
-            if not clipped_tif.exists() or clipped_tif.stat().st_size == 0:
-                worker_log.info("DGM1 AGS %s: clipped TIFF empty, skipping.", ags_code)
-                return None
-
-            worker_log.info("DGM1 AGS %s: raster prepared.", ags_code)
-            return str(clipped_tif)
-
-        finally:
-            _cleanup_paths([file_list_path, vrt_path, mask_path], worker_log)
-
-    except Exception:
-        worker_log.exception("DGM1 AGS %s failed unexpectedly.", ags_code)
-        return None
-
-
-def _build_dgm1_ags_rasters_in_parallel(
+def _resample_dgm1_tile(
     infdb: InfDB,
-    ags_list: list[str],
-    dgm1_region_cfg: dict,
-    dgm1_base_dir: Path,
+    source_tif: Path,
+    output_tif: Path,
     source_srid: int,
     target_res: float,
-    processes: int | None = None,
-) -> list[str]:
+) -> Path | None:
+    """Resample one DGM1 tile to the configured target resolution without clipping."""
     log = infdb.get_worker_logger()
 
-    if not ags_list:
-        log.warning("DGM1: no AGS values to process.")
-        return []
+    if output_tif.exists() and output_tif.stat().st_size > 0:
+        return output_tif
 
-    processes = max(1, min(processes, len(ags_list)))
+    rc = utils.do_cmd(
+        infdb,
+        [
+            "gdalwarp",
+            "-overwrite",
+            "-of",
+            "GTiff",
+            "-co",
+            "TILED=YES",
+            "-co",
+            "COMPRESS=DEFLATE",
+            "-co",
+            "PREDICTOR=2",
+            "-co",
+            "BIGTIFF=IF_SAFER",
+            "-co",
+            "BLOCKXSIZE=512",
+            "-co",
+            "BLOCKYSIZE=512",
+            "-r",
+            "bilinear",
+            "-multi",
+            "-wo",
+            "NUM_THREADS=ALL_CPUS",
+            "-t_srs",
+            f"EPSG:{source_srid}",
+            "-tr",
+            str(target_res),
+            str(target_res),
+            "-srcnodata",
+            "-9999",
+            "-dstnodata",
+            "-9999",
+            str(source_tif),
+            str(output_tif),
+        ],
+    )
 
-    config_path = "../configs/config-infdb-import.yml"
+    if rc != 0:
+        log.error("DGM1: gdalwarp resampling failed for %s", source_tif)
+        return None
 
-    with mp.Pool(processes=processes) as pool:
-        results = pool.starmap(
-            _build_dgm1_single_ags_raster,
-            [
-                (
-                    ags_code,
-                    infdb.get_toolname(),
-                    config_path,
-                    dgm1_region_cfg,
-                    str(dgm1_base_dir),
-                    source_srid,
-                    target_res,
-                )
-                for ags_code in ags_list
-            ],
+    if not output_tif.exists() or output_tif.stat().st_size == 0:
+        log.warning("DGM1: resampled TIFF is empty for %s", source_tif)
+        return None
+
+    return output_tif
+
+
+def _chunk_list(items: list, batch_size: int) -> list[list]:
+    return [
+        items[i:i + batch_size]
+        for i in range(0, len(items), batch_size)
+    ]
+
+
+def _resample_dgm1_tile_worker(
+    source_tif_str: str,
+    output_tif_str: str,
+    source_srid: int,
+    target_res: float,
+) -> tuple[bool, str | None, str | None]:
+    try:
+        source_tif = Path(source_tif_str)
+        output_tif = Path(output_tif_str)
+
+        if output_tif.exists() and output_tif.stat().st_size > 0:
+            return True, str(output_tif), None
+
+        output_tif.parent.mkdir(parents=True, exist_ok=True)
+
+        cmd = [
+            "gdalwarp",
+            "-overwrite",
+            "-of",
+            "GTiff",
+            "-co",
+            "TILED=YES",
+            "-co",
+            "COMPRESS=DEFLATE",
+            "-co",
+            "PREDICTOR=2",
+            "-co",
+            "BIGTIFF=IF_SAFER",
+            "-co",
+            "BLOCKXSIZE=512",
+            "-co",
+            "BLOCKYSIZE=512",
+            "-r",
+            "bilinear",
+            "-multi",
+            "-wo",
+            "NUM_THREADS=1",
+            "-t_srs",
+            f"EPSG:{source_srid}",
+            "-tr",
+            str(target_res),
+            str(target_res),
+            "-srcnodata",
+            "-9999",
+            "-dstnodata",
+            "-9999",
+            str(source_tif),
+            str(output_tif),
+        ]
+
+        proc = subprocess.run(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
         )
 
-    ags_rasters = [p for p in results if p]
+        if proc.returncode != 0:
+            output_tif.unlink(missing_ok=True)
+            return False, None, f"gdalwarp failed for {source_tif}: {proc.stdout}"
 
-    if len(ags_rasters) != len(ags_list):
-        raise RuntimeError("DGM1: one or more AGS raster preparation jobs failed.")
+        if not output_tif.exists() or output_tif.stat().st_size == 0:
+            output_tif.unlink(missing_ok=True)
+            return False, None, f"resampled TIFF is empty for {source_tif}"
 
-    return ags_rasters
+        return True, str(output_tif), None
+
+    except Exception as err:
+        return False, None, str(err)
+
+
+def _resample_dgm1_batch(
+    batch: list[str],
+    resampled_dir_str: str,
+    source_srid: int,
+    target_res: float,
+    batch_idx: int,
+    total_batches: int,
+) -> tuple[bool, list[str], list[str], int, int]:
+    resampled_paths: list[str] = []
+    errors: list[str] = []
+
+    resampled_dir = Path(resampled_dir_str)
+
+    for source_tif_str in batch:
+        source_tif = Path(source_tif_str)
+        output_tif = resampled_dir / source_tif.name
+
+        ok, resampled_path, error = _resample_dgm1_tile_worker(
+            source_tif_str=str(source_tif),
+            output_tif_str=str(output_tif),
+            source_srid=source_srid,
+            target_res=target_res,
+        )
+
+        if ok and resampled_path:
+            resampled_paths.append(resampled_path)
+        else:
+            errors.append(error or f"Unknown error for {source_tif}")
+
+    return len(errors) == 0, resampled_paths, errors, batch_idx, total_batches
+
+def _resample_dgm1_batch_star(args):
+    return _resample_dgm1_batch(*args)
+
+def _resample_dgm1_tiles_in_parallel(
+    infdb: InfDB,
+    tile_paths: list[Path],
+    resampled_dir: Path,
+    source_srid: int,
+    target_res: float,
+    batch_size: int = 200,
+    processes: int | None = None,
+) -> list[Path]:
+    log = infdb.get_worker_logger()
+
+    if not tile_paths:
+        return []
+
+    batches = _chunk_list([str(p) for p in tile_paths], batch_size)
+    total_batches = len(batches)
+
+    if processes is None:
+        processes = utils.get_number_processes(infdb)
+
+    processes = max(1, min(processes, total_batches))
+
+    log.info(
+        "DGM1: resampling %d tiles in %d batches with %d worker(s).",
+        len(tile_paths),
+        total_batches,
+        processes,
+    )
+
+    worker_args = [
+        (
+            batch,
+            str(resampled_dir),
+            source_srid,
+            target_res,
+            i + 1,
+            total_batches,
+        )
+        for i, batch in enumerate(batches)
+    ]
+
+    resampled_paths: list[Path] = []
+    errors: list[str] = []
+    completed_batches = 0
+
+    with mp.Pool(processes=processes) as pool:
+        for ok, batch_paths, batch_errors, batch_idx, total in pool.imap_unordered(
+            _resample_dgm1_batch_star,
+            worker_args,
+        ):
+            completed_batches += 1
+
+            log.info(
+                "DGM1: %d/%d batches are completed. Finished batch %d/%d with %d output file(s).",
+                completed_batches,
+                total,
+                batch_idx,
+                total,
+                len(batch_paths),
+            )
+
+            resampled_paths.extend(Path(p) for p in batch_paths)
+
+            if not ok:
+                errors.extend(batch_errors)
+
+    if errors:
+        raise RuntimeError(
+            f"DGM1: {len(errors)} tile(s) failed during parallel resampling. First error: {errors[0]}"
+        )
+
+    return sorted(set(resampled_paths))
 
 
 # ====================================================================================
@@ -288,7 +368,7 @@ def load(infdb: InfDB) -> bool:
 
 # ====================================================================================
 # DGM1 LOADER - Digital Terrain Model (Elevation Raster Data)
-# SIMPLE VERSION: just download all tiles per Landkreis and import into PostGIS
+# SIMPLE VERSION: download selected tiles, resample them, build VRT, import into PostGIS
 # ====================================================================================
 
 
@@ -296,11 +376,12 @@ def _load_dgm1(infdb: InfDB, base_path: Path, target_epsg: int):
     """Loads Bavaria DGM1 using tiled statewide download logic.
 
     Behavior:
-      * resolves one Bavaria-scoped geometry via utils.get_clip_geometry(...)
-      * computes all intersecting DGM1 tiles using regular grid logic
+      * resolves all required DGM1 tile URLs for the active scopes
       * downloads all required tiles once into a shared folder
-      * clips them exactly to the configured scope polygon
-      * imports the final clipped raster into one target table
+      * selects only TIFF files belonging to the current URL list
+      * resamples each selected tile to the configured target resolution
+      * builds a VRT from the current resampled tiles
+      * imports the VRT into one target table
 
     """
 
@@ -329,6 +410,9 @@ def _load_dgm1(infdb: InfDB, base_path: Path, target_epsg: int):
     dgm1_base_dir = base_path / "gelaendemodell_1m"
     dgm1_base_dir.mkdir(parents=True, exist_ok=True)
 
+    resampled_dir = dgm1_base_dir / f"resampled_{target_res:g}m"
+    resampled_dir.mkdir(parents=True, exist_ok=True)
+
     # ---------- 2. Read tiled download config ----------
     dgm1_region_cfg = {
         "status": infdb.get_config_value(dgm1_cfg + ["status"]),
@@ -345,148 +429,115 @@ def _load_dgm1(infdb: InfDB, base_path: Path, target_epsg: int):
         log.warning("DGM1: no Bavaria tiles resolved for the active scopes; skipping.")
         return
 
+    urls = sorted(set(urls))
+
     log.info("DGM1: %d unique tiles to download.", len(urls))
 
     # ---------- 4. Download all tiles once ----------
-    utils.download_aria2c_many(infdb, urls, output_dir=str(dgm1_base_dir))
+    #utils.download_aria2c_many(infdb, urls, output_dir=str(dgm1_base_dir))
 
-    # ---------- 5. Collect all downloaded TIFF tiles ----------
-    raster_source_files = subprocess.check_output(
-        [
-            "find",
-            str(dgm1_base_dir),
-            "-maxdepth",
-            "1",
-            "-type",
-            "f",
-            "-iname",
-            "*.tif",
-            "-print",
-        ],
-        text=True,
-    ).strip()
+    # ---------- 5. Collect only downloaded TIFF tiles from current URL list ----------
+    tile_paths = []
+    missing_tile_paths = []
 
-    if not raster_source_files:
-        log.warning("DGM1: no .tif tiles found after download; skipping.")
+    for url in urls:
+        tile_path = dgm1_base_dir / Path(url).name
+
+        if tile_path.exists() and tile_path.is_file() and tile_path.suffix.lower() in [".tif", ".tiff"]:
+            tile_paths.append(tile_path)
+        else:
+            missing_tile_paths.append(tile_path)
+
+    tile_paths = sorted(set(tile_paths))
+
+    if missing_tile_paths:
+        log.warning(
+            "DGM1: %d expected TIFF files are missing after download. First missing file: %s",
+            len(missing_tile_paths),
+            missing_tile_paths[0],
+        )
+
+    if not tile_paths:
+        log.warning("DGM1: no expected .tif tiles found after download; skipping.")
         return
 
-    tile_paths = raster_source_files.splitlines()
-    log.info("DGM1: %d raster tiles available for clipping.", len(tile_paths))
+    log.info("DGM1: %d raster tiles selected from current URL list for resampling.", len(tile_paths))
 
-    # ---------- 6. Resolve exact clip geometry ----------
-    # We clip exactly to the real configured scope, but the tile
-    # download step is done once on the statewide grid.
-    ags_list = utils.fetch_scope_ags_from_db(infdb)
-    if not ags_list:
-        log.warning("DGM1: no AGS resolved from scope; skipping.")
-        return
-
-    # ---------- 8. Clip / merge all tiles into one raster ----------
-    ags_rasters = _build_dgm1_ags_rasters_in_parallel(
+    # ---------- 6. Resample all current tiles to target resolution ----------
+    resampled_paths = _resample_dgm1_tiles_in_parallel(
         infdb=infdb,
-        ags_list=ags_list,
-        dgm1_region_cfg=dgm1_region_cfg,
-        dgm1_base_dir=dgm1_base_dir,
+        tile_paths=tile_paths,
+        resampled_dir=resampled_dir,
         source_srid=source_srid,
         target_res=target_res,
+        batch_size=200,
         processes=utils.get_number_processes(infdb),
     )
 
-    final_file_list_path = dgm1_base_dir / "dgm1_scope.txt"
-    final_vrt_path = dgm1_base_dir / "dgm1_scope.vrt"
-    output_tif = dgm1_base_dir / f"dgm1_{target_res}m_clipped.tif"
+    if not resampled_paths:
+        log.warning("DGM1: no resampled TIFF files created; skipping import.")
+        return
+
+    log.info("DGM1: %d raster tiles resampled.", len(resampled_paths))
+
+    # ---------- 7. Build VRT from current resampled rasters ----------
+    file_list_path = dgm1_base_dir / "dgm1_resampled_files.txt"
+    vrt_path = dgm1_base_dir / f"dgm1_{target_res:g}m_resampled.vrt"
 
     try:
-        _write_file_list(ags_rasters, final_file_list_path)
+        _write_file_list([str(p) for p in resampled_paths], file_list_path)
 
         rc = utils.do_cmd(
             infdb,
             [
                 "gdalbuildvrt",
                 "-input_file_list",
-                str(final_file_list_path),
-                str(final_vrt_path),
+                str(file_list_path),
+                str(vrt_path),
             ],
         )
-        if rc != 0:
-            raise RuntimeError("DGM1: failed to build final scope VRT.")
 
-        rc = utils.do_cmd(
-            infdb,
-            [
-                "gdalwarp",
-                "-overwrite",
-                "-of",
-                "GTiff",
-                "-co",
-                "TILED=YES",
-                "-co",
-                "COMPRESS=DEFLATE",
-                "-co",
-                "PREDICTOR=2",
-                "-co",
-                "BIGTIFF=IF_SAFER",
-                "-co",
-                "BLOCKXSIZE=512",
-                "-co",
-                "BLOCKYSIZE=512",
-                "-r",
-                "bilinear",
-                "-multi",
-                "-wo",
-                "NUM_THREADS=ALL_CPUS",
-                "-t_srs",
-                f"EPSG:{source_srid}",
-                "-tr",
-                str(target_res),
-                str(target_res),
-                "-srcnodata",
-                "-9999",
-                "-dstnodata",
-                "-9999",
-                str(final_vrt_path),
-                str(output_tif),
-            ],
-        )
         if rc != 0:
-            raise RuntimeError("DGM1: failed to create final merged raster.")
+            raise RuntimeError("DGM1: failed to build VRT from resampled TIFFs.")
 
-        # ---------- 9. Validate output ----------
+        if not vrt_path.exists() or vrt_path.stat().st_size == 0:
+            raise RuntimeError("DGM1: generated VRT is empty.")
+
+        log.info("DGM1: created VRT for current resampled rasters: %s", vrt_path)
+
+        # ---------- 8. Validate output ----------
         try:
-            size_mb = output_tif.stat().st_size / 1_000_000
+            size_mb = sum(p.stat().st_size for p in resampled_paths) / 1_000_000
         except FileNotFoundError:
-            log.error("DGM1: clipped raster not found at %s", output_tif)
+            log.error("DGM1: one or more resampled TIFF files are missing.")
             return
 
         if size_mb <= 0:
-            log.warning("DGM1: clipped raster is empty; skipping import.")
-            output_tif.unlink(missing_ok=True)
+            log.warning("DGM1: resampled raster files are empty; skipping import.")
             return
 
-        log.info("DGM1: created clipped raster (%.1f MB)", size_mb)
+        log.info("DGM1: current resampled raster data size %.1f MB", size_mb)
 
-        # ---------- 10. Import into PostGIS ----------
+        # ---------- 9. Import into PostGIS ----------
         target_table = f"{schema}.{table_base}"
-
-        with infdb.connect() as db:
-            db.execute_query(f"DROP TABLE IF EXISTS {target_table};")
 
         pgurl = utils._pg_connstring_for_psql(infdb)
         psql_cmd = f'psql --no-psqlrc -q -v ON_ERROR_STOP=1 -X "{pgurl}"'
 
         import_pipeline = (
-            f'raster2pgsql -q -s {source_srid} -I -C -M -N -9999 -t 100x100 -l 4,8,16 "{output_tif}" {target_table} | {psql_cmd}'
+            f'raster2pgsql -q -s {source_srid} -I -C -M -N -9999 -t 100x100 -l 4,8,16 "{vrt_path}" {target_table} | {psql_cmd}'
         )
 
         log.info("DGM1: importing into %s", target_table)
-        utils.do_cmd(infdb, import_pipeline, shell=True)
+        rc = utils.do_cmd(infdb, import_pipeline, shell=True)
+
+        if rc != 0:
+            raise RuntimeError("DGM1: raster2pgsql import failed.")
+
         log.info("DGM1: import finished.")
 
     finally:
-        _cleanup_paths(
-            [final_file_list_path, final_vrt_path, output_tif] + [Path(p) for p in ags_rasters],
-            log,
-        )
+        _cleanup_paths([file_list_path, vrt_path], log)
 
 
 # ====================================================================================
