@@ -4,8 +4,144 @@ import sys
 from infdb import InfDB
 from shapely import wkt as shapely_wkt
 from shapely.geometry import box
+import multiprocessing as mp
 
 from . import utils
+
+
+def _urls_to_local_gml_paths(urls: list[str], gml_path: str, log) -> list[str]:
+    """Resolve current-run URLs to existing local GML file paths."""
+    local_files = []
+    missing_files = []
+
+    for url in urls:
+        filename = os.path.basename(url)
+        local_path = os.path.join(gml_path, filename)
+
+        if os.path.isfile(local_path):
+            local_files.append(local_path)
+        else:
+            missing_files.append(local_path)
+
+    if missing_files:
+        log.warning("LoD2: %d expected files are missing after download.", len(missing_files))
+        for path in missing_files[:20]:
+            log.warning("Missing file: %s", path)
+        if len(missing_files) > 20:
+            log.warning("... and %d more missing files.", len(missing_files) - 20)
+
+    return sorted(set(local_files))
+
+
+def _chunk_list(items: list[str], chunk_size: int) -> list[list[str]]:
+    """Split items into fixed-size chunks."""
+    if chunk_size <= 0:
+        raise ValueError("chunk_size must be > 0")
+    return [items[i:i + chunk_size] for i in range(0, len(items), chunk_size)]
+
+
+def _import_lod2_batch(
+    batch_files: list[str],
+    tool_name: str,
+    batch_index: int,
+    total_batches: int,
+) -> bool:
+    """Import one batch of GML files directly with citydb."""
+    try:
+        infdb = InfDB(tool_name=tool_name, config_path="../configs/config-infdb-import.yml")
+        log = infdb.get_worker_logger()
+
+        if not batch_files:
+            log.info("LoD2 batch %d/%d: empty batch, skipping.", batch_index, total_batches)
+            return True
+
+        source_cfg = [infdb.get_toolname(), "sources", "lod2"]
+        params = infdb.get_db_parameters_dict()
+        import_mode = infdb.get_config_value(source_cfg + ["import-mode"]) or "skip"
+
+        log.info(
+            "LoD2 batch %d/%d: importing %d files.",
+            batch_index,
+            total_batches,
+            len(batch_files),
+        )
+
+        cmd_parts = [
+            "citydb",
+            "import",
+            "citygml",
+            "-H",
+            params["host"],
+            "-d",
+            params["db"],
+            "-u",
+            params["user"],
+            "-p",
+            params["password"],
+            "-P",
+            str(params["exposed_port"]),
+            f"--import-mode={import_mode}",
+            *batch_files,
+        ]
+
+        return_code = utils.do_cmd(infdb, cmd_parts)
+
+        if return_code != 0:
+            log.error(
+                "LoD2 batch %d/%d failed with return code %d.",
+                batch_index,
+                total_batches,
+                return_code,
+            )
+            return False
+
+        log.info("LoD2 batch %d/%d imported successfully.", batch_index, total_batches)
+        return True
+
+    except Exception:
+        if "log" in locals():
+            log.exception("LoD2 batch %d/%d failed unexpectedly.", batch_index, total_batches)
+        return False
+
+
+def _import_lod2_files_in_parallel(
+    infdb: InfDB,
+    gml_files: list[str],
+    batch_size: int = 200,
+    processes: int | None = None,
+) -> bool:
+    """Import current-run GML files in parallel batches."""
+    log = infdb.get_worker_logger()
+
+    if not gml_files:
+        log.warning("LoD2: no GML files to import.")
+        return True
+
+    batches = _chunk_list(gml_files, batch_size)
+    total_batches = len(batches)
+
+    if processes is None:
+        processes = utils.get_number_processes(infdb)
+
+    processes = max(1, min(processes, total_batches))
+
+    log.info(
+        "LoD2: importing %d files in %d batches with %d worker(s).",
+        len(gml_files),
+        total_batches,
+        processes,
+    )
+
+    with mp.Pool(processes=processes) as pool:
+        results = pool.starmap(
+            _import_lod2_batch,
+            [
+                (batch, infdb.get_toolname(), i + 1, total_batches)
+                for i, batch in enumerate(batches)
+            ],
+        )
+
+    return all(results)
 
 
 def _iter_tile_origins_for_geom(geom, tile_size_m: int):
@@ -86,6 +222,46 @@ def _build_urls_for_region(region_name: str, region_cfg: dict, infdb: InfDB, log
     return urls
 
 
+def _build_urls_for_single_ags(
+    region_name: str,
+    region_cfg: dict,
+    ags_code: str,
+    infdb: InfDB,
+    log,
+) -> list[str]:
+    """Build tiled dataset URLs for one AGS only."""
+    if region_cfg.get("status") != "active":
+        log.info("%s: inactive, skipping.", region_name)
+        return []
+
+    base_url = str(region_cfg.get("base_url", "")).rstrip("/") + "/"
+    tile_size_m = int(region_cfg.get("tile_size_m") or 0)
+    template = region_cfg.get("filename_template")
+
+    if not ags_code or not base_url or not tile_size_m or not template:
+        log.warning("%s: incomplete tiled dataset configuration for AGS %s, skipping.", region_name, ags_code)
+        return []
+
+    clip_wkt, _, _ = utils.get_clip_geometry(target_crs=25832, infdb=infdb, state_prefix=ags_code)
+    if not clip_wkt:
+        log.info("%s: no scope geometry resolved for AGS %s, skipping.", region_name, ags_code)
+        return []
+
+    scope_geom = shapely_wkt.loads(clip_wkt)
+
+    urls = []
+    for x, y in _iter_tile_origins_for_geom(scope_geom, tile_size_m=tile_size_m):
+        fname = template.format(
+            e_km=x // 1000,
+            n_km=y // 1000,
+        )
+        urls.append(base_url + fname)
+
+    urls = sorted(set(urls))
+    log.info("%s / AGS %s: %d intersecting tiles resolved.", region_name, ags_code, len(urls))
+    return urls
+
+
 def load(infdb: InfDB) -> bool:
     """Download LoD2 CityGML tiles for all active configured regions, import them via citydb,
     then create the flat LoD2 building table.
@@ -124,29 +300,22 @@ def load(infdb: InfDB) -> bool:
         # Download all unique tiles into one shared folder
         utils.download_aria2c_many(infdb, urls, output_dir=gml_path)
 
-        # Import all downloaded CityGML files from the shared folder
-        params = infdb.get_db_parameters_dict()
-        import_mode = infdb.get_config_value(source_cfg + ["import-mode"]) or "skip"
+        # Resolve only the files for the current run / current scope
+        gml_files = _urls_to_local_gml_paths(urls, gml_path, log)
 
-        cmd_parts = [
-            "citydb",
-            "import",
-            "citygml",
-            "-H",
-            params["host"],
-            "-d",
-            params["db"],
-            "-u",
-            params["user"],
-            "-p",
-            params["password"],
-            "-P",
-            str(params["exposed_port"]),
-            f"--import-mode={import_mode}",
-            # "--log-level=warn",
-            str(gml_path),
-        ]
-        utils.do_cmd(infdb, cmd_parts)
+        if not gml_files:
+            log.warning("LoD2: no downloaded GML files found for current scope; skipping import.")
+            return True
+
+        success = _import_lod2_files_in_parallel(
+            infdb=infdb,
+            gml_files=gml_files,
+            batch_size=200,
+            processes=utils.get_number_processes(infdb),
+        )
+
+        if not success:
+            raise RuntimeError("LoD2: one or more import batches failed")
 
         # Create flat building table
         object_id_prefix = infdb.get_config_value(source_cfg + ["object_id_prefix"]) or "DE"
