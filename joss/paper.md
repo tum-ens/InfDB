@@ -1,6 +1,5 @@
 ---
-title: 'InfDB: An Open-Source Energy and Infrastructure Data
-Ecosystem for Modeling and Planning'
+title: 'InfDB: An Open-Source Energy and Infrastructure Data Ecosystem for Modeling and Planning'
 tags:
     - Python
     - Docker
