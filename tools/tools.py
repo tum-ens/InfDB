@@ -1,3 +1,30 @@
+"""InfDB Tools User Interface for Multiple AGS
+
+This module orchestrates for multiple AGS processing runs by:
+- parsing CLI arguments for a profile or tool target
+- loading project and tools-specific environment variables
+- fetching AGS codes from the database or accepting them explicitly
+- launching ``tools.sh`` subprocesses in parallel
+- handling shutdown and cleanup on interruption
+- logging to console and logfile tools.log
+
+Software Prerequisites:
+The package manager uv must be installed to run this script, 
+as it relies on the Python dependencies defined in pyproject.toml. 
+You can install uv with:
+- Mac/Linux: curl -LsSf https://astral.sh/uv/install.sh | sh
+- Windows: powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+- PyPI: pip install uv
+
+Usage:
+    Profile: uv run python3 tools/tools.py -p linear [-a AGS1,AGS2,... -n NUM_WORKERS -c]
+    Single Tool: uv run python3 tools/tools.py -t ro-heat [-a AGS1,AGS2,... -n NUM_WORKERS -c]
+
+It is intended as the Python entrypoint for bulk local processing runs across
+multiple municipalities while keeping logging and interruption handling in one
+place.
+"""
+
 import logging
 import os
 import signal
@@ -130,7 +157,7 @@ if __name__ == "__main__":
     load_dotenv(os.path.join(SCRIPT_DIR, "tools.env"), override=True)
 
     # Initialize InfDB handler
-    infdb = InfDB(tool_name="run_ags", host="localhost")
+    infdb = InfDB(tool_name="tools", host="localhost")
     log = infdb.get_logger()
 
     # Parse command-line arguments

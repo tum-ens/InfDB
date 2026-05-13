@@ -1,8 +1,24 @@
 #!/bin/bash
 
-## Usage:
-# Profile: bash tools.sh -p PROFILE AGS
-# Single Tool: bash tools.sh -t TOOLNAME AGS
+# ----------------------------------------------------------------------
+# InfDB Tools User Interface for Single AGS
+# Purpose:
+#   Runs InfDB tools defined in tools/compose.yml either linked by Docker
+#   Compose profile or as a single named service for single AGS. This gives 
+#   users a single entrypoint for executing processing tools against in the 
+#   InfDB tool framework without needing to know the underlying infrastructure behind.
+#
+# Usage:
+#   bash tools.sh -p <profile> <ags> 
+#   bash tools.sh -t <tool> <ags>
+#
+# Examples:
+#   bash tools.sh -p linear 09780139    # Run the "linear" profile for the AGS 09780139
+#   bash tools.sh -t ro-heat 09780139   # Run the "ro-heat" tool for the AGS 09780139
+#
+# The script loads variables from the repository .env file and the local
+# tools.env file before starting the requested Compose workload.
+# ----------------------------------------------------------------------
 
 echo "Loading environment variables from infDB .env file..."
 set -a
