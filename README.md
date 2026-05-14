@@ -65,8 +65,39 @@ infdb/
 ```
 The recommended structure places all instance data in docker managed volumes while keeping each instance's configuration and tools in separate directories (e.g. by region `muenchen/`, `bavaria/`). This approach simplifies backups, migrations, and multi-instance management.
 
+#### Configuration
+The configuration of services is managed through environment variables set in the environment file `.env` and for data import in the YAML file `configs/config-infdb-import.yml`. The environment file controls which services are activated and their settings, while the YAML file specifies which datasets are imported and how they are processed. If no configuration is provided, the InfDB will create an environment file as well as a YAML file with default settings. More details can be found in section [Setup](https://tum-ens.github.io/InfDB/usage/setup/) of the documentation.
+
+Default configuration settings and the database service activated:
+```bash title=".env"
+# ==============================================================================
+# SERVICE ACTIVATION
+# ==============================================================================
+# Select profiles to activate
+COMPOSE_PROFILES=db  # db,admin,notebook,qwc,api
+
+# ==============================================================================
+# POSTGRESQL DATABASE (Db Service)
+# ==============================================================================
+# Profile: db
+
+# Database name
+SERVICES_POSTGRES_DB=infdb
+
+# Database credentials
+SERVICES_POSTGRES_USER=infdb_user
+SERVICES_POSTGRES_PASSWORD=infdb
+
+# Host:Port address from which a container is able to reach the Postgres database
+SERVICES_POSTGRES_HOST=host.docker.internal
+SERVICES_POSTGRES_EXPOSED_PORT=54328
+
+# EPSG code for spatial reference system (25832 = ETRS89 / UTM zone 32N)
+SERVICES_POSTGRES_EPSG=25832
+```
+
 ### Quick Start
-You can quickly start an InfDB with default configuration and credentials by following these steps:
+You can quickly start InfDB with default configuration and credentials as mentioned above by following these steps:
 
 First of all, create the main `infdb` directory and navigate into it:
 ```bash
