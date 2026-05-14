@@ -68,7 +68,7 @@ bibliography: paper.bib
 ---
 
 # Summary
-`InfDB - Infrastructure and Energy Database` is an open-source, containerized data infrastructure for managing and providing access to heterogeneous energy and infrastructure datasets used in urban and regional energy system studies. 
+`InfDB - Energy and Infrastructure Database` is an open-source, containerized data infrastructure for managing and providing access to heterogeneous energy and infrastructure datasets used in urban and regional energy system studies. 
 
 It bundles a PostgreSQL [@stonebraker1986design] database extended for geospatial, time-series, and graph data as well as standardized REST [@fielding2000architectural] and OpenAPI standards by the Open Geospatial Consortium (OGC) [@ogc_wfs]. Finally, it offers a configurable import service transforming raw public data into structured, version-controlled schemas.
 
@@ -140,7 +140,7 @@ The *Tools* layer (depicted in the right box in \autoref{fig:infdb-overview}) co
 * **Extensible Ecosystem:** Importantly, InfDB does not prescribe specific modeling approaches, optimization methods, or planning workflows. Its role is limited to providing a stable and reproducible data infrastructure that can be reused across different analytical contexts. Therefore, users can integrate existing third-party simulation software or develop proprietary tools that plug into the `InfDB` backend without modifying the core services.
 
 # Applications
-the `InfDB` ecosystem allows researchers and planners across multiple use cases to access the full spectrum of container-ingested data. This includes open data (e.g., building LOD2), enriched base data (e.g., estimated households per building), and intermediate simulation results (e.g., heat demand). This also facilitates the seamless integration of downstream tools, such as energy system optimization models, with consistent data for both electrical and district heating grids. This makes `InfDB` suitable both for one-time feasibility studies and for continuous planning processes where data and assumptions are updated regularly.
+The `InfDB` ecosystem allows researchers and planners across multiple use cases to access the full spectrum of container-ingested data. This includes open data (e.g., building LOD2), enriched base data (e.g., estimated households per building), and intermediate simulation results (e.g., heat demand). This also facilitates the seamless integration of downstream tools, such as energy system optimization models, with consistent data for both electrical and district heating grids. This makes `InfDB` suitable both for one-time feasibility studies and for continuous planning processes where data and assumptions are updated regularly.
 
 # AI usage disclosure
 In the development of this work, GitHub Copilot [@githubcopilot] and Gemini [@googlegemini] were used. GitHub Copilot assisted in code generation through code suggestions and completion tasks, while Gemini assisted in drafting and refining textual content.
