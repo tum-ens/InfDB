@@ -70,6 +70,7 @@ nav:
       - pgAdmin: infdb/services/pgadmin.md
       - Jupyter Notebook: infdb/services/jupyter.md
       - QGIS Webclient: infdb/services/qwc2.md
+      - Lizmap: infdb/services/lizmap.md
       - FastAPI: infdb/services/fastapi.md
       - PostgREST: infdb/services/postgrest.md
       - pygeoapi: infdb/services/pygeoapi.md

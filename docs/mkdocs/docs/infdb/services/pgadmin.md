@@ -43,3 +43,6 @@ If you activate the service, it should be available on the default port `SERVICE
 
 === "Remote"
     http://IP-ADDRESS-OF-HOST:5050
+
+## License
+pgAdmin is released under the [PostgreSQL License](https://opensource.org/license/postgresql), a liberal Open Source license, similar to the BSD or MIT licenses.
