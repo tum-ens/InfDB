@@ -55,7 +55,18 @@ nav:
       - Environment Variables: usage/setup/environment-variables.md
       - YAML Configuration: usage/setup/yaml-configuration.md
     - Deployment: usage/deployment.md
-    - Services: usage/services.md
+    - Services:
+      - Introduction: usage/services/index.md
+      - infdb-db: usage/services/infdb-db.md
+      - infdb-import: usage/services/infdb-import.md
+      - pgAdmin: usage/services/pgadmin.md
+      - Jupyter Notebook: usage/services/jupyter.md
+      - QGIS Webclient: usage/services/qwc2.md
+      - Lizmap: usage/services/lizmap.md
+      - FastAPI: usage/services/fastapi.md
+      - PostgREST: usage/services/postgrest.md
+      - pygeoapi: usage/services/pygeoapi.md
+      - OpenCloud: usage/services/opencloud.md
     - Tools: usage/tools.md
 
   - InfDB: 
@@ -63,18 +74,8 @@ nav:
     - Architecture: infdb/architecture.md
     # - Core: infdb/core.md
     - Database: infdb/database.md
-    - Services:
-      - infdb/services/index.md
-      - infdb-db: infdb/services/infdb-db.md
-      - infdb-import: infdb/services/infdb-import.md
-      - pgAdmin: infdb/services/pgadmin.md
-      - Jupyter Notebook: infdb/services/jupyter.md
-      - QGIS Webclient: infdb/services/qwc2.md
-      - Lizmap: infdb/services/lizmap.md
-      - FastAPI: infdb/services/fastapi.md
-      - PostgREST: infdb/services/postgrest.md
-      - pygeoapi: infdb/services/pygeoapi.md
-      - OpenCloud: infdb/services/opencloud.md
+    - Services: infdb/services.md
+
   - API: 
     - Introduction: api/index.md
     - pyinfdb: 
