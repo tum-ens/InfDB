@@ -88,3 +88,23 @@ sslmode=disable
 git config --global pull.rebase true
 git config --global rebase.autostash true
 ```
+
+### pg_dump
+Install pg_dump on Ubuntu:
+```bash
+# Install the common package
+sudo apt-get update
+sudo apt-get install -y postgresql-common
+
+# Run the repository setup script (press Enter when prompted)
+sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh
+sudo apt-get update
+sudo apt-get install -y postgresql-client-17
+
+pg_dump --version
+```
+
+Run backup for schemas "basedata" and "linear_heat_density" in the "infdb" database, connecting to localhost on port 54328 with user "infdb_user", and output the backup in custom format to "infdb-nrw_backup.sql":
+```bash
+pg_dump -h localhost -p 54328 -U infdb_user -d infdb -n basedata -n linear_heat_density -F c > infdb-nrw_backup.sql
+```
