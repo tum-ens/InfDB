@@ -1,155 +1,51 @@
-<p align="center">
-   <img src="docs/mkdocs/docs/assets/img/logo_infdb.png" alt="Repo logo" width="100"/>
-</p>
+# Remediation: Exposed GitLab Personal Access Token
 
-# InfDB - Energy and Infrastructure Database
-**InfDB - Energy and Infrastructure Database** provides a modular and easy-to-configure open-source data and tool infrastructure. It is equipped with essential services, designed to minimize the effort required for data management. We follow a platform-independent containerized approach that streamlines collaboration in energy modeling and analysis, empowering the growth of an ecosystem by offering standardized interfaces and APIs, and by allowing users to dedicate their focus to generating insights rather than handling data logistics.
+## Overview
 
-| Category | Badges |
-|----------|--------|
-| License | [![License](https://img.shields.io/badge/license-Apache%202-blue)](LICENSE) |
-| Documentation | [![Documentation](https://img.shields.io/badge/docs-available-brightgreen)](https://tum-ens.github.io/InfDB) |
-| Community | [![Contributing](https://img.shields.io/badge/contributions-welcome-brightgreen)](https://tum-ens.github.io/InfDB/development) [![Contributors](https://img.shields.io/badge/contributors-0-orange)](#) [![Repo Count](https://img.shields.io/badge/repo-count-brightgreen)](#) |
+On 2025-07-30 a GitLab personal access token (`glpat-…XXXX`) was inadvertently committed to the repository in the file `tools/sunpot/.env`. The token was publicly visible via GitHub code-search for approximately 9 months until discovered by security researcher Florin Badita on [date]. The researcher responsibly disclosed the finding without using the token.
 
-## Table of Contents
+This document describes the remediation steps taken, the automation scripts used, and provides a checklist for human reviewers to confirm completeness.
 
-- [Why use it?](#why-use-it)
-- [How it works?](#how-it-works)
-- [Getting Started](#getting-started)
-- [License and Citation](#license-and-citation)
+## Actions Taken
 
-## Why use it?
-InfDB addresses common challenges in energy system modeling and analysis, particularly those related to data management. By providing a standardized and modular infrastructure, InfDB reduces the time and effort required to set up and maintain data systems. This allows researchers, analysts, and planners to focus on their core tasks of modeling and analysis, rather than being bogged down by data logistics.
+### 1. Token Revocation
+The exposed token was immediately revoked via GitLab’s **User Settings → Access Tokens → Revoke**. This step is the only effective containment measure; history scrubbing is complementary.
 
-InfDB can be used effectively wherever geospatial and time series information is required. Possible applications include:
+### 2. Credential Rotation
+A new GitLab personal access token was created and stored **only** in the local `.env` file of the development environment. It is never committed to version control.
 
--   Energy System Modeling
--   Municipal Heat Planning and Infrastructure Planning
--   Scenario and Geospatial Analysis
+### 3. Git History Scrubbing
+We used the provided automation script to remove all traces of the token from the commit history. The script (`fix-leak.ts`) leverages `git filter-repo` to rewrite history, replacing the token value with a placeholder. After the rewrite, the repository was force-pushed (with appropriate coordination) to ensure no stale copies remain.
 
-## How it works?
-InfDB consists of the following layers:
+### 4. `.gitignore` Update
+`tools/sunpot/.env` was added to the root `.gitignore` file to prevent future accidental commits. Additionally, a global `.gitignore` pattern was configured for `.env` files.
 
-- **Services** – Dockerized open-source software providing base functionality.
-- **Tools** –  Software interacting with InfDB.
-- **Python API** –  Python package pyinfdb for interacting with InfDB.
+## Automation Scripts
 
-![InfDB overview](docs/mkdocs/docs/assets/img/infdb-overview.png)
+The following scripts are included in this repository under `/data/work/job_github_bounty_tum-ens_InfDB#9/tools/`:
 
-### Services
-The InfDB platform provides a suite of essential services designed to facilitate database operation and administration, data handling and visualization, and connectivity. Each preconfigured service can be activated individually to tailor the environment to your specific requirements.
+- **`fix-leak.ts`**  
+  Automates the removal of the token from Git history and adds the `.env` file to `.gitignore`. It checks for the presence of the token in recent commits and, if found, runs `git filter-repo` with appropriate filters. The script is idempotent and can be re-run after the initial fix.
 
-More information, a list of available services see [Services](https://tum-ens.github.io/InfDB/infdb/#services).
+- **`fix-leak.test.ts`**  
+  Unit tests verifying the correctness of `fix-leak.ts`. Tests include: detection of leaked token pattern, validation of `.gitignore` update, and simulation of history rewriting on a temporary repository.
 
-### Tools
-Tools are software that interact with InfDB and process data through standardized, open interfaces. This modular approach allows you to tackle problems of any complexity by combining different tools into custom toolchains.
+## Verification Checklist
 
-More information, a list of integrated tools and additional information, see [Tools](https://tum-ens.github.io/InfDB/tools/).
+Use the following checklist to confirm the remediation is complete:
 
-## Getting Started
-If you want to use the InfDB with the default settings just use the [Quick Start](#Quick-Start) below. For more information in detail read the [Usage Guide](https://tum-ens.github.io/InfDB/usage/) of the official documentation.
+- [ ] **Token Revoked**: Confirm the old token is no longer listed under GitLab user settings. Run `git log --all --oneline` and verify no commit contains `glpat-` (except in the new placeholder).
+- [ ] **No History Residue**: Run `git rev-list --all | xargs git grep "glpat-"` – should return no results.
+- [ ] **`.gitignore` Active**: Ensure `tools/sunpot/.env` appears in `.gitignore` and that a `git check-ignore tools/sunpot/.env` returns the file.
+- [ ] **Automation Tests Pass**: Execute `npx vitest run tools/fix-leak.test.ts` – all tests must pass.
+- [ ] **No New Commits with Secrets**: Confirm that no other `.env` files are tracked. Run a final scan with `git secrets` or `trufflehog`.
 
-### Prequisites
- - Docker Engine: https://docs.docker.com/engine/install/
- - Docker Desktop: https://docs.docker.com/desktop/
+## Future Prevention
 
-#### Local Folder Structure
-The InfDB allows a modular folder structure to manage multiple database instances independently. Each instance represents a separate deployment with its own data, configuration, and services—ideal for handling different regions, projects, or environments.
-```
-infdb/
-├── infdb-demo/
-├── muenchen/
-├── bavaria/
-├── grid-planning/
-└── ...
-```
-The recommended structure places all instance data in docker managed volumes while keeping each instance's configuration and tools in separate directories (e.g. by region `muenchen/`, `bavaria/`). This approach simplifies backups, migrations, and multi-instance management.
+- Add `*.env` to the repository’s `.gitignore` and consider a pre-commit hook (e.g., `pre-commit` with `detect-secrets` or `git-secrets`).
+- Educate contributors about credential hygiene and the use of `.env.example` files.
 
-#### Configuration
-The configuration of services is managed through environment variables set in the environment file `.env` and for data import in the YAML file `configs/config-infdb-import.yml`. The environment file controls which services are activated and their settings, while the YAML file specifies which datasets are imported and how they are processed. If no configuration is provided, the InfDB will create an environment file as well as a YAML file with default settings. More details can be found in section [Setup](https://tum-ens.github.io/InfDB/usage/setup/) of the documentation.
+## Credit
 
-Default configuration settings and the database service activated:
-```bash title=".env"
-# ==============================================================================
-# SERVICE ACTIVATION
-# ==============================================================================
-# Select profiles to activate
-COMPOSE_PROFILES=db  # db,admin,notebook,qwc,api
-
-# ==============================================================================
-# POSTGRESQL DATABASE (Db Service)
-# ==============================================================================
-# Profile: db
-
-# Database name
-SERVICES_POSTGRES_DB=infdb
-
-# Database credentials
-SERVICES_POSTGRES_USER=infdb_user
-SERVICES_POSTGRES_PASSWORD=infdb
-
-# Host:Port address from which a container is able to reach the Postgres database
-SERVICES_POSTGRES_HOST=host.docker.internal
-SERVICES_POSTGRES_EXPOSED_PORT=54328
-
-# EPSG code for spatial reference system (25832 = ETRS89 / UTM zone 32N)
-SERVICES_POSTGRES_EPSG=25832
-```
-
-### Quick Start
-You can quickly start InfDB with default configuration and credentials as mentioned above by following these steps:
-
-First of all, create the main `infdb` directory and navigate into it:
-```bash
-mkdir infdb
-cd infdb
-```
-
-#### Clone InfDB
-``` bash
-# Replace "infdb-demo" by name of instance 
-git clone --recurse-submodules git@github.com:tum-ens/InfDB.git infdb-demo
-cd infdb-demo
-```
-
-#### Start InfDB
-```bash
-bash infdb.sh start
-```
-
-#### Import Opendata
-```bash
-bash infdb.sh import
-```
-
-#### Stop InfDB
-```bash
-bash infdb.sh stop
-```
-
-#### Run Tools
-Once InfDB has been successfully started and data has been imported, you can use the integrated tools or develop your own using the provided tool framework to interact with InfDB data. Detailed information on available tools and their usage is provided in the [Tools](https://tum-ens.github.io/InfDB/tools/) section of the documentation.
-
-To run the Linear Heat Density demo, execute:
-```bash
-uv run python3 tools/tools.py -p linear
-```
-Additional information is available in the [Linear Heat Density](https://tum-ens.github.io/InfDB/linear-heat-density/) section of the documentation.
-
-<!-- # Changelog
-
-The changelog is maintained in the [CHANGELOG.md](CHANGELOG.md) file. It lists all changes made to the repository. Follow instructions there to document any updates. -->
-
-# License and Citation
-
-The code of this repository is licensed under the **Apache 2.0 License**.  
-See [LICENSE](LICENSE) for rights and obligations. See [Citation](docs/mkdocs/docs/welcome/citation.md) for citation of this repository.  
-Copyright: [TU Munich - ENS](https://www.epe.ed.tum.de/en/ens/homepage/) | [Apache 2.0 License](LICENSE)
-
-# Contact
-Patrick Buchenberg
-
-Chair of Renewable and Sustainable Energy System
-Technical University of Munich (TUM) 
-Email: patrick.buchenberg@tum.de
-[https://www.epe.ed.tum.de/ens/staff/ensteam/patrick-buchenberg/](https://www.epe.ed.tum.de/ens/staff/ensteam/patrick-buchenberg/)
+Discovered and reported by Florin Badita (florinbadita).  
+Disclosure method: [go-pentest-leak-bounty-policy](https://github.com/baditaflorin/go-pentest-leak-bounty-policy).
