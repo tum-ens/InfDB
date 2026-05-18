@@ -69,12 +69,12 @@ def setup_fdw(infdb: InfDB) -> None:
             """
             db.execute_query(create_mapping_sql)
 
-            # 4. Create foreign schema
-            log.info(f"Creating foreign schema '{local_schema}' mapping to remote '{foreign_schema}'...")
-            create_schema_sql = f"""
-                CREATE SCHEMA IF NOT EXISTS {local_schema};
-            """
-            db.execute_query(create_schema_sql)
+            # 4. Drop and recreate foreign schema (ensures clean import)
+            log.info(f"Preparing foreign schema '{local_schema}' mapping to remote '{foreign_schema}'...")
+            # Drop existing schema to ensure clean import (idempotent)
+            db.execute_query(f"DROP SCHEMA IF EXISTS {local_schema} CASCADE;")
+            # Create fresh schema
+            db.execute_query(f"CREATE SCHEMA {local_schema};")
 
             # 5. Import foreign schema
             log.info(f"Importing foreign schema '{foreign_schema}' into local schema '{local_schema}'...")
