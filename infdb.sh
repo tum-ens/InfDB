@@ -91,7 +91,7 @@ read_profiles() {
         exit 1
     fi
 
-    # Normalize: remove spaces, convert CSV → array
+    # Remove spaces, convert comma separated values to array
     local normalized
     normalized=$(echo "$COMPOSE_PROFILES" | tr -d '[:space:]')
 
@@ -139,6 +139,7 @@ EOF
     esac
 }
 
+# Setup before initialization of services that require it.
 setup_services() {
     local profiles=("$@")
     
