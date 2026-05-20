@@ -69,7 +69,7 @@ cp configs/config-infdb-fdw-setup.yml.template configs/config-infdb-fdw-setup.ym
 
 ### Configuration Options
 
-Edit `configs/config-infdb-fdw-setup.yml` with your settings:
+Edit `configs/config-infdb-fdw-setup.yml` with your settings. A minimal example:
 
 ```yaml
 infdb-fdw-setup:
@@ -77,32 +77,28 @@ infdb-fdw-setup:
   logging:
     path: "infdb-fdw-setup.log"
     level: "INFO"  # ERROR, WARNING, INFO, DEBUG
-  hosts:
-    postgres:
-      user: None
-      password: None
-      db: None
-      host: None
-      exposed_port: None
-      epsg: None
   fdw:
     central_db:
       host: "host.docker.internal"  # Central InfDB instance host
-      port: 5432  # Central InfDB instance port
-      db: "postgres"  # Central InfDB database name
-      user: "citydb_user"  # Central InfDB user
-      password: "infdb"  # Central InfDB password
-    foreign_schema: "opendata"  # Schema to import via FDW
-    local_schema: "opendata_fdw"  # Local schema name for FDW mapping
+      port: 54328                      # Central InfDB instance port
+      db: "infdb"                     # Central InfDB database name (usually $SERVICES_POSTGRES_DB)
+      user: "citydb_user"             # Central InfDB user
+      password: "infdb"               # Central InfDB password
+    foreign_schema: "opendata"        # Schema to import via FDW
+    local_schema: "opendata_fdw"      # Local schema name for FDW mapping
 ```
+
+Notes:
+- The central database name commonly used in this repository is `infdb` (see `SERVICES_POSTGRES_DB` in the root `.env`). Use the actual name of your central database.
+- Ports and hostnames must be reachable from the machine/container running this tool (e.g. `host.docker.internal` when running Docker on macOS).
 
 **Configuration Parameters:**
 
-| Parameter | Description | Default | Required |
-|-----------|-------------|---------|----------|
+| Parameter | Description | Example / Recommended | Required |
+|-----------|-------------|-----------------------|----------|
 | `fdw/central_db/host` | Hostname/IP of central InfDB | `host.docker.internal` | Yes |
-| `fdw/central_db/port` | Port of central InfDB | `5432` | Yes |
-| `fdw/central_db/db` | Database name on central InfDB | `postgres` | Yes |
+| `fdw/central_db/port` | Port of central InfDB | `54328` | Yes |
+| `fdw/central_db/db` | Database name on central InfDB | `infdb` (or `$SERVICES_POSTGRES_DB`) | Yes |
 | `fdw/central_db/user` | Username for central InfDB | `citydb_user` | Yes |
 | `fdw/central_db/password` | Password for central InfDB | `infdb` | Yes |
 | `fdw/foreign_schema` | Schema name on central DB | `opendata` | Yes |
@@ -135,6 +131,53 @@ docker compose up
 
 - **Standard Mode**: Sets up FDW and imports the complete opendata schema
 - **Custom Mode**: Modify configuration to import specific schemas or tables
+
+Quick Start (recommended)
+-------------------------
+
+From the repository root (recommended):
+
+```bash
+# Run the FDW setup from repo root
+docker compose -f tools/infdb-fdw-setup/compose.yml --profile infdb-fdw-setup up
+```
+
+From inside the tool directory:
+
+```bash
+cd tools/infdb-fdw-setup
+docker compose -f compose.yml --profile infdb-fdw-setup up
+```
+
+Notes:
+- If you run from the tool directory, use the local `compose.yml` path. If you run from the repository root, use the relative path `tools/infdb-fdw-setup/compose.yml`.
+- Ensure the root `.env` is available and readable if your configuration relies on environment variables defined there. When running from the repo root Docker Compose will automatically load `.env` in the same directory. When running from inside `tools/infdb-fdw-setup`, verify the service's `env_file` settings (the compose file can reference `../../.env`).
+
+Verification
+------------
+
+After the container completes successfully, verify the FDW objects and query foreign tables:
+
+```bash
+# Open a psql shell in the local Postgres container (adjust container name if different)
+docker exec -it infdb-demo-postgres-1 psql -U infdb_user -d infdb
+```
+
+Inside psql run:
+
+```sql
+-- List the FDW schema and tables
+\dn
+\dt opendata_fdw.
+
+-- Count imported foreign tables
+SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'opendata_fdw';
+
+-- Sample query against a foreign table (replace with an existing table name)
+SELECT * FROM opendata_fdw.bkg_vg5000_gem LIMIT 5;
+```
+
+The `\dt opendata_fdw.` command lists the foreign tables in that schema. If queries return rows, FDW access is working and data is being read from the central InfDB instance.
 
 ## Output
 
@@ -191,6 +234,23 @@ ERROR: permission denied for foreign server infdb_central_server
 ERROR: schema "opendata" does not exist
 ```
 **Solution**: Verify the central InfDB instance has the opendata schema populated with data.
+
+---
+
+**Issue**: Import fails with `relation "..." already exists` (duplicate table)
+```
+psycopg2.errors.DuplicateTable: relation "basemap_verkehrslinie" already exists
+```
+**Cause**: A previous run left foreign tables or local objects in the target schema. `IMPORT FOREIGN SCHEMA` attempts to create local foreign tables with the same names and fails.
+**Solution**:
+- Recommended: The setup script now drops the local target schema and recreates it before importing. Re-run the tool to get a clean import.
+- Manual recovery: connect to the local database and drop the local schema before running the tool:
+
+```sql
+DROP SCHEMA IF EXISTS opendata_fdw CASCADE;
+```
+
+Then re-run the FDW setup.
 
 ### Logging
 
