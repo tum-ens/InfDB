@@ -979,7 +979,7 @@ def create_building_lod2_table(object_id_prefix: str, infdb: InfDB) -> None:
     Creates the flat building_lod2 table for the specified object_id_prefix
     by filtering the source data based on AGS codes.
 
-    :param object_id_prefix: Object ID prefix (e.g., "DEBY" for Bavaria, "DENW" for North Rhine-Westphalia, "DEBW" for Baden-Württemberg, "Bensheim" for only Bensheim)
+    :param object_id_prefix: Object ID prefix (e.g., "DEBY" for Bavaria, "DENW" for North Rhine-Westphalia, "DEBW" for Baden-Württemberg, "Hesse_Bergstrasse")
     :type object_id_prefix: str
     :param infdb: instance of InfDB for database access and logging
     :type infdb: InfDB
