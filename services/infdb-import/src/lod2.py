@@ -1,11 +1,13 @@
 import os
 import sys
 from zipfile import ZipFile, BadZipFile
+from urllib.parse import unquote
 
 from infdb import InfDB
 from shapely import wkt as shapely_wkt
 from shapely.geometry import box
 import multiprocessing as mp
+from datetime import datetime
 
 from . import utils
 
@@ -27,6 +29,9 @@ def _urls_to_local_citygml_paths(urls: list[str], gml_path: str, log) -> list[st
     for url in urls:
         filename = os.path.basename(url)
         local_path = os.path.join(gml_path, filename)
+
+        if not os.path.isfile(local_path):
+            local_path = os.path.join(gml_path, unquote(filename)) # E.g. to interpret %20 in url as space when downloading from Geoportal Hessen
 
         if not os.path.isfile(local_path):
             missing_files.append(local_path)
@@ -285,6 +290,38 @@ def _build_urls_for_region(region_name: str, region_cfg: dict, infdb: InfDB, log
     log.info("%s: %d intersecting tiles resolved.", region_name, len(urls))
     return urls
 
+def _build_url_for_hesse_bergstrasse(config: dict, log) -> list[str]:
+    """Build the URLs for the Hesse Bergstrasse LoD2 dataset.
+
+    Expected config keys in config:
+      - status: "active" / "not-active"
+      - base_url: URL with placeholders {date} and {city_name}
+    """
+    if config.get("status") != "active":
+        log.info("Hesse Bergstrasse: inactive, skipping.")
+        return []
+
+    base_url = config.get("base_url")
+    if not base_url:
+        log.warning("Hesse Bergstrasse: incomplete dataset configuration, skipping.")
+        return []
+    
+    
+    today_str = datetime.today().strftime("%Y%m%d")
+    base_url = base_url.replace("{date}", today_str)
+    
+    cities = ["Abtsteinach", "Bensheim", "Biblis", "Birkenau", "Buerstadt", "Einhausen", "Fuerth", 
+            "Gorxheimertal", "Grasellenbach", "Gross-Rohrheim", "Heppenheim%20(Bergstrasse)", 
+            "Hirschhorn%20(Neckar)", "Lampertheim", "Lautertal%20(Odenwald)", "Lindenfels", "Lorsch", "Moerlenbach", 
+            "Neckarsteinach", "Rimbach", "Viernheim", "Wald-Michelbach", "Zwingenberg"]
+    
+    download_urls = []
+    for city in cities:
+        download_url = base_url.replace("{city_name}", city)
+        download_urls.append(download_url)
+    
+    return download_urls
+
 
 
 def load(infdb: InfDB) -> bool:
@@ -313,11 +350,13 @@ def load(infdb: InfDB) -> bool:
         nrw_cfg = infdb.get_config_value(source_cfg + ["nrw"]) or {}
         bavaria_cfg = infdb.get_config_value(source_cfg + ["bavaria"]) or {}
         bw_cfg = infdb.get_config_value(source_cfg + ["baden_wuerttemberg"]) or {}
+        hesse_bergstrasse_cfg = infdb.get_config_value(source_cfg + ["hesse_bergstrasse"]) or {}
 
         urls = []
         urls.extend(_build_urls_for_region("NRW", nrw_cfg, infdb, log))
         urls.extend(_build_urls_for_region("Bavaria", bavaria_cfg, infdb, log))
         urls.extend(_build_urls_for_region("Baden-Württemberg", bw_cfg, infdb, log))
+        urls.extend(_build_url_for_hesse_bergstrasse(hesse_bergstrasse_cfg, log))
 
         urls = sorted(set(urls))
         log.info("LoD2: %d unique tiles to download across all active regions.", len(urls))
@@ -328,9 +367,8 @@ def load(infdb: InfDB) -> bool:
 
         # Download all unique tiles into one shared folder.
         # NRW / Bavaria download .gml files.
-        # Baden-Württemberg downloads .zip files.
-        utils.download_aria2c_many(infdb, urls, output_dir=gml_path)
-
+        # Baden-Württemberg and Hesse Bergstrasse download .zip files.
+        utils.download_aria2c_many(infdb, urls, output_dir=gml_path)    
         # Resolve only the files for the current run / current scope.
         # ZIP files are extracted into the same CityGML folder and their
         # extracted .gml files are returned.
