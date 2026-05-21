@@ -68,6 +68,7 @@ nav:
       - pygeoapi: usage/services/pygeoapi.md
       - OpenCloud: usage/services/opencloud.md
     - Tools: usage/tools.md
+    - Demo: usage/demo.md
 
   - InfDB: 
     - Introduction: infdb/index.md
