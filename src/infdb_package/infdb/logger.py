@@ -8,7 +8,7 @@ from logging.handlers import QueueHandler, QueueListener
 
 LOGGER_NAME: str = "infdb"
 WORKER_LOGGER_NAME: str = "infdb.worker"
-LOG_FORMAT: str = "%(asctime)s | %(processName)s [ %(process)d] | %(levelname)s: %(message)s"
+LOG_FORMAT: str = "%(asctime)s | %(processName)s [%(process)d] | %(levelname)s: %(message)s"
 FILE_ENCODING: str = "utf-8"
 
 
