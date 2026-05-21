@@ -1,4 +1,4 @@
-# InfDB - Infrastructure and Energy Database
+# InfDB - Energy and Infrastructure Database
 
 <p align="center">
   <img src="../assets/img/logo_infdb_text.png" alt="InfDB logo" width="00"/>

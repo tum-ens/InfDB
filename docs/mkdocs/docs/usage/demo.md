@@ -1,5 +1,5 @@
 ---
-icon: material-play-circle
+icon: material/play-circle
 ---
 # Demo
 Show demo application on how to use InfDB tools for an use case.
