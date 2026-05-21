@@ -78,7 +78,7 @@ nav:
 
   - API: 
     - Introduction: api/index.md
-    - pyinfdb: 
+    - PyInfDB: 
       - api/pyinfdb/index.md
       - InfDB Class: api/pyinfdb/infdb.md
       - InfDBClient Class: api/pyinfdb/client.md
