@@ -23,6 +23,7 @@ infdb-fdw-setup:
             exposed_port: None
             epsg: None
     fdw:
+        status: active
         central_db:
             host: "host.docker.internal"  # Central InfDB instance host
             port: 54328  # Central InfDB instance port
@@ -31,3 +32,4 @@ infdb-fdw-setup:
             password: "infdb"  # Central InfDB password
         foreign_schema: "opendata"  # Schema to import via FDW
         local_schema: "opendata_fdw"  # Local schema name for FDW mapping
+        read_only: true # default is True - set to False to allow write access to foreign tables (not recommended for production)
