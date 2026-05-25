@@ -8,6 +8,12 @@ opendata schema from a remote InfDB instance without duplicating data.
 from infdb import InfDB
 
 
+def is_active(infdb: InfDB):
+    """Returns whether this tool is active based on the config."""
+    fdw_config = infdb.get_config_value([infdb.get_toolname(), "fdw"])
+    isActive : str = fdw_config["status"]
+    return isActive.lower() == "active"
+
 def setup_fdw(infdb: InfDB) -> None:
     """
     Sets up Foreign Data Wrapper to access the central opendata schema.
@@ -32,9 +38,11 @@ def setup_fdw(infdb: InfDB) -> None:
     central_password = fdw_config["central_db"]["password"]
     foreign_schema = fdw_config["foreign_schema"]
     local_schema = fdw_config["local_schema"]
+    read_only = fdw_config.get("read_only", True)
 
     log.info(f"Setting up FDW to access '{foreign_schema}' schema from central InfDB instance")
     log.info(f"Central DB: {central_host}:{central_port}/{central_db}")
+    log.info(f"FDW read-only mode: {read_only}")
 
     # Connect to local database
     with infdb.connect() as db:
@@ -87,12 +95,20 @@ def setup_fdw(infdb: InfDB) -> None:
 
             # 6. Grant permissions (optional - adjust as needed)
             log.info("Granting permissions on foreign schema...")
-            grant_sql = f"""
-                GRANT USAGE ON SCHEMA {local_schema} TO PUBLIC;
-                GRANT SELECT ON ALL TABLES IN SCHEMA {local_schema} TO PUBLIC;
-                ALTER DEFAULT PRIVILEGES IN SCHEMA {local_schema}
-                GRANT SELECT ON TABLES TO PUBLIC;
-            """
+            if read_only:
+                grant_sql = f"""
+                    GRANT USAGE ON SCHEMA {local_schema} TO PUBLIC;
+                    GRANT SELECT ON ALL TABLES IN SCHEMA {local_schema} TO PUBLIC;
+                    ALTER DEFAULT PRIVILEGES IN SCHEMA {local_schema}
+                    GRANT SELECT ON TABLES TO PUBLIC;
+                """
+            else:
+                grant_sql = f"""
+                    GRANT USAGE ON SCHEMA {local_schema} TO PUBLIC;
+                    GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA {local_schema} TO PUBLIC;
+                    ALTER DEFAULT PRIVILEGES IN SCHEMA {local_schema}
+                    GRANT ALL PRIVILEGES ON TABLES TO PUBLIC;
+                """
             db.execute_query(grant_sql)
 
             log.info("FDW setup completed successfully!")
