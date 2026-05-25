@@ -78,6 +78,7 @@ infdb-fdw-setup:
     path: "infdb-fdw-setup.log"
     level: "INFO"  # ERROR, WARNING, INFO, DEBUG
   fdw:
+    status: active # set to "inactive" to disable FDW setup
     central_db:
       host: "host.docker.internal"  # Central InfDB instance host
       port: 54328                      # Central InfDB instance port
@@ -86,6 +87,7 @@ infdb-fdw-setup:
       password: "infdb"               # Central InfDB password
     foreign_schema: "opendata"        # Schema to import via FDW
     local_schema: "opendata_fdw"      # Local schema name for FDW mapping
+    read_only: true                   # Defaults to true; set false to allow writes
 ```
 
 Notes:
@@ -95,14 +97,16 @@ Notes:
 **Configuration Parameters:**
 
 | Parameter | Description | Example / Recommended | Required |
-|-----------|-------------|-----------------------|----------|
+|--------|-----------------------------|---------|----------|
 | `fdw/central_db/host` | Hostname/IP of central InfDB | `host.docker.internal` | Yes |
 | `fdw/central_db/port` | Port of central InfDB | `54328` | Yes |
 | `fdw/central_db/db` | Database name on central InfDB | `infdb` (or `$SERVICES_POSTGRES_DB`) | Yes |
-| `fdw/central_db/user` | Username for central InfDB | `citydb_user` | Yes |
-| `fdw/central_db/password` | Password for central InfDB | `infdb` | Yes |
-| `fdw/foreign_schema` | Schema name on central DB | `opendata` | Yes |
-| `fdw/local_schema` | Local schema name for FDW | `opendata_fdw` | Yes |
+| `fdw/central_db/user` | Username for central InfDB  | `citydb_user` | Yes |
+| `fdw/central_db/password` | Password for central InfDB  | `infdb` | Yes |
+| `fdw/foreign_schema` | Schema name on central DB   | `opendata` | Yes |
+| `fdw/local_schema` | Local schema name for FDW   | `opendata_fdw` | Yes |
+| `fdw/read_only` | Disable writes to foreign tables | `true`  | No |
+| `fdw/status` | Enables FDW mapper creation | `active` | Yes |
 
 ### Environment Variables
 
@@ -114,26 +118,12 @@ CONFIG_INFDB_PATH=../infdb/configs  # Path to infDB config folder
 
 ## Usage
 
-### Run the Tool
-
-Execute the tool using Docker Compose:
-
-```bash
-docker compose -f tools/infdb-fdw-setup/compose.yml up
-```
-
-For standalone execution:
-```bash
-docker compose up
-```
-
 ### Execution Modes
 
 - **Standard Mode**: Sets up FDW and imports the complete opendata schema
 - **Custom Mode**: Modify configuration to import specific schemas or tables
 
-Quick Start (recommended)
--------------------------
+### Quick Start
 
 From the repository root (recommended):
 
@@ -153,8 +143,7 @@ Notes:
 - If you run from the tool directory, use the local `compose.yml` path. If you run from the repository root, use the relative path `tools/infdb-fdw-setup/compose.yml`.
 - Ensure the root `.env` is available and readable if your configuration relies on environment variables defined there. When running from the repo root Docker Compose will automatically load `.env` in the same directory. When running from inside `tools/infdb-fdw-setup`, verify the service's `env_file` settings (the compose file can reference `../../.env`).
 
-Verification
-------------
+### Verification
 
 After the container completes successfully, verify the FDW objects and query foreign tables:
 
