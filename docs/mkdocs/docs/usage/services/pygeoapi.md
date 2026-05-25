@@ -37,3 +37,6 @@ If you activate the service, it should be available on the default port `SERVICE
 
 === "Remote"
     http://IP-ADDRESS-OF-HOST:5000
+
+## License
+pygeoapi is released under the Creative Commons Attribution 4.0 International (CC BY 4.0) license.

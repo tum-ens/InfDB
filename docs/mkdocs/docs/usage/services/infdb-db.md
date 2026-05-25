@@ -44,3 +44,6 @@ SERVICES_POSTGRES_EPSG=25832    # (7)
 5.  **Host**: Internal parameter for Docker networking (usually `host.docker.internal`).
 6.  **Port**: The port exposed to the host machine for communicating with other applications.
 7.  **EPSG**: The default coordinate reference system (CRS) for the database.
+
+## License
+PostgreSQL is released under the [PostgreSQL License](https://opensource.org/license/postgresql), a liberal Open Source license, similar to the BSD or MIT licenses.

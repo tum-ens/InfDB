@@ -2,8 +2,8 @@
    <img src="docs/mkdocs/docs/assets/img/logo_infdb.png" alt="Repo logo" width="100"/>
 </p>
 
-# InfDB - Infrastructure and Energy Database
-**InfDB - Infrastructure and Energy Database** provides a modular and easy-to-configure open-source data and tool infrastructure. It is equipped with essential services, designed to minimize the effort required for data management. We follow a platform-independent containerized approach that streamlines collaboration in energy modeling and analysis, empowering the growth of an ecosystem by offering standardized interfaces and APIs, and by allowing users to dedicate their focus to generating insights rather than handling data logistics.
+# InfDB - Energy and Infrastructure Database
+**InfDB - Energy and Infrastructure Database** provides a modular and easy-to-configure open-source data and tool infrastructure. It is equipped with essential services, designed to minimize the effort required for data management. We follow a platform-independent containerized approach that streamlines collaboration in energy modeling and analysis, empowering the growth of an ecosystem by offering standardized interfaces and APIs, and by allowing users to dedicate their focus to generating insights rather than handling data logistics.
 
 | Category | Badges |
 |----------|--------|
@@ -65,8 +65,39 @@ infdb/
 ```
 The recommended structure places all instance data in docker managed volumes while keeping each instance's configuration and tools in separate directories (e.g. by region `muenchen/`, `bavaria/`). This approach simplifies backups, migrations, and multi-instance management.
 
+#### Configuration
+The configuration of services is managed through environment variables set in the environment file `.env` and for data import in the YAML file `configs/config-infdb-import.yml`. The environment file controls which services are activated and their settings, while the YAML file specifies which datasets are imported and how they are processed. If no configuration is provided, the InfDB will create an environment file as well as a YAML file with default settings. More details can be found in section [Setup](https://tum-ens.github.io/InfDB/usage/setup/) of the documentation.
+
+Default configuration settings and the database service activated:
+```bash title=".env"
+# ==============================================================================
+# SERVICE ACTIVATION
+# ==============================================================================
+# Select profiles to activate
+COMPOSE_PROFILES=db  # db,admin,notebook,qwc,api
+
+# ==============================================================================
+# POSTGRESQL DATABASE (Db Service)
+# ==============================================================================
+# Profile: db
+
+# Database name
+SERVICES_POSTGRES_DB=infdb
+
+# Database credentials
+SERVICES_POSTGRES_USER=infdb_user
+SERVICES_POSTGRES_PASSWORD=infdb
+
+# Host:Port address from which a container is able to reach the Postgres database
+SERVICES_POSTGRES_HOST=host.docker.internal
+SERVICES_POSTGRES_EXPOSED_PORT=54328
+
+# EPSG code for spatial reference system (25832 = ETRS89 / UTM zone 32N)
+SERVICES_POSTGRES_EPSG=25832
+```
+
 ### Quick Start
-You can quickly start an InfDB with default configuration and credentials by following these steps:
+You can quickly start InfDB with default configuration and credentials as mentioned above by following these steps:
 
 First of all, create the main `infdb` directory and navigate into it:
 ```bash
@@ -95,6 +126,15 @@ bash infdb.sh import
 ```bash
 bash infdb.sh stop
 ```
+
+#### Run Tools
+Once InfDB has been successfully started and data has been imported, you can use the integrated tools or develop your own using the provided tool framework to interact with InfDB data. Detailed information on available tools and their usage is provided in the [Tools](https://tum-ens.github.io/InfDB/tools/) section of the documentation.
+
+To run the Linear Heat Density demo, execute:
+```bash
+uv run python3 tools/tools.py -p linear
+```
+Additional information is available in the [Linear Heat Density](https://tum-ens.github.io/InfDB/linear-heat-density/) section of the documentation.
 
 <!-- # Changelog
 

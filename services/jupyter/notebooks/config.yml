@@ -1,0 +1,26 @@
+# Demo Configuration file for choose-a-name
+#
+# This configuration file contains database connection parameters and tool-specific settings.
+#
+# Database Connection Parameters:
+# - Parameters set to 'None' will be automatically replaced with values from the central
+#   environment configuration file '.env'
+# - This approach allows you to run locally using centralized database settings
+# - To connect to a remote infdb instance, replace 'None' values with your specific
+#   connection parameters (user, password, db, host, exposed_port, epsg)
+#
+choose-a-name:
+    logging:
+        path: "choose-a-name.log"
+        level: "INFO" # ERROR, WARNING, INFO, DEBUG
+    hosts:
+        postgres:
+            user: None
+            password: None
+            db: None 
+            host: None
+            exposed_port: None
+            epsg: None
+    data:
+        input_schema: basedata
+        output_schema: choose_a_name   # needs to be snake_case

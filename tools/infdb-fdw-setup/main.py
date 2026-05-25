@@ -24,7 +24,7 @@ def main():
     if not infdb_fdw_setup.is_active(infdb):
         print(f"{infdb.get_toolname()} tool is not active. Please check the configuration.")
         return
-    
+
     # Start message
     log = infdb.get_logger()
     log.info(f"Starting {infdb.get_toolname()} tool")

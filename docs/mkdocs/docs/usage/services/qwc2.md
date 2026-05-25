@@ -114,3 +114,6 @@ Create `pg_service.conf` with the same database connection details and add its p
 - [Official QWC Documentation](https://qwc-services.github.io/master/)
 - [Official QWC Docker Repo](https://github.com/qwc-services/qwc-docker)
 - [Our Customized Version](https://gitlab.lrz.de/tum-ens/need/infdb/-/tree/main/tools/qgis_webclient)
+
+## License
+QGIS Web Client 2 is released under the [GPL-2.0 License](https://opensource.org/license/gpl-2-0/), a copyleft Open Source license that requires derivative works to be distributed under the same license.

@@ -37,3 +37,6 @@ If you activate the service, it should be available on the default port `SERVICE
 
 === "Remote"
     http://IP-ADDRESS-OF-HOST:8000
+
+## License
+The FastAPI service is released under the [MIT License](https://opensource.org/license/mit/), a permissive Open Source license that allows for wide usage and distribution with minimal restrictions.

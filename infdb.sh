@@ -1,14 +1,23 @@
 #!/usr/bin/env bash
-set -e
-
 # ----------------------------------------------------------------------
-# infDB command script
+# InfDB User Interface
+#
+# Purpose:
+#   Provides a small command-line wrapper around the project's Docker
+#   Compose setup so users can start, import, stop, and remove infDB
+#   services from a single entrypoint without needing to know the underlying Docker Compose commands.
+#
 # Usage:
-#   ./infdb.sh start [docker compose args]
-#   ./infdb.sh import [docker compose args]
+#   ./infdb.sh start
+#   ./infdb.sh import
 #   ./infdb.sh stop
-#   ./infdb.sh remove
+#   ./infdb.sh remove [service_name] or "*" for all services
+#
+# This script also initializes template-based configuration files, loads
+# values from .env when present, and performs Lizmap setup when that
+# profile is enabled.
 # ----------------------------------------------------------------------
+set -e
 
 # Ensure relative path works
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -17,16 +26,10 @@ cd "$SCRIPT_DIR"
 print_usage() {
     cat <<'EOF'
 Usage:
-  ./infdb.sh start [docker compose args]
-  ./infdb.sh import [docker compose args]
+  ./infdb.sh start
+  ./infdb.sh import
   ./infdb.sh stop
-  ./infdb.sh remove
-
-Examples:
-  ./infdb.sh start -d
-  ./infdb.sh import --build
-  ./infdb.sh stop
-  ./infdb.sh remove
+  ./infdb.sh remove [service_name] or "*" for all services
 EOF
 }
 

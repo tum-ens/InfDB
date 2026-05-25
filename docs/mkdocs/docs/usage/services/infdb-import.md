@@ -115,3 +115,6 @@ The downloaded and processed raw data files are stored in a dedicated volume wit
     processes.append(mp.Process(target=mydata.load, args=(infdb,), name="mydata"))
     ```
 5.  **Configure**: Add configuration parameters to `configs/config-infdb-import.yml`.
+
+## License
+The infdb-import service is released under Apache License 2.0, a permissive Open Source license that allows for wide usage and distribution with minimal restrictions. See the [LICENSE](https://www.apache.org/licenses/LICENSE-2.0) file for more details.

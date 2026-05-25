@@ -47,3 +47,6 @@ If you activate the service, it should be available on the default port `SERVICE
 
 === "Remote"
     http://IP-ADDRESS-OF-HOST:8888
+
+## License
+Jupyter Notebook is released under the [BSD 3-Clause License](https://opensource.org/license/bsd-3-clause/), a permissive Open Source license that allows for wide usage and distribution with minimal restrictions.
