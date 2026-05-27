@@ -10,16 +10,10 @@ The architecture of InfDB is designed to be modular, scalable, and flexible, all
 ## Core Components
 
 -   **Docker Compose**: The extensive `compose.yml` file controls all containerized services.
--   **Helper Scripts**: Bash scripts (`infdb-start.sh`, `infdb-stop.sh`, etc.) simplify common management tasks.
+-   **Helper Script**: Bash script (`infdb.sh`,) simplify common management tasks such as starting, stopping, removing and loading data.
 -   **Configuration**:
     -   `.env`: Controls global settings like credentials, ports, and paths.
     -   `config-infdb-import.yml`: Manages open data import configurations.
 
 ## Profiles & Scalability
-Service selection is handled via Docker profiles, allowing you to spin up only what you need.
-
-```bash
-COMPOSE_PROFILES=core docker compose up
-```
-
-This command starts only the **core** services (the database). You can extend the functionality by adding other profiles (e.g., `COMPOSE_PROFILES=core,api,pgadmin`).
+Service selection is handled via Docker profiles, allowing you to spin up only what you need. This modular approach supports scalability and customization, enabling users to add new services or tools as needed without affecting the core architecture.

@@ -15,12 +15,12 @@ The system configuration is managed via environment variables:
 # SERVICE ACTIVATION
 # ==============================================================================
 # Select profiles to activate
-COMPOSE_PROFILES=core,...  # (1)
+COMPOSE_PROFILES=db,...  # (1)
 
 # ==============================================================================
-# POSTGRESQL DATABASE (Core Service)
+# POSTGRESQL DATABASE (DB Service)
 # ==============================================================================
-# Profile: core
+# Profile: db
 
 # Database name
 SERVICES_POSTGRES_DB=infdb  # (2)
@@ -37,7 +37,7 @@ SERVICES_POSTGRES_EXPOSED_PORT=54328    # (6)
 SERVICES_POSTGRES_EPSG=25832    # (7)
 ```
 
-1.  **Activate database service**: The `core` profile must be included to start the database.
+1.  **Activate database service**: The `db` profile must be included to start the database.
 2.  **Database name**: The name of the base PostgreSQL database.
 3.  **User**: The admin user for the PostgreSQL database.
 4.  **Password**: The admin password for the PostgreSQL database.

@@ -31,10 +31,10 @@ Edit the environment file `.env` to customize your InfDB instance settings (data
 # Select profiles to activate
 
 # Base profiles
-COMPOSE_PROFILES=core # (1)
+COMPOSE_PROFILES=db # (1)
 
 # All profiles
-# COMPOSE_PROFILES=core,admin,notebook,qwc,api # (2)
+# COMPOSE_PROFILES=db,admin,notebook,qwc,api # (2)
 
 # ==============================================================================
 # BASE CONFIGURATION
