@@ -72,7 +72,7 @@ bibliography: paper.bib
 
 It bundles a PostgreSQL [@stonebraker1986design] database extended for geospatial, time-series, and graph data as well as standardized REST [@fielding2000architectural] and OpenAPI standards by the Open Geospatial Consortium (OGC) [@ogc_wfs]. Finally, it offers a configurable import service transforming raw public data into structured, version-controlled schemas.
 
-By decoupling data ingestion, storage, and access from downstream analysis and modeling tools, InfDB reduces data preprocessing effort and enables reproducible, transferable energy modeling workflows across regions and projects. In this way, it can be used for many different applications in energy system modeling, such as district heating planning, electrical distribution network analysis, or urban energy demand estimation.
+By decoupling data ingestion, storage, and access from downstream analysis, modeling and planning tools, InfDB reduces data pre-processing effort and enables reproducible, transferable energy system modelling workflows across regions and projects. In this way, it can be used for many different applications in energy system modelling, such as district heating planning, electrical distribution network analysis, or urban energy demand estimation.
   
 # Statement of need
 The transition to a climate-neutral energy system is a central pillar of energy policy, exemplified by Germany's aim for climate neutrality by 2045. New legislative frameworks, such as the requirement for municipal heat planning [@GesetzFurWarmeplanung] and the requirement for grid expansion plans based on regional transition pathway scenarios defined in the German Energy Industry Act [@14dEnWGEinzelnorm], demand that municipalities and Distribution System Operators (DSOs) process vast amounts of energy and infrastructure data.
@@ -84,7 +84,7 @@ However, the current landscape of energy data is fragmented. While the Open Data
 3. **Lack of Reproducibility:** Planning results are often one-off studies that are difficult to update or audit.
 4. **Siloed Infrastructure:** DSOs and municipalities lack standardized tools to efficiently manage and share energy and infrastructure data, such as distribution network or building data.
 
-`InfDB` addresses these challenges by providing a reproducible, version-controlled, and automated ETL (Extract, Transform, Load) pipeline. It acts as a middleware between raw public data and high-level energy modeling tools, ensuring that planning data is transparent, traceable, and easily updatable. 
+`InfDB` addresses these challenges by providing a reproducible, version-controlled, and automated ETL (Extract, Transform, Load) pipeline. It acts as a middleware between raw public data and high-level energy modelling and planning tools, ensuring that input data is transparent, traceable, and easily updatable. 
 While `InfDB` is developed in a German context addressing local regulatory requirements, the underlying architecture and methodology can also be applied to data across different regions and regulatory frameworks, making it applicable to municipal and regional energy planning efforts worldwide.
 
 # State of the field
@@ -94,7 +94,7 @@ Energy and infrastructure data management is an active field with several existi
 * **Open Source Modeling Frameworks:** Tools like **City Energy Analyst (CEA)** [@jimenofonsecaArchitecturebuildingsystemsCityEnergyAnalystCityEnergyAnalyst2025], **EUReCA** [@pratavieraEUReCAOpensourceUrban2021] and **OpenPlan** [@OpenPlan] focus on modeling and optimization but typically assume preprocessed, structured input data provided externally.
 * **Data Initiatives:** The **NEED project** [@duchonPlatformEcosystemProviding2024] provides a decentralized data hub for synthetic energy data, and **DB4KWP** [@reiner-lemoine-institutDB4KWPUsingDatabases] focuses on ontologies (OEO/OEKG) and naming conventions.
 
-`InfDB` fills the gap between available open data sources and existing energy modeling and planning solutions. While simulation tools like the City Energy Analyst focus on modeling, `InfDB` provides the foundational data infrastructure that these tools require. Moreover, unlike static data repositories, `InfDB` offers a dynamic, service-oriented platform that enables users to deploy local instances, continuously integrate fresh datasets, and seamlessly connect with both commercial and open-source downstream tools. Looking forward, `InfDB` can complement ontology initiatives like DB4KWP by providing a technical implementation layer that transforms conceptual data standards into practical, operational systems.
+`InfDB` fills the gap between available open data sources and existing energy modelling and planning solutions. While simulation tools like CEA focus on modeling, `InfDB` provides the foundational data infrastructure that these tools require. Moreover, unlike static data repositories, `InfDB` offers a dynamic, service-oriented platform that enables users to deploy local instances, continuously integrate fresh datasets, and seamlessly connect with both commercial and open-source downstream tools. Looking forward, `InfDB` can complement ontology initiatives like DB4KWP by providing a technical implementation layer that transforms conceptual data standards into practical, operational systems.
 
 # Research impact statement
 The research relevance of `InfDB` lies in its role as a reusable data infrastructure that supports transparent and reproducible energy system analysis workflows. By separating data management from analysis logic, `InfDB` contributes to several recurring methodological requirements in energy research:
@@ -147,7 +147,7 @@ In the development of this work, GitHub Copilot [@githubcopilot] and Gemini [@go
 
 # Acknowledgements
 Martin Stengel gratefully acknowledges financial support through the Bavarian State Ministry of Science and the Arts to promote applied research and development at universities of applied sciences and technical universities.
-All other authors gratefully acknowledge financial support through the project executing agency Jülich (PTJ) with funds provided by the Federal Ministry for Economic Affairs and Climate Action (BMWK) due to an enactment of the German Bundestag under Grant No. 01256602/1.
+All other authors gratefully acknowledge financial support through the project executing agency Jülich (PTJ) with funds provided by the Federal Ministry for Economic Affairs and Energy (BMWE) due to an enactment of the German Bundestag under Grant No. 01256602/1.
 
 # References
 
