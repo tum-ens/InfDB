@@ -183,11 +183,9 @@ infdb-import:
                 # - versorgungspunkt
                 # - weitere_nutzung_flaeche
         plz:
-            status: active 
-            url: "https://cloud.ocd.need.energy/remote.php/dav/spaces/1bb5c9f8-4002-4b43-a148-2489f970c921$6693aeaa-a1c3-4b08-8969-33ea8b9c6cc7/plz-5stellig.geojson"
-            protocol: webdav
-            username: "need"
-            access_token: "quake taunt tricycle uncrown barista drilling"
+            status: active
+            url: "https://hub.arcgis.com/api/download/v1/items/5b203df4357844c8a6715d7d411a8341/geojson?layers=0"
+            filename: "plz-5stellig.geojson"
             path:
                 base: "{infdb-import/path/opendata}/plz/"
                 processed: "{infdb-import/path/processed}/plz/"
