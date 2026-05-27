@@ -108,7 +108,7 @@ cd infdb
 #### Clone InfDB
 ``` bash
 # Replace "infdb-demo" by name of instance 
-git clone --recurse-submodules git@github.com:tum-ens/InfDB.git infdb-demo
+git clone --recurse-submodules https://github.com/tum-ens/InfDB.git infdb-demo
 cd infdb-demo
 ```
 
