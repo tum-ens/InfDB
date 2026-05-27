@@ -85,7 +85,7 @@ However, the current landscape of energy data is fragmented. While the Open Data
 4. **Siloed Infrastructure:** DSOs and municipalities lack standardized tools to efficiently manage and share energy and infrastructure data, such as distribution network or building data.
 
 `InfDB` addresses these challenges by providing a reproducible, version-controlled, and automated ETL (Extract, Transform, Load) pipeline. It acts as a middleware between raw public data and high-level energy modeling tools, ensuring that planning data is transparent, traceable, and easily updatable. 
-While `InfDB` is developed in a German context addressing local regulatory requirements, the underlying architecture and methodology can be also applied to data across different regions and regulatory frameworks, making it applicable to municipal and regional energy planning efforts worldwide.
+While `InfDB` is developed in a German context addressing local regulatory requirements, the underlying architecture and methodology can also be applied to data across different regions and regulatory frameworks, making it applicable to municipal and regional energy planning efforts worldwide.
 
 # State of the field
 Energy and infrastructure data management is an active field with several existing solutions:
@@ -107,7 +107,7 @@ The research relevance of `InfDB` lies in its role as a reusable data infrastruc
 
 # Software Design
 `InfDB` is designed as a modular, containerized data infrastructure that decouples data ingestion, storage, and access from downstream analysis and modeling. It follows a service-oriented architecture orchestrated via Docker Compose, allowing individual components to be deployed, configured, and combined depending on the requirements of a specific workflow. The system is conceptually divided into **Services**, which provide the foundational infrastructure, and **Tools**, which consume and process the data. 
-In opposition to a single binary or service, this separation allows for data portability between tools and configurability both in deciding which components are enabled and in easily expanding to new components or replacing components to meet different preferences or local needs.
+As opposed to a single binary or service, this separation allows for data portability between tools and configurability both in deciding which components are enabled and in easily expanding to new components or replacing components to meet different preferences or local needs.
 
 ![InfDB - Data Sources, Services and Tools \label{fig:infdb-overview}](../docs/mkdocs/docs/assets/img/infdb-overview.png)
 
@@ -118,12 +118,12 @@ The *Services* layer (depicted in the grey box in \autoref{fig:infdb-overview}) 
 This service automates the ingestion of heterogeneous external data sources. It transforms raw external formats into structured schemas within the database. Users control this process via a simple YAML configuration file, eliminating the need for custom ETL scripting.
 
 ### infdb-db
-The central storage engine hosting a PostgreSQL database. It is pre-configured with essential extensions for infrastructure and energy data:
+The central storage engine hosting a PostgreSQL [@postgresql] database. It is pre-configured with essential extensions for infrastructure and energy data:
 
-* **PostGIS** for geospatial data.
-* **TimescaleDB** for time-series data.
-* **3D City DB** for (3D) semantic city models.
-* **pgRouting** for graph-based network analysis.
+* **PostGIS** [@postgis] for geospatial data.
+* **TimescaleDB** [@timescaledb] for time-series data.
+* **3D City DB** [@yao20183dcitydb] for (3D) semantic city models.
+* **pgRouting** [@pgRouting] for graph-based network analysis.
 
 ### APIs and Data Access Services
 InfDB exposes data exclusively through standardized interfaces rather than custom file formats. This includes SQL access to the database as well as RESTful and OGC-compliant APIs implemented using **FastAPI** [@Ramirez_FastAPI], **PostgREST** [@postgrest], and **pygeoAPI** [@pygeoapi]. These interfaces allow external tools to access data in a consistent manner while keeping the internal database structure encapsulated.
@@ -133,7 +133,7 @@ Optional services such as **pgAdmin** [@pgadmin], **Jupyter Notebook** [@kluyver
 External storage integration such as **OpenCloud** [@opencloud] component allows integration with cloud-based storage solutions for handling offline or closed data.
 
 ## Tools
-The *Tools* layer (depicted in the right box in \autoref{fig:infdb-overview}) consists of (external) software that interacts with the `InfDB` Services to process data or generate insights. Each tool can interact independently with the Services, reading and writing data. This modular approach allows users to chain different tools into custom workflows. Depending on the tool type and requirements, e.g. new scripts, open tool, proprietary tool, multiple integration options with the `InfDB` are available building upon following foundations:
+The *Tools* layer (depicted in the right box in \autoref{fig:infdb-overview}) consists of (external) software that interacts with the `InfDB` Services to process data or generate insights. Each tool can interact independently with the Services, reading and writing data. This modular approach allows users to chain different tools into custom workflows. Depending on the tool type and requirements, e.g., new scripts, open-source tools, proprietary tools, multiple integration options with `InfDB` are available building upon the following foundations:
 
 * **Standardized Integration:** Tools interact with the core database exclusively through open interfaces (SQL or REST APIs), ensuring that the underlying data schema remains consistent regardless of the tool used.
 * **pyinfdb:** To facilitate the development of custom tools, the platform provides the `pyinfdb` Python package. This library abstracts database connections, logging, and configuration management, allowing researchers to rapidly develop Python-based analysis scripts that integrate seamlessly with the InfDB ecosystem.
