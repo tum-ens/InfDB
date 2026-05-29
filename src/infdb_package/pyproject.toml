@@ -3,8 +3,8 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "infdb"
-version = "0.2.0"
+name = "pyinfdb"
+version = "0.1.0"
 authors = [
   { name="Patrick Buchenberg", email="patrick.buchenberg@tum.de" },
 ]

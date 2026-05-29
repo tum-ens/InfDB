@@ -8,7 +8,7 @@ The user only interacts with the superior InfDB class, the internal classes are 
 It provides functions for database access, configuration management, logging and data handling. The central idea is to provide standard methods to interact with InfDB in order to simplify the interaction with InfDB.
 
 ## Installation
-PyInfDB is available on [PyPI](https://pypi.org/project/infdb/) and can be installed via uv pip for example:
+PyInfDB is available on [PyPI](https://pypi.org/project/pyinfdb/) and can be installed via uv pip for example:
 ```bash
 uv pip install pyinfdb
 ```

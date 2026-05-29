@@ -6,7 +6,7 @@ WORKDIR /app
 COPY pyproject.toml /app/pyproject.toml
 # COPY uv.lock /app/uv.lock
 
-## Install infdb package in editable mode
+## Install pyinfdb package in editable mode
 # COPY infdb_package /app/infdb_package
 # RUN uv pip install -e /app/infdb_package
 
