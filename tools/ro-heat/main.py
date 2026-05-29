@@ -55,6 +55,11 @@ def main():
         }
         buildings = infdbclient_citydb.get_pandas_sqlfile(full_path, format_params=format_params)
 
+        # # Choose a subset of buildings for testing
+        # if len(buildings) > 100:
+        #     buildings = buildings.sample(n=100, random_state=random_seed).reset_index(drop=True)
+        
+
         if len(buildings) == 0:
             infdblog.warning(f"No buildings found for AGS {ags}. Returning without result")
             return
