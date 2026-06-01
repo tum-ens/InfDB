@@ -42,7 +42,8 @@ docs = [
 "watchdog",
 "mkdocstrings-python",
 ]
-test =[
+test = [
+  "pytest>=8.0",
   {include-group = "precommit-hook"},
   {include-group = "lint"},
   {include-group = "security-lint"},
