@@ -30,11 +30,10 @@ The InfDB can be used effectively wherever geospatial and time series informatio
 
 The architecture of InfDB as shown in figure below is composed of two main components:
 
-: :fontawesome-solid-gears: **[Services](usage/services.md)** – Dockerized core functionalities.
+: :fontawesome-solid-gears: **[Services](usage/services/index.md)** – Dockerized core functionalities.
 : :material-tools: **[Tools](tools/index.md)** – Dockerized software and tools for specific use cases and data processing tasks.
 
 ![InfDB Overview](assets/img/infdb-overview.png)
-
 
 ## Getting Started
 

@@ -6,4 +6,4 @@ The InfDB platform provides a suite of essential services designed to facilitate
 
 ![alt text](../assets/img/infdb-overview.png)
 
-The usage of the services of InfDB is explained in the [Usage -> Services](../../usage/services) section.
+The usage of the services of InfDB is explained in the [Usage -> Services](../usage/services/index.md) section.

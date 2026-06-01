@@ -16,7 +16,7 @@ This template enables you to:
 Prerequisites:
 
 - [Docker Desktop](https://docs.docker.com/get-started/get-docker/) (or Docker Engine) installed
-- Follow [development workflow instructions](#development-workflow) below
+- Follow development workflow instructions below
 - Run commands from the repository root
 
 **Option A — Docker Compose:**

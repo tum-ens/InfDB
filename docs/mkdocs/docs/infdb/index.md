@@ -10,13 +10,13 @@ InfDB is a modular and flexible data platform built on dockerized services that 
 
 As shown in the diagram above, the architecture is composed of two main components:
 
-: :fontawesome-solid-gears: **[Services](services/index.md)** – Dockerized open-source software providing base functionality.
+: :fontawesome-solid-gears: **[Services](../usage/services/index.md)** – Dockerized open-source software providing base functionality.
 : :material-tools: **[Tools](../tools/index.md)** – Software interacting with the InfDB.
 
 ## Services
 InfDB services follow microservice architecture principles, enabling independent development and deployment while improving modularity, scalability, and adaptability.
 
-For a comprehensive list of integrated tools and additional information, see **[Services](services/index.md)**.
+For a comprehensive list of integrated tools and additional information, see **[Services](../usage/services/index.md)**.
 
 ## Tools
 The InfDB ecosystem includes a variety of tools designed to handle different aspects of data workflows. These so called tools are software that interact with InfDB and process data through standardized, open interfaces. This modular approach allows you to tackle problems of any complexity by combining different tools into custom toolchains.

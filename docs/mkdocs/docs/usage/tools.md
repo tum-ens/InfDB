@@ -6,6 +6,4 @@ Tools are software that interact with InfDB and process data through standardize
 
 For a comprehensive list of integrated tools and additional information, see [Tools](../tools/index.md).
 
-<p align="center">
-  <img src="tools.png" alt="InfDB logo" width="200"/>
-</p>
+![Available Tools](tools.png)

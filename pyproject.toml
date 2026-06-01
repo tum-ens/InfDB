@@ -8,12 +8,12 @@ authors = [
 requires-python = "==3.12.*"
 
 dependencies = [
-    "infdb",
+    "pyinfdb",
     "geopandas",
 ]
 
 [tool.uv.sources]
-infdb = { path = "src/infdb_package", editable = true }
+pyinfdb = { path = "src/infdb_package", editable = true }
 
 [dependency-groups]
 dev = ["flake8==7.1.1"]

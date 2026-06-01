@@ -5,18 +5,6 @@ This use case demonstrates the integration of various data sources and analytica
 
 ![alt text](liz-browser.png)
 
-## Toolchain
-
-![Linear Heat Density Toolchain](toolchain.png)
-
-The linear heat density toolchain is implemented through a combination of open-source tools and custom scripts, executed within the InfDB environment:
-
-1. The building heat demand is estimated on a building level using statistical data and building characteristics. 
-2. Suitable streets for district heating are identified based on various criteria such as building density, street length, and connectivity. 
-3. The linear heat density is calculated by aggregating the heat demand of buildings along each street segment and dividing it by the length of the street.
-
-![Toolchain](data-modell.png)
-
 ## Run Linear Heat Density
 To run the complete linear heat density toolchain, use the following command:
 ```bash
