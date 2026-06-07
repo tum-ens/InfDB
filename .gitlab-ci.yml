@@ -7,12 +7,15 @@ variables:
 
 # Default tags for all jobs
 default:
-  image: ghcr.io/astral-sh/uv:python3.12-trixie-slim
-
   tags:
     - infdb-feature
     - docker
     - python
+
+# Ensure uv is available on shell runners (installs to ~/.local/bin if missing)
+before_script:
+  - which uv || curl -LsSf https://astral.sh/uv/install.sh | sh
+  - export PATH="$HOME/.local/bin:$PATH"
 
 
 # Cache configuration
