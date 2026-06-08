@@ -979,17 +979,18 @@ def create_building_lod2_table(object_id_prefix: str, infdb: InfDB) -> None:
     Creates the flat building_lod2 table for the specified object_id_prefix
     by filtering the source data based on AGS codes.
 
-    :param object_id_prefix: Object ID prefix (e.g., "DEBY" for Bavaria, "DENW" for North Rhine-Westphalia)
+    :param object_id_prefix: Object ID prefix (e.g., "DEBY" for Bavaria, "DENW" for North Rhine-Westphalia, "DEBW" for Baden-Württemberg)
     :type object_id_prefix: str
     :param infdb: instance of InfDB for database access and logging
     :type infdb: InfDB
     """
     log = infdb.get_worker_logger()
 
-    # DE means "run both old region-specific implementations"
+    # DE means "run all supported region-specific implementations"
     if object_id_prefix == "DE":
         create_building_lod2_table("DEBY", infdb)
         create_building_lod2_table("DENW", infdb)
+        create_building_lod2_table("DEBW", infdb)
         return
 
     match object_id_prefix:
@@ -997,6 +998,8 @@ def create_building_lod2_table(object_id_prefix: str, infdb: InfDB) -> None:
             ags_id = "09"
         case "DENW":
             ags_id = "05"
+        case "DEBW":
+            ags_id = "08"
         case _:
             log.error(f"Region {object_id_prefix} not supported for building_lod2.sql")
             sys.exit(1)

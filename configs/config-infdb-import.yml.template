@@ -105,6 +105,15 @@ infdb-import:
                 tile_size_m: 2000
                 filename_template: "{e_km}_{n_km}.gml"
 
+            baden_wuerttemberg:
+                status: active
+                state_prefix: "08"
+                base_url: "https://opengeodata.lgl-bw.de/data/lod2/"
+                tile_size_m: 2000
+                tile_origin_offset_x_m: 1000
+                tile_origin_offset_y_m: 0
+                filename_template: "LoD2_32_{e_km}_{n_km}_2_bw.zip"
+                
         bkg:
             status: active
             path:
