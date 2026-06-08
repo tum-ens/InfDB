@@ -1,5 +1,5 @@
 ---
-title: 'InfDB: An Open-Source Energy and Infrastructure Data Ecosystem for Modeling and Planning'
+title: 'InfDB: An Open Source Energy and Infrastructure Data Ecosystem for Modeling and Planning'
 tags:
     - Python
     - Docker
@@ -68,7 +68,7 @@ bibliography: paper.bib
 ---
 
 # Summary
-`InfDB - Energy and Infrastructure Database` is an open-source, containerized data infrastructure for managing and providing access to heterogeneous energy and infrastructure datasets used in urban and regional energy system studies. 
+`InfDB - Energy and Infrastructure Database` is an open source, containerized data infrastructure for managing and providing access to heterogeneous energy and infrastructure datasets used in urban and regional energy system studies. 
 
 It bundles a PostgreSQL [@stonebraker1986design] database extended for geospatial, time-series, and graph data as well as standardized REST [@fielding2000architectural] and OpenAPI standards by the Open Geospatial Consortium (OGC) [@ogc_wfs]. Finally, it offers a configurable import service transforming raw public data into structured, version-controlled schemas.
 
@@ -92,9 +92,9 @@ Energy and infrastructure data management is an active field with several existi
 
 * **Commercial Platforms:** Tools like **nPro** [@wirtz2023npro], **Solarea** [@solarea_software], and **flexRM** [@flexrm_software] offer robust analytics and user interfaces but are proprietary, limiting transparency and community extension.
 * **Open Source Modeling Frameworks:** Tools like **City Energy Analyst (CEA)** [@jimenofonsecaArchitecturebuildingsystemsCityEnergyAnalystCityEnergyAnalyst2025], **EUReCA** [@pratavieraEUReCAOpensourceUrban2021] and **OpenPlan** [@OpenPlan] focus on modeling and optimization but typically assume preprocessed, structured input data provided externally.
-* **Data Initiatives:** The **NEED project** [@duchonPlatformEcosystemProviding2024] provides a decentralized data hub for synthetic energy data, and **DB4KWP** [@reiner-lemoine-institutDB4KWPUsingDatabases] focuses on ontologies (OEO/OEKG) and naming conventions.
+* **Data Initiatives:** The **NEED project** [@duchonPlatformEcosystemProviding2024] provides a decentralized data hub for synthetic energy data, and **DB4KWP** [@reiner-lemoine-institutDB4KWPUsingDatabases] focuses on ontologies Open Energy Ontology (OEO) and Knowledge Graph (OEKG) naming conventions.
 
-`InfDB` fills the gap between available open data sources and existing energy modelling and planning solutions. While simulation tools like CEA focus on modeling, `InfDB` provides the foundational data infrastructure that these tools require. Moreover, unlike static data repositories, `InfDB` offers a dynamic, service-oriented platform that enables users to deploy local instances, continuously integrate fresh datasets, and seamlessly connect with both commercial and open-source downstream tools. Looking forward, `InfDB` can complement ontology initiatives like DB4KWP by providing a technical implementation layer that transforms conceptual data standards into practical, operational systems.
+`InfDB` fills the gap between available open data sources and existing energy modelling and planning solutions. While simulation tools like CEA focus on modeling, `InfDB` provides the foundational data infrastructure that these tools require. Moreover, unlike static data repositories, `InfDB` offers a dynamic, service-oriented platform that enables users to deploy local instances, continuously integrate fresh datasets, and seamlessly connect with both commercial and open source downstream tools. Looking forward, `InfDB` can complement ontology initiatives like DB4KWP by providing a technical implementation layer that transforms conceptual data standards into practical, operational systems.
 
 # Research impact statement
 The research relevance of `InfDB` lies in its role as a reusable data infrastructure that supports transparent and reproducible energy system analysis workflows. By separating data management from analysis logic, `InfDB` contributes to several recurring methodological requirements in energy research:
@@ -126,14 +126,14 @@ The central storage engine hosting a PostgreSQL [@postgresql] database. It is pr
 * **pgRouting** [@pgRouting] for graph-based network analysis.
 
 ### APIs and Data Access Services
-`InfDB` exposes data exclusively through standardized interfaces rather than custom file formats. This includes SQL access to the database as well as RESTful and OGC-compliant APIs implemented using **FastAPI** [@Ramirez_FastAPI], **PostgREST** [@postgrest], and **pygeoAPI** [@pygeoapi]. These interfaces allow external tools to access data in a consistent manner while keeping the internal database structure encapsulated.
+`InfDB` exposes data exclusively through standardized interfaces rather than custom file formats. This includes SQL access to the database as well as RESTful and OGC-compliant APIs implemented using **FastAPI** [@Ramirez_FastAPI], **PostgREST** [@postgrest], and **pygeoapi** [@pygeoapi]. These interfaces allow external tools to access data in a consistent manner while keeping the internal database structure encapsulated.
 
 ### Administrative and Interactive Services
 Optional services such as **pgAdmin** [@pgadmin], **Jupyter Notebook** [@kluyver2016jupyter], and a web-based **QGIS** [@qgis] client support administration, inspection, prototyping, and visualization of data stored in the database. These components are intended to lower the entry barrier for users from different backgrounds (e.g., GIS specialists or researchers). However, they are not required for automated or headless workflows.
 External storage integration such as **OpenCloud** [@opencloud] component allows integration with cloud-based storage solutions for handling offline or closed data.
 
 ## Tools
-The *Tools* layer (depicted in the right box in \autoref{fig:infdb-overview}) consists of (external) software that interacts with the `InfDB` Services to process data or generate insights. Each tool can interact independently with the Services, reading and writing data. This modular approach allows users to chain different tools into custom workflows. Depending on the tool type and requirements, e.g., new scripts, open-source tools, proprietary tools, multiple integration options with `InfDB` are available building upon the following foundations:
+The *Tools* layer (depicted in the right box in \autoref{fig:infdb-overview}) consists of (external) software that interacts with the `InfDB` Services to process data or generate insights. Each tool can interact independently with the Services, reading and writing data. This modular approach allows users to chain different tools into custom workflows. Depending on the tool type and requirements, e.g., new scripts, open source tools, proprietary tools, multiple integration options with `InfDB` are available building upon the following foundations:
 
 * **Standardized Integration:** Tools interact with the core database exclusively through open interfaces (SQL or REST APIs), ensuring that the underlying data schema remains consistent regardless of the tool used.
 * **pyinfdb:** To facilitate the development of custom tools, the platform provides the `pyinfdb` Python package. This library abstracts database connections, logging, and configuration management, allowing researchers to rapidly develop Python-based analysis scripts that integrate seamlessly with the `InfDB` ecosystem.
