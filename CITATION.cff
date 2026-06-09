@@ -1,15 +1,48 @@
-cff-version: 0.0.0
+cff-version: 1.2.0
 message: "If you use this software, please cite it using this metadata."
 authors:
   - family-names: "Buchenberg"
     given-names: "Patrick"
-    alias: "@pbuchenberg"
-    affiliation: "Technical University of Munich"
+    affiliation: "Technical University of Munich, Germany"
     orcid: "https://orcid.org/0000-0001-7683-8422"
-title: "InfDB - Infrastructure and Energy Database"
+  - family-names: "Döpfert"
+    given-names: "Markus"
+    affiliation: "Technical University of Munich, Germany"
+    orcid: "https://orcid.org/0000-0001-8720-2585"
+  - family-names: "Reveron Baecker"
+    given-names: "Beneharo"
+    affiliation: "Technical University of Munich, Germany"
+    orcid: "https://orcid.org/0000-0001-6560-134X"
+  - family-names: "Genena"
+    given-names: "Hussein Mohamed Ali"
+    affiliation: "Technical University of Munich, Germany"
+    orcid: "https://orcid.org/0009-0002-1600-3145"
+  - family-names: "Stengel"
+    given-names: "Martin"
+    affiliation: "Technical University of Munich, Germany; Rosenheim Technical University of Applied Sciences, Germany"
+    orcid: "https://orcid.org/0009-0006-2721-3227"
+  - family-names: "Huang"
+    given-names: "Marvin Wen"
+    affiliation: "Technical University of Munich, Germany"
+    orcid: "https://orcid.org/0009-0002-3988-2138"
+  - family-names: "Kalkan"
+    given-names: "Kadir"
+    affiliation: "Technical University of Munich, Germany"
+  - family-names: "Kuper"
+    given-names: "Laura"
+    affiliation: "Siemens AG, Germany; Technical University of Darmstadt, Germany"
+  - family-names: "Ayasse"
+    given-names: "Carolin"
+    affiliation: "Technical University of Darmstadt, Germany"
+    orcid: "https://orcid.org/0009-0006-8478-216X"
+  - family-names: "Ebrahimi Salari"
+    given-names: "Haniyeh"
+    affiliation: "Technical University of Dortmund, Germany"
+title: "InfDB: An Open Source Energy and Infrastructure
+Data Ecosystem for Modeling and Planning"
 type: software
-license: Apache License Version 2.0
-version: 4.0.0
-doi: 
-date-released: 2025-13-05
+license: Apache-2.0
+version: 4.1.4
+doi: "10.5281/zenodo.20609117"
+date-released: 2026-06-09
 url: "https://github.com/tum-ens/InfDB"
