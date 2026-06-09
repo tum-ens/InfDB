@@ -42,7 +42,7 @@ title: "InfDB: An Open Source Energy and Infrastructure
 Data Ecosystem for Modeling and Planning"
 type: software
 license: Apache-2.0
-version: 4.1.3
+version: 4.1.4
 doi: "10.5281/zenodo.20609117"
 date-released: 2026-06-09
 url: "https://github.com/tum-ens/InfDB"
