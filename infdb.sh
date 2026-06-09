@@ -71,7 +71,7 @@ cmd_import() {
 
 cmd_stop() {
     echo "=== Stopping infDB ==="
-    docker compose down
+    docker --remove-orphans compose down 
     echo "Successfully stopped all InfDB services."
 }
 
