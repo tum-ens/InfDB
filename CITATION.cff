@@ -1,4 +1,4 @@
-cff-version: 0.0.0
+cff-version: 1.2.0
 message: "If you use this software, please cite it using this metadata."
 authors:
   - family-names: "Buchenberg"
@@ -8,8 +8,8 @@ authors:
     orcid: "https://orcid.org/0000-0001-7683-8422"
 title: "InfDB - Infrastructure and Energy Database"
 type: software
-license: Apache License Version 2.0
-version: 4.0.0
-doi: 
-date-released: 2025-13-05
+license: Apache-2.0
+version: 4.1.3
+doi: ""
+date-released: 2025-06-09
 url: "https://github.com/tum-ens/InfDB"
