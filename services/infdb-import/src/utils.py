@@ -17,7 +17,7 @@ import geopandas as gpd
 import psycopg2
 import requests
 from bs4 import BeautifulSoup
-from infdb import InfDB
+from pyinfdb import InfDB
 from pySmartDL import SmartDL
 
 # ============================== Constants ==============================

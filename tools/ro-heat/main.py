@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 # entise package has to type stubs
 from entise.core.generator import Generator  # type: ignore
-from infdb import InfDB
+from pyinfdb import InfDB
 
 from src import refurbishment, tabula_handling, timedata
 

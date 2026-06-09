@@ -9,7 +9,7 @@ import subprocess
 import sys
 from typing import List
 
-from infdb import InfDB
+from pyinfdb import InfDB
 
 
 def query_database(infdb: InfDB, query: str) -> str:

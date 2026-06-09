@@ -4,8 +4,8 @@ import os
 
 import pytest
 import yaml
-from infdb.config import InfdbConfig
-from infdb.logger import InfdbLogger
+from pyinfdb.config import InfdbConfig
+from pyinfdb.logger import InfdbLogger
 
 
 # ── InfdbConfig: no config file ───────────────────────────────────────────────

@@ -2,7 +2,7 @@ import os
 import sys
 from zipfile import ZipFile, BadZipFile
 
-from infdb import InfDB
+from pyinfdb import InfDB
 from shapely import wkt as shapely_wkt
 from shapely.geometry import box
 import multiprocessing as mp

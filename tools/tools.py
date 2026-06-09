@@ -36,7 +36,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 import geopandas as gpd
 import argparse
-from infdb import InfDB
+from pyinfdb import InfDB
 from dotenv import load_dotenv
 
 

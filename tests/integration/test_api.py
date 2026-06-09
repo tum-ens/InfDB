@@ -3,8 +3,8 @@ import logging
 
 import pytest
 import sqlalchemy
-from infdb.client import InfdbClient
-from infdb.config import InfdbConfig
+from pyinfdb.client import InfdbClient
+from pyinfdb.config import InfdbConfig
 from psycopg2 import OperationalError
 
 pytestmark = pytest.mark.integration

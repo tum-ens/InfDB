@@ -1,4 +1,4 @@
-from infdb import InfDB
+from pyinfdb import InfDB
 
 from . import utils
 

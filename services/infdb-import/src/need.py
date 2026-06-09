@@ -2,7 +2,7 @@ import os
 import sys
 from typing import Dict
 
-from infdb import InfDB
+from pyinfdb import InfDB
 
 from . import utils
 

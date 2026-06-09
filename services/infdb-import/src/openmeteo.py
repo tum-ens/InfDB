@@ -3,7 +3,7 @@ import os
 import sys
 from typing import Any, Dict
 
-import infdb as InfDB
+import pyinfdb as InfDB
 import openmeteo_requests
 import pandas as pd
 import requests_cache

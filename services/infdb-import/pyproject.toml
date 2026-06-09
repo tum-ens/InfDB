@@ -22,8 +22,8 @@ dependencies = [
     "duckdb>=1.0.0",
     "marshmallow>=3.13,<4",
     "charset-normalizer",
-    "infdb",
+    "pyinfdb",
 ]
 
 [tool.uv.sources]
-infdb = { path = "/workspaces/infdb_package", editable = true }
+pyinfdb = { path = "/workspaces/infdb_package", editable = true }

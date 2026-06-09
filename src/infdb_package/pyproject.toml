@@ -32,7 +32,7 @@ dependencies = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["infdb"]
+packages = ["pyinfdb"]
 
 keywords = ["infrastructure", "energy", "database", "data handling"]
 

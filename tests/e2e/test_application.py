@@ -3,7 +3,7 @@ import logging
 
 import pytest
 import yaml
-from infdb import InfDB
+from pyinfdb import InfDB
 from psycopg2 import OperationalError
 
 pytestmark = pytest.mark.e2e
