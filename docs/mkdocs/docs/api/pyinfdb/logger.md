@@ -1,1 +1,1 @@
-:::infdb_package.infdb.logger.InfdbLogger
+:::infdb_package.pyinfdb.logger.InfdbLogger

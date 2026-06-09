@@ -1,1 +1,1 @@
-:::infdb_package.infdb.client.InfdbClient
+:::infdb_package.pyinfdb.client.InfdbClient
