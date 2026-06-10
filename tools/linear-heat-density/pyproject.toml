@@ -3,7 +3,7 @@ name = "linear-heat-density"
 version = "1"
 requires-python = "==3.12.*"
 dependencies = [
-    "infdb @ file:/app/mnt/infdb_package",
+    "pyinfdb @ file:/app/mnt/infdb_package",
     "geopandas",
     # Add your packages here
 ]
