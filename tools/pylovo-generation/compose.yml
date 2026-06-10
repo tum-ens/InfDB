@@ -8,8 +8,7 @@ services:
             - ../../.env          # root env (DB creds, etc.)
             - env_pylovo_generation.env
         volumes:
-            - ./configs:/app/configs                           # infdb tool configs (config-pylovo-generation.yml etc.)
-            - ./configs/pylovo:/app/configs/pylovo             # pylovo config overrides (PYLOVO_CONFIG_DIR)
+            - ./configs:/app/configs
             - ./src/pylovo:/app/src/pylovo
             - ../../src/infdb_package:/app/mnt/infdb_package
         extra_hosts:
