@@ -195,6 +195,7 @@ src/infdb_package/site
 
 .env
 configs/config-infdb-import.yml
+compose.yml
 
 docs/mkdocs/site
 
