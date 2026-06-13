@@ -13,4 +13,4 @@ dependencies = [
 
 [tool.uv.sources]
 pyinfdb = { path = "/workspaces/infdb_package", editable = true }
-entise = { git = "https://github.com/tum-ens/EnTiSe", branch = "develop" }
+entise = { git = "https://github.com/tum-ens/EnTiSe", branch = "timeseries-storage" }

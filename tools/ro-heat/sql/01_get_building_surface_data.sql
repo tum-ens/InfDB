@@ -21,6 +21,7 @@ SELECT b.objectid                                                        AS buil
        b.floor_number,
        b.building_type,
        b.construction_year,
+       b.postcode,
        -- Reduce wall surface by the assumed window area, see below
        wd.wall_surface_area - b.floor_area * b.floor_number * 0.75 * 0.2 AS wall_area,
        rd.roof_surface_area                                              AS roof_area,

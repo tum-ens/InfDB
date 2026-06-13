@@ -28,7 +28,7 @@ ro-heat:
             simulation_year: 2023
             heating_setpoint: 20.0 # heating setpoint in °C
             random_seed: 42 # explain this value
-            method: 1R0C_internal # 1R1C or 1R0C or 1R0C_internal
+            method: 1R1C # 1R1C or 1R0C or 1R0C_internal
             Heated_Area_Ratio: 0.8 # ratio of heated area to total area (0-1)
         refurbishment:
             outer_wall:
@@ -45,3 +45,33 @@ ro-heat:
                 lifespan_spread: 10
         output:
             schema: ro_heat   # needs to be snake_case
+        # Storage settings handed over to EnTiSe. EnTiSe calculates the time series and
+        # (when enabled) streams them directly into the database via COPY. The schema is
+        # taken from data.output.schema above. This block is the domain-specific mapping
+        # injected into the otherwise generic EnTiSe storage backend.
+        storage:
+            enabled: true            # flag: whether EnTiSe stores the results to the DB
+            ts_type: hvac            # EnTiSe timeseries type to read per object
+            source: ro-heat          # value written to the metadata 'source' column
+            data_table: entise_ts_data
+            metadata_table: entise_ts_metadata
+            index_name: entise_ts_data_idx
+            use_timescaledb: true    # create the data table as a TimescaleDB hypertable
+            stream_chunk_size: 500   # objects computed + written per streamed chunk
+            store_plz: []   # optional: only calculate (and store) buildings whose postcode (PLZ) is in this list; empty/unset = all
+            series:                  # mapping: EnTiSe output column -> stored DB series
+                - column: "indoor_temperature[C]"
+                  name: ro_heat_indoor_temperature
+                  description: "Indoor temperature for building"
+                  type: synthetic
+                  unit: "°C"
+                - column: "heating:load[W]"
+                  name: ro_heat_heating_load
+                  description: "Heating load for building"
+                  type: synthetic
+                  unit: "W"
+                - column: "cooling:load[W]"
+                  name: ro_heat_cooling_load
+                  description: "Cooling load for building"
+                  type: synthetic
+                  unit: "W"
