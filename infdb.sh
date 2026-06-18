@@ -45,7 +45,11 @@ ensure_from_template() {
 }
 
 cmd_start() {
-    configure_lizmap
+    read -r -a selected_profiles <<< "$(read_profiles)"
+    echo "Selected profiles: ${selected_profiles[*]}"
+
+    setup_services "${selected_profiles[@]}"
+    generate_compose "${selected_profiles[@]}"
 
     echo "=== Pull latest docker images ==="
     docker compose pull --ignore-buildable
@@ -70,7 +74,7 @@ cmd_import() {
 
 cmd_stop() {
     echo "=== Stopping infDB ==="
-    docker compose --profile "*" down
+    docker compose down --remove-orphans
     echo "Successfully stopped all InfDB services."
 }
 
@@ -84,9 +88,129 @@ cmd_remove() {
     fi
 }
 
+read_profiles() {
+    if [[ -z "${COMPOSE_PROFILES:-}" ]]; then
+        echo "Error: COMPOSE_PROFILES is not set in .env" >&2
+        exit 1
+    fi
+
+    # Remove spaces, convert comma separated values to array
+    local normalized
+    normalized=$(echo "$COMPOSE_PROFILES" | tr -d '[:space:]')
+
+    IFS=',' read -r -a profiles <<< "$normalized"
+
+    if [[ ${#profiles[@]} -eq 0 ]]; then
+        echo "Error: No valid profiles in COMPOSE_PROFILES" >&2
+        exit 1
+    fi
+
+    echo "${profiles[@]}"
+}
+
+get_profile_paths() {
+    case "$1" in
+        db)
+            echo "services/infdb-db/compose.yml"
+            ;;
+        admin)
+            echo "services/pgadmin/compose.yml"
+            ;;
+        api)
+            cat <<EOF
+services/infdb-api/fastapi/compose.yml
+services/infdb-api/pygeoapi/compose.yml
+services/infdb-api/postgrest/compose.yml
+EOF
+            ;;
+        notebook)
+            echo "services/jupyter/compose.yml"
+            ;;
+        qwc)
+            echo "services/infdb-qwc/compose.yml"
+            ;;
+        lizmap)
+            echo "services/infdb-lizmap/docker-compose.yml"
+            ;;
+        opencloud)
+            echo "services/infdb-opencloud/docker-compose.yml"
+            ;;
+        *)
+            echo "Error: Unknown profile '$1'" >&2
+            exit 1
+            ;;
+    esac
+}
+
+# Setup before initialization of services that require it.
+setup_services() {
+    local profiles=("$@")
+    
+    for profile in "${profiles[@]}"; do
+        case "$profile" in
+            lizmap)
+                configure_lizmap
+                ;;
+            # You can easily add other services that require configurations here:
+            # opencloud) configure_opencloud ;;
+            # qwc) configure_qwc ;;
+            # ...
+        esac
+    done
+}
+
+generate_compose() {
+    local output_file="compose.yml"
+
+    # Explicitly remove existing compose file
+    if [[ -f "$output_file" || -L "$output_file" ]]; then
+        echo "=== Removing existing $output_file ==="
+        rm -f "$output_file"
+    fi
+
+    local profiles=("$@")
+
+    echo "=== Generating $output_file from COMPOSE_PROFILES: $COMPOSE_PROFILES ==="
+
+    declare -A seen
+    local paths=()
+
+    for profile in "${profiles[@]}"; do
+
+        while IFS= read -r path; do
+            [[ -z "$path" ]] && continue
+
+            if [[ -z "${seen[$path]}" ]]; then
+                if [[ ! -f "$path" ]]; then
+                    echo "Error: Missing compose file: $path" >&2
+                    exit 1
+                fi
+
+                paths+=("$path")
+                seen["$path"]=1
+            fi
+        done < <(get_profile_paths "$profile")
+    done
+
+    {
+        echo "name: \${BASE_NAME}"
+        echo
+        echo "include:"
+        for p in "${paths[@]}"; do
+            echo "  - path: $p"
+        done
+        echo
+        echo "networks:"
+        echo "  infdb_network:"
+        echo "    name: infdb-\${BASE_NAME}_network"
+        echo "    driver: bridge"
+    } > "$output_file"
+
+    echo "=== Generated $output_file with ${#paths[@]} includes ==="
+}
+
 configure_lizmap() {
-    echo ${COMPOSE_PROFILES}
-    if [[ ":${COMPOSE_PROFILES}:" == *"lizmap"* ]] && [ ! -d "services/infdb-lizmap/lizmap" ]; then
+    if [ ! -d "services/infdb-lizmap/lizmap" ]; then
         echo "=== Configuring lizmap ==="
         cd services/infdb-lizmap
         ./configure.sh configure
