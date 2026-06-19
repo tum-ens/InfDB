@@ -45,20 +45,29 @@ ro-heat:
                 lifespan_spread: 10
         output:
             schema: ro_heat   # needs to be snake_case
-        # Storage settings handed over to EnTiSe. EnTiSe calculates the time series and
-        # (when enabled) streams them directly into the database via COPY. The schema is
-        # taken from data.output.schema above. This block is the domain-specific mapping
-        # injected into the otherwise generic EnTiSe storage backend.
+        # ── EnTiSe storage ───────────────────────────────────────────────────────
+        # ro-heat hands its DB engine + this block to EnTiSe, which computes the time
+        # series and (optionally) streams them into the DB via COPY. Target schema comes
+        # from data.output.schema above. [EnTiSe] keys map onto EnTiSe's StorageConfig;
+        # [ro-heat] keys are consumed here and not passed to EnTiSe.
         storage:
-            store_timeseries: true   # false: compute the time series and store ONLY the summary table; true: also store the full time series (the heavy step).
-            ts_type: hvac            # EnTiSe timeseries type to read per object
-            source: ro-heat          # value written to the metadata 'source' column
-            data_table: entise_ts_data
-            metadata_table: entise_ts_metadata
-            index_name: entise_ts_data_idx
-            stream_chunk_size: 500   # objects computed + written per streamed chunk
-            store_plz: []   # optional: only calculate (and store) buildings whose postcode (PLZ) is in this list; empty/unset = all
-            series:                  # mapping: EnTiSe output column -> stored DB series
+            store_timeseries: true               # [ro-heat] false = store summary only; true = also store the full time series
+            ts_type: hvac                        # [EnTiSe] result type to read: {object_id: {ts_type: DataFrame}}
+            source: ro-heat                      # [EnTiSe] metadata 'source' + part of unique key (name+objectid+source)
+            data_table: entise_ts_data           # [EnTiSe] holds (ts_metadata_id, time, value) rows
+            metadata_table: entise_ts_metadata   # [EnTiSe] one row per (building, series)
+            index_name: entise_ts_data_idx       # [EnTiSe] dropped before load, rebuilt once after (index-once)
+            stream_chunk_size: 500               # [EnTiSe] buildings computed + COPY-ed per chunk (bounds RAM)
+            store_plz: []                        # [ro-heat] only process these postcodes; [] = all buildings in the AGS
+
+            # [EnTiSe] column-to-series mapping (the domain-specific part). For each
+            # EnTiSe output column we store, this declares the DB series + metadata:
+            #   column      -> column in EnTiSe's per-object DataFrame (the value source)
+            #   name        -> series name written to metadata_table
+            #   description -> human-readable description (metadata)
+            #   type        -> series type (metadata)
+            #   unit        -> physical unit (metadata)
+            series:
                 - column: "indoor_temperature[C]"
                   name: ro_heat_indoor_temperature
                   description: "Indoor temperature for building"

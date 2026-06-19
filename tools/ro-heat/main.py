@@ -225,6 +225,7 @@ def main():
                         "data_table": storage_cfg.get("data_table", "entise_ts_data"),
                         "metadata_table": storage_cfg.get("metadata_table", "entise_ts_metadata"),
                         "index_name": storage_cfg.get("index_name", "entise_ts_data_idx"),
+                        "stream_chunk_size": storage_cfg.get("stream_chunk_size", 500),
                         "series": storage_cfg["series"],
                     }
                 )
@@ -232,12 +233,7 @@ def main():
 
                 # EnTiSe computes in chunks and streams each chunk to the database,
                 # keeping memory bounded and building the index once at the end.
-                summary, _ = gen.generate(
-                    data,
-                    workers=os.cpu_count(),
-                    storage=storage,
-                    stream_chunk_size=storage_cfg.get("stream_chunk_size", 500),
-                )
+                summary, _ = gen.generate(data, workers=os.cpu_count(), storage=storage)
             else:
                 infdblog.info("store_timeseries is false; computing summary only (time series not stored).")
                 summary, _ = gen.generate(data, workers=os.cpu_count())
