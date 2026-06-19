@@ -214,9 +214,9 @@ def main():
             # engine to EnTiSe. EnTiSe then both calculates the time series and streams
             # them straight into the database, without returning the bulk data here.
             storage_cfg = infdbhandler.get_config_value(["ro-heat", "data", "storage"])
-            store_enabled = storage_cfg.get("enabled", True)
+            store_timeseries = storage_cfg.get("store_timeseries", True)
 
-            if store_enabled:
+            if store_timeseries:
                 storage_config = StorageConfig.from_dict(
                     {
                         "schema": output_schema,
@@ -225,7 +225,6 @@ def main():
                         "data_table": storage_cfg.get("data_table", "entise_ts_data"),
                         "metadata_table": storage_cfg.get("metadata_table", "entise_ts_metadata"),
                         "index_name": storage_cfg.get("index_name", "entise_ts_data_idx"),
-                        "use_timescaledb": storage_cfg.get("use_timescaledb", True),
                         "series": storage_cfg["series"],
                     }
                 )
@@ -240,7 +239,7 @@ def main():
                     stream_chunk_size=storage_cfg.get("stream_chunk_size", 500),
                 )
             else:
-                infdblog.info("Storage disabled in configuration; computing summary only.")
+                infdblog.info("store_timeseries is false; computing summary only (time series not stored).")
                 summary, _ = gen.generate(data, workers=os.cpu_count())
 
             # Summary

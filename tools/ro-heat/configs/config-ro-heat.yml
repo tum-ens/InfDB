@@ -50,13 +50,12 @@ ro-heat:
         # taken from data.output.schema above. This block is the domain-specific mapping
         # injected into the otherwise generic EnTiSe storage backend.
         storage:
-            enabled: true            # flag: whether EnTiSe stores the results to the DB
+            store_timeseries: true   # false: compute the time series and store ONLY the summary table; true: also store the full time series (the heavy step).
             ts_type: hvac            # EnTiSe timeseries type to read per object
             source: ro-heat          # value written to the metadata 'source' column
             data_table: entise_ts_data
             metadata_table: entise_ts_metadata
             index_name: entise_ts_data_idx
-            use_timescaledb: true    # create the data table as a TimescaleDB hypertable
             stream_chunk_size: 500   # objects computed + written per streamed chunk
             store_plz: []   # optional: only calculate (and store) buildings whose postcode (PLZ) is in this list; empty/unset = all
             series:                  # mapping: EnTiSe output column -> stored DB series
