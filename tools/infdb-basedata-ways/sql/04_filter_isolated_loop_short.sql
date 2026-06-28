@@ -28,6 +28,7 @@ DO $$
 DECLARE
     v_min_length       double precision := {min_length_meter}::double precision; -- minimum length threshold (meters)
     v_snap_tol         double precision := 10.0;   -- snap/proximity tolerance for endpoint connections
+    v_node_tol         double precision := 0.5;    -- tight tolerance to detect an endpoint sitting on another way (bridge test)
     v_apply_loop       boolean          := {apply_loop_filter}::boolean;         -- enable loop filter
     v_apply_isolated   boolean          := {apply_isolated_filter}::boolean;     -- enable isolated filter
     v_apply_length     boolean          := {apply_length_filter}::boolean;       -- enable short-way filter
@@ -35,6 +36,7 @@ DECLARE
     v_connected_way text;  -- chosen replacement way id (if applicable)
     v_filter_type text;    -- classification for why a way is filtered
     v_connection_count int; -- number of detected neighbour connections
+    v_is_bridge bool;      -- TRUE when both endpoints sit on other ways (short bridges must be kept)
     v_should_delete bool;  -- whether this way meets any active filter criterion
 BEGIN
     -- Iterate ways_tem and classify ways for filtering
@@ -60,6 +62,20 @@ BEGIN
           AND (ST_DWithin(w2.geom, r.start_pt, v_snap_tol)  -- near start endpoint
                OR ST_DWithin(w2.geom, r.end_pt, v_snap_tol)); -- near end endpoint
 
+        -- A way is a "bridge" when BOTH endpoints sit on another way: deleting such a
+        -- short way would tear a hole in an otherwise continuous road. A tight tolerance
+        -- is used so a dangling stub (whose free end lies on no other way) is NOT mistaken
+        -- for a bridge and can still be removed by the short filter.
+        SELECT
+            EXISTS (SELECT 1 FROM ways_tem w2
+                    WHERE w2.id::text <> r.way_id AND w2.geom IS NOT NULL
+                      AND ST_DWithin(w2.geom, r.start_pt, v_node_tol)) -- start endpoint on another way
+            AND
+            EXISTS (SELECT 1 FROM ways_tem w2
+                    WHERE w2.id::text <> r.way_id AND w2.geom IS NOT NULL
+                      AND ST_DWithin(w2.geom, r.end_pt, v_node_tol))   -- end endpoint on another way
+        INTO v_is_bridge;
+
         -- Determine if this way should be deleted based on active filters
         v_should_delete := (
             (v_apply_loop     AND r.is_loop)                          -- loop filter
@@ -68,7 +84,8 @@ BEGIN
             OR
             (v_apply_length   AND r.way_length < v_min_length         -- short filter
                               AND NOT r.is_loop                       --   (loops already handled above)
-                              AND v_connection_count > 0)             --   (isolated already handled above)
+                              AND v_connection_count > 0              --   (isolated already handled above)
+                              AND NOT v_is_bridge)                    --   keep short bridges (both ends connect)
         );
 
         IF v_should_delete THEN
