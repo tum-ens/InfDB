@@ -40,11 +40,11 @@ INSERT INTO temp_bld2ts (
     dist
 )
 SELECT
-    bld.objectid AS bld_objectid,
+    bld.building_objectid AS bld_objectid,
     ts.id        AS ts_metadata_id,
     ts.name      AS ts_metadata_name,
     ts.dist
-FROM {input_schema}.building_view bld
+FROM temp_building_footprint bld   -- footprint/centroid from ground surfaces (04); already scoped to {ags}
 CROSS JOIN LATERAL (
     SELECT
         m.id,
@@ -54,7 +54,6 @@ CROSS JOIN LATERAL (
     ORDER BY dist
     LIMIT 1
 ) ts
-WHERE bld.gemeindeschluessel = '{ags}'
 ON CONFLICT (bld_objectid,ts_metadata_name)
 DO UPDATE
 SET
@@ -66,7 +65,6 @@ SET
 
 UPDATE temp_bld2ts
 SET geom = ST_ShortestLine(bld.centroid, ts.geom_transformed)
-FROM {input_schema}.building_view bld, temp_ts_nodes ts
-WHERE bld.gemeindeschluessel = '{ags}'
-  AND temp_bld2ts.ts_metadata_id = ts.id
-  AND temp_bld2ts.bld_objectid = bld.objectid;
+FROM temp_building_footprint bld, temp_ts_nodes ts
+WHERE temp_bld2ts.ts_metadata_id = ts.id
+  AND temp_bld2ts.bld_objectid = bld.building_objectid;

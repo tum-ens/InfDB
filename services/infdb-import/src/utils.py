@@ -974,178 +974,48 @@ def get_clip_geometries_per_scope(target_crs: int, infdb: InfDB):
     return results
 
 
-def create_building_lod2_table(object_id_prefix: str, infdb: InfDB) -> None:
-    """
-    Creates the flat building_lod2 table for the specified object_id_prefix
-    by filtering the source data based on AGS codes.
+def create_building_tables(infdb: InfDB) -> None:
+    """Creates {schema}.building_view and {schema}.building_surface directly from
+    citydb using the fortiss method.
 
-    :param object_id_prefix: Object ID prefix (e.g., "DEBY" for Bavaria, "DENW" for North Rhine-Westphalia, "DEBW" for Baden-Württemberg)
-    :type object_id_prefix: str
-    :param infdb: instance of InfDB for database access and logging
-    :type infdb: InfDB
-    """
-    log = infdb.get_worker_logger()
-
-    # DE means "run all supported region-specific implementations"
-    if object_id_prefix == "DE":
-        create_building_lod2_table("DEBY", infdb)
-        create_building_lod2_table("DENW", infdb)
-        create_building_lod2_table("DEBW", infdb)
-        return
-
-    match object_id_prefix:
-        case "DEBY":
-            ags_id = "09"
-        case "DENW":
-            ags_id = "05"
-        case "DEBW":
-            ags_id = "08"
-        case _:
-            log.error(f"Region {object_id_prefix} not supported for building_lod2.sql")
-            sys.exit(1)
-
-    ags_list = fetch_scope_ags_from_db(infdb)
-    ags_filtered = [s for s in ags_list if s.startswith(ags_id)]
-
-    if ags_filtered:
-
-        def fmt(lst):
-            return ",".join(f"'{s}'" for s in lst)
-
-        table_name = (
-            infdb.get_config_value(
-                [infdb.get_toolname(), "sources", "lod2", "table_name"]
-            )
-            + "_lod2"
-        )
-
-        TEMP_OUTPUT_SCHEMA = "tmp_bld"
-        TEMP_TABLE_NAME = f"{table_name}_{object_id_prefix.lower()}"
-
-        try:
-            with infdb.connect() as db:
-                # # Create central building table
-                # db.execute_sql_file(
-                #     "sql/create_building_table.sql", {"output_schema": output_schema, "table_name": table_name}
-                # )
-                # log.info(f"Created central building_lod2: {output_schema}.{table_name}")
-
-                # Create building table for the region
-                log.info(f"building_lod2: starting {TEMP_OUTPUT_SCHEMA}.{TEMP_TABLE_NAME} ({ags_id}...)")
-                db.execute_sql_file(
-                    "sql/bld.sql",
-                    {
-                        "output_schema": TEMP_OUTPUT_SCHEMA,
-                        "table_name": TEMP_TABLE_NAME,
-                        "ags": fmt(ags_filtered),
-                        "ags_id": ags_id,
-                        "object_id_prefix": object_id_prefix,
-                    },
-                )
-                log.info(f"{TEMP_OUTPUT_SCHEMA}.{TEMP_TABLE_NAME} completed")
-
-        except Exception:
-            infdb.get_logger().exception(f"{TEMP_OUTPUT_SCHEMA}.{TEMP_TABLE_NAME} failed")
-
-
-def create_building_surface_table(infdb: InfDB) -> None:
-    """
-    Creates the flat building_lod2 table for the specified object_id_prefix
-    by filtering the source data based on AGS codes.
-
-    :param object_id_prefix: Object ID prefix (e.g., "DEBY" for Bavaria, "DENW" for North Rhine-Westphalia)
-    :type object_id_prefix: str
-    :param infdb: instance of InfDB for database access and logging
-    :type infdb: InfDB
+    Steps:
+    - Build per-attribute helper tables (one row per feature_id) in the helper
+      schema (building_helpers.sql).
+    - building_view: one row per building (or per 902 part), attributes +
+      lod2Solid geometry (building_view.sql). No residential/scope filter — the
+      table holds ALL buildings; residential selection happens downstream.
+    - building_surface: classified surfaces (709/710/712) linked via the
+      boundary FK, including 902 parts (building_surface.sql). gemeindeschluessel
+      is attached in the same CREATE via a helper join (no post-hoc UPDATE).
     """
     log = infdb.get_worker_logger()
 
-    OUTPUT_SCHEMA = infdb.get_config_value([infdb.get_toolname(), "sources", "lod2", "schema"])
-    table_name = infdb.get_config_value(
-        [infdb.get_toolname(), "sources", "lod2", "table_name"]
-    )
-    TABLE_NAME = table_name + "_surface"
+    output_schema = infdb.get_config_value([infdb.get_toolname(), "sources", "lod2", "schema"])
+    helper_schema = "building_helpers"
 
     try:
         with infdb.connect() as db:
-            # Create building surface table
-            log.info(f"building_surface: starting {OUTPUT_SCHEMA}.{TABLE_NAME}")
+            log.info(f"building tables: building helper tables in schema '{helper_schema}'...")
             db.execute_sql_file(
-                "sql/sur_ids.sql",
-                {
-                    "output_schema": OUTPUT_SCHEMA,
-                    "table_name": TABLE_NAME,
-                    "bld_table_name": table_name,
-                    "object_id_prefix": "replace-me",
-                },
+                "sql/building_helpers.sql",
+                {"helper_schema": helper_schema},
             )
-            db.execute_sql_file(
-                "sql/sur_table.sql",
-                {
-                    "output_schema": OUTPUT_SCHEMA,
-                    "table_name": TABLE_NAME,
-                    "bld_table_name": table_name,
-                    "object_id_prefix": "replace-me",
-                },
-            )
-            log.info(f"{OUTPUT_SCHEMA}.{TABLE_NAME} completed")
 
+            log.info(f"building tables: creating {output_schema}.building_view...")
+            db.execute_sql_file(
+                "sql/building_view.sql",
+                {"output_schema": output_schema, "helper_schema": helper_schema},
+            )
+            log.info(f"{output_schema}.building_view completed")
+
+            log.info(f"building tables: creating {output_schema}.building_surface...")
+            db.execute_sql_file(
+                "sql/building_surface.sql",
+                {"output_schema": output_schema, "helper_schema": helper_schema},
+            )
+            log.info(f"{output_schema}.building_surface completed")
     except Exception:
-        infdb.get_logger().exception(f"{OUTPUT_SCHEMA}.{TABLE_NAME} failed")
-
-
-def create_table_building(infdb: InfDB) -> None:
-
-    log = infdb.get_worker_logger()
-
-    output_schema = infdb.get_config_value([infdb.get_toolname(), "sources", "lod2", "schema"])
-    table_name = (
-        infdb.get_config_value(
-            [infdb.get_toolname(), "sources", "lod2", "table_name"]
-        )
-        + "_lod2"
-    )
-
-    log.info("Creating building table and indexes...")
-
-    with infdb.connect() as db:
-        # Create indexes on shared citydb tables BEFORE parallel processing
-        log.info("Creating indexes on citydb.geometry_data and feature...")
-        db.execute_query("""
-            CREATE INDEX IF NOT EXISTS geometry_data_geometry_properties_index 
-            ON citydb.geometry_data USING gin (geometry_properties);
-        """)
-        db.execute_query("""
-            CREATE INDEX IF NOT EXISTS idx_feature_objectclass 
-            ON feature(objectclass_id);
-        """)
-        db.execute_query("""
-            CREATE INDEX IF NOT EXISTS idx_feature_objectid 
-            ON feature(objectid);
-        """)
-
-        # Create central building table
-        db.execute_sql_file("sql/create_building_table.sql", {"output_schema": output_schema, "table_name": table_name})
-
-def create_table_building_view(infdb: InfDB) -> None:
-
-    log = infdb.get_worker_logger()
-    output_schema = infdb.get_config_value([infdb.get_toolname(), "sources", "lod2", "schema"])
-    table_name = infdb.get_config_value(
-            [infdb.get_toolname(), "sources", "lod2", "table_name"]
-        )
-    with infdb.connect() as db:
-        # Create building surface table
-        log.info(f"building_surface: starting {output_schema}.{table_name}_view")
-        db.execute_sql_file(
-            "sql/bld_view.sql",
-            {
-                "output_schema": output_schema,
-                "bld_table_name": table_name,
-                "object_id_prefix": "replace-me",
-            },
-        )
-    log.info(f"{output_schema}.{table_name}_view completed")
+        infdb.get_logger().exception(f"{output_schema}.building_view / building_surface failed")
 
 # ============================== Shell helper ==============================
 

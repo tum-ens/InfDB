@@ -94,8 +94,6 @@ def main() -> None:
     # Ensure that administrative areas are loaded for scope
     bkg.load(infdb)
 
-    utils.create_table_building(infdb=infdb)
-
     # Launch data loading in parallel
     mp.freeze_support()
     processes: List[mp.Process] = []
@@ -134,11 +132,9 @@ def main() -> None:
         # Explicitly close the process to release resources
         process.close()
 
-    # Create building surface tables for BY and NRW
-    utils.create_building_surface_table(infdb=infdb)
-
-    # Create building view
-    utils.create_table_building_view(infdb=infdb)
+    # Create flat building tables (building_view + building_surface) directly
+    # from citydb using the fortiss method.
+    utils.create_building_tables(infdb=infdb)
 
     # Summarize successes and failures using stored results
     successful = [name for name, exitcode in process_results if exitcode == 0]

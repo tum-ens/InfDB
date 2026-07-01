@@ -21,11 +21,12 @@ SELECT
 FROM {input_schema}.grid_cells g
     JOIN {input_schema}.bkg_vg5000_gem bkg ON bkg.ags = '{ags}' AND ST_Intersects(g.geom, bkg.geom)
 WHERE EXISTS (
+    -- footprint/centroid come from the ground surfaces (built in 04); already
+    -- scoped to {ags}, geometry in the source SRID like the old building_view.
     SELECT 1
-    FROM {input_schema}.building_view b
+    FROM temp_building_footprint b
     WHERE g.geom && b.geom
       AND ST_Contains(g.geom, b.centroid)
-      AND b.gemeindeschluessel = '{ags}'
 );
 
 -- 100m building grid raster (write into temp table)
