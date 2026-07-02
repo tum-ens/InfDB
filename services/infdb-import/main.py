@@ -8,6 +8,7 @@ from src import (
     bkg,
     census2022,
     gebaeude_neuburg,
+    infdb_fdw_setup,
     kwp_nrw,
     kwp_nrw_oberhausen,
     lod2,
@@ -73,6 +74,16 @@ def main() -> None:
     # Download opendata package for development directly (original guard)
     # if utils.if_active("package", infdb):00
     #     package.load(infdb)
+
+    # Set up Foreign Data Wrapper (FDW) if active
+    if infdb_fdw_setup.is_active(infdb):
+        log.info("Setting up Foreign Data Wrapper (FDW)...")
+        try:
+            infdb_fdw_setup.setup_fdw(infdb)
+            log.info("FDW setup completed successfully")
+        except Exception as e:
+            log.error(f"FDW setup failed: {str(e)}")
+            raise
 
     # Drop schema "opendata" and "tmp_bld" for clean development runs
     log.info("Terminating other connections to avoid deadlocks during schema drop...")
