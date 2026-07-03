@@ -1,21 +1,29 @@
 import os
 import sys
+import shutil
 from typing import Sequence
+from urllib.request import Request, urlopen
 
 from pyinfdb import InfDB
 
 from . import utils
 
 
+def _download_file(url: str, file_path: str) -> None:
+    request = Request(url, headers={"User-Agent": "Mozilla/5.0"})
+    with urlopen(request) as response, open(file_path, "wb") as out_file:
+        shutil.copyfileobj(response, out_file)
+
+
 def load(infdb: InfDB) -> bool:
-    """Downloads PLZ dataset (if active), ensures schema, and imports configured layers.
+    """Downloads PLZ dataset from ArcGIS Hub, ensures schema, and imports configured layers.
 
     Behavior preserved:
     - Early exit (True) when feature flag `plz` is inactive.
     - Skips download when the target file already exists.
     - Ensures schema via InfdbClient and imports layers with configured prefix.
     """
-    file_path: str | None = None  # for safe logging if errors occur before assignment
+    file_path: str | None = None
     try:
         log = infdb.get_worker_logger()
         if not utils.if_active("plz", infdb):
@@ -26,22 +34,7 @@ def load(infdb: InfDB) -> bool:
         os.makedirs(base_path, exist_ok=True)
 
         url: str = infdb.get_config_value([infdb.get_toolname(), "sources", "plz", "url"])
-        log.debug("url=%s", url)
-
-        # Get auth flag (defaults to False if not present)
-        try:
-            protocol = infdb.get_config_value([infdb.get_toolname(), "sources", "plz", "protocol"])
-        except Exception:
-            protocol = "http"
-
-        # Get credentials if auth is enabled
-        username = None
-        access_token = None
-        if protocol == "webdav":
-            username = infdb.get_config_value([infdb.get_toolname(), "sources", "plz", "username"])
-            access_token = infdb.get_config_value([infdb.get_toolname(), "sources", "plz", "access_token"])
-
-        filename, *_ = utils.get_file_from_url(url)
+        filename: str = infdb.get_config_value([infdb.get_toolname(), "sources", "plz", "filename"])
 
         file_path = os.path.join(base_path, filename)
         log.debug("Downloading PLZ data from %s to %s", url, file_path)
@@ -50,11 +43,10 @@ def load(infdb: InfDB) -> bool:
             log.info("File %s already exists.", file_path)
         else:
             log.info("File %s will be downloaded from %s", file_path, url)
-            utils.download_files(url, base_path, infdb, protocol, username=username, access_token=access_token)
+            _download_file(url, file_path)
 
         schema: str = infdb.get_config_value([infdb.get_toolname(), "sources", "plz", "schema"])
 
-        # Ensure schema exists using InfdbClient
         with infdb.connect() as db:
             db.execute_query(f"CREATE SCHEMA IF NOT EXISTS {schema};")
 
