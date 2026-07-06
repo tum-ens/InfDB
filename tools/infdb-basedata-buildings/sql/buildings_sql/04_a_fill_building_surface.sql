@@ -34,15 +34,16 @@ WITH scoped AS (
     WHERE bs.gemeindeschluessel = '{ags}'
 ),
 -- Vertices of the surfaces that still need a computed area (no direct Flaeche),
--- paired with their successor around the ring (ring-then-vertex order so holed
--- polygons are traversed correctly).
+-- each paired with its successor in vertex order. Ordering by the full dp.path
+-- (polygon, ring, vertex) keeps the vertices sequential for the MultiPolygon
+-- geometry, which the Newell normal below relies on.
 edges AS (
     SELECT
         s.surface_gmlid,
         dp.geom AS pg,
         LEAD(dp.geom) OVER (
             PARTITION BY s.surface_gmlid
-            ORDER BY dp.path[1], dp.path[2]
+            ORDER BY dp.path
         ) AS npt
     FROM scoped s
     CROSS JOIN LATERAL ST_DumpPoints(s.geometry) AS dp
