@@ -8,6 +8,7 @@
 | Category | Badges |
 |----------|--------|
 | License | [![License](https://img.shields.io/badge/license-Apache%202-blue)](LICENSE) |
+| Publication | [![JOSS](https://joss.theoj.org/papers/10.21105/joss.10458/status.svg)](https://doi.org/10.21105/joss.10458) |
 | Documentation | [![Documentation](https://img.shields.io/badge/docs-available-brightgreen)](https://tum-ens.github.io/InfDB) |
 | Community | [![Contributing](https://img.shields.io/badge/contributions-welcome-brightgreen)](https://tum-ens.github.io/InfDB/development) [![Contributors](https://img.shields.io/badge/contributors-0-orange)](#) [![Repo Count](https://img.shields.io/badge/repo-count-brightgreen)](#) |
 
@@ -156,8 +157,14 @@ The changelog is maintained in the [CHANGELOG.md](CHANGELOG.md) file. It lists a
 # License and Citation
 
 The code of this repository is licensed under the **Apache 2.0 License**.  
-See [LICENSE](LICENSE) for rights and obligations. See [Citation](docs/mkdocs/docs/welcome/citation.md) for citation of this repository.  
+See [LICENSE](LICENSE) for rights and obligations.  
 Copyright: [TU Munich - ENS](https://www.epe.ed.tum.de/en/ens/homepage/) | [Apache 2.0 License](LICENSE)
+
+If you use InfDB in your work, please cite the paper published in the *Journal of Open Source Software*:
+
+> Buchenberg et al., (2026). InfDB: An Open Source Energy and Infrastructure Data Ecosystem for Modeling and Planning. *Journal of Open Source Software*, 11(122), 10458, https://doi.org/10.21105/joss.10458
+
+See [Citation](docs/mkdocs/docs/welcome/citation.md) for the BibTeX entry and for citing a specific software version.
 
 # Contact
 Patrick Buchenberg
