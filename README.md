@@ -2,15 +2,15 @@
    <img src="docs/mkdocs/docs/assets/img/logo_infdb.png" alt="Repo logo" width="100"/>
 </p>
 
-# InfDB - Energy and Infrastructure Database
-**InfDB - Energy and Infrastructure Database** provides a modular and easy-to-configure open-source data and tool infrastructure. It is equipped with essential services, designed to minimize the effort required for data management. We follow a platform-independent containerized approach that streamlines collaboration in energy modeling and analysis, empowering the growth of an ecosystem by offering standardized interfaces and APIs, and by allowing users to dedicate their focus to generating insights rather than handling data logistics.
+# InfDB - Energy and Infrastructure Database Ecosystem
+**InfDB - Energy and Infrastructure Database Ecosystem** provides a modular and easy-to-configure open-source data and tool infrastructure. It is equipped with essential services, designed to minimize the effort required for data management. We follow a platform-independent containerized approach that streamlines collaboration in energy modeling and analysis, empowering the growth of an ecosystem by offering standardized interfaces and APIs, and by allowing users to dedicate their focus to generating insights rather than handling data logistics.
 
 | Category | Badges |
 |----------|--------|
 | License | [![License](https://img.shields.io/badge/license-Apache%202-blue)](LICENSE) |
 | Publication | [![JOSS](https://joss.theoj.org/papers/10.21105/joss.10458/status.svg)](https://doi.org/10.21105/joss.10458) |
 | Documentation | [![Documentation](https://img.shields.io/badge/docs-available-brightgreen)](https://tum-ens.github.io/InfDB) |
-| Community | [![Contributing](https://img.shields.io/badge/contributions-welcome-brightgreen)](https://tum-ens.github.io/InfDB/development) [![Contributors](https://img.shields.io/badge/contributors-0-orange)](#) [![Repo Count](https://img.shields.io/badge/repo-count-brightgreen)](#) |
+| Community | [![Contributing](https://img.shields.io/badge/contributions-welcome-brightgreen)](https://tum-ens.github.io/InfDB/development) [![Contributors](https://img.shields.io/github/contributors/tum-ens/InfDB)](https://github.com/tum-ens/InfDB/graphs/contributors) [![Last Commit](https://img.shields.io/github/last-commit/tum-ens/InfDB)](https://github.com/tum-ens/InfDB/commits/) |
 
 ## Table of Contents
 
@@ -48,9 +48,9 @@ Tools are software that interact with InfDB and process data through standardize
 More information, a list of integrated tools and additional information, see [Tools](https://tum-ens.github.io/InfDB/tools/).
 
 ## Getting Started
-If you want to use the InfDB with the default settings just use the [Quick Start](#Quick-Start) below. For more information in detail read the [Usage Guide](https://tum-ens.github.io/InfDB/usage/) of the official documentation.
+If you want to use the InfDB with the default settings just use the [Quick Start](#quick-start) below. For more information in detail read the [Usage Guide](https://tum-ens.github.io/InfDB/usage/) of the official documentation.
 
-### Prequisites
+### Prerequisites
  - Docker Engine: https://docs.docker.com/engine/install/
  - Docker Desktop: https://docs.docker.com/desktop/
 
@@ -150,9 +150,9 @@ SELECT * FROM linear_heat_density.linear_heat_density LIMIT 10;
 
 You can also use pgAdmin or any other database client to connect to the database using the credentials and port specified in the configuration.
 
-<!-- # Changelog
+# Changelog
 
-The changelog is maintained in the [CHANGELOG.md](CHANGELOG.md) file. It lists all changes made to the repository. Follow instructions there to document any updates. -->
+The changelog is maintained in the [CHANGELOG.md](CHANGELOG.md) file. It lists all changes made to the repository. Follow instructions there to document any updates.
 
 # License and Citation
 

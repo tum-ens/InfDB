@@ -1,11 +1,20 @@
 [project]
 name = "infdb-workspace"
-version = "4.0.0"
-description = "Infrastructure and Energy Database"
+version = "4.1.4"
+description = "InfDB - Energy and Infrastructure Database Ecosystem"
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
 authors = [
   { name = "Patrick Buchenberg", email = "patrick.buchenberg@tum.de" }
 ]
 requires-python = "==3.12.*"
+
+[project.urls]
+Homepage = "https://github.com/tum-ens/InfDB"
+Documentation = "https://tum-ens.github.io/InfDB"
+Issues = "https://github.com/tum-ens/InfDB/issues"
+Paper = "https://doi.org/10.21105/joss.10458"
 
 dependencies = [
     "pyinfdb",

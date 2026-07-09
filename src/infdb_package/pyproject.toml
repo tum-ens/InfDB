@@ -3,15 +3,16 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "pyinfdb"
+name = "PyInfDB"
 version = "0.1.0"
 authors = [
   { name="Patrick Buchenberg", email="patrick.buchenberg@tum.de" },
 ]
-description = "InfDB wrapper for python"
+description = "Python API for InfDB - Energy and Infrastructure Database Ecosystem"
 readme = "README.md"
+keywords = ["infrastructure", "energy", "database", "data handling"]
 requires-python = ">=3.9"
-license = "MIT"
+license = "Apache-2.0"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
@@ -34,10 +35,7 @@ dependencies = [
 [tool.hatch.build.targets.wheel]
 packages = ["pyinfdb"]
 
-keywords = ["infrastructure", "energy", "database", "data handling"]
-
-
 [project.urls]
 Homepage = "https://github.com/tum-ens/InfDB"
 Issues = "https://github.com/tum-ens/InfDB/issues"
-"Documentation" = "https://infdb.readthedocs.io"
+"Documentation" = "https://tum-ens.github.io/InfDB"
