@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Dict, List
 
 import geopandas as gpd
-from infdb import InfDB
+from pyinfdb import InfDB
 from sqlalchemy import text
 from shapely import wkt as shapely_wkt
 

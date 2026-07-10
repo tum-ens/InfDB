@@ -5,7 +5,7 @@ Handles InfDB initialization, database connection, logging, and demo execution.
 
 # Import packages
 import src.infdb_metadata as infdb_metadata
-from infdb import InfDB
+from pyinfdb import InfDB
 
 
 def main():

@@ -1,7 +1,7 @@
 import multiprocessing as mp
 from typing import Callable, List
 
-from infdb import InfDB
+from pyinfdb import InfDB
 
 from src import (
     basemap,

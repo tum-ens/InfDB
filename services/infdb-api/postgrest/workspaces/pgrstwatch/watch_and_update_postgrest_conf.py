@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from typing import Iterable
 
 import psycopg
-from infdb import InfDB
+from pyinfdb import InfDB
 import utils
 from psycopg import Connection
 from psycopg.rows import dict_row

@@ -6,4 +6,6 @@ Pull requests (PRs) are always welcome, but making a PR is just the start. Pleas
 
 For more, please read https://tum-ens.github.io/InfDB/development/
 
+To report a security vulnerability, please do **not** open a public issue — follow the instructions in [SECURITY.md](SECURITY.md) instead.
+
 Thank you for contributing, and happy coding!

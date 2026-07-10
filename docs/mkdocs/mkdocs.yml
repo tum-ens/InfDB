@@ -105,9 +105,10 @@ nav:
       - Architecture: tools/infdb-basedata-buildings/architecture.md
       - Data Pipeline: tools/infdb-basedata-buildings/data-pipeline.md
     - pylovo-generation: tools/pylovo-generation.md
-  - Linear Heat Density: 
+  - Linear Heat Density:
     - Introduction: linear-heat-density/index.md
-    - Tools:
+    - Toolchain:
+      - linear-heat-density/tools/index.md
       - infdb-basedata: linear-heat-density/tools/infdb-basedata.md
       - ro-heat: linear-heat-density/tools/ro-heat.md
       - process-streets: linear-heat-density/tools/process-streets.md

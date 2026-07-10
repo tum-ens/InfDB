@@ -27,6 +27,11 @@ BEGIN
         FROM ways_tem
         WHERE ST_GeometryType(geom) = 'ST_LineString'  -- restrict to LINESTRING geometries
     LOOP
+        -- Skip the already processed ways during the segmenting
+        IF NOT EXISTS (SELECT 1 FROM ways_tem WHERE id = way.id) THEN
+            CONTINUE;
+        END IF;
+
         -- Find one intersecting LINESTRING that intersects the interior of the current way
         -- ST_LineSubstring(0.01, 0.99) excludes endpoints to avoid endpoint-touch intersections
         SELECT geom, klasse, ags, id

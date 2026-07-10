@@ -1,20 +1,5 @@
 # InfDB-basedata-ways
-The tool `infDB-basedata-ways` processes ways-related data as fundamental data basis for various applications and analyses.
-
-<!-- ## Contents
-- Objective (Scope, Motivation)
-- Architecture (Design, Implementation)
-    - Structure (Project/Code)
-    - Data Pipeline
-    - Code (Classes and Functions)
-    - Dependencies
-- Usage (Quick Start, Requirements, Configuration) -->
-
-## Structure
-The `pyinfdb` package consists of a superior class InfDB based on the internal classes InDBConfig, InfDBClient, InfDBLogger and InfDBIO as shown in the following figure:
-![alt text](demo-figure.png)
-The user only interacts with the superior InfDB class, the internal classes are not directly accessible. This abstraction ensures the python interface is consistent despite changes in the internal structure of the package.
-It provides functions for database access, configuration management, logging and data handling. The central idea is to provide standard methods to interact with InfDB in order to simplify the interaction with InfDB.
+The `basedata-ways` tool processes raw street network data to generate a structured dataset of way segments with associated attributes. The tool performs data cleaning, topology correction, segment generation, and attribute enrichment. The processing is executed through Python-based orchestration and SQL-based transformation steps within InfDB.
 
 ## Usage
 Details on how to use the tool can be found in the [Usage](usage.md) section.

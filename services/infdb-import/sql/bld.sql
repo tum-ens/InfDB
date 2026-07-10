@@ -45,7 +45,7 @@ WITH base_buildings AS (
     GROUP BY f.id, f.objectclass_id, f.objectid
     HAVING MAX(CASE WHEN p.name = 'function' THEN p.val_string END) >= '31001_'
     AND MAX(CASE WHEN p.name = 'function' THEN p.val_string END) < '31002'
-    -- AND MAX(CASE WHEN p.name = 'Gemeindeschluessel' THEN p.val_string END) IN ({ags})
+    AND MAX(CASE WHEN p.name = 'Gemeindeschluessel' THEN p.val_string END) IN ({ags})
 )
 SELECT
     bb.ags_id,

@@ -6,7 +6,25 @@ icon: material/file-code
 
 The configuration for the opendata import is done via a YAML file (default: `configs/config-infdb-import.yml`) due to its complexity.
 
-For detailed configuration options of the **infdb-import**, refer to the [Services > infdb-import](../../infdb/services/infdb-import.md) documentation.
+For detailed configuration options of the **infdb-import**, refer to the [Services > infdb-import](../services/infdb-import.md) documentation.
+
+When editing the YAML file, keep the following in mind:
+
+- The top-level key `infdb-import` groups all settings for one import instance.
+- Use `status: active` to enable a source or dataset, and `status: not-active` to keep it disabled.
+- Paths may contain placeholders such as `{infdb-import/path/opendata}` or `{infdb-import/name}`; these are resolved by the importer at runtime.
+- `None` values in the database connection section are replaced automatically from the central `config-infdb.yml` file.
+- If you want to connect to a remote database, set the PostgreSQL host, port, user, password, database, and EPSG explicitly.
+- Many sources contain nested sections such as `path`, `datasets`, `layer`, or `types`; only configure the sections that are relevant for the source you want to import.
+- URLs, file names, and layer names must match the structure of the upstream data exactly, otherwise the import will fail.
+
+In practice, a typical configuration flow is:
+
+1. Choose the sources and datasets you need.
+2. Set the instance name and scope to limit the import area.
+3. Define local directories for raw, processed, and temporary files.
+4. Configure database access, either via the central configuration or directly in this file.
+5. Enable the required datasets and adjust source-specific options like resolution, layers, or file templates.
 
 Below is an exemplary excerpt of the `config-infdb-import.yml` file:
 
@@ -23,12 +41,18 @@ Below is an exemplary excerpt of the `config-infdb-import.yml` file:
 #   connection parameters (user, password, db, host, exposed_port, epsg)
 #
 infdb-import:
-    name: "oberh_neub_sonth"  # Name of the infdb-import instance
+    name: "oberh-neub-sonth" #"forchheim"  # Name of the infdb-import instance
     scope:  # AGS (Amtlicher Gemeindeschlüssel)
-        # - "09162000"  # Munich
-        - "09780139"  # Sonthofen
+        # - "09162000"  # Munich (BY)
+        # - "09780139"  # Sonthofen (BY)
+        - "05119000" # Oberhausen (NRW)
+        # - "05117000" # Dümpten (NRW)
+        # - "05158012" # Heiligenhausen (NRW)
+        - "09185149" # Neuburg a. d. Donau (BY)
+        # - "09%" # Bavaria (BY)
+        # - "05%" # North Rhine-Westphalia (NRW)
     multiproccesing: 
-        status: not-active
+        status: active
         max_cores: 2    # max cores since of memory limitations to 2
     config-infdb: "config-infdb.yml" # only filename - change path in ".env" file "CONFIG_INFDB_PATH"
     path:
@@ -46,12 +70,188 @@ infdb-import:
             exposed_port: None
             epsg: None # 3035 (Europe)
         webdav:
-            username: infdb
-            access_token: "letdown subscribe lily catchable landmine sphinx"
+            username: need
+            access_token: "moal taunt tricycle uncrown barista testing"
     sources:
-        # Service configuration examples...
+        package:
+            status: not-active
+            url: http://ds1.need.energy:8123/opendata-neuburg-demo.zip
+            path:
+                base: "{infdb-import/path/base}"
+                processed: "{infdb-import/path/opendata}"
+        need:
+            status: not-active
+            host: "ds1.need.energy"
+            database: need
+            port: 5431
+            user: postgres
+            password: postgres
+            schema_input: need
+            path_dump: "{infdb-import/path/opendata}/need/"
+
+        opendata_bavaria:
+            status: active
+            schema: opendata
+            prefix: bavaria
+            path: 
+                base: "{infdb-import/path/opendata}/opendata_bavaria"
+            datasets:
+                gelaendemodell_1m:
+                    status: not-active
+                    name: Geländemodell Bayern 1m
+                    table_name: gelaendemodell_1m
+                    target_resolution: 10.0
+                    srid: 25832
+                    
+                    state_prefix: "09"
+                    base_url: "https://download2.bayernwolke.de/a/dgm/dgm1/"
+                    tile_size_m: 1000
+                    filename_template: "{e_km}_{n_km}.tif"
+                tatsaechliche_nutzung:
+                    status: not-active
+                    name: Tatsächliche Nutzung (TN) 
+                    table_name: tatsaechliche_nutzung
+                    url: "https://geodaten.bayern.de/odd/m/3/daten/tn/Nutzung_kreis.gpkg"
+        lod2:
+            status: active
+            import-mode: skip
+            object_id_prefix: "DE"
+            table_name: building
+            schema: opendata
+            path:
+                lod2: "{infdb-import/path/opendata}/lod2/"
+                gml: "{infdb-import/path/opendata}/lod2/citygml"
+
+            nrw:
+                status: active
+                state_prefix: "05"
+                base_url: "https://www.opengeodata.nrw.de/produkte/geobasis/3dg/lod2_gml/lod2_gml/"
+                tile_size_m: 1000
+                filename_template: "LoD2_32_{e_km}_{n_km}_1_NW.gml"
+
+            bavaria:
+                status: active
+                state_prefix: "09"
+                base_url: "https://download1.bayernwolke.de/a/lod2/citygml/"
+                tile_size_m: 2000
+                filename_template: "{e_km}_{n_km}.gml"
+
+        bkg:
+            status: active
+            path:
+                base: "{infdb-import/path/opendata}/bkg/"
+                zip: "{infdb-import/sources/bkg/path/base}/zip/"
+                unzip: "{infdb-import/sources/bkg/path/base}/unzip/"
+                processed: "{infdb-import/path/processed}/bkg/"
+            prefix: bkg
+            schema: opendata
+            vg5000:
+                url: "https://daten.gdz.bkg.bund.de/produkte/vg/vg5000_1231/aktuell/vg5000_12-31.utm32s.gpkg.ebenen.zip"
+                layer:
+                    - "vg5000_gem"
+                    - "vg5000_krs"
+                    - "vg5000_lan"
+                    - "vg5000_li"
+                    - "vg5000_rbz"
+                    - "vg5000_sta"
+                    - "vg5000_vwg"
+            nuts:
+                url: "https://daten.gdz.bkg.bund.de/produkte/vg/nuts250_1231/aktuell/nuts250_12-31.utm32s.gpkg.zip"
+                layer:
+                    - "nuts250_n1"
+                    - "nuts250_n2"
+                    - "nuts250_n3"
+            geogitter:
+                table_name: grid_cells
+                resolutions:
+                     - 100m
+                     - 1km
+                     - 10km
+                     - 100km
+
+        basemap:
+            status: active
+            url: "https://basemap.de/dienste/opendata/basisviews/"
+            ending: ".gpkg"
+            filter:
+                - by # Bavaria
+                - nw # North Rhine-Westphalia
+            path:
+                base: "{infdb-import/path/opendata}/basemap/"
+                processed: "{infdb-import/path/processed}/basemap/"
+            schema: opendata
+            prefix: basemap
+            layer:
+                # - barrierenlinie
+                # - bauwerksflaeche
+                # - bauwerkslinie
+                # - bauwerkspunkt
+                # - besondere_flaeche
+                # - besondere_linie
+                # - besonderer_punkt
+                # - gewaesserflaeche
+                # - gewaesserlinie
+                # - gewaesserpunkt
+                # - grenze_flaeche
+                # - grenze_linie
+                # - grenze_punkt
+                # - historische_flaeche
+                # - historische_linie
+                # - historischer_punkt
+                # - name_flaeche
+                # - name_punkt
+                # - reliefflaeche
+                # - relieflinie
+                # - reliefpunkt
+                # - siedlungsflaeche
+                # - vegetationsflaeche
+                # - vegetationslinie
+                # - vegetationspunkt
+                # - verkehrsflaeche
+                - verkehrslinie
+                # - verkehrspunkt
+                # - versorgungslinie
+                # - versorgungspunkt
+                # - weitere_nutzung_flaeche
+        plz:
+            status: active 
+            url: "https://cloud.ocd.need.energy/remote.php/dav/spaces/1bb5c9f8-4002-4b43-a148-2489f970c921$6693aeaa-a1c3-4b08-8969-33ea8b9c6cc7/plz-5stellig.geojson"
+            protocol: webdav
+            username: "need"
+            access_token: "quake taunt tricycle uncrown barista drilling"
+            path:
+                base: "{infdb-import/path/opendata}/plz/"
+                processed: "{infdb-import/path/processed}/plz/"
+            schema: opendata
+            prefix: postcodes
+            layer:
+                - plz-5stellig
+        tabula:
+            status: active
+            url:
+                - "https://raw.githubusercontent.com/RWTH-EBC/TEASER/refs/heads/main/teaser/data/input/inputdata/TypeElements_TABULA_DE.json"
+                - "https://raw.githubusercontent.com/RWTH-EBC/TEASER/refs/heads/main/teaser/data/input/inputdata/MaterialTemplates.json"
+            path:
+                base: "{infdb-import/path/opendata}/tabula/"
+            schema: opendata
+            prefix: tabula
         zensus_2022:
             status: active
+            resolutions:
+                - 10km
+                - 1km
+                - 100m
+            years:
+                - 2022
+                # - 2011
+            path:
+                base: "{infdb-import/path/opendata}/zensus/"
+                zip: "{infdb-import/sources/zensus_2022/path/base}/zip/"
+                unzip: "{infdb-import/sources/zensus_2022/path/base}/unzip/"
+                processed: "{infdb-import/path/processed}/zensus_2022/"
+            url: "https://www.zensus2022.de/DE/Ergebnisse-des-Zensus/_inhalt.html"
+            schema: opendata
+            prefix: zensus
             save_local: not-active
             datasets:
                 - name: Bevoelkerungszahl
@@ -59,6 +259,541 @@ infdb-import:
                   table_name: bevoelkerungszahl
                   year: 2022
                   url: https://www.destatis.de/static/DE/zensus/gitterdaten/Zensus2022_Bevoelkerungszahl.zip
+                  types:
+                    einwohner: bigint
+
+                - name: Deutsche Staatsangehoerige 18+
+                  status: not-active
+                  table_name: deutsche_staatsangehoerige_18plus
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Deutsche_Staatsangehoerige_ab_18_Jahren.zip
+
+                - name: Auslaenderanteil
+                  status: not-active
+                  table_name: auslaenderanteil
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Auslaenderanteil_in_Gitterzellen.zip
+
+                - name: Auslaenderanteil 18+
+                  status: not-active
+                  table_name: auslaenderanteil_18plus
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Auslaenderanteil_ab_18_Jahren.zip
+
+                - name: Geburtsland Gruppen
+                  status: not-active
+                  table_name: geburtsland_gruppen
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Zensus2022_Geburtsland_Gruppen_in_Gitterzellen.zip
+
+                - name: Staatsangehoerigkeit
+                  status: not-active
+                  table_name: staatsangehoerigkeit
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Zensus2022_Staatsangehoerigkeit_in_Gitterzellen.zip
+
+                - name: Staatsangehoerigkeit Gruppen
+                  status: not-active
+                  table_name: staatsangehoerigkeit_gruppen
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Zensus2022_Staatsangehoerigkeit_Gruppen_in_Gitterzellen.zip
+
+                - name: Zahl der Staatsangehoerigkeiten
+                  status: not-active
+                  table_name: staatsangehoerigkeiten_zahl
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Zahl_der_Staatsangehoerigkeiten.zip
+
+                - name: Durchschnittsalter
+                  status: not-active
+                  table_name: durchschnittsalter
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Durchschnittsalter_in_Gitterzellen.zip
+
+                - name: Altersgruppen (5 Klassen)
+                  status: not-active
+                  table_name: altersgruppen_5klassen
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Alter_in_5_Altersklassen.zip
+
+                - name: Altersgruppen (10 Jahre)
+                  status: not-active
+                  table_name: altersgruppen_10jahre
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Alter_in_10er-Jahresgruppen.zip
+
+                - name: Anteil unter 18
+                  status: not-active
+                  table_name: anteil_unter18
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Anteil_unter_18-jaehrige_in_Gitterzellen.zip
+
+                - name: Anteil ab 65
+                  status: not-active
+                  table_name: anteil_ab65
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Anteil_ab_65-jaehrige_in_Gitterzellen.zip
+
+                - name: Altersgruppen Infrastruktur
+                  status: not-active
+                  table_name: altersgruppen_infrastruktur
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Alter_in_infrastrukturellen_Altersgruppen.zip
+
+                - name: Familienstand
+                  status: not-active
+                  table_name: familienstand
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Familienstand_in_Gitterzellen.zip
+
+                - name: Religion
+                  status: not-active
+                  table_name: religion
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Religion.zip
+
+                - name: Durchschnittliche Haushaltsgroesse
+                  status: active
+                  table_name: durchschn_haushaltsgroesse
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Durchschnittliche_Haushaltsgroesse_in_Gitterzellen.zip
+                  types:
+                    durchschnhhgroesse: double precision
+                    werterlaeuternde_zeichen: text
+
+                - name: Haushaltsgroesse
+                  status: not-active
+                  table_name: haushaltsgroesse
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Zensus2022_Groesse_des_privaten_Haushalts_in_Gitterzellen.zip
+
+                - name: Kernfamilie nach Kindern
+                  status: not-active
+                  table_name: kernfamilie_kinder
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Typ_der_Kernfamilie_nach_Kindern.zip
+
+                - name: Kernfamilie Groesse
+                  status: not-active
+                  table_name: kernfamilie_groesse
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Groesse_der_Kernfamilie.zip
+
+                - name: Privathaushalt Lebensform
+                  status: not-active
+                  table_name: privathaushalt_lebensform
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Typ_des_privaren_Haushalts_Lebensform.zip
+
+                - name: Privathaushalt Familie
+                  status: not-active
+                  table_name: privathaushalt_familien
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Typ_des_privaten_Haushalts_Familien.zip
+
+                - name: Seniorenstatus im Privathaushalt
+                  status: not-active
+                  table_name: seniorenstatus
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Seniorenstatus_eines_privaten_Haushalts.zip
+
+                - name: Nettokaltmiete
+                  status: not-active
+                  table_name: nettokaltmiete
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Zensus2022_Durchschn_Nettokaltmiete.zip
+
+                - name: Nettokaltmiete + Anzahl Wohnungen
+                  status: not-active
+                  table_name: nettokaltmiete_anzahl_wohnungen
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Durchschnittliche_Nettokaltmiete_und_Anzahl_der_Wohnungen.zip
+
+                - name: Eigentuemerquote
+                  status: active
+                  table_name: eigentuemerquote
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Eigentuemerquote_in_Gitterzellen.zip
+                  types:
+                    eigentuemerquote: double precision
+                    werterlaeuternde_zeichen: text
+
+                - name: Leerstandsquote
+                  status: not-active
+                  table_name: leerstandsquote
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Leerstandsquote_in_Gitterzellen.zip
+
+                - name: Marktaktive Leerstandsquote
+                  status: not-active
+                  table_name: leerstandsquote_marktaktiv
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Marktaktive_Leerstandsquote_in_Gitterzellen.zip
+
+                - name: Wohnflaeche je Bewohner
+                  status: not-active
+                  table_name: wohnflaeche_bewohner
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Durchschnittliche_Wohnflaeche_je_Bewohner_in_Gitterzellen.zip
+
+                - name: Flaeche je Wohnung
+                  status: active
+                  table_name: wohnflaeche_wohnung
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Durchschnittliche_Flaeche_je_Wohnung_in_Gitterzellen.zip
+                  types:
+                    durchschnflaechejewohn: double precision
+                    werterlaeuternde_zeichen: text
+
+
+                - name: Flaeche Wohnung 10m2 Intervalle
+                  status: not-active
+                  table_name: wohnflaeche_wohnung_intervalle
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Flaeche_der_Wohnung_10m2_Intervalle.zip
+
+                - name: Wohnungen nach Gebaeudetyp und Groesse
+                  status: not-active
+                  table_name: wohnungen_gebaeudetyp
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Wohnungen_nach_Gebaeudetyp_Groesse.zip
+
+                - name: Wohnungen nach Raeumen
+                  status: not-active
+                  table_name: wohnungen_raeume
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Wohnungen_nach_Zahl_der_Raeume.zip
+
+                - name: Gebaeude nach Baujahr (Jahrzehnte)
+                  status: not-active
+                  table_name: gebaeude_baujahr_jahrzehnte
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Gebaeude_nach_Baujahr_Jahrzehnte.zip
+
+                - name: Gebaeude nach Baujahr (Mikrozensus)
+                  status: active
+                  table_name: gebaeude_baujahr_mikrozensus
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Gebaeude_nach_Baujahr_in_Mikrozensus_Klassen.zip
+                  types:
+                    insgesamt_gebaeude: bigint
+                    vor1919: bigint
+                    a1919bis1948: bigint
+                    a1949bis1978: bigint
+                    a1979bis1990: bigint
+                    a1991bis2000: bigint
+                    a2001bis2010: bigint
+                    a2011bis2019: bigint
+                    a2020undspaeter: bigint
+
+                - name: Gebaeude nach Anzahl Wohnungen
+                  status: active
+                  table_name: gebaeude_anzahl_wohnungen
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Gebaeude_nach_Anzahl_der_Wohnungen_im_Gebaeude.zip
+                  types:
+                    insgesamt_gebaeude: bigint
+                    1_wohnung: bigint
+                    2_wohnungen: bigint
+                    3bis6_wohnungen: bigint
+                    7bis12_wohnungen: bigint
+                    13undmehr_wohnungen: bigint
+
+
+                - name: Gebaeude nach Typ und Groesse
+                  status: active
+                  table_name: gebaeude_typ_groesse
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Gebaeude_mit_Wohnraum_nach_Gebaeudetyp_Groesse.zip
+                  types:
+                    insgesamt_gebaeude: bigint
+                    freiefh: bigint
+                    efh_dhh: bigint
+                    efh_reihenhaus: bigint
+                    freist_zfh: bigint
+                    zfh_dhh: bigint
+                    zfh_reihenhaus: bigint
+                    mfh_3bis6wohnungen: bigint
+                    mfh_7bis12wohnungen: bigint
+                    mfh_13undmehrwohnungen: bigint
+                    anderergebaeudetyp: bigint
+
+
+                - name: Heizungsart
+                  status: active
+                  table_name: heizungsart
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Zensus2022_Heizungsart.zip
+                  types:
+                    insgesamt_heizungsart: bigint
+                    fernheizung: bigint
+                    etagenheizung: bigint
+                    blockheizung: bigint
+                    zentralheizung: bigint
+                    einzel_mehrraumoefen: bigint
+                    keine_heizung: bigint
+
+
+                - name: Heizungsart (ueberwiegend)
+                  status: active
+                  table_name: heizungsart_ueberwiegend
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Gebaeude_mit_Wohnraum_nach_ueberwiegender_Heizungsart.zip
+                  types:
+                    insgesamt_heizungsart: bigint
+                    fernheizung: bigint
+                    etagenheizung: bigint
+                    blockheizung: bigint
+                    zentralheizung: bigint
+                    einzel_mehrraumoefen: bigint
+                    keine_heizung: bigint
+
+
+                - name: Energietraeger
+                  status: active
+                  table_name: energietraeger
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Zensus2022_Energietraeger.zip
+                  types:
+                    insgesamt_energietraeger: bigint
+                    gas: bigint
+                    heizoel: bigint
+                    holz_holzpellets: bigint
+                    biomasse_biogas: bigint
+                    solar_geothermie_waermepumpen: bigint
+                    strom: bigint
+                    kohle: bigint
+                    fernwaerme: bigint
+                    kein_energietraeger: bigint
+
+
+                - name: Energietraeger der Heizung
+                  status: active
+                  table_name: energietraeger_heizung
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Gebaeude_mit_Wohnraum_nach_Energietraeger_der_Heizung.zip
+                  types:
+                    insgesamt_energietraeger: bigint
+                    gas: bigint
+                    heizoel: bigint
+                    holz_holzpellets: bigint
+                    biomasse_biogas: bigint
+                    solar_geothermie_waermepumpen: bigint
+                    strom: bigint
+                    kohle: bigint
+                    fernwaerme: bigint
+                    kein_energietraeger: bigint
+
+
+                - name: Auslaenderanteil EU/nichtEU
+                  status: not-active
+                  table_name: auslaenderanteil_eu_nichteu
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Auslaenderanteil_EU_nichtEU_Gitterzellen.zip
+
+                - name: Gebaeude nach Baujahresklassen
+                  status: not-active
+                  table_name: gebaeude_baujahresklassen
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Gebaeude_nach_Baujahresklassen_in_Gitterzellen.zip
+
+                - name: Shapefile Zensus 2022
+                  status: not-active
+                  table_name: shapefile_2022
+                  year: 2022
+                  url: https://www.destatis.de/static/DE/zensus/gitterdaten/Shapefile_Zensus2022.zip
+
+                - name: Bevoelkerung (100m Raster)
+                  status: not-active
+                  table_name: bevoelkerung_100m
+                  year: 2011
+                  url: http://www.destatis.de/static/DE/zensus/2011_gitterdaten/Download-Tabelle_Bevoelkerung_im_100_Meter-Gitter.zip
+
+                - name: Demographie (100m Raster)
+                  status: not-active
+                  table_name: demographie_100m
+                  year: 2011
+                  url: http://www.destatis.de/static/DE/zensus/2011_gitterdaten/Demographie_100_Meter-Gitter.zip
+
+                - name: Familien (100m Raster)
+                  status: not-active
+                  table_name: familien_100m
+                  year: 2011
+                  url: http://www.destatis.de/static/DE/zensus/2011_gitterdaten/Download-Tabelle_Familien_im_100_Meter-Gitter.zip
+
+                - name: Haushalte (100m Raster)
+                  status: not-active
+                  table_name: haushalte_100m
+                  year: 2011
+                  url: http://www.destatis.de/static/DE/zensus/2011_gitterdaten/Tabelle_Haushalt_im_100_Meter-Gitter.zip
+
+                - name: Wohnungen (100m Raster)
+                  status: not-active
+                  table_name: wohnungen_100m
+                  year: 2011
+                  url: http://www.destatis.de/static/DE/zensus/2011_gitterdaten/Wohnungen_im_100_Meter-Gitter.zip
+
+                - name: Gebaeude und Wohnungen (100m Raster)
+                  status: not-active
+                  table_name: gebaeude_wohnungen_100m
+                  year: 2011
+                  url: http://www.destatis.de/static/DE/zensus/2011_gitterdaten/Gebaeude_und_Wohnungen_im_100_Meter-Gitter.zip
+
+                - name: Klassierte Werte (1km Raster)
+                  status: not-active
+                  table_name: klassierte_werte_1km
+                  year: 2011
+                  url: http://www.destatis.de/static/DE/zensus/2011_gitterdaten/Tabelle_und_Datensatzbeschreibung_Klassierte_Werte_im_ein_Kilometer-Gitter.zip
+
+                - name: Spitze Werte (1km Raster)
+                  status: not-active
+                  table_name: spitze_werte_1km
+                  year: 2011
+                  url: http://www.destatis.de/static/DE/zensus/2011_gitterdaten/Tabelle_und_Datensatzbeschreibung_Spitze_Werte_im_ein_Kilometer-Gitter.zip
+
+                - name: Shapefile 1km Raster
+                  status: not-active
+                  table_name: shapefile_1km
+                  year: 2011
+                  url: http://www.destatis.de/static/DE/zensus/2011_gitterdaten/Shapefile_eines_ein_Kilometer-Gitters_fuer_Deutschland_INSPIRE_konform.zip
+
+                - name: Shapefile Zensus 2011
+                  status: not-active
+                  table_name: shapefile_2011
+                  year: 2011
+                  url: https://www.destatis.de/static/DE/zensus/2011_gitterdaten/Shapefile_Zensus2011.zip
+        openmeteo:
+          status: active
+          schema: opendata
+          prefix: openmeteo
+          path:
+              base: "{infdb-import/path/opendata}/openmeteo/"
+              processed: "{infdb-import/path/processed}/openmeteo/"
+          timing:
+              start_time: "2020-01-01"
+              end_time: "2024-12-31"
+              temporal: hourly  # options: hourly, daily
+          grid_resolution: 1km
+          data:
+              - temperature_2m
+              - wind_speed_10m
+              - precipitation
+        kwp-nrw:
+          status: not-active
+          schema: opendata
+          prefix: kwp_nrw
+          path:
+              base: "{infdb-import/path/opendata}/kwp-nrw/"
+              zip: "{infdb-import/sources/kwp-nrw/path/base}/zip/"
+              unzip: "{infdb-import/sources/kwp-nrw/path/base}/unzip/"
+              processed: "{infdb-import/path/processed}/kwp-nrw/"
+          datasets:
+              - name: Waermebedarf
+                status: active
+                table_name: waermebedarf
+                url: https://www.opengeodata.nrw.de/produkte/umwelt_klima/energie/kwp/KWP-NRW-Waermebedarf_EPSG25832_Geodatabase.zip
+                layer:
+                  - "Waermelinien"
+                  - "Raumwaermebedarf_ist"
+                  - "Gebaeude_Fortschreibung_moderat"
+                  - "Gebaeude_Fortschreibung_hoch"
+                  - "Gebaeude_Fortschreibung_erhoeht"
+              - name: Energietraeger
+                status: active
+                table_name: energietraeger
+                url: https://www.opengeodata.nrw.de/produkte/umwelt_klima/energie/kwp/KWP-NRW-Energietraeger-Sanierung-Baubloecke-Flure-NRW_EPSG25832_Geodatabase.zip
+                layer:
+                  - "Flur_Sanierung_Energietraeger_OpenData"
+                  - "Baublock_Sanierung_Energietraeger_OpenData"
+              - name: Waermelinien
+                status: active
+                table_name: waermelinien
+                url: https://www.opengeodata.nrw.de/produkte/umwelt_klima/energie/kwp/KWP-NRW-Waermelinien_EPSG25832_Geodatabase.zip
+                layer:
+                  - "Waermelinien"
+              - name: Tiefe Geothermie
+                status: active
+                table_name: geothermie_tief
+                url: https://www.opengeodata.nrw.de/produkte/umwelt_klima/energie/kwp/KWP-NRW-Potenzial_TG_Raster_EPSG25832_Geodatabase.zip
+                layer:
+                  - "MTG_TG_Raster_NRW"
+              - name: Oberflaechennahe Geothermie
+                status: active
+                table_name: geothermie_oberflaeche
+                url: https://www.opengeodata.nrw.de/produkte/umwelt_klima/energie/kwp/KWP-NRW-Potenzial_ONG_MTG_Baublock_EPSG25832_Geodatabase.zip
+                layer:
+                  - "Pot_ONG_MTG_NRW"
+              - name: Freiflaechen Solarthermie
+                status: active
+                table_name: solarthermie_freiflaeche
+                url: https://www.opengeodata.nrw.de/produkte/umwelt_klima/energie/kwp/KWP-NRW-Potenzial_FF_Solarthermie_Flur_EPSG25832_Geodatabase.zip
+                layer:
+                  - "FF_Solarthermie_Flur_NRW"
+        kwp-nrw-oberhausen:
+          status: not-active
+          url: https://www.opengeodata.nrw.de/produkte/umwelt_klima/energie/kwp/KWP-NRW_05119000_Oberhausen_EPSG25832_Shape.zip
+          schema: opendata
+          prefix: kwp_nrw_oberhausen
+          path:
+              base: "{infdb-import/path/opendata}/kwp-nrw-oberhausen/"
+              zip: "{infdb-import/sources/kwp-nrw-oberhausen/path/base}/"
+              unzip: "{infdb-import/sources/kwp-nrw-oberhausen/path/base}/unzip/"
+              processed: "{infdb-import/path/processed}/kwp-nrw-oberhausen/"
+          layer:
+            - "WBM-NRW_"
+            - "WBM-NRW-erhoeht"
+            - "WBM-NRW-hoch"
+            - "WBM-NRW-moderat"
+            - "WBM-NRW-Waermelinien"
+            - "Sanierung-Energietraeger-Flure"
+            - "Sanierung-Energietraeger-Baublock"
+            - "Potenzial-TG-Raster"
+            - "Potenzial-ONG-MTG-Baublock"
+            - "Potenzial-FF-Solarthermie-Flur"
+
+        gebaeude-neuburg:
+            status: not-active
+            url: "https://cloud.ocd.need.energy/remote.php/dav/spaces/1bb5c9f8-4002-4b43-a148-2489f970c921$5720d11a-72a9-4e88-abe1-3291e0711805/gebaeudedaten-neuburg.gpkg"
+            protocol: webdav
+            username: "need-intern"
+            path:
+                base: "{infdb-import/path/opendata}/gebaeude-neuburg/"
+                processed: "{infdb-import/path/processed}/gebaeude-neuburg/"
+            schema: need_intern
+            layer:
+                - "gebaeudedaten_neuburg"
+        waermeatlas-hessen-bensheim:
+            status: not-active
+            url: "https://cloud.ocd.need.energy/remote.php/dav/spaces/1bb5c9f8-4002-4b43-a148-2489f970c921$5720d11a-72a9-4e88-abe1-3291e0711805/BensheimWaermeatlasHessen.gpkg"
+            protocol: webdav
+            username: "need-intern"
+            path:
+                base: "{infdb-import/path/opendata}/waermeatlas-hessen-bensheim/"
+                processed: "{infdb-import/path/processed}/waermeatlas-hessen-bensheim/"
+            schema: need_intern
+            prefix: "waermeatlas_hessen_bensheim"
+            layer:
+                - "WAH_Punkte"
+                - "WAH_Strassenabschnitte"
+                - "WAH_Raster_1km"
+                - "WAH_Raster_100m"
+                - "WAH_Baubloecke"
+                - "Hausumringe"
+                - "Flurstuecke"
+        nrw-opencloud:
+            status: not-active
+            url: "https://cloud.ocd.need.energy/remote.php/dav/spaces/1bb5c9f8-4002-4b43-a148-2489f970c921$5720d11a-72a9-4e88-abe1-3291e0711805/Waermebedarf_NRW-allTables.gpkg"
+            protocol: webdav
+            # username: "need-intern"
+            # WEBDAV_NEED_INTERNAL_ACCESS_TOKEN: "estimator coconut scalding division scrunch explode"
+            path:
+                base: "{infdb-import/path/opendata}/nrw-opencloud/"
+                processed: "{infdb-import/path/processed}/nrw-opencloud/"
+            schema: need_intern
+            layer:
+                - "Waermelinien"
+                - "Raumwaermebedarf_ist"
+                - "Gebaeude_Fortschreibung_moderat"
+                - "Gebaeude_Fortschreibung_hoch"
+                - "Gebaeude_Fortschreibung_erhoeht"
 ```
-###REVIEW: Fix nomenclature loader vs importer in all files to avoid confusion here?###
-###REVIEW: I would suggest more generic region-independen names for the import docker...I dont see the advantage of changing this one every time parallel to the scopes, do you?###

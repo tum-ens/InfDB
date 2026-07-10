@@ -2,7 +2,7 @@ import os
 import time
 from typing import Any, Dict
 
-from infdb import InfDB
+from pyinfdb import InfDB
 
 
 def main() -> None:

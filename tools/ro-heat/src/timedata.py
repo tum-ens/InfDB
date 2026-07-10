@@ -4,7 +4,7 @@ import io
 import time
 
 import pandas as pd
-from infdb import InfDB
+from pyinfdb import InfDB
 from pandas import DataFrame
 from sqlalchemy import MetaData, Table
 from sqlalchemy.dialects.postgresql import insert as pg_insert

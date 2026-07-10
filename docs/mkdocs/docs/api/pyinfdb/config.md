@@ -1,1 +1,1 @@
-:::infdb_package.infdb.config.InfdbConfig
+:::infdb_package.pyinfdb.config.InfdbConfig

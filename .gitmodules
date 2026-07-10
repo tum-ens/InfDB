@@ -1,7 +1,6 @@
 [submodule "tools/pylovo-generation/src/pylovo"]
 	path = tools/pylovo-generation/src/pylovo
 	url = https://github.com/tum-ens/pylovo.git
-	branch = feature/flexible-configs
 [submodule "services/infdb-qwc"]
 	path = services/infdb-qwc
 	url = https://github.com/tum-ens/infDB-qwc.git

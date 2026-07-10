@@ -6,7 +6,7 @@ Handles InfDB initialization, database connection, logging, and demo execution.
 # Import packages
 import os
 
-from infdb import InfDB
+from pyinfdb import InfDB
 
 
 def main():

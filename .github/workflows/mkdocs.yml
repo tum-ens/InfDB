@@ -1,7 +1,13 @@
-name: mkdocs-deploy 
-on: [push]
+name: mkdocs-deploy
+on:
+  push:
+    branches: [main, develop]
+  workflow_dispatch:
 permissions:
   contents: write
+concurrency:
+  group: mkdocs-deploy
+  cancel-in-progress: true
 jobs:
   deploy:
     runs-on: ubuntu-latest

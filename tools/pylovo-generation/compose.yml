@@ -4,15 +4,17 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
-        stdin_open: true # Enable stdin for interactive input
-        tty: true # Allocate a pseudo-TTY
         env_file:
-            - ../../.env # Use root .env file with database credentials
-            - pylovo.env
+            - ../../.env          # root env (DB creds, etc.)
+            - env_pylovo_generation.env
         volumes:
             - ./configs:/app/configs
-            - ./src/pylovo:/app/mnt/pylovo
-            - ../../configs:/app/mnt/configs-infdb #:ro # for root *.yml configs
-            - ../../src/infdb_package:/app/mnt/infdb_package #
+            - ./src/pylovo:/app/src/pylovo
+            - ../../src/infdb_package:/app/mnt/infdb_package
         extra_hosts:
             - "host.docker.internal:host-gateway"
+        depends_on:
+            infdb-basedata-buildings:
+                condition: service_completed_successfully
+            infdb-basedata-ways:
+                condition: service_completed_successfully

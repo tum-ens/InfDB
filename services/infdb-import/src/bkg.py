@@ -2,7 +2,7 @@
 import os
 from typing import Sequence, Union
 
-from infdb import InfDB
+from pyinfdb import InfDB
 
 from . import utils
 

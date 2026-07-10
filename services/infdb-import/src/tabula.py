@@ -4,7 +4,7 @@ import sys
 from typing import Any, Dict, List
 
 import pandas as pd
-from infdb import InfDB
+from pyinfdb import InfDB
 from sqlalchemy import text
 
 from . import utils

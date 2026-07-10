@@ -3,7 +3,7 @@ import os
 import sys
 from typing import Any, Dict, List
 
-from infdb import InfDB
+from pyinfdb import InfDB
 
 from . import utils
 

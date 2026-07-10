@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import psycopg
 import yaml
-from infdb import InfDB
+from pyinfdb import InfDB
 # from infdb.utils import atomic_write_yaml, build_dsn_from_env, read_env
 import utils # import atomic_write_yaml, build_dsn_from_env, read_env
 from psycopg import sql

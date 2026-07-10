@@ -27,7 +27,7 @@ Mainly builds upon the following open data sources:
 
 ## Usage
 
-If you want to run the tool, first run the [basedata](infdb-basedata.md) and afterward execute:
+If you want to run the tool, first run the [basedata-buildings](infdb-basedata-buildings/index.md) and [basedata-ways](infdb-basedata-ways/index.md). Afterwards execute:
 ```bash
 bash tools/pylovo-generation/run.sh
 ```

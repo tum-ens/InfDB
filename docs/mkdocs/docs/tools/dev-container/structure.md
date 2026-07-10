@@ -25,6 +25,7 @@ tools/
 
 ### `main.py`
 Entry point that:
+
 - Initializes InfDB client (Sets up logging, database connections, etc.)
 - Executes your business logic
 
