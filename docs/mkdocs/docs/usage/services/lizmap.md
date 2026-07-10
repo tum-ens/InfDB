@@ -8,13 +8,13 @@ icon: material/map-search
 1. The infdb database is up and running. (db profile in infdb.sh)
 2. Lizmap web-instance is up and running. (lizmap profile in infdb.sh)
 
-# In order to host a map on the lizmap web-instance using infdb, we have prepared a guideline of the necessary steps for the :
+# In order to host a map on the lizmap web-instance using infdb, we have prepared a guideline of the necessary steps:
 1. Download QGIS Desktop LTR (Long-Term-Release) from https://www.qgis.org/download/. 
 2. In the QGIS Desktop app go into plugins and install the Lizmap plugin.
 3. Open the Lizmap plugin and connect to the web-instance using it's URL.
 4. Create a connection to infdb's PostgreSQL.
 5. Create and save your project with the .qgs file extension. 
-6. Open the Lizmap plugin and create the configuration file for the web-instance.
+6. Open the Lizmap plugin and create the confgiiguration file for the web-instance.
 7. Create a subfolder for your project in the services/infdb-lizmap/lizmap/instances
 8. Place both your .qgs project and the .qgs.cfg in the subfolder you created.
 9. In the Lizmap web-instance go into Administration -> Maps management
