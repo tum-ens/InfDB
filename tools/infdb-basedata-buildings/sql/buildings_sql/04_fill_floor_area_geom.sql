@@ -11,8 +11,8 @@ DROP TABLE IF EXISTS temp_building_footprint;
 CREATE TEMP TABLE temp_building_footprint AS
 SELECT
     bs.building_objectid,
-    ST_Multi(ST_Union(ST_Force2D(bs.geometry)))      AS geom,
-    ST_PointOnSurface(ST_Union(ST_Force2D(bs.geometry))) AS centroid
+    ST_Multi(ST_Union(ST_MakeValid(ST_Force2D(bs.geometry))))      AS geom,
+    ST_PointOnSurface(ST_Union(ST_MakeValid(ST_Force2D(bs.geometry)))) AS centroid
 FROM {input_schema}.building_surface bs
 WHERE bs.objectclass_id = 710 -- 710 = ground surface
   AND bs.gemeindeschluessel = '{ags}'
