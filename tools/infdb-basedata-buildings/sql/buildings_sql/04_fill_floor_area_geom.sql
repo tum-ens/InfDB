@@ -7,16 +7,29 @@
 -- lod2Solid, not a footprint). Geometry stays in the source SRID (e.g. 25832),
 -- so it is a drop-in for the former building_view.geom / building_view.centroid
 -- in this file and in 06_prepare_grid / 11_create_building_to_grid.
+--
+-- A building's ground faces are unioned into a single footprint. Each face is
+-- normalized with ST_MakeValid so the union is well defined for any source
+-- polygon, and ST_CollectionExtract(..., 3) keeps the polygonal parts of the
+-- union, yielding a MultiPolygon for the geom/centroid target columns.
 DROP TABLE IF EXISTS temp_building_footprint;
 CREATE TEMP TABLE temp_building_footprint AS
+WITH footprint AS (
+    SELECT
+        bs.building_objectid,
+        ST_CollectionExtract(
+            ST_Union(ST_MakeValid(ST_Force2D(bs.geometry))), 3
+        ) AS geom
+    FROM {input_schema}.building_surface bs
+    WHERE bs.objectclass_id = 710 -- 710 = ground surface
+      AND bs.gemeindeschluessel = '{ags}'
+    GROUP BY bs.building_objectid
+)
 SELECT
-    bs.building_objectid,
-    ST_Multi(ST_Union(ST_MakeValid(ST_Force2D(bs.geometry))))      AS geom,
-    ST_PointOnSurface(ST_Union(ST_MakeValid(ST_Force2D(bs.geometry)))) AS centroid
-FROM {input_schema}.building_surface bs
-WHERE bs.objectclass_id = 710 -- 710 = ground surface
-  AND bs.gemeindeschluessel = '{ags}'
-GROUP BY bs.building_objectid;
+    building_objectid,
+    geom,
+    ST_PointOnSurface(geom) AS centroid
+FROM footprint;
 
 CREATE INDEX ON temp_building_footprint USING GIST (geom);
 CREATE INDEX ON temp_building_footprint (building_objectid);
