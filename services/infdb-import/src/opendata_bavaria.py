@@ -3,20 +3,11 @@ import logging
 import multiprocessing as mp
 import subprocess
 from pathlib import Path
-from typing import Dict, List
 import sys
-import psycopg2
 
-<<<<<<< HEAD
 from pyinfdb import InfDB
 from sqlalchemy import text
 import shlex
-=======
-import geopandas as gpd
-from infdb import InfDB
-from sqlalchemy import text
-from shapely import wkt as shapely_wkt
->>>>>>> f30ea441 (resampling logic is parallelized)
 
 from . import utils
 from .lod2 import _build_urls_for_region
@@ -43,84 +34,13 @@ def _get_gpkg_layers(gpkg: Path) -> list[str]:
         out = subprocess.check_output(["ogrinfo", "-ro", "-q", str(gpkg)], text=True, stderr=subprocess.STDOUT)
         return [line.split(":", 1)[1].split("(")[0].strip() for line in out.splitlines() if ":" in line and "(" in line]
 
-def _write_file_list(file_paths: list[str], list_path: Path) -> None:
+
+
+def _write_file_list(file_paths: list[Path], list_path: Path) -> None:
     """Write one file path per line for GDAL input_file_list usage."""
     with open(list_path, "w", encoding="utf-8") as f:
         for path in file_paths:
             f.write(f"{path}\n")
-
-
-def _cleanup_paths(paths: list[Path], log) -> None:
-    """Delete generated helper/output files if they exist."""
-    for path in paths:
-        try:
-            path.unlink(missing_ok=True)
-        except Exception:
-            log.warning("Could not remove temporary file: %s", path)
-
-
-def _resample_dgm1_tile(
-    infdb: InfDB,
-    source_tif: Path,
-    output_tif: Path,
-    source_srid: int,
-    target_res: float,
-) -> Path | None:
-    """Resample one DGM1 tile to the configured target resolution without clipping."""
-    log = infdb.get_worker_logger()
-
-    if output_tif.exists() and output_tif.stat().st_size > 0:
-        return output_tif
-
-    rc = utils.do_cmd(
-        infdb,
-        [
-            "gdalwarp",
-            "-overwrite",
-            "-of",
-            "GTiff",
-            "-co",
-            "TILED=YES",
-            "-co",
-            "COMPRESS=DEFLATE",
-            "-co",
-            "PREDICTOR=2",
-            "-co",
-            "BIGTIFF=IF_SAFER",
-            "-co",
-            "BLOCKXSIZE=512",
-            "-co",
-            "BLOCKYSIZE=512",
-            "-r",
-            "bilinear",
-            "-multi",
-            "-wo",
-            "NUM_THREADS=ALL_CPUS",
-            "-t_srs",
-            f"EPSG:{source_srid}",
-            "-tr",
-            str(target_res),
-            str(target_res),
-            "-tap",
-            "-srcnodata",
-            "-9999",
-            "-dstnodata",
-            "-9999",
-            str(source_tif),
-            str(output_tif),
-        ],
-    )
-
-    if rc != 0:
-        log.error("DGM1: gdalwarp resampling failed for %s", source_tif)
-        return None
-
-    if not output_tif.exists() or output_tif.stat().st_size == 0:
-        log.warning("DGM1: resampled TIFF is empty for %s", source_tif)
-        return None
-
-    return output_tif
-
 
 def _chunk_list(items: list, batch_size: int) -> list[list]:
     return [
@@ -129,56 +49,65 @@ def _chunk_list(items: list, batch_size: int) -> list[list]:
     ]
 
 
-def _resample_dgm1_tile_worker(
+def _convert_dgm1_tile_to_cog_worker(
     source_tif_str: str,
     output_tif_str: str,
-    source_srid: int,
-    target_res: float,
+    target_res: float | None = None,
 ) -> tuple[bool, str | None, str | None]:
+    """Convert one downloaded DGM1 GeoTIFF into a Cloud Optimized GeoTIFF.
+
+    When target_res is set the tile is downsampled on the way in. Source tiles are
+    1km wide, so any resolution that divides 1000 keeps the output grid aligned with
+    the tile origin and no -tap is needed.
+    """
     try:
         source_tif = Path(source_tif_str)
         output_tif = Path(output_tif_str)
 
+        # Reuse an existing persistent COG file on subsequent runs.
         if output_tif.exists() and output_tif.stat().st_size > 0:
             return True, str(output_tif), None
 
         output_tif.parent.mkdir(parents=True, exist_ok=True)
 
-        cmd = [
-            "gdalwarp",
-            "-overwrite",
-            "-of",
-            "GTiff",
-            "-co",
-            "TILED=YES",
-            "-co",
-            "COMPRESS=DEFLATE",
-            "-co",
-            "PREDICTOR=2",
-            "-co",
-            "BIGTIFF=IF_SAFER",
-            "-co",
-            "BLOCKXSIZE=512",
-            "-co",
-            "BLOCKYSIZE=512",
-            "-r",
-            "bilinear",
-            "-multi",
-            "-wo",
-            "NUM_THREADS=1",
-            "-t_srs",
-            f"EPSG:{source_srid}",
-            "-tr",
-            str(target_res),
-            str(target_res),
-            "-tap",
-            "-srcnodata",
-            "-9999",
-            "-dstnodata",
-            "-9999",
-            str(source_tif),
-            str(output_tif),
-        ]
+        if target_res:
+            # average, not bilinear: for pure decimation of a terrain model it keeps
+            # the mean elevation of the source cells instead of sampling four of them.
+            cmd = [
+                "gdalwarp",
+                "-overwrite",
+                "-of",
+                "COG",
+                "-co",
+                "COMPRESS=ZSTD",
+                "-co",
+                "BLOCKSIZE=512",
+                "-r",
+                "average",
+                "-tr",
+                str(target_res),
+                str(target_res),
+                "-srcnodata",
+                "-9999",
+                "-dstnodata",
+                "-9999",
+                str(source_tif),
+                str(output_tif),
+            ]
+        else:
+            cmd = [
+                "gdal_translate",
+                "-of",
+                "COG",
+                "-co",
+                "COMPRESS=ZSTD",
+                "-co",
+                "BLOCKSIZE=512",
+                "-a_nodata",
+                "-9999",
+                str(source_tif),
+                str(output_tif),
+            ]
 
         proc = subprocess.run(
             cmd,
@@ -189,11 +118,11 @@ def _resample_dgm1_tile_worker(
 
         if proc.returncode != 0:
             output_tif.unlink(missing_ok=True)
-            return False, None, f"gdalwarp failed for {source_tif}: {proc.stdout}"
+            return False, None, f"{cmd[0]} failed for {source_tif}: {proc.stdout}"
 
         if not output_tif.exists() or output_tif.stat().st_size == 0:
             output_tif.unlink(missing_ok=True)
-            return False, None, f"resampled TIFF is empty for {source_tif}"
+            return False, None, f"COG output is empty for {source_tif}"
 
         return True, str(output_tif), None
 
@@ -201,179 +130,53 @@ def _resample_dgm1_tile_worker(
         return False, None, str(err)
 
 
-def _resample_and_import_dgm1_batch(
+def _convert_dgm1_batch_to_cogs(
     batch: list[str],
-    resampled_dir_str: str,
-    dgm1_base_dir_str: str,
-    source_srid: int,
-    target_res: float,
-    schema: str,
-    table_base: str,
-    pgurl: str,
+    cog_dir_str: str,
     batch_idx: int,
     total_batches: int,
-) -> tuple[bool, str | None, str | None, list[str], int, int]:
-    resampled_paths: list[str] = []
+    target_res: float | None = None,
+) -> tuple[bool, list[str], list[str], int, int]:
+    cog_paths: list[str] = []
     errors: list[str] = []
 
-    resampled_dir = Path(resampled_dir_str)
-    dgm1_base_dir = Path(dgm1_base_dir_str)
+    cog_dir = Path(cog_dir_str)
 
-    stage_tiled_table = f"{schema}.{table_base}_stage_tiled_{batch_idx:04d}"
-    stage_untiled_table = f"{schema}.{table_base}_stage_untiled_{batch_idx:04d}"
+    for source_tif_str in batch:
+        source_tif = Path(source_tif_str)
+        output_tif = cog_dir / source_tif.name
 
-    file_list_path = dgm1_base_dir / f"dgm1_batch_{batch_idx:04d}_files.txt"
-    vrt_path = dgm1_base_dir / f"dgm1_batch_{batch_idx:04d}_{target_res:g}m.vrt"
-
-    try:
-        for source_tif_str in batch:
-            source_tif = Path(source_tif_str)
-            output_tif = resampled_dir / source_tif.name
-
-            ok, resampled_path, error = _resample_dgm1_tile_worker(
-                source_tif_str=str(source_tif),
-                output_tif_str=str(output_tif),
-                source_srid=source_srid,
-                target_res=target_res,
-            )
-
-            if ok and resampled_path:
-                resampled_paths.append(resampled_path)
-            else:
-                errors.append(error or f"Unknown error for {source_tif}")
-
-        if errors:
-            return False, None, None, errors, batch_idx, total_batches
-
-        if not resampled_paths:
-            return False, None, None, [f"No resampled paths for batch {batch_idx}"], batch_idx, total_batches
-
-        _write_file_list(resampled_paths, file_list_path)
-
-        proc = subprocess.run(
-            [
-                "gdalbuildvrt",
-                "-srcnodata",
-                "-9999",
-                "-vrtnodata",
-                "-9999",
-                "-input_file_list",
-                str(file_list_path),
-                str(vrt_path),
-            ],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True,
+        ok, cog_path, error = _convert_dgm1_tile_to_cog_worker(
+            source_tif_str=str(source_tif),
+            output_tif_str=str(output_tif),
+            target_res=target_res,
         )
 
-        if proc.returncode != 0:
-            return False, None, None, [f"gdalbuildvrt failed for batch {batch_idx}: {proc.stdout}"], batch_idx, total_batches
+        if ok and cog_path:
+            cog_paths.append(cog_path)
+        else:
+            errors.append(error or f"Unknown error for {source_tif}")
 
-        if not vrt_path.exists() or vrt_path.stat().st_size == 0:
-            return False, None, None, [f"generated VRT is empty for batch {batch_idx}"], batch_idx, total_batches
-
-        psql_cmd = f'psql --no-psqlrc -q -v ON_ERROR_STOP=1 -X "{pgurl}"'
-
-        for stage_table in [stage_tiled_table, stage_untiled_table]:
-            drop_stage_cmd = f'{psql_cmd} -c "DROP TABLE IF EXISTS {stage_table} CASCADE;"'
-
-            proc = subprocess.run(
-                drop_stage_cmd,
-                shell=True,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,
-                text=True,
-            )
-
-            if proc.returncode != 0:
-                return False, None, None, [f"failed to drop stage table {stage_table}: {proc.stdout}"], batch_idx, total_batches
-
-        tiled_import_pipeline = (
-            f'raster2pgsql '
-            f'-q '
-            f'-s {source_srid} '
-            f'-I '
-            f'-C '
-            f'-M '
-            f'-N -9999 '
-            f'-t 100x100 '
-            f'"{vrt_path}" '
-            f'{stage_tiled_table} | {psql_cmd}'
-        )
-
-        proc = subprocess.run(
-            tiled_import_pipeline,
-            shell=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True,
-        )
-
-        if proc.returncode != 0:
-            return False, None, None, [f"tiled raster2pgsql failed for batch {batch_idx}: {proc.stdout}"], batch_idx, total_batches
-
-        untiled_import_pipeline = (
-            f'raster2pgsql '
-            f'-q '
-            f'-s {source_srid} '
-            f'-I '
-            f'-C '
-            f'-M '
-            f'-N -9999 '
-            f'"{vrt_path}" '
-            f'{stage_untiled_table} | {psql_cmd}'
-        )
-
-        proc = subprocess.run(
-            untiled_import_pipeline,
-            shell=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True,
-        )
-
-        if proc.returncode != 0:
-            return False, None, None, [f"untiled raster2pgsql failed for batch {batch_idx}: {proc.stdout}"], batch_idx, total_batches
-
-        return True, stage_tiled_table, stage_untiled_table, [], batch_idx, total_batches
-
-    except Exception as err:
-        return False, None, None, [str(err)], batch_idx, total_batches
-
-    finally:
-        try:
-            file_list_path.unlink(missing_ok=True)
-        except Exception:
-            pass
-
-        try:
-            vrt_path.unlink(missing_ok=True)
-        except Exception:
-            pass
+    return len(errors) == 0, cog_paths, errors, batch_idx, total_batches
 
 
-def _resample_and_import_dgm1_batch_star(args):
-    return _resample_and_import_dgm1_batch(*args)
+def _convert_dgm1_batch_to_cogs_star(args):
+    return _convert_dgm1_batch_to_cogs(*args)
 
 
-def _resample_and_import_dgm1_batches_in_parallel(
+def _convert_dgm1_tiles_to_cogs_in_parallel(
     infdb: InfDB,
     tile_paths: list[Path],
-    resampled_dir: Path,
-    dgm1_base_dir: Path,
-    source_srid: int,
-    target_res: float,
-    schema: str,
-    table_base: str,
+    cog_dir: Path,
     batch_size: int = 200,
     processes: int | None = None,
-) -> tuple[list[str], list[str]]:
+    target_res: float | None = None,
+) -> list[Path]:
+    """Convert selected DGM1 tiles into persistent COG files in parallel."""
     log = infdb.get_worker_logger()
 
     if not tile_paths:
-        return [], []
-
-    pgurl = utils._pg_connstring_for_psql(infdb)
+        return []
 
     batches = _chunk_list([str(p) for p in tile_paths], batch_size)
     total_batches = len(batches)
@@ -384,7 +187,7 @@ def _resample_and_import_dgm1_batches_in_parallel(
     processes = max(1, min(processes, total_batches))
 
     log.info(
-        "DGM1: resampling and importing %d tiles in %d batches with %d worker(s).",
+        "DGM1 COG: converting %d tiles in %d batches with %d worker(s).",
         len(tile_paths),
         total_batches,
         processes,
@@ -393,52 +196,105 @@ def _resample_and_import_dgm1_batches_in_parallel(
     worker_args = [
         (
             batch,
-            str(resampled_dir),
-            str(dgm1_base_dir),
-            source_srid,
-            target_res,
-            schema,
-            table_base,
-            pgurl,
+            str(cog_dir),
             i + 1,
             total_batches,
+            target_res,
         )
         for i, batch in enumerate(batches)
     ]
 
-    stage_tiled_tables: list[str] = []
-    stage_untiled_tables: list[str] = []
+    cog_paths: list[Path] = []
     errors: list[str] = []
     completed_batches = 0
 
     with mp.Pool(processes=processes) as pool:
-        for ok, stage_tiled_table, stage_untiled_table, batch_errors, batch_idx, total in pool.imap_unordered(
-            _resample_and_import_dgm1_batch_star,
+        for ok, batch_paths, batch_errors, batch_idx, total in pool.imap_unordered(
+            _convert_dgm1_batch_to_cogs_star,
             worker_args,
         ):
             completed_batches += 1
 
-            if ok and stage_tiled_table and stage_untiled_table:
-                stage_tiled_tables.append(stage_tiled_table)
-                stage_untiled_tables.append(stage_untiled_table)
-
-            if not ok:
-                errors.extend(batch_errors)
-
             log.info(
-                "DGM1: %d/%d batches are completed. Finished batch %d/%d.",
+                "DGM1 COG: %d/%d batches are completed. Finished batch %d/%d with %d output file(s).",
                 completed_batches,
                 total,
                 batch_idx,
                 total,
+                len(batch_paths),
             )
+
+            cog_paths.extend(Path(p) for p in batch_paths)
+
+            if not ok:
+                errors.extend(batch_errors)
 
     if errors:
         raise RuntimeError(
-            f"DGM1: {len(errors)} error(s) occurred during parallel batch import. First error: {errors[0]}"
+            f"DGM1 COG: {len(errors)} tile(s) failed during conversion. First error: {errors[0]}"
         )
 
-    return sorted(stage_tiled_tables), sorted(stage_untiled_tables)
+    return sorted(set(cog_paths))
+
+
+def _build_consolidated_overview(
+    infdb: InfDB,
+    vrt_path: Path,
+    output_path: Path,
+    overview_res: float,
+) -> Path | None:
+    """Build one consolidated low-resolution COG covering the whole scope.
+
+    QGIS cannot render the full-resolution mosaic when zoomed out, and the internal
+    overviews of the individual COG tiles do not help: at that zoom the cost is
+    opening every source tile, not reading pixels. Collapsing the mosaic into a
+    single coarse file removes that cost. Measured on the Neuburg/Munich scope
+    (488 tiles): full-extent read drops from ~2500 ms to ~50 ms.
+
+    The COG driver adds further internal overview levels on top of this file, so one
+    consolidated level is enough to cover the whole zoom range.
+    """
+    log = infdb.get_worker_logger()
+
+    output_path.unlink(missing_ok=True)
+
+    rc = utils.do_cmd(
+        infdb,
+        [
+            "gdalwarp",
+            "-overwrite",
+            "-of",
+            "COG",
+            "-co",
+            "COMPRESS=ZSTD",
+            "-co",
+            "BLOCKSIZE=512",
+            "-r",
+            "average",
+            "-tr",
+            str(overview_res),
+            str(overview_res),
+            "-srcnodata",
+            "-9999",
+            "-dstnodata",
+            "-9999",
+            "-multi",
+            "-wo",
+            "NUM_THREADS=ALL_CPUS",
+            str(vrt_path),
+            str(output_path),
+        ],
+    )
+
+    if rc != 0:
+        log.error("DGM1 COG OUTDB: consolidated overview generation failed.")
+        return None
+
+    if not output_path.exists() or output_path.stat().st_size == 0:
+        log.warning("DGM1 COG OUTDB: consolidated overview is empty.")
+        return None
+
+    return output_path
 
 
 # ====================================================================================
@@ -502,54 +358,63 @@ def load(infdb: InfDB) -> bool:
 
 # ====================================================================================
 # DGM1 LOADER - Digital Terrain Model (Elevation Raster Data)
-# SIMPLE VERSION: download selected tiles, resample them, build VRT, import into PostGIS
+# COG VERSION: download selected tiles, convert them to COGs, register them out-of-db
 # ====================================================================================
 
 
+
+
 def _load_dgm1(infdb: InfDB, base_path: Path, target_epsg: int):
-    """Loads Bavaria DGM1 using batch imports.
+    """Load Bavaria DGM1 as persistent COG files registered out-of-db in PostGIS.
 
     Workflow:
-      * resolve required DGM1 tile URLs
-      * resample selected tiles to target resolution
-      * for every batch, import two stage tables:
-          - tiled stage table
-          - untiled stage table
-      * merge tiled stages into final main table
-      * merge untiled stages into temporary helper table
-      * create raw overviews from helper table
-      * retile raw overviews into regular 100x100 tiles
-      * register retiled overviews to final main table
+      * resolve required DGM1 tile URLs for the active scopes
+      * select downloaded TIFF files belonging to the current URL list
+      * convert each selected TIFF to a persistent COG file
+      * reuse existing non-empty COG files on subsequent runs
+      * build one persistent VRT from the current scope's COG files for direct QGIS use
+      * register only the current scope's COG files directly with raster2pgsql -R
+      * create no PostGIS overview tables
+      * validate the main out-of-db raster table
     """
 
     log = infdb.get_worker_logger()
 
     # ---------- 1. Read configuration ----------
-
     source_cfg = [infdb.get_toolname(), "sources", "opendata_bavaria"]
     dgm1_cfg = source_cfg + ["datasets", "gelaendemodell_1m"]
 
     schema = infdb.get_config_value(source_cfg + ["schema"])
     table_base = infdb.get_config_value(dgm1_cfg + ["table_name"])
     source_srid = int(infdb.get_config_value(dgm1_cfg + ["srid"]))
-    target_res = float(infdb.get_config_value(dgm1_cfg + ["target_resolution"]) or 1.0)
+    overview_res = float(infdb.get_config_value(dgm1_cfg + ["overview_resolution"]) or 32.0)
+
+    # Unset (or 1m) means: keep the native DGM1 resolution and skip resampling.
+    configured_res = infdb.get_config_value(dgm1_cfg + ["target_resolution"])
+    target_res = float(configured_res) if configured_res else None
+    if target_res == 1.0:
+        target_res = None
 
     log.info(
-        "DGM1: schema=%s table=%s srid=%s target_res=%.2f",
+        "DGM1 COG OUTDB: schema=%s table=%s srid=%s target_res=%s overview_res=%.1f",
         schema,
         table_base,
         source_srid,
-        target_res,
+        f"{target_res:g}m" if target_res else "native 1m",
+        overview_res,
     )
 
+    # ---------- 2. Working directories ----------
     dgm1_base_dir = base_path / "gelaendemodell_1m"
     dgm1_base_dir.mkdir(parents=True, exist_ok=True)
 
-    resampled_dir = dgm1_base_dir / f"resampled_{target_res:g}m"
-    resampled_dir.mkdir(parents=True, exist_ok=True)
+    # Persistent COG files remain available because PostGIS stores their paths.
+    # The resolution is part of the directory name: the worker reuses any existing
+    # output file, so a shared directory would silently mix resolutions across runs.
+    cog_dir = dgm1_base_dir / (f"cogs_{target_res:g}m" if target_res else "cogs")
+    cog_dir.mkdir(parents=True, exist_ok=True)
 
-    # ---------- 2. Read tiled download config ----------
-
+    # ---------- 3. Read tiled download config ----------
     dgm1_region_cfg = {
         "status": infdb.get_config_value(dgm1_cfg + ["status"]),
         "state_prefix": infdb.get_config_value(dgm1_cfg + ["state_prefix"]),
@@ -558,26 +423,22 @@ def _load_dgm1(infdb: InfDB, base_path: Path, target_epsg: int):
         "filename_template": infdb.get_config_value(dgm1_cfg + ["filename_template"]),
     }
 
-    # ---------- 3. Resolve all intersecting DGM1 tile URLs ----------
-
+    # ---------- 4. Resolve all intersecting DGM1 tile URLs ----------
     urls = _build_urls_for_region("DGM1 Bavaria", dgm1_region_cfg, infdb, log)
 
     if not urls:
-        log.warning("DGM1: no Bavaria tiles resolved for the active scopes; skipping.")
+        log.warning("DGM1 COG OUTDB: no Bavaria tiles resolved for the active scopes; skipping.")
         return
 
     urls = sorted(set(urls))
+    log.info("DGM1 COG OUTDB: %d unique tiles resolved.", len(urls))
 
-    log.info("DGM1: %d unique tiles to download.", len(urls))
+    # ---------- 5. Download all tiles once ----------
+    utils.download_aria2c_many(infdb, urls, output_dir=str(dgm1_base_dir))
 
-    # ---------- 4. Download all tiles once ----------
-
-    # utils.download_aria2c_many(infdb, urls, output_dir=str(dgm1_base_dir))
-
-    # ---------- 5. Collect only downloaded TIFF tiles from current URL list ----------
-
-    tile_paths = []
-    missing_tile_paths = []
+    # ---------- 6. Collect only downloaded TIFF tiles from current URL list ----------
+    tile_paths: list[Path] = []
+    missing_tile_paths: list[Path] = []
 
     for url in urls:
         tile_path = dgm1_base_dir / Path(url).name
@@ -590,394 +451,273 @@ def _load_dgm1(infdb: InfDB, base_path: Path, target_epsg: int):
     tile_paths = sorted(set(tile_paths))
 
     if missing_tile_paths:
+        # Grid cells that touch the state boundary but hold no data are expected
+        # to be absent, so a missing tile must not abort the run.
         log.warning(
-            "DGM1: %d expected TIFF files are missing after download. First missing file: %s",
+            "DGM1 COG OUTDB: %d expected TIFF files are missing. First missing file: %s",
             len(missing_tile_paths),
             missing_tile_paths[0],
         )
 
     if not tile_paths:
-        log.warning("DGM1: no expected .tif tiles found after download; skipping.")
+        log.warning("DGM1 COG OUTDB: no expected .tif files found; skipping.")
         return
 
-    log.info("DGM1: %d raster tiles selected from current URL list for resampling.", len(tile_paths))
+    log.info("DGM1 COG OUTDB: %d raster tiles selected for COG conversion.", len(tile_paths))
 
-    # ---------- 6. Resample and import batches ----------
+    # ---------- 7. Convert selected TIFF files to persistent COG files ----------
+    cog_paths = _convert_dgm1_tiles_to_cogs_in_parallel(
+        infdb=infdb,
+        tile_paths=tile_paths,
+        cog_dir=cog_dir,
+        batch_size=200,
+        processes=utils.get_number_processes(infdb),
+        target_res=target_res,
+    )
 
+    if not cog_paths:
+        log.warning("DGM1 COG OUTDB: no COG files created; skipping import.")
+        return
+
+    # cog_paths contains only files corresponding to URLs resolved for the active scopes.
+    # Older COG files from previous scopes may remain in cog_dir, but they are not imported.
+    cog_paths = sorted(set(cog_paths))
+    log.info("DGM1 COG OUTDB: %d COG files selected for registration.", len(cog_paths))
+
+    try:
+        size_mb = sum(p.stat().st_size for p in cog_paths) / 1_000_000
+        log.info("DGM1 COG OUTDB: selected COG data size %.1f MB", size_mb)
+    except FileNotFoundError:
+        log.error("DGM1 COG OUTDB: one or more selected COG files are missing.")
+        return
+
+    # ---------- 8. Build a persistent scope-specific VRT for direct QGIS use ----------
+    file_list_path = dgm1_base_dir / "dgm1_scope_cog_files.txt"
+    vrt_path = dgm1_base_dir / "dgm1_scope_cogs.vrt"
+
+    _write_file_list(cog_paths, file_list_path)
+
+    rc = utils.do_cmd(
+        infdb,
+        [
+            "gdalbuildvrt",
+            "-overwrite",
+            "-srcnodata",
+            "-9999",
+            "-vrtnodata",
+            "-9999",
+            "-input_file_list",
+            str(file_list_path),
+            str(vrt_path),
+        ],
+    )
+
+    if rc != 0:
+        raise RuntimeError("DGM1 COG OUTDB: failed to build VRT from selected COG files.")
+
+    if not vrt_path.exists() or vrt_path.stat().st_size == 0:
+        raise RuntimeError("DGM1 COG OUTDB: generated VRT is empty.")
+
+    log.info("DGM1 COG OUTDB: persistent QGIS VRT created: %s", vrt_path)
+
+    # ---------- 8b. Build the consolidated overview used for zoomed-out rendering ----------
+    overview_path = dgm1_base_dir / f"dgm1_overview_{overview_res:g}m.tif"
+
+    log.info(
+        "DGM1 COG OUTDB: building consolidated %.1fm overview from %d COG files.",
+        overview_res,
+        len(cog_paths),
+    )
+
+    overview_path = _build_consolidated_overview(
+        infdb=infdb,
+        vrt_path=vrt_path,
+        output_path=overview_path,
+        overview_res=overview_res,
+    )
+
+    if overview_path:
+        log.info(
+            "DGM1 COG OUTDB: consolidated overview created: %s (%.1f MB)",
+            overview_path,
+            overview_path.stat().st_size / 1_000_000,
+        )
+        log.info(
+            "DGM1 COG OUTDB: add this file to QGIS as the zoomed-out layer; "
+            "use the full-resolution mosaic only below a scale threshold."
+        )
+    else:
+        log.warning(
+            "DGM1 COG OUTDB: no consolidated overview available; "
+            "zoomed-out QGIS rendering will be slow."
+        )
+
+    # ---------- 9. Drop the previous table and legacy overview tables ----------
     target_table = f"{schema}.{table_base}"
-
-    tmp_untiled_base = f"{table_base}_tmp_untiled_merged"
-    tmp_untiled_table = f"{schema}.{tmp_untiled_base}"
-
-    overview_factors = (4, 8, 16)
-    overview_resampling = "NearestNeighbor"
-    overview_tile_width = 100
-    overview_tile_height = 100
 
     with infdb.connect() as db:
         db.execute_query(f"DROP TABLE IF EXISTS {target_table} CASCADE;")
-        db.execute_query(f"DROP TABLE IF EXISTS {tmp_untiled_table} CASCADE;")
 
-        for factor in overview_factors:
-            db.execute_query(f"DROP TABLE IF EXISTS {schema}.o_{factor}_{table_base} CASCADE;")
-            db.execute_query(f"DROP TABLE IF EXISTS {schema}.o_{factor}_{tmp_untiled_base} CASCADE;")
+        # Remove overview tables left behind by the previous VRT-based implementation.
+        # The new COG implementation does not create overview tables.
+        for factor in (4, 8, 16):
+            db.execute_query(
+                f"DROP TABLE IF EXISTS {schema}.o_{factor}_{table_base} CASCADE;"
+            )
 
-    stage_tiled_tables, stage_untiled_tables = _resample_and_import_dgm1_batches_in_parallel(
-        infdb=infdb,
-        tile_paths=tile_paths,
-        resampled_dir=resampled_dir,
-        dgm1_base_dir=dgm1_base_dir,
-        source_srid=source_srid,
-        target_res=target_res,
-        schema=schema,
-        table_base=table_base,
-        batch_size=200,
-        processes=10,
-    )
+    # ---------- 10. Register selected COG files directly as out-of-db rasters ----------
+    pgurl = utils._pg_connstring_for_psql(infdb)
+    psql_cmd = f'psql --no-psqlrc -q -v ON_ERROR_STOP=1 -X "{pgurl}"'
 
-    if not stage_tiled_tables or not stage_untiled_tables:
-        log.warning("DGM1: no staging tables created; skipping final import.")
-        return
+    # All paths cannot go on one command line: statewide Bavaria is ~70k tiles, which
+    # is ~5.5 MB of arguments against an ARG_MAX of 2 MB. Register in chunks instead,
+    # and add index/constraints once at the end rather than per chunk.
+    registration_chunk_size = 500
+    path_chunks = _chunk_list(cog_paths, registration_chunk_size)
 
     log.info(
-        "DGM1: %d tiled staging tables and %d untiled staging tables created.",
-        len(stage_tiled_tables),
-        len(stage_untiled_tables),
+        "DGM1 COG OUTDB: registering %d COG files with raster2pgsql -R into %s in %d chunk(s).",
+        len(cog_paths),
+        target_table,
+        len(path_chunks),
     )
 
-    # ---------- 7. Merge tiled stages into final main table ----------
+    for chunk_idx, chunk in enumerate(path_chunks, start=1):
+        quoted_cog_paths = " ".join(shlex.quote(str(path)) for path in chunk)
+        append_flag = "" if chunk_idx == 1 else "-a "
 
-    with infdb.connect() as db:
-        db.execute_query(
-            f"""
-            CREATE TABLE {target_table} (
-                rid SERIAL PRIMARY KEY,
-                rast raster
-            );
-            """
+        import_pipeline = (
+            f"raster2pgsql "
+            f"-q "
+            f"-s {source_srid} "
+            f"-R "
+            f"-F "
+            f"{append_flag}"
+            f"-t auto "
+            f"-N -9999 "
+            f"{quoted_cog_paths} "
+            f"{target_table} | {psql_cmd}"
         )
 
-        for stage_table in stage_tiled_tables:
-            db.execute_query(
-                f"""
-                INSERT INTO {target_table} (rast)
-                SELECT rast FROM {stage_table};
-                """
+        rc = utils.do_cmd(infdb, import_pipeline, shell=True)
+
+        if rc != 0:
+            raise RuntimeError(
+                f"DGM1 COG OUTDB: raster2pgsql -R import failed for chunk "
+                f"{chunk_idx}/{len(path_chunks)}."
             )
 
-        db.execute_query(
-            f"""
-            UPDATE {target_table}
-            SET rast = ST_SetBandNoDataValue(
-                ST_SetSRID(rast, {source_srid}),
-                1,
-                -9999
-            );
-            """
-        )
-
-        db.execute_query(
-            f"""
-            DELETE FROM {target_table}
-            WHERE ST_Count(rast, 1, TRUE) = 0;
-            """
-        )
-
-        db.execute_query(
-            f"""
-            SELECT AddRasterConstraints(
-                '{schema}'::name,
-                '{table_base}'::name,
-                'rast'::name
-            );
-            """
-        )
-
-        db.execute_query(
-            f"""
-            CREATE INDEX IF NOT EXISTS {table_base}_rast_gix
-            ON {target_table}
-            USING GIST (ST_ConvexHull(rast));
-            """
-        )
-
-        db.execute_query(f"ANALYZE {target_table};")
-
-        log.info("DGM1: final tiled main table created: %s", target_table)
-
-    # ---------- 8. Merge untiled stages into helper table ----------
-
-    with infdb.connect() as db:
-        db.execute_query(
-            f"""
-            CREATE TABLE {tmp_untiled_table} (
-                rid SERIAL PRIMARY KEY,
-                rast raster
-            );
-            """
-        )
-
-        for stage_table in stage_untiled_tables:
-            db.execute_query(
-                f"""
-                INSERT INTO {tmp_untiled_table} (rast)
-                SELECT rast FROM {stage_table};
-                """
-            )
-
-        db.execute_query(
-            f"""
-            UPDATE {tmp_untiled_table}
-            SET rast = ST_SetBandNoDataValue(
-                ST_SetSRID(rast, {source_srid}),
-                1,
-                -9999
-            );
-            """
-        )
-
-        db.execute_query(
-            f"""
-            DELETE FROM {tmp_untiled_table}
-            WHERE ST_Count(rast, 1, TRUE) = 0;
-            """
-        )
-
-        db.execute_query(
-            f"""
-            SELECT AddRasterConstraints(
-                '{schema}'::name,
-                '{tmp_untiled_base}'::name,
-                'rast'::name
-            );
-            """
-        )
-
-        db.execute_query(f"ANALYZE {tmp_untiled_table};")
-
-        log.info("DGM1: merged untiled helper table created: %s", tmp_untiled_table)
-
-    # ---------- 9. Create raw overviews, retile, and register ----------
-
-    with infdb.connect() as db:
-        for factor in overview_factors:
-            raw_ov_name = f"o_{factor}_{tmp_untiled_base}"
-            raw_ov_table = f"{schema}.{raw_ov_name}"
-
-            final_ov_name = f"o_{factor}_{table_base}"
-            final_ov_table = f"{schema}.{final_ov_name}"
-
-            overview_scale_x = float(target_res) * factor
-            overview_scale_y = -float(target_res) * factor
-
+        if chunk_idx % 10 == 0 or chunk_idx == len(path_chunks):
             log.info(
-                "DGM1: creating raw overview %s from merged untiled table %s with factor %d.",
-                raw_ov_table,
-                tmp_untiled_table,
-                factor,
+                "DGM1 COG OUTDB: registered %d/%d chunks.",
+                chunk_idx,
+                len(path_chunks),
             )
 
-            db.execute_query(
-                f"""
-                SELECT ST_CreateOverview(
-                    '{tmp_untiled_table}'::regclass,
-                    'rast'::name,
-                    {factor},
-                    '{overview_resampling}'
-                );
-                """
-            )
+    finalize_sql = f"""
+        SELECT AddRasterConstraints('{schema}'::name, '{table_base}'::name, 'rast'::name);
 
-            db.execute_query(f"ANALYZE {raw_ov_table};")
+        CREATE INDEX IF NOT EXISTS {table_base}_rast_gix
+        ON {target_table}
+        USING GIST (ST_ConvexHull(rast));
 
-            log.info(
-                "DGM1: retiling raw overview %s into final overview %s.",
-                raw_ov_table,
-                final_ov_table,
-            )
+        ANALYZE {target_table};
+    """
 
-            db.execute_query(f"DROP TABLE IF EXISTS {final_ov_table} CASCADE;")
+    rc = utils.do_cmd(infdb, f'{psql_cmd} -c "{finalize_sql}"', shell=True)
 
-            db.execute_query(
-                f"""
-                CREATE TABLE {final_ov_table} AS
-                WITH ext AS (
-                    SELECT ST_Envelope(ST_Union(ST_ConvexHull(rast))) AS geom
-                    FROM {raw_ov_table}
-                )
-                SELECT
-                    row_number() OVER () AS rid,
-                    r.rast
-                FROM ext,
-                LATERAL ST_Retile(
-                    '{raw_ov_table}'::regclass,
-                    'rast'::name,
-                    ext.geom,
-                    {overview_scale_x},
-                    {overview_scale_y},
-                    {overview_tile_width},
-                    {overview_tile_height},
-                    '{overview_resampling}'
-                ) AS r(rast);
-                """
-            )
+    if rc != 0:
+        raise RuntimeError("DGM1 COG OUTDB: constraint/index creation failed.")
 
-            stats = db.execute_query(
-                f"""
-                SELECT
-                    COUNT(*) AS tiles,
-                    COALESCE(SUM(ST_Count(rast, 1, TRUE)), 0) AS valid_pixels
-                FROM {final_ov_table};
-                """
-            )
+    log.info("DGM1 COG OUTDB: direct raster2pgsql -R import finished.")
 
-            log.info("DGM1: retiled overview stats for %s: %s", final_ov_table, stats)
+    # ---------- 11. Validate raster metadata ----------
+    metadata_sql = f"""
+        SELECT
+            r_table_name,
+            srid,
+            scale_x,
+            scale_y,
+            blocksize_x,
+            blocksize_y,
+            same_alignment,
+            regular_blocking,
+            num_bands,
+            pixel_types,
+            nodata_values,
+            out_db
+        FROM raster_columns
+        WHERE r_table_schema = '{schema}'
+          AND r_table_name = '{table_base}';
+    """
 
-            tiles = stats[0][0]
-            valid_pixels = stats[0][1]
+    log.info("DGM1 COG OUTDB: checking raster_columns metadata for the main table.")
+    rc = utils.do_cmd(
+        infdb,
+        f'{psql_cmd} -c "{metadata_sql}"',
+        shell=True,
+    )
 
-            if tiles == 0 or valid_pixels == 0:
-                raise RuntimeError(
-                    f"DGM1: retiled overview table {final_ov_table} is empty "
-                    f"(tiles={tiles}, valid_pixels={valid_pixels})."
-                )
+    if rc != 0:
+        raise RuntimeError("DGM1 COG OUTDB: raster_columns metadata query failed.")
 
-            db.execute_query(
-                f"""
-                ALTER TABLE {final_ov_table}
-                ADD PRIMARY KEY (rid);
-                """
-            )
+    # ---------- 12. Validate that PostgreSQL can read the COG rasters ----------
+    read_validation_sql = f"""
+        SELECT
+            COUNT(*) AS raster_count,
+            MIN(ST_Width(rast)) AS min_width,
+            MAX(ST_Width(rast)) AS max_width,
+            MIN(ST_Height(rast)) AS min_height,
+            MAX(ST_Height(rast)) AS max_height,
+            MIN(ST_ScaleX(rast)) AS min_scalex,
+            MAX(ST_ScaleX(rast)) AS max_scalex,
+            MIN(ST_ScaleY(rast)) AS min_scaley,
+            MAX(ST_ScaleY(rast)) AS max_scaley,
+            SUM(ST_Count(rast, 1, TRUE)) AS valid_pixels
+        FROM {target_table};
+    """
 
-            db.execute_query(
-                f"""
-                DROP INDEX IF EXISTS {schema}.{final_ov_name}_rast_gix;
-                """
-            )
+    log.info("DGM1 COG OUTDB: validating that PostgreSQL can read the registered COG rasters.")
+    rc = utils.do_cmd(
+        infdb,
+        f'{psql_cmd} -c "{read_validation_sql}"',
+        shell=True,
+    )
 
-            db.execute_query(
-                f"""
-                CREATE INDEX {final_ov_name}_rast_gix
-                ON {final_ov_table}
-                USING GIST (ST_ConvexHull(rast));
-                """
-            )
-
-            db.execute_query(
-                f"""
-                SELECT AddRasterConstraints(
-                    '{schema}'::name,
-                    '{final_ov_name}'::name,
-                    'rast'::name
-                );
-                """
-            )
-
-            meta = db.execute_query(
-                f"""
-                SELECT
-                    srid,
-                    scale_x,
-                    scale_y,
-                    blocksize_x,
-                    blocksize_y,
-                    nodata_values
-                FROM raster_columns
-                WHERE r_table_schema = '{schema}'
-                  AND r_table_name = '{final_ov_name}';
-                """
-            )
-
-            log.info("DGM1: retiled overview metadata for %s: %s", final_ov_table, meta)
-
-            srid, scale_x, scale_y, blocksize_x, blocksize_y, nodata_values = meta[0]
-
-            if srid != source_srid or scale_x is None or scale_y is None:
-                raise RuntimeError(
-                    f"DGM1: retiled overview table {final_ov_table} has invalid metadata: {meta}"
-                )
-
-            db.execute_query(
-                f"""
-                SELECT AddOverviewConstraints(
-                    '{schema}'::name,
-                    '{final_ov_name}'::name,
-                    'rast'::name,
-                    '{schema}'::name,
-                    '{table_base}'::name,
-                    'rast'::name,
-                    {factor}
-                );
-                """
-            )
-
-            db.execute_query(f"ANALYZE {final_ov_table};")
-
-            log.info(
-                "DGM1: final overview %s registered as factor %d overview of %s.",
-                final_ov_table,
-                factor,
-                target_table,
-            )
-
-    # ---------- 10. Cleanup temporary tables ----------
-
-    with infdb.connect() as db:
-        log.info("DGM1: cleaning up staging, helper, and raw overview tables.")
-
-        for stage_table in stage_tiled_tables + stage_untiled_tables:
-            db.execute_query(f"DROP TABLE IF EXISTS {stage_table} CASCADE;")
-
-        for factor in overview_factors:
-            raw_ov_table = f"{schema}.o_{factor}_{tmp_untiled_base}"
-            db.execute_query(f"DROP TABLE IF EXISTS {raw_ov_table} CASCADE;")
-
-        db.execute_query(f"DROP TABLE IF EXISTS {tmp_untiled_table} CASCADE;")
-
-        rows = db.execute_query(
-            f"""
-            SELECT
-                o_table_schema,
-                o_table_name,
-                r_table_schema,
-                r_table_name,
-                overview_factor
-            FROM raster_overviews
-            WHERE r_table_schema = '{schema}'
-              AND r_table_name = '{table_base}'
-            ORDER BY overview_factor;
-            """
+    if rc != 0:
+        raise RuntimeError(
+            "DGM1 COG OUTDB: PostgreSQL could not read the registered out-of-db COG rasters. "
+            "Check that the DB container can read the COG paths and that out-db raster access is enabled."
         )
 
-        log.info("DGM1: registered raster overviews for %s: %s", target_table, rows)
+    log.info("DGM1 COG OUTDB: PostgreSQL successfully read the registered COG rasters.")
 
-        meta_rows = db.execute_query(
-            f"""
-            SELECT
-                r_table_name,
-                srid,
-                scale_x,
-                scale_y,
-                blocksize_x,
-                blocksize_y,
-                same_alignment,
-                regular_blocking,
-                nodata_values
-            FROM raster_columns
-            WHERE r_table_schema = '{schema}'
-              AND r_table_name IN (
-                  '{table_base}',
-                  'o_4_{table_base}',
-                  'o_8_{table_base}',
-                  'o_16_{table_base}'
-              )
-            ORDER BY scale_x;
-            """
-        )
+    # ---------- 13. Show the first few registered COG paths ----------
+    path_check_sql = f"""
+        SELECT
+            rid,
+            filename,
+            ST_BandPath(rast, 1) AS registered_path,
+            ST_Width(rast) AS width,
+            ST_Height(rast) AS height,
+            ST_ScaleX(rast) AS scalex,
+            ST_ScaleY(rast) AS scaley
+        FROM {target_table}
+        ORDER BY rid
+        LIMIT 10;
+    """
 
-        log.info("DGM1: raster metadata after overview registration: %s", meta_rows)
+    log.info("DGM1 COG OUTDB: checking the first registered COG paths.")
+    rc = utils.do_cmd(
+        infdb,
+        f'{psql_cmd} -c "{path_check_sql}"',
+        shell=True,
+    )
 
-    log.info("DGM1: final tiled table + retiled overviews completed successfully.")
+    if rc != 0:
+        log.warning("DGM1 COG OUTDB: could not inspect registered COG paths.")
+
+    log.info("DGM1 COG OUTDB: COG-based out-of-db import finished successfully.")
 
 
 # ====================================================================================
@@ -1083,7 +823,7 @@ def _load_tatsaechliche_nutzung(infdb: InfDB, cfg: dict, base_path: Path, pgurl:
             )
         conn.commit()
 
-    # ==================== 7. FINALIZATION ====================
+    # ==================== 8. FINALIZATION ====================
     # Get final row count and create spatial index if there is data
     total_rows_imported = 0
     with engine.connect() as conn:
