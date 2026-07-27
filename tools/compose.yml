@@ -9,6 +9,7 @@ include:
   - infdb-metadata/compose.yml
   - linear-heat-density/compose.yml
   # - process-streets/compose.yml
+  - dhmin/compose.yml
   - pylovo-generation/compose.yml
   - ro-heat/compose.yml
   - buildings-to-street/compose.yml
