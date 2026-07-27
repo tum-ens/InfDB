@@ -81,7 +81,6 @@ infdb-import:
                     name: Geländemodell Bayern 1m
                     table_name: gelaendemodell_1m
                     target_resolution: 10.0
-                    overview_resolution: 32.0  # Resolution of the single consolidated overview file that QGIS renders when zoomed out. Lower = sharper but slower to build.
                     srid: 25832
                     
                     state_prefix: "09"

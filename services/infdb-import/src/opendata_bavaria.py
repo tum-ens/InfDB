@@ -241,18 +241,15 @@ def _build_consolidated_overview(
     infdb: InfDB,
     vrt_path: Path,
     output_path: Path,
-    overview_res: float,
 ) -> Path | None:
-    """Build one consolidated low-resolution COG covering the whole scope.
+    """Build one consolidated GeoTIFF with a 9-level overview pyramid covering the whole scope.
 
     QGIS cannot render the full-resolution mosaic when zoomed out, and the internal
     overviews of the individual COG tiles do not help: at that zoom the cost is
     opening every source tile, not reading pixels. Collapsing the mosaic into a
-    single coarse file removes that cost. Measured on the Neuburg/Munich scope
-    (488 tiles): full-extent read drops from ~2500 ms to ~50 ms.
-
-    The COG driver adds further internal overview levels on top of this file, so one
-    consolidated level is enough to cover the whole zoom range.
+    single file with a deep gdaladdo pyramid removes that cost while keeping full
+    detail available on zoom-in. Measured on the Neuburg/Munich scope (488 tiles):
+    full-extent read drops from ~2500 ms to ~50 ms.
     """
     log = infdb.get_worker_logger()
 
@@ -264,16 +261,15 @@ def _build_consolidated_overview(
             "gdalwarp",
             "-overwrite",
             "-of",
-            "COG",
+            "GTiff",
+            "-co",
+            "TILED=YES",
             "-co",
             "COMPRESS=ZSTD",
             "-co",
-            "BLOCKSIZE=512",
-            "-r",
-            "average",
-            "-tr",
-            str(overview_res),
-            str(overview_res),
+            "BIGTIFF=YES",
+            "-co",
+            "NUM_THREADS=ALL_CPUS",
             "-srcnodata",
             "-9999",
             "-dstnodata",
@@ -292,6 +288,23 @@ def _build_consolidated_overview(
 
     if not output_path.exists() or output_path.stat().st_size == 0:
         log.warning("DGM1 COG OUTDB: consolidated overview is empty.")
+        return None
+
+    log.info("DGM1 COG OUTDB: building overview pyramid (gdaladdo 9 levels).")
+
+    rc = utils.do_cmd(
+        infdb,
+        [
+            "gdaladdo",
+            "-r",
+            "average",
+            str(output_path),
+            "2", "4", "8", "16", "32", "64", "128", "256", "512",
+        ],
+    )
+
+    if rc != 0:
+        log.error("DGM1 COG OUTDB: gdaladdo pyramid build failed.")
         return None
 
     return output_path
@@ -387,7 +400,6 @@ def _load_dgm1(infdb: InfDB, base_path: Path, target_epsg: int):
     schema = infdb.get_config_value(source_cfg + ["schema"])
     table_base = infdb.get_config_value(dgm1_cfg + ["table_name"])
     source_srid = int(infdb.get_config_value(dgm1_cfg + ["srid"]))
-    overview_res = float(infdb.get_config_value(dgm1_cfg + ["overview_resolution"]) or 32.0)
 
     # Unset (or 1m) means: keep the native DGM1 resolution and skip resampling.
     configured_res = infdb.get_config_value(dgm1_cfg + ["target_resolution"])
@@ -396,12 +408,11 @@ def _load_dgm1(infdb: InfDB, base_path: Path, target_epsg: int):
         target_res = None
 
     log.info(
-        "DGM1 COG OUTDB: schema=%s table=%s srid=%s target_res=%s overview_res=%.1f",
+        "DGM1 COG OUTDB: schema=%s table=%s srid=%s target_res=%s",
         schema,
         table_base,
         source_srid,
         f"{target_res:g}m" if target_res else "native 1m",
-        overview_res,
     )
 
     # ---------- 2. Working directories ----------
@@ -521,11 +532,11 @@ def _load_dgm1(infdb: InfDB, base_path: Path, target_epsg: int):
     log.info("DGM1 COG OUTDB: persistent QGIS VRT created: %s", vrt_path)
 
     # ---------- 8b. Build the consolidated overview used for zoomed-out rendering ----------
-    overview_path = dgm1_base_dir / f"dgm1_overview_{overview_res:g}m.tif"
+    res_label = target_res if target_res else 1.0
+    overview_path = dgm1_base_dir / f"dgm1_overview_{res_label:g}m.tif"
 
     log.info(
-        "DGM1 COG OUTDB: building consolidated %.1fm overview from %d COG files.",
-        overview_res,
+        "DGM1 COG OUTDB: building consolidated overview from %d COG files.",
         len(cog_paths),
     )
 
@@ -533,7 +544,6 @@ def _load_dgm1(infdb: InfDB, base_path: Path, target_epsg: int):
         infdb=infdb,
         vrt_path=vrt_path,
         output_path=overview_path,
-        overview_res=overview_res,
     )
 
     if overview_path:
