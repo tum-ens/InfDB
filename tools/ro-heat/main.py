@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 # entise package has to type stubs
 from entise.core.generator import Generator  # type: ignore
+from entise.io.storage import PostgresTimescaleStorage, StorageConfig  # type: ignore
 from pyinfdb import InfDB
 
 from src import refurbishment, tabula_handling, timedata
@@ -55,10 +56,14 @@ def main():
         }
         buildings = infdbclient_citydb.get_pandas_sqlfile(full_path, format_params=format_params)
 
-        # # Choose a subset of buildings for testing
-        # if len(buildings) > 100:
-        #     buildings = buildings.sample(n=100, random_state=random_seed).reset_index(drop=True)
-        
+        # Optional: restrict the calculation to buildings whose postcode (PLZ) is listed
+        # in the config. postcode is stored as an integer, so compare numerically.
+        store_plz = (infdbhandler.get_config_value(["ro-heat", "data", "storage"]) or {}).get("store_plz")
+        if store_plz:
+            plz_set = {int(p) for p in store_plz}
+            buildings = buildings[buildings["postcode"].isin(plz_set)].reset_index(drop=True)
+            infdblog.info(f"Filtered to {len(buildings)} buildings in PLZ {sorted(plz_set)}")
+
 
         if len(buildings) == 0:
             infdblog.warning(f"No buildings found for AGS {ags}. Returning without result")
@@ -204,8 +209,34 @@ def main():
             gen = Generator()
             gen.add_objects(entise_input)
 
-            # Generate time series and summary
-            summary, dict_df = gen.generate(data, workers=os.cpu_count())
+            # Storage configuration: ro-heat injects the domain-specific mapping
+            # (output columns -> series names, target schema, units) and hands the
+            # engine to EnTiSe. EnTiSe then both calculates the time series and streams
+            # them straight into the database, without returning the bulk data here.
+            storage_cfg = infdbhandler.get_config_value(["ro-heat", "data", "storage"])
+            store_timeseries = storage_cfg.get("store_timeseries", True)
+
+            if store_timeseries:
+                storage_config = StorageConfig.from_dict(
+                    {
+                        "schema": output_schema,
+                        "ts_type": storage_cfg["ts_type"],
+                        "source": storage_cfg.get("source", infdbhandler.get_toolname()),
+                        "data_table": storage_cfg.get("data_table", "entise_ts_data"),
+                        "metadata_table": storage_cfg.get("metadata_table", "entise_ts_metadata"),
+                        "index_name": storage_cfg.get("index_name", "entise_ts_data_idx"),
+                        "stream_chunk_size": storage_cfg.get("stream_chunk_size", 500),
+                        "series": storage_cfg["series"],
+                    }
+                )
+                storage = PostgresTimescaleStorage(engine, storage_config)
+
+                # EnTiSe computes in chunks and streams each chunk to the database,
+                # keeping memory bounded and building the index once at the end.
+                summary, _ = gen.generate(data, workers=os.cpu_count(), storage=storage)
+            else:
+                infdblog.info("store_timeseries is false; computing summary only (time series not stored).")
+                summary, _ = gen.generate(data, workers=os.cpu_count())
 
             # Summary
             summary.index.name = "building_objectid"
@@ -221,19 +252,11 @@ def main():
                                                 format_params_output_schema)
 
             infdblog.info(summary.head())
-
-            # Time Series
-            write_timeseries = False
-            if not write_timeseries:
-                infdblog.info("Skipping EnTiSe output time series writing to database as per configuration")
-                return
-
-            timedata.write_ts_data(dict_df, engine, infdbclient_citydb, infdbhandler, infdblog, output_schema)
         else:
             raise ValueError("Method must be 1R0C or 1R1C")
 
     except Exception as e:
-        infdblog.exception()
+        infdblog.exception("Error while running ro-heat tool")
         infdbhandler.stop_logger()
         raise e
 

@@ -28,7 +28,7 @@ ro-heat:
             simulation_year: 2023
             heating_setpoint: 20.0 # heating setpoint in °C
             random_seed: 42 # explain this value
-            method: 1R0C_internal # 1R1C or 1R0C or 1R0C_internal
+            method: 1R1C # 1R1C or 1R0C or 1R0C_internal
             Heated_Area_Ratio: 0.8 # ratio of heated area to total area (0-1)
         refurbishment:
             outer_wall:
@@ -45,3 +45,41 @@ ro-heat:
                 lifespan_spread: 10
         output:
             schema: ro_heat   # needs to be snake_case
+        # ── EnTiSe storage ───────────────────────────────────────────────────────
+        # ro-heat hands its DB engine + this block to EnTiSe, which computes the time
+        # series and (optionally) streams them into the DB via COPY. Target schema comes
+        # from data.output.schema above. [EnTiSe] keys map onto EnTiSe's StorageConfig;
+        # [ro-heat] keys are consumed here and not passed to EnTiSe.
+        storage:
+            store_timeseries: true               # [ro-heat] false = store summary only; true = also store the full time series
+            ts_type: hvac                        # [EnTiSe] result type to read: {object_id: {ts_type: DataFrame}}
+            source: ro-heat                      # [EnTiSe] metadata 'source' + part of unique key (name+objectid+source)
+            data_table: entise_ts_data           # [EnTiSe] holds (ts_metadata_id, time, value) rows
+            metadata_table: entise_ts_metadata   # [EnTiSe] one row per (building, series)
+            index_name: entise_ts_data_idx       # [EnTiSe] dropped before load, rebuilt once after (index-once)
+            stream_chunk_size: 500               # [EnTiSe] buildings computed + COPY-ed per chunk (bounds RAM)
+            store_plz: []                        # [ro-heat] only process these postcodes; [] = all buildings in the AGS
+
+            # [EnTiSe] column-to-series mapping (the domain-specific part). For each
+            # EnTiSe output column we store, this declares the DB series + metadata:
+            #   column      -> column in EnTiSe's per-object DataFrame (the value source)
+            #   name        -> series name written to metadata_table
+            #   description -> human-readable description (metadata)
+            #   type        -> series type (metadata)
+            #   unit        -> physical unit (metadata)
+            series:
+                - column: "indoor_temperature[C]"
+                  name: ro_heat_indoor_temperature
+                  description: "Indoor temperature for building"
+                  type: synthetic
+                  unit: "°C"
+                - column: "heating:load[W]"
+                  name: ro_heat_heating_load
+                  description: "Heating load for building"
+                  type: synthetic
+                  unit: "W"
+                - column: "cooling:load[W]"
+                  name: ro_heat_cooling_load
+                  description: "Cooling load for building"
+                  type: synthetic
+                  unit: "W"
