@@ -5,7 +5,7 @@ This module sets up PostgreSQL Foreign Data Wrapper to access the central
 opendata schema from a remote InfDB instance without duplicating data.
 """
 
-from infdb import InfDB
+from pyinfdb import InfDB
 
 
 def is_active(infdb: InfDB):
