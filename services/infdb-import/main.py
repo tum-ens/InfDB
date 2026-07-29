@@ -16,6 +16,7 @@ from src import (
     nrw_opencloud,
     opendata_bavaria,
     openmeteo,
+    osm,
     plz,
     tabula,
     utils,
@@ -125,6 +126,7 @@ def main() -> None:
     # processes.append(mp.Process(target=_run_loader, args=(wetterdienst.load,), name="wetterdienst"))
     processes.append(mp.Process(target=_run_loader, args=(nrw_opencloud.load,), name="nrw_opencloud"))
     processes.append(mp.Process(target=_run_loader, args=(opendata_bavaria.load,), name="opendata_bavaria"))
+    processes.append(mp.Process(target=_run_loader, args=(osm.load,), name="osm"))
     processes.append(mp.Process(target=_run_loader, args=(lod2.load,), name="lod2"))
 
     for process in processes:

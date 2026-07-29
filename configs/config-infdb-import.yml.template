@@ -92,6 +92,26 @@ infdb-import:
                     name: Tatsächliche Nutzung (TN) 
                     table_name: tatsaechliche_nutzung
                     url: "https://geodaten.bayern.de/odd/m/3/daten/tn/Nutzung_kreis.gpkg"
+        osm:
+            # OpenStreetMap via pgosm-flex (osm2pgsql). Handled automatically by
+            # src/osm.py during the normal import run:
+            #   - if 'staging_schema' is missing, it launches the pgosm-flex
+            #     container (see Dockerfile/compose.yml) to download the WHOLE
+            #     subregion and import it into the infdb DB (external Postgres mode);
+            #   - then it clips to the configured scope (top-level 'scope:') and
+            #     writes the result into 'schema' as <prefix>_<table>.
+            # The staging schema persists across runs, so the heavy download only
+            # happens once. To force a re-download, drop the staging schema manually.
+            status: active
+            staging_schema: osm      # pgosm-flex target (whole subregion); persists across runs
+            schema: opendata         # scope-clipped result
+            prefix: osm              # target tables -> opendata.osm_<table>
+            srid: 25832
+            # pgosm-flex import parameters:
+            region: europe/germany
+            subregion: bayern
+            layerset: everything     # 'everything' = all OSM layers (45 tables)
+            ram: 8                   # GB of RAM for osm2pgsql tuning
         lod2:
             status: active
             import-mode: skip
