@@ -428,9 +428,9 @@ def load(infdb: InfDB) -> bool:
         if not success:
             raise RuntimeError("LoD2: one or more import batches failed")
 
-        # Create flat building table
-        object_id_prefix = infdb.get_config_value(source_cfg + ["object_id_prefix"]) or "DE"
-        utils.create_building_lod2_table(object_id_prefix=object_id_prefix, infdb=infdb)
+        # Flat building tables (building_view / building_surface) are created
+        # centrally in main.py via utils.create_building_tables() after all
+        # citydb imports finish.
 
         log.info("LoD2 data loaded successfully")
         sys.exit(0)
