@@ -14,10 +14,13 @@ services:
             POSTGRES_PASSWORD: ${SERVICES_POSTGRES_PASSWORD}
             PGDATA: /infdb-data
             SRID: ${SERVICES_POSTGRES_EPSG}
+            POSTGIS_ENABLE_OUTDB_RASTERS: "1"
+            POSTGIS_GDAL_ENABLED_DRIVERS: "ENABLE_ALL"
         ports:
             - ${SERVICES_POSTGRES_EXPOSED_PORT}:5432
         volumes:
             - infdb-db-data:/infdb-data
+            - infdb-import-data:/workspaces/data:ro
         networks:
             - infdb_network
         healthcheck:
@@ -29,3 +32,6 @@ services:
 volumes:
   infdb-db-data:
     name: ${BASE_NAME}-db-data
+  infdb-import-data:
+    external: true
+    name: infdb-import-data

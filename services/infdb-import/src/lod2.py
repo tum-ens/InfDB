@@ -324,6 +324,46 @@ def _build_url_for_hesse_bergstrasse(config: dict, log) -> list[str]:
 
 
 
+def _build_urls_for_single_ags(
+    region_name: str,
+    region_cfg: dict,
+    ags_code: str,
+    infdb: InfDB,
+    log,
+) -> list[str]:
+    """Build tiled dataset URLs for one AGS only."""
+    if region_cfg.get("status") != "active":
+        log.info("%s: inactive, skipping.", region_name)
+        return []
+
+    base_url = str(region_cfg.get("base_url", "")).rstrip("/") + "/"
+    tile_size_m = int(region_cfg.get("tile_size_m") or 0)
+    template = region_cfg.get("filename_template")
+
+    if not ags_code or not base_url or not tile_size_m or not template:
+        log.warning("%s: incomplete tiled dataset configuration for AGS %s, skipping.", region_name, ags_code)
+        return []
+
+    clip_wkt, _, _ = utils.get_clip_geometry(target_crs=25832, infdb=infdb, state_prefix=ags_code)
+    if not clip_wkt:
+        log.info("%s: no scope geometry resolved for AGS %s, skipping.", region_name, ags_code)
+        return []
+
+    scope_geom = shapely_wkt.loads(clip_wkt)
+
+    urls = []
+    for x, y in _iter_tile_origins_for_geom(scope_geom, tile_size_m=tile_size_m):
+        fname = template.format(
+            e_km=x // 1000,
+            n_km=y // 1000,
+        )
+        urls.append(base_url + fname)
+
+    urls = sorted(set(urls))
+    log.info("%s / AGS %s: %d intersecting tiles resolved.", region_name, ags_code, len(urls))
+    return urls
+
+
 def load(infdb: InfDB) -> bool:
     """Download LoD2 CityGML tiles for all active configured regions, import them via citydb,
     then create the flat LoD2 building table.
