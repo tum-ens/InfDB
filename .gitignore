@@ -204,3 +204,6 @@ jats/*
 
 # # QGIS Web Client generated configurations
 # services/qgis_webclient/volumes/config/default/*
+
+# Graphify
+graphify-out
