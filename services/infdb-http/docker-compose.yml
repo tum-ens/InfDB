@@ -9,12 +9,10 @@ services:
       - BASIC_AUTH_PASSWORD=${BASIC_AUTH_PASSWORD:-password}
     volumes:
       - ./data:/usr/share/nginx/html
-      # Serve the imported rasters read-only so GDAL clients can open the COGs
-      # over HTTP with /vsicurl/ instead of downloading them.
+      # Serve the imported rasters read-only so GDAL clients can open the COGs over HTTP with /vsicurl/
       - infdb-import-data:/usr/share/nginx/html/import:ro
 
 volumes:
-  # Same declaration as services/infdb-import/compose.yml, so both projects
-  # attach to the one volume named infdb-import-data.
+  # Same declaration as services/infdb-import/compose.yml, so both projects attach to the one volume named infdb-import-data.
   infdb-import-data:
     name: infdb-import-data
