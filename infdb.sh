@@ -73,7 +73,7 @@ cmd_import() {
     generate_compose "${selected_profiles[@]}"
     
     echo "=== Importing data ==="
-    docker compose --profile "import" up "$@"
+    docker compose --profile "import-tobefixed" up "$@"
 }
 
 cmd_stop() {

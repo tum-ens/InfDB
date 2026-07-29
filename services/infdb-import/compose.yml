@@ -1,7 +1,7 @@
 services:
     infdb-import:
         profiles:
-            - import
+            - import-tobefixed
         image: infdb/infdb-import:latest
         build:
             context: .
