@@ -42,7 +42,7 @@ infdb-import:
             username: need
             access_token: "quake taunt tricycle uncrown barista drilling"
     fdw:
-        status: inactive # set to "inactive" to disable FDW setup
+        status: not-inactive # set to "active" to enable FDW setup
         central_db:
             host: "host.docker.internal"  # Central InfDB instance host
             port: 54328  # Central InfDB instance port

@@ -89,7 +89,7 @@ def main() -> None:
     
 
     # Set up Foreign Data Wrapper (FDW) if active
-    if infdb_fdw_setup.is_active(infdb):
+    if utils.if_active("fdw", infdb):
         log.info("Setting up Foreign Data Wrapper (FDW)...")
         try:
             infdb_fdw_setup.setup_fdw(infdb)
