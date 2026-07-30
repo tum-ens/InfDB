@@ -70,10 +70,12 @@ cmd_import() {
     ensure_from_template "configs/config-infdb-import.yml" "configs/config-infdb-import.yml.template"
 
     read -r -a selected_profiles <<< "$(read_profiles)"
-    generate_compose "${selected_profiles[@]}"
-    
+    generate_compose "${selected_profiles[@]}" "db" "import"
+
     echo "=== Importing data ==="
-    docker compose --profile "import-tobefixed" up "$@"
+    docker compose up "$@"
+
+    generate_compose "${selected_profiles[@]}"
 }
 
 cmd_stop() {
