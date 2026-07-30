@@ -13,11 +13,11 @@
 | Community | [![Contributing](https://img.shields.io/badge/contributions-welcome-brightgreen)](https://tum-ens.github.io/InfDB/development) [![Contributors](https://img.shields.io/github/contributors/tum-ens/InfDB)](https://github.com/tum-ens/InfDB/graphs/contributors) [![Last Commit](https://img.shields.io/github/last-commit/tum-ens/InfDB)](https://github.com/tum-ens/InfDB/commits/) |
 
 ## Table of Contents
-
 - [Why use it?](#why-use-it)
 - [How it works?](#how-it-works)
 - [Getting Started](#getting-started)
-- [License and Citation](#license-and-citation)
+- [License](#license)
+- [Citation](#citation)
 
 ## Why use it?
 InfDB addresses common challenges in energy system modeling and analysis, particularly those related to data management. By providing a standardized and modular infrastructure, InfDB reduces the time and effort required to set up and maintain data systems. This allows researchers, analysts, and planners to focus on their core tasks of modeling and analysis, rather than being bogged down by data logistics.
@@ -151,15 +151,14 @@ SELECT * FROM linear_heat_density.linear_heat_density LIMIT 10;
 You can also use pgAdmin or any other database client to connect to the database using the credentials and port specified in the configuration.
 
 # Changelog
-
 The changelog is maintained in the [CHANGELOG.md](CHANGELOG.md) file. It lists all changes made to the repository. Follow instructions there to document any updates.
 
-# License and Citation
-
+# License
 The code of this repository is licensed under the **Apache 2.0 License**.  
 See [LICENSE](LICENSE) for rights and obligations.  
 Copyright: [TU Munich - ENS](https://www.epe.ed.tum.de/en/ens/homepage/) | [Apache 2.0 License](LICENSE)
 
+# Citation
 If you use InfDB in your work, please cite the paper published in the *Journal of Open Source Software*:
 
 > Buchenberg et al., (2026). InfDB: An Open Source Energy and Infrastructure Data Ecosystem for Modeling and Planning. *Journal of Open Source Software*, 11(122), 10458, https://doi.org/10.21105/joss.10458
