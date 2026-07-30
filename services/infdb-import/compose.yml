@@ -2,9 +2,6 @@ services:
     infdb-import:
         profiles:
             - import
-        depends_on:
-            postgres:
-                condition: service_healthy
         image: infdb/infdb-import:latest
         build:
             context: .
