@@ -7,34 +7,21 @@ from sqlalchemy import text
 
 from . import utils
 
-# Module logger (replaced by the worker logger inside load()).
 log = logging.getLogger(__name__)
 
 
 # ====================================================================================
 # OpenStreetMap loader
 # ====================================================================================
-#
-# Behaves like the other loaders: on every import run it checks whether the OSM data
-# is already present, and if not, downloads + imports it first, then clips to scope.
-#
 #   1. DOWNLOAD + FULL IMPORT (only if missing)
-#      Launches the tested pgosm-flex container (osm2pgsql under the hood) as a
+#      Launches the pgosm-flex container (osm2pgsql under the hood) as a
 #      SIBLING container via the host Docker daemon. pgosm-flex downloads the WHOLE
 #      subregion (e.g. Bavaria) from Geofabrik and imports it - in external Postgres
 #      mode - directly into a STAGING schema (default "osm") of the infdb database.
-#      This is the exact two-step pgosm-flex workflow (docker run -d, then
-#      docker exec ... pgosm_flex.py), only the DB target is the infdb database.
-#      It is heavy but runs only once: the staging schema persists across runs
-#      (main.py drops only 'opendata' / 'tmp_bld', never the staging schema).
 #
 #   2. SCOPE CLIP (every run)
-#      Copies ONLY the features inside the configured scope
-#      (config-infdb-import.yml -> top-level 'scope:') from the staging schema into
+#      Copies ONLY the features inside the configured scope from the staging schema into
 #      the 'opendata' schema (opendata.osm_<table>).
-#
-# Requirements (see Dockerfile / compose.yml): the docker CLI is installed in this
-# image and the host Docker socket is mounted, so this loader can launch pgosm-flex.
 # ====================================================================================
 
 _PGOSM_IMAGE = "rustprooflabs/pgosm-flex"
