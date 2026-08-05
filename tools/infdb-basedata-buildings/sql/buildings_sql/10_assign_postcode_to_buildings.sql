@@ -12,7 +12,7 @@ CREATE TEMP TABLE IF NOT EXISTS temp_postcode_{EPSG}
 CREATE INDEX IF NOT EXISTS idx_temp_postcode_geom ON temp_postcode_{EPSG} USING GIST (geom);
 
 INSERT INTO temp_postcode_{EPSG} (plz, geom)
-SELECT plz::int, ST_Transform(geom, {EPSG})
+SELECT plz::int, ST_MakeValid(ST_Transform(geom, {EPSG}))
 FROM {input_schema}."postcodes_germany";
 
 UPDATE temp_buildings b

@@ -130,3 +130,61 @@ FROM (SELECT building_id,
             FROM temp_nearest_grid_year) year_probs) sub
 WHERE b.id = sub.building_id
   AND b.construction_year IS NULL;
+
+
+-- Step 5: Bundesland-level fallback for AGS where no census grid cell has
+-- construction year data (e.g. Gemeindefreies Gebiet — uninhabited forest areas).
+-- Steps 1-4 only search within the current AGS's grid cells; when the entire AGS
+-- lacks census coverage, those steps leave construction_year NULL.
+-- This fallback aggregates the construction year distribution across all census
+-- grid cells in the same Bundesland (matched via the AGS prefix) and draws from
+-- that state-wide distribution using the same deterministic random seed.
+DO $$
+DECLARE
+    v_null_count INTEGER;
+BEGIN
+    SELECT COUNT(*) INTO v_null_count
+    FROM temp_buildings
+    WHERE construction_year IS NULL;
+
+    IF v_null_count = 0 THEN
+        RETURN;
+    END IF;
+
+    RAISE NOTICE '[09_fill_construction_year] AGS {ags}: % buildings still without construction_year after nearest-neighbor fallback — applying Bundesland-level fallback (state prefix: %)',
+        v_null_count, LEFT('{ags}', 2);
+
+    UPDATE temp_buildings b
+    SET construction_year = {output_schema}.assign_weighted_year(
+            state_agg.s_vor1919,
+            state_agg.s_a1919bis1948,
+            state_agg.s_a1949bis1978,
+            state_agg.s_a1979bis1990,
+            state_agg.s_a1991bis2000,
+            state_agg.s_a2001bis2010,
+            state_agg.s_a2011bis2019,
+            state_agg.s_a2020undspaeter,
+            (
+                get_byte(decode(md5(format('%s:%s', '{random_seed}', b.objectid)), 'hex'), 0)::bigint * 16777216 +
+                get_byte(decode(md5(format('%s:%s', '{random_seed}', b.objectid)), 'hex'), 1)::bigint * 65536 +
+                get_byte(decode(md5(format('%s:%s', '{random_seed}', b.objectid)), 'hex'), 2)::bigint * 256 +
+                get_byte(decode(md5(format('%s:%s', '{random_seed}', b.objectid)), 'hex'), 3)::bigint
+            )::double precision / 4294967295.0
+        )
+    FROM (
+        SELECT
+            SUM(COALESCE(z.vor1919, 0))            AS s_vor1919,
+            SUM(COALESCE(z.a1919bis1948, 0))       AS s_a1919bis1948,
+            SUM(COALESCE(z.a1949bis1978, 0))       AS s_a1949bis1978,
+            SUM(COALESCE(z.a1979bis1990, 0))       AS s_a1979bis1990,
+            SUM(COALESCE(z.a1991bis2000, 0))       AS s_a1991bis2000,
+            SUM(COALESCE(z.a2001bis2010, 0))       AS s_a2001bis2010,
+            SUM(COALESCE(z.a2011bis2019, 0))       AS s_a2011bis2019,
+            SUM(COALESCE(z.a2020undspaeter, 0))    AS s_a2020undspaeter
+        FROM {input_schema}.zensus_2022_100m_gebaeude_baujahr_mikrozensus z
+        JOIN {input_schema}.bkg_vg5000_gem bkg
+            ON bkg.ags LIKE LEFT('{ags}', 2) || '%%'
+            AND ST_Intersects(z.geom, bkg.geom)
+    ) state_agg
+    WHERE b.construction_year IS NULL;
+END $$;
