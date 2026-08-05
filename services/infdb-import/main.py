@@ -76,8 +76,21 @@ def main() -> None:
     # if utils.if_active("package", infdb):00
     #     package.load(infdb)
 
+    # Check whether the database is available before continuing.
+    log.info(f"Database parameters: {infdb.get_db_parameters_dict()}")
+    log.info("Checking database availability...")
+    try:
+        with infdb.connect() as db:
+            db.execute_query("SELECT 1;")
+        log.info("Database is available.")
+    except Exception as e:
+        log.error(f"Database is not available: {str(e)}")
+        raise
+
+    
+
     # Set up Foreign Data Wrapper (FDW) if active
-    if infdb_fdw_setup.is_active(infdb):
+    if utils.if_active("fdw", infdb):
         log.info("Setting up Foreign Data Wrapper (FDW)...")
         try:
             infdb_fdw_setup.setup_fdw(infdb)

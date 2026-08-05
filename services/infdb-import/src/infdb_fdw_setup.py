@@ -8,12 +8,6 @@ opendata schema from a remote InfDB instance without duplicating data.
 from pyinfdb import InfDB
 
 
-def is_active(infdb: InfDB):
-    """Returns whether this tool is active based on the config."""
-    fdw_config = infdb.get_config_value([infdb.get_toolname(), "fdw"])
-    isActive : str = fdw_config["status"]
-    return isActive.lower() == "active"
-
 def setup_fdw(infdb: InfDB) -> None:
     """
     Sets up Foreign Data Wrapper to access the central opendata schema.
