@@ -776,7 +776,7 @@ infdb-import:
                 processed: "{infdb-import/path/processed}/dwd/"
             schema: need_intern
             prefix: "dwd"
-            scope: true   # set to false to import the data unclipped (no AGS scope filter)
+            scope: false # scope filtering does NOT work for this dataset, so it is disabled
         waermeatlas-hessen-bensheim:
             status: not-active
             url: "https://cloud.ocd.need.energy/remote.php/dav/spaces/1bb5c9f8-4002-4b43-a148-2489f970c921$5720d11a-72a9-4e88-abe1-3291e0711805/BensheimWaermeatlasHessen.gpkg"
