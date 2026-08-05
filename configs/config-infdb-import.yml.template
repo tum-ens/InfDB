@@ -92,6 +92,17 @@ infdb-import:
                     name: Tatsächliche Nutzung (TN) 
                     table_name: tatsaechliche_nutzung
                     url: "https://geodaten.bayern.de/odd/m/3/daten/tn/Nutzung_kreis.gpkg"
+        osm:
+            status: active
+            staging_schema: osm      # pgosm-flex target (whole subregion); persists across runs
+            schema: opendata         # scope-clipped result
+            prefix: osm              # target tables -> opendata.osm_<table>
+            srid: 25832
+            # pgosm-flex import parameters:
+            region: europe/germany
+            subregion: bayern
+            layerset: everything     # 'everything' = all OSM layers (45 tables)
+            ram: 8                   # GB of RAM for osm2pgsql tuning
         lod2:
             status: active
             import-mode: skip

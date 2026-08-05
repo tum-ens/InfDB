@@ -14,6 +14,9 @@ services:
             # - /workspaces/infdb-import/.venv # for development only: exclude .venv from volume mount
             - .vscode:/workspaces/.vscode:ro # for development only
             - ../../configs:/workspaces/configs:ro
+            # OSM loader (src/osm.py) launches the pgosm-flex container as a sibling.
+            # This mounts the host Docker daemon so the import process can run it.
+            - /var/run/docker.sock:/var/run/docker.sock
         extra_hosts:
             - "host.docker.internal:host-gateway"
         env_file:

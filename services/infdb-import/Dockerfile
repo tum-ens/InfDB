@@ -11,6 +11,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gdal-bin \
  && rm -rf /var/lib/apt/lists/*
 
+# Docker CLI (client only) - the OSM loader (src/osm.py) launches the pgosm-flex
+# container as a sibling via the mounted host Docker socket (see compose.yml).
+RUN curl -fsSL https://download.docker.com/linux/static/stable/x86_64/docker-27.5.1.tgz \
+    | tar -xz --strip-components=1 -C /usr/local/bin docker/docker
+
 # PostgreSQL client (PGDG) + PostGIS necessary for shp2pgsql / raster2pgsql
 RUN install -d /usr/share/postgresql-common/pgdg && \
     curl -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc --fail https://www.postgresql.org/media/keys/ACCC4CF8.asc && \
