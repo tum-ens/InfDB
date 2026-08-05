@@ -1,26 +1,11 @@
-import json
 import os
-import subprocess
 import sys
-from typing import List
 
 from pyinfdb import InfDB
 
 from . import utils
 
 NAME = "dwd"
-
-
-def _get_gpkg_layers(gpkg: str) -> List[str]:
-    """List all layer names in a GeoPackage via ogrinfo (JSON, with a text fallback)."""
-    try:
-        out = subprocess.check_output(["ogrinfo", "-ro", "-q", "-json", str(gpkg)], text=True)
-        data = json.loads(out)
-        return [lyr["name"] for lyr in data.get("layers", []) if "name" in lyr]
-    except Exception:
-        # Fallback: parse "1: layer_name (Geometry Type)" lines.
-        out = subprocess.check_output(["ogrinfo", "-ro", "-q", str(gpkg)], text=True, stderr=subprocess.STDOUT)
-        return [line.split(":", 1)[1].split("(")[0].strip() for line in out.splitlines() if ":" in line and "(" in line]
 
 
 def load(infdb: InfDB) -> bool:
@@ -68,7 +53,7 @@ def load(infdb: InfDB) -> bool:
         prefix: str = infdb.get_config_value(cfg + ["prefix"]) or NAME
 
         # Import every layer found in the GeoPackage (we don't hardcode a layer list).
-        layers = _get_gpkg_layers(file_path)
+        layers = utils.get_gpkg_layers(file_path)
         if not layers:
             log.warning(f"{NAME}: no layers found in {file_path}; nothing to import.")
             return True
