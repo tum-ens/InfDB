@@ -1,4 +1,5 @@
 import csv
+import json
 import multiprocessing
 import os
 import random
@@ -662,6 +663,18 @@ def get_number_processes(infdb: InfDB) -> int:
 
 # ======================= import / export to PostGIS =======================
 # --------------------------------------------------------------------------
+
+
+def get_gpkg_layers(gpkg: str) -> List[str]:
+    """List all layer names in a GeoPackage via ogrinfo (JSON, with a text fallback)."""
+    try:
+        out = subprocess.check_output(["ogrinfo", "-ro", "-q", "-json", str(gpkg)], text=True)
+        data = json.loads(out)
+        return [lyr["name"] for lyr in data.get("layers", []) if "name" in lyr]
+    except Exception:
+        # Fallback: parse "1: layer_name (Geometry Type)" lines.
+        out = subprocess.check_output(["ogrinfo", "-ro", "-q", str(gpkg)], text=True, stderr=subprocess.STDOUT)
+        return [line.split(":", 1)[1].split("(")[0].strip() for line in out.splitlines() if ":" in line and "(" in line]
 
 
 def import_layers(

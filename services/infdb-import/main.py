@@ -7,6 +7,7 @@ from src import (
     basemap,
     bkg,
     census2022,
+    dwd,
     gebaeude_neuburg,
     infdb_fdw_setup,
     kwp_nrw,
@@ -134,6 +135,7 @@ def main() -> None:
     processes.append(
         mp.Process(target=_run_loader, args=(waermeatlas_hessen_bensheim.load,), name="waermeatlas_hessen_bensheim")
     )
+    processes.append(mp.Process(target=_run_loader, args=(dwd.load,), name="dwd"))
     # processes.append(mp.Process(target=_run_loader, args=(wetterdienst.load,), name="wetterdienst"))
     processes.append(mp.Process(target=_run_loader, args=(nrw_opencloud.load,), name="nrw_opencloud"))
     processes.append(mp.Process(target=_run_loader, args=(opendata_bavaria.load,), name="opendata_bavaria"))
