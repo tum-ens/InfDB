@@ -43,10 +43,11 @@ def main():
     rng = np.random.default_rng(seed=random_seed)
 
     try:
-        # Create output schema if it does not exist
-        sql = f"CREATE SCHEMA IF NOT EXISTS {output_schema};"
-        infdbclient_citydb.execute_query(sql)
-        infdblog.info(f"output schema: {output_schema} created successfully")
+        # Create shared schema, tables and views (coordinated across parallel AGS workers)
+        infdbclient_citydb.execute_sql_file(
+            os.path.join("sql", "00_initialization.sql"), {"output_schema": output_schema, "method": method}
+        )
+        infdblog.info(f"output schema: {output_schema} initialized successfully")
 
         # Get building data from database
         full_path = os.path.join("sql", "01_get_building_surface_data.sql")
@@ -167,7 +168,6 @@ def main():
             infdbclient_citydb.execute_sql_file(
                 os.path.join("sql", "03_heat-demand-r.sql"), format_params=format_params
             )
-            infdbclient_citydb.execute_sql_file(os.path.join("sql", "04_debug_demand.sql"), format_params=format_params)
 
             # Summary
             # # TODO: Adapt output format to EnTiSe format
