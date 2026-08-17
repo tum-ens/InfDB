@@ -279,9 +279,12 @@ def load(infdb: InfDB) -> bool:
                     copied += 1
                 conn.commit()
 
-        # ---------- 5. Clean up the scope helper table ----------
+        # ---------- 5. Clean up helper objects ----------
         with engine.connect() as conn:
             conn.execute(text(f"DROP TABLE IF EXISTS {target_schema}.{scope_table};"))
+            # pgosm-flex auto-creates the 'pgosm' schema (routing reference table);
+            # routing is currently not used, so drop it.
+            conn.execute(text("DROP SCHEMA IF EXISTS pgosm CASCADE;"))
             conn.commit()
 
         log.info(
