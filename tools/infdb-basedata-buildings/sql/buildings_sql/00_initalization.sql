@@ -34,11 +34,20 @@ BEGIN
         -- ============================================================
         RAISE NOTICE '[Init] Lock acquired - running init scripts (1,2,3) ...';
 
-        -- Check if resources already exist (idempotency)
+        -- Check if resources already exist (idempotency). Existing databases may
+        -- predate newly added helper functions, so a buildings table alone is not
+        -- sufficient evidence that initialization is complete.
         IF NOT EXISTS (
             SELECT 1 FROM pg_tables 
             WHERE schemaname = '{output_schema}' 
               AND tablename = 'buildings'
+        ) OR NOT EXISTS (
+            SELECT 1
+            FROM pg_proc p
+            JOIN pg_namespace n ON n.oid = p.pronamespace
+            WHERE p.proname = 'surface_area_corrected_geom'
+            AND n.nspname = '{output_schema}'
+            AND p.pronargs = 4
         ) THEN
             -- ========================================================
             -- Resources don't exist - create them now
@@ -753,6 +762,16 @@ BEGIN
           AND pronamespace = '{output_schema}'::regnamespace
     ) THEN
         RAISE EXCEPTION '[Init] FATAL ERROR: assign_weighted_year function does not exist after initialization. Check logs for errors.';
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_proc
+        WHERE proname = 'surface_area_corrected_geom'
+          AND pronamespace = '{output_schema}'::regnamespace
+          AND pronargs = 4
+    ) THEN
+        RAISE EXCEPTION '[Init] FATAL ERROR: surface_area_corrected_geom function does not exist after initialization. Check logs for errors.';
     END IF;
 
     -- ================================================================
