@@ -43,10 +43,11 @@ BEGIN
               AND tablename = 'buildings'
         ) OR NOT EXISTS (
             SELECT 1
-            FROM pg_proc
-            WHERE proname = 'surface_area_corrected_geom'
-              AND pronamespace = '{output_schema}'::regnamespace
-              AND pronargs = 4
+            FROM pg_proc p
+            JOIN pg_namespace n ON n.oid = p.pronamespace
+            WHERE p.proname = 'surface_area_corrected_geom'
+            AND n.nspname = '{output_schema}'
+            AND p.pronargs = 4
         ) THEN
             -- ========================================================
             -- Resources don't exist - create them now
