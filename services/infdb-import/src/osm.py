@@ -78,6 +78,9 @@ def _run_pgosm_import(infdb: InfDB, cfg: dict) -> None:
     # into the already-running infdb database.
     run_cmd = [
         "docker", "run", "-d", "--name", _PGOSM_CONTAINER,
+        # Let the container reach a host-published database via
+        # 'host.docker.internal'; ignored when POSTGRES_HOST is a real IP.
+        "--add-host", "host.docker.internal:host-gateway",
         "-e", f"POSTGRES_HOST={p['host']}",
         "-e", f"POSTGRES_PORT={p['exposed_port']}",
         "-e", f"POSTGRES_DB={p['db']}",
