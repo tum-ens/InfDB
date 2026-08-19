@@ -175,12 +175,13 @@ def main():
             # infdbclient_citydb.execute_query(sql)
 
         elif method == "1R1C" or method == "1R0C":
-            bld2ts = timedata.get_bld2ts(database_connection=engine)
+            bld2ts = timedata.get_bld2ts(database_connection=engine, ags=ags)
 
             all_ts_df = timedata.get_all_timeseries_data(
                 database_connection=engine,
                 start=pd.Timestamp(start_time),
                 end=pd.Timestamp(end_time),
+                ags=ags,
             )
             all_ts_df.index.name = "datetime"
             all_ts_df.rename(columns={"value": "air_temperature[C]"}, inplace=True)

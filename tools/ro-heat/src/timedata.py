@@ -34,11 +34,19 @@ def get_distinct_building_ids(database_connection):
     return df["objectid"].tolist()
 
 
-def get_all_timeseries_data(database_connection, start, end):
+def get_all_timeseries_data(database_connection, start, end, ags):
+    # Restrict to the weather grids referenced by the AGS's buildings, so a run
+    # loads only the series it actually needs rather than every grid in the database.
     query = f"""
-        SELECT *
-        FROM opendata.openmeteo_ts_data
-        WHERE time >= '{start}' AND time < '{end}'
+        SELECT d.*
+        FROM opendata.openmeteo_ts_data d
+        WHERE d.time >= '{start}' AND d.time < '{end}'
+          AND d.ts_metadata_id IN (
+              SELECT DISTINCT bt.ts_metadata_id
+              FROM basedata.bld2ts bt
+              JOIN basedata.buildings b ON b.objectid = bt.bld_objectid
+              WHERE b.gemeindeschluessel LIKE '{ags}'
+          )
     """
     df = pd.read_sql(sql=query, con=database_connection)
     df.set_index("time", inplace=True)
@@ -46,10 +54,14 @@ def get_all_timeseries_data(database_connection, start, end):
     return df
 
 
-def get_bld2ts(database_connection):
-    query = """
-        SELECT *
-        FROM basedata.bld2ts
+def get_bld2ts(database_connection, ags):
+    # Restrict to the AGS's buildings, so the mapping loaded here matches the
+    # buildings being processed instead of the full basedata.bld2ts table.
+    query = f"""
+        SELECT bt.*
+        FROM basedata.bld2ts bt
+        JOIN basedata.buildings b ON b.objectid = bt.bld_objectid
+        WHERE b.gemeindeschluessel LIKE '{ags}'
     """
     df = pd.read_sql(sql=query, con=database_connection)
 
