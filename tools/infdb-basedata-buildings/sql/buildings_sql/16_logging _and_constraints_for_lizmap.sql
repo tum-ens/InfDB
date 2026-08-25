@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS {output_schema}.buildings_history
 );
 
 ALTER TABLE IF EXISTS {output_schema}.buildings_history
-    OWNER TO infdb_user;
+    OWNER TO CURRENT_USER;
 
 
 
