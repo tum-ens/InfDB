@@ -68,7 +68,6 @@ face_normals AS (
     SELECT
         surface_gmlid,
         face_idx,
-        MIN(face) AS face,
         SUM((ST_Y(pg) - ST_Y(npt)) * (ST_Z(pg) + ST_Z(npt))) AS nx,
         SUM((ST_Z(pg) - ST_Z(npt)) * (ST_X(pg) + ST_X(npt))) AS ny,
         SUM((ST_X(pg) - ST_X(npt)) * (ST_Y(pg) + ST_Y(npt))) AS nz
@@ -79,10 +78,13 @@ face_normals AS (
 -- Sum the per-face areas back to a single area per surface.
 face_areas AS (
     SELECT
-        surface_gmlid,
-        SUM({output_schema}.surface_area_corrected_geom(face, nx, ny, nz)) AS area
-    FROM face_normals
-    GROUP BY surface_gmlid
+        fn.surface_gmlid,
+        SUM({output_schema}.surface_area_corrected_geom(f.face, fn.nx, fn.ny, fn.nz)) AS area
+    FROM face_normals fn
+    JOIN faces f
+      ON f.surface_gmlid = fn.surface_gmlid
+     AND f.face_idx = fn.face_idx
+    GROUP BY fn.surface_gmlid
 )
 SELECT
     s.building_objectid,

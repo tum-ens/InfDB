@@ -78,6 +78,9 @@ def _run_pgosm_import(infdb: InfDB, cfg: dict) -> None:
     # into the already-running infdb database.
     run_cmd = [
         "docker", "run", "-d", "--name", _PGOSM_CONTAINER,
+        # Let the container reach a host-published database via
+        # 'host.docker.internal'; ignored when POSTGRES_HOST is a real IP.
+        "--add-host", "host.docker.internal:host-gateway",
         "-e", f"POSTGRES_HOST={p['host']}",
         "-e", f"POSTGRES_PORT={p['exposed_port']}",
         "-e", f"POSTGRES_DB={p['db']}",
@@ -279,9 +282,12 @@ def load(infdb: InfDB) -> bool:
                     copied += 1
                 conn.commit()
 
-        # ---------- 5. Clean up the scope helper table ----------
+        # ---------- 5. Clean up helper objects ----------
         with engine.connect() as conn:
             conn.execute(text(f"DROP TABLE IF EXISTS {target_schema}.{scope_table};"))
+            # pgosm-flex auto-creates the 'pgosm' schema (routing reference table);
+            # routing is currently not used, so drop it.
+            conn.execute(text("DROP SCHEMA IF EXISTS pgosm CASCADE;"))
             conn.commit()
 
         log.info(
