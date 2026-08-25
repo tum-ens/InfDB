@@ -33,11 +33,11 @@ BEGIN
             SELECT
                 w.ctid AS rid, -- row identifier used for stable join back to ways_tem
                 pc.plz,
-                ST_Length(ST_Intersection(ST_Transform(w.geom, v_srid), pc.geom)) AS intersect_len -- calculate length within polygon
+                ST_Length(ST_Intersection(ST_Transform(w.geom, v_srid), ST_MakeValid(pc.geom))) AS intersect_len -- calculate length within polygon
             FROM ways_tem w
             JOIN {input_schema}.postcodes_germany pc
                 ON pc.geom && ST_Transform(w.geom, v_srid) -- bbox prefilter for index usage
-               AND ST_Intersects(pc.geom, ST_Transform(w.geom, v_srid)) -- spatial check
+               AND ST_Intersects(ST_MakeValid(pc.geom), ST_Transform(w.geom, v_srid)) -- spatial check
             WHERE w.postcode IS NULL
               AND w.geom IS NOT NULL
               AND NOT ST_IsEmpty(w.geom)
@@ -58,11 +58,11 @@ BEGIN
             SELECT
                 w.ctid AS rid, -- row identifier used for stable join back to ways_tem_connection
                 pc.plz,
-                ST_Length(ST_Intersection(ST_Transform(w.geom, v_srid), pc.geom)) AS intersect_len -- calculate length within polygon
+                ST_Length(ST_Intersection(ST_Transform(w.geom, v_srid), ST_MakeValid(pc.geom))) AS intersect_len -- calculate length within polygon
             FROM ways_tem_connection w
             JOIN {input_schema}.postcodes_germany pc
                 ON pc.geom && ST_Transform(w.geom, v_srid) -- bbox prefilter for index usage
-               AND ST_Intersects(pc.geom, ST_Transform(w.geom, v_srid)) -- spatial check
+               AND ST_Intersects(ST_MakeValid(pc.geom), ST_Transform(w.geom, v_srid)) -- spatial check
             WHERE w.postcode IS NULL
               AND w.geom IS NOT NULL
               AND NOT ST_IsEmpty(w.geom)

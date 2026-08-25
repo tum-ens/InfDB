@@ -6,22 +6,6 @@ BEGIN
 -- create a new changelog id and store it in a variable for later reference in the insert statements
 SELECT public.fn_begin_changelog('{tool_name}', 'no comment', session_user::TEXT, '{ags}', '{process_id}') INTO v_changelog_id;
 
-CREATE TABLE IF NOT EXISTS {output_schema}.buildings_refurbished_status
-(
-    building_objectid TEXT PRIMARY KEY,
-    floor_area DOUBLE PRECISION,
-    floor_number BIGINT,
-    building_type TEXT,
-    construction_year BIGINT,
-    wall_area DOUBLE PRECISION,
-    roof_area DOUBLE PRECISION,
-    window_area DOUBLE PRECISION,
-    outer_wall BIGINT,
-    rooftop BIGINT,
-    "window" BIGINT,
-    changelog_id      BIGINT REFERENCES public.changelog(id) ON DELETE SET NULL
-);
-
 INSERT INTO {output_schema}.buildings_refurbished_status (
     building_objectid,
     floor_area,

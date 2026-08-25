@@ -5,15 +5,6 @@ BEGIN
 -- create a new changelog id and store it in a variable for later reference in the insert statements
 SELECT public.fn_begin_changelog('{tool_name}', 'no comment', session_user::TEXT, '{ags}', '{process_id}') INTO v_changelog_id;
 
--- DROP TABLE IF EXISTS {output_schema}.annual_heating_demand;
-
-CREATE TABLE IF NOT EXISTS {output_schema}.annual_heating_demand (
-    building_objectid text PRIMARY KEY,
-    "heating:demand[kWh]" double precision,
-    pmax double precision,
-    changelog_id      BIGINT REFERENCES public.changelog(id) ON DELETE SET NULL
-);
-
 INSERT INTO {output_schema}.annual_heating_demand (building_objectid, "heating:demand[kWh]", pmax, changelog_id)
     SELECT
         bldrc.building_objectid,

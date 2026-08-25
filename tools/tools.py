@@ -244,3 +244,28 @@ if __name__ == "__main__":
     log.info(f"Total execution time: {end_time - start_time:.2f} seconds")
     if failed_ags:
         log.warning(f"The following AGS failed: {', '.join(failed_ags)}")
+
+    # Report buildings that received a state-level construction year because the census grid
+    # holds no construction year data anywhere in their AGS
+    try:
+        with infdb.connect() as db:
+            coverage = db.get_pandas(
+                """WITH c AS (
+                       SELECT DISTINCT b.gemeindeschluessel AS ags
+                       FROM basedata.buildings b JOIN basedata.buildings_grid_100m g
+                         ON g.geom && b.centroid AND ST_Contains(g.geom, b.centroid)
+                       WHERE GREATEST(g.vor1919, g.a1919bis1948, g.a1949bis1978, g.a1979bis1990,
+                                      g.a1991bis2000, g.a2001bis2010, g.a2011bis2019, g.a2020undspaeter) > 0
+                   )
+                   SELECT COUNT(*) AS total,
+                          COUNT(*) FILTER (WHERE gemeindeschluessel NOT IN (SELECT ags FROM c)) AS fallback
+                   FROM basedata.buildings WHERE gemeindeschluessel IN ({ags_list});""",
+                format_params={"ags_list": ", ".join(f"'{ags}'" for ags in todo_ags)},
+            )
+        total, fallback = int(coverage["total"][0]), int(coverage["fallback"][0])
+        share = fallback / total if total else 0
+        log.info(f"Construction year state-level fallback: {fallback}/{total} buildings ({share:.2%})")
+        if share > 0.10:
+            log.error(f"Construction year state-level fallback exceeds 10%: {share:.2%}")
+    except Exception as exc:
+        log.warning(f"Could not determine construction year fallback share: {exc}")
