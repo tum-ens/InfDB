@@ -68,6 +68,8 @@ END $$;
 
 
 -- History table
+-- PostgreSQL assigns a newly created table to the connection role configured
+-- by SERVICES_POSTGRES_USER; no separate ownership change is needed.
 
 CREATE TABLE IF NOT EXISTS {output_schema}.buildings_history
 (
@@ -78,11 +80,6 @@ CREATE TABLE IF NOT EXISTS {output_schema}.buildings_history
     old_data jsonb,
     new_data jsonb
 );
-
-ALTER TABLE IF EXISTS {output_schema}.buildings_history
-    OWNER TO CURRENT_USER;
-
-
 
 -- Logging trigger function
 CREATE OR REPLACE FUNCTION {output_schema}.log_buildings_changes()
