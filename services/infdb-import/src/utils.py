@@ -913,6 +913,11 @@ def fast_copy_points_csv(
             log.info("Creating spatial index...")
             cur.execute(f'CREATE INDEX "{table_name}_geom_gix" ON "{schema}"."{table_name}" USING GIST (geom);')
 
+        # Step 9: Index the grid coordinates, which is how downstream tools join these tables
+        cur.execute(
+            f'CREATE INDEX "{table_name}_mp_idx" ON "{schema}"."{table_name}" ("{x_col}", "{y_col}");'
+        )
+
     finally:
         # Cleanup: Drop staging table
         cur.execute(f'DROP TABLE IF EXISTS "{schema}"."{staging}" CASCADE;')

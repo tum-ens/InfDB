@@ -1,19 +1,22 @@
 -- Summary: Estimates the number of occupants for residential buildings.
 -- It distributes population data from zensus grid cells to buildings proportionally
--- based on building volume. Buildings without direct grid data are assigned
+-- based on residential volume, so the residential component of mixed-use
+-- buildings is included. Buildings without direct grid data are assigned
 -- occupants using the nearest populated grid cell.
 
 -- Step 1: Create temp table for buildings with cell and weight
 DROP TABLE IF EXISTS temp_building_weights;
 CREATE TEMP TABLE temp_building_weights AS
 SELECT b.id                    AS building_id,
-       b.height * b.floor_area AS weight,
+       -- building volume scaled by the residential share of the gross floor area
+       b.height * b.floor_area
+         * (b.residential_floor_area / NULLIF(b.floor_area * b.floor_number, 0)) AS weight,
        g.id                    as bevoelkerungszahl_id,
        g.einwohner
 FROM temp_buildings b
     JOIN temp_buildings_grid_100m g
     ON ST_Contains(g.geom, b.centroid)
-WHERE b.building_use = 'Residential'
+WHERE b.residential_floor_area > 0   -- Residential and the residential part of Mixed
   AND b.centroid && g.geom;  -- Bounding box filter before spatial query
 
 CREATE INDEX ON temp_building_weights (bevoelkerungszahl_id);
@@ -71,7 +74,7 @@ CROSS JOIN LATERAL (
 ) nearest
 JOIN temp_building_occupants bo ON b.id = bo.building_id
 JOIN temp_cell_weights cw ON nearest.bevoelkerungszahl_id = cw.bevoelkerungszahl_id
-WHERE b.occupants IS NULL AND b.building_use = 'Residential';
+WHERE b.occupants IS NULL AND b.residential_floor_area > 0;
 
 -- Step 6: Update the original building table with the nearest estimations
 UPDATE temp_buildings b
