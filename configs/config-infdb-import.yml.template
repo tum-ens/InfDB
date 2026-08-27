@@ -207,7 +207,7 @@ infdb-import:
                 # - reliefflaeche
                 # - relieflinie
                 # - reliefpunkt
-                # - siedlungsflaeche
+                - siedlungsflaeche
                 # - vegetationsflaeche
                 # - vegetationslinie
                 # - vegetationspunkt
