@@ -74,7 +74,12 @@ def main() -> None:
         # DELETE FROM public.databasechangelog WHERE labels like '%buildings%';
         start_time = time.time()
         log.info("Running BUILDINGS SQL scripts")
-        db.execute_sql_files(BUILDINGS_SQL_DIR, format_params=format_params)
+        # TEMPORARY: skip 16_logging_and_constraints_for_lizmap.sql 
+        sql_files = [
+            f for f in sorted(os.listdir(BUILDINGS_SQL_DIR))
+            if f.endswith(".sql") and not f.startswith("16_")
+        ]
+        db.execute_sql_files(BUILDINGS_SQL_DIR, file_list=sql_files, format_params=format_params)
         end_time = time.time()
         log.info("BUILDINGS SQL scripts completed in %.2f seconds", end_time - start_time)
 
