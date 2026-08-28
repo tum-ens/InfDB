@@ -15,7 +15,7 @@ FROM temp_buildings b
              ON d.geom && b.geom AND
              ST_Contains(d.geom, ST_Centroid(b.geom))
 WHERE b.occupants IS NOT NULL
-  AND b.building_use = 'Residential'; -- already ensured by above clause
+  AND b.residential_floor_area > 0; -- already ensured by above clause
 
 CREATE INDEX ON temp_building_hh_grid (building_id);
 
@@ -56,7 +56,7 @@ CROSS JOIN LATERAL (
 JOIN temp_building_occupants bo ON b.id = bo.building_id
 JOIN temp_cell_weights cw ON nearest.bevoelkerungszahl_id = cw.bevoelkerungszahl_id
 WHERE b.occupants IS NULL
-  AND b.building_use = 'Residential';
+  AND b.residential_floor_area > 0;
 
 -- release memory
 DROP TABLE IF EXISTS temp_building_hh_grid;

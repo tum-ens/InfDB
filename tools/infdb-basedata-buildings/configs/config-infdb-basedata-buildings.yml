@@ -16,3 +16,23 @@ infdb-basedata-buildings:
         output_schema: basedata
         census_building_type_resolution: 1km #1km, 100m
         random_seed: 0.98 # Seed value used for the random assignment of construction periods
+    mixed_use:
+        status: active          # set to anything else to disable mixed-use promotion
+        min_floors: 2           # a mixed-use building needs more than one storey
+        min_overlap: 0.5        # minimum share of the LOD2 footprint an OSM polygon must cover to be matched
+        threshold: 4            # minimum score to be promoted under the census quota
+        rescue_threshold: 3     # minimum score in cells with population but no residential building
+        rescue_max_per_cell: 3  # how many buildings such a cell may promote
+        weights:
+            osm_residential: 3  # OSM calls the footprint residential while LOD2 calls it commercial
+            mixed_area: 3       # inside an ATKIS FlaecheGemischterNutzung
+            address: 2          # the footprint carries a street address
+            residential_area: 1 # inside an ATKIS Wohnbauflaeche
+            floors_3plus: 1     # three or more storeys
+            industrial_area: -3 # inside an ATKIS IndustrieUndGewerbeflaeche
+        share:
+            pedestrian_buffer_m: 25         # distance to a Fussgaengerzone that counts as prime retail location
+            commercial_floors_pedestrian: 2 # commercial storeys in prime retail locations
+            commercial_floors_default: 1    # commercial storeys elsewhere
+            min_residential_share: 0.2      # Wohn- und Geschaeftshaus band, lower bound
+            max_residential_share: 0.8      # Wohn- und Geschaeftshaus band, upper bound
