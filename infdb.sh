@@ -68,9 +68,16 @@ cmd_start() {
 
 cmd_import() {
     ensure_from_template "configs/config-infdb-import.yml" "configs/config-infdb-import.yml.template"
+
+    read -r -a selected_profiles <<< "$(read_profiles)"
+    generate_compose "${selected_profiles[@]}" "import"
+
     echo "=== Importing data ==="
-    docker compose --profile "import" up "$@"
+    docker compose --profile "import" up --remove-orphans "$@" 
+
+    generate_compose "${selected_profiles[@]}"
 }
+
 
 cmd_stop() {
     echo "=== Stopping infDB ==="
@@ -131,6 +138,9 @@ EOF
             ;;
         lizmap)
             echo "services/infdb-lizmap/docker-compose.yml"
+            ;;
+        import)
+            echo  "services/infdb-import/compose.yml"
             ;;
         opencloud)
             echo "services/infdb-opencloud/docker-compose.yml"
