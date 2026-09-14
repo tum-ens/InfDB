@@ -21,6 +21,10 @@
 --   (floor_area * floor_number). 07 and 08 allocate census occupants and
 --   households on the residential component only.
 --
+--   Only promoted buildings carry both components, so a building with a
+--   non-zero non-residential component is always labelled 'Mixed'. Buildings
+--   LOD2 classifies as Residential are left untouched.
+--
 -- ------------------------------------------------------------
 -- STEP 1 - EVIDENCE
 --   No source states mixed use directly: OSM's building:use / building:flats
@@ -28,24 +32,20 @@
 --   Mixed use is therefore inferred from independent indirect signals:
 --
 --     osm_residential      OSM tags the footprint residential/apartments
---                          while LOD2 calls it commercial. The two sources
---                          disagree, which is the strongest single signal.
+--                          while LOD2 calls it non-residential. The two
+--                          sources disagree, the strongest single signal.
 --     has_address          The footprint carries a street address. Addresses
 --                          mark buildings people live or work in; sheds,
 --                          garages and barns do not get one (measured in
 --                          Sonthofen: 94% of residential buildings have an
 --                          address, 25% of commercial ones).
---     in_mixed_area        Inside an official ATKIS mixed-use settlement area
+--     in_mixed_area        Inside an official basemap mixed-use settlement area
 --                          (FlaecheGemischterNutzung). OSM has no equivalent.
 --     in_residential_area  Inside a residential settlement area, weaker
 --                          context-only evidence.
 --     in_industrial_area   Inside an industrial/commercial settlement area.
 --                          Negative evidence: a warehouse on an industrial
 --                          estate is very unlikely to contain dwellings.
---     has_business_poi     A shop, restaurant or office point falls inside the
---                          footprint. Used in both directions: it supports
---                          mixed use in a commercial building and marks a
---                          commercial ground floor in a residential one.
 --     is_institutional     Inside a social/education/health/religious area.
 --                          Such buildings (dormitories, care homes, staff
 --                          housing) do contain dwellings but are not
@@ -77,12 +77,15 @@
 --   Quota rule    within a cell, take the highest scoring candidates above the
 --                 score threshold, at most as many as the quota allows.
 --   Rescue rule   a cell with census population but no residential building at
---                 all cannot have its population allocated anywhere. Such
---                 cells promote their best candidates regardless of quota,
---                 because those residents demonstrably live somewhere. A
---                 separate, lower score threshold applies; cells that reach
---                 neither threshold stay unresolved rather than being filled
---                 with a guess.
+--                 all cannot have its population allocated anywhere. Those
+--                 residents demonstrably live somewhere, so such cells promote
+--                 candidates in score order until the combined residential
+--                 capacity covers the population. The census publishes no
+--                 building count for most of these cells, so the demand is
+--                 derived from the population and a measured floor area per
+--                 resident. Cells that reach the score threshold with no
+--                 candidate stay unresolved rather than being filled with a
+--                 guess.
 --
 -- STEP 5 - FLOOR-AREA SPLIT
 --   No source measures the split: OSM building:levels covers ~3% of buildings
@@ -94,11 +97,9 @@
 --                        residential buildings that LOD2 mislabelled.
 --     pedestrian         commercial ground floor plus first upper floor.
 --                        In prime retail locations (1a-Lage) retail extends
---                        above the ground floor. Proximity to an ATKIS
+--                        above the ground floor. Proximity to a basemap
 --                        Fussgaengerzone is used as the location proxy.
 --     standard           commercial ground floor, residential above.
---     ground_floor_shop  a Residential building containing a business POI;
---                        its ground floor moves to the commercial component.
 --     full_residential / full_nonresidential  unchanged single-use buildings.
 --
 --   The resulting share is clamped to the configured band. German real-estate
@@ -132,7 +133,6 @@ SELECT b.id,
        b.centroid,
        false AS osm_residential,
        false AS has_address,
-       false AS has_business_poi,
        false AS in_mixed_area,
        false AS in_residential_area,
        false AS in_industrial_area,
@@ -183,7 +183,8 @@ BEGIN
             SELECT o.osm_subtype, o.housenumber
             FROM temp_mix_osm o
             WHERE o.geom && c.geom
-              AND ST_Area(ST_Intersection(c.geom, o.geom)) / NULLIF(ST_Area(c.geom), 0) >= {mu_min_overlap}
+              -- half the LOD2 footprint: the two sources describe the same building
+              AND ST_Area(ST_Intersection(c.geom, o.geom)) / NULLIF(ST_Area(c.geom), 0) >= 0.5
             ORDER BY ST_Area(ST_Intersection(c.geom, o.geom)) DESC
             LIMIT 1
         ) o
@@ -193,47 +194,7 @@ BEGIN
     DROP TABLE IF EXISTS temp_mix_osm;
 END $$;
 
--- Business points of interest inside the footprint.
-DO $$
-DECLARE
-    src_srid   int;
-    scope_geom geometry;
-BEGIN
-    IF to_regclass('{input_schema}.osm_poi_point') IS NULL
-       OR to_regclass('{input_schema}.osm_poi_polygon') IS NULL THEN
-        RAISE NOTICE '[MixedUse] osm_poi tables not present - POI evidence skipped';
-        RETURN;
-    END IF;
-
-    SELECT ST_SRID(geom) INTO src_srid FROM {input_schema}.osm_poi_point LIMIT 1;
-    IF src_srid IS NULL THEN
-        RAISE NOTICE '[MixedUse] osm_poi_point empty - POI evidence skipped';
-        RETURN;
-    END IF;
-    scope_geom := ST_Transform((SELECT geom FROM temp_mix_extent), src_srid);
-
-    DROP TABLE IF EXISTS temp_mix_poi;
-    CREATE TEMP TABLE temp_mix_poi AS
-    SELECT ST_Transform(geom, {EPSG}) AS geom
-    FROM {input_schema}.osm_poi_point
-    WHERE geom && scope_geom
-    UNION ALL
-    SELECT ST_PointOnSurface(ST_Transform(geom, {EPSG}))
-    FROM {input_schema}.osm_poi_polygon
-    WHERE geom && scope_geom;
-    CREATE INDEX ON temp_mix_poi USING GIST (geom);
-
-    UPDATE temp_mix_evidence e
-    SET has_business_poi = true
-    WHERE EXISTS (
-        SELECT 1 FROM temp_mix_poi p
-        WHERE p.geom && e.geom AND ST_Contains(e.geom, p.geom)
-    );
-
-    DROP TABLE IF EXISTS temp_mix_poi;
-END $$;
-
--- ATKIS settlement areas: land-use context and the institutional flag.
+-- basemap settlement areas: land-use context and the institutional flag.
 DO $$
 DECLARE
     src_srid   int;
@@ -338,7 +299,8 @@ SELECT e.id,
 FROM temp_mix_evidence e
 WHERE '{mu_status}' = 'active'
   AND e.building_use IN ('Commercial', 'Public')
-  AND e.floor_number >= {mu_min_floors};
+  -- the split is vertical, so a single-storey building has no floor to keep residential
+  AND e.floor_number >= 2;
 
 CREATE INDEX ON temp_mix_candidates (id);
 CREATE INDEX ON temp_mix_candidates USING GIST (centroid);
@@ -369,6 +331,8 @@ SELECT c.id,
        g.cell_id,
        g.quota,
        g.einwohner,
+       -- residential floor area the building could contribute, at the upper end of the band
+       c.floor_area * c.floor_number * {mu_max_residential_share} AS capacity_m2,
        ROW_NUMBER() OVER (PARTITION BY g.cell_id
                           ORDER BY c.score DESC, c.floor_area * c.height DESC) AS rank_in_cell
 FROM temp_mix_candidates c
@@ -400,11 +364,19 @@ FROM (
     WHERE r.score >= {mu_threshold}
       AND r.rank_in_cell <= r.quota
     UNION ALL
+    -- Unserved cells the census gives no count for: promote in score order until the
+    -- combined residential capacity covers the cell population.
     SELECT r.id, r.score, r.is_institutional, 'rescue'
-    FROM temp_mix_ranked r
-    JOIN temp_mix_unserved_cells u ON u.cell_id = r.cell_id
-    WHERE r.score >= {mu_rescue_threshold}
-      AND r.rank_in_cell <= {mu_rescue_max_per_cell}
+    FROM (
+        SELECT r.*,
+               SUM(r.capacity_m2) OVER (PARTITION BY r.cell_id ORDER BY r.rank_in_cell)
+                 - r.capacity_m2 AS capacity_before
+        FROM temp_mix_ranked r
+        JOIN temp_mix_unserved_cells u ON u.cell_id = r.cell_id
+        WHERE r.score >= {mu_threshold}
+          AND COALESCE(r.quota, 0) = 0
+    ) r
+    WHERE r.capacity_before < r.einwohner * {mu_m2_per_person}
 ) p
 GROUP BY id;
 
@@ -433,8 +405,6 @@ WITH classified AS (
                WHEN b.building_use = 'Mixed' AND p.is_institutional              THEN 'institutional'
                WHEN b.building_use = 'Mixed' AND e.near_pedestrian_zone          THEN 'pedestrian'
                WHEN b.building_use = 'Mixed'                                     THEN 'standard'
-               WHEN b.building_use = 'Residential' AND e.has_business_poi
-                    AND b.floor_number >= 2 AND '{mu_status}' = 'active'         THEN 'ground_floor_shop'
                WHEN b.building_use = 'Residential'                               THEN 'full_residential'
                ELSE 'full_nonresidential'
            END AS rule
@@ -448,7 +418,6 @@ commercial_floors AS (
                WHEN 'institutional'      THEN 0
                WHEN 'pedestrian'         THEN {mu_commercial_floors_pedestrian}
                WHEN 'standard'           THEN {mu_commercial_floors_default}
-               WHEN 'ground_floor_shop'  THEN {mu_commercial_floors_default}
                WHEN 'full_residential'   THEN 0
                ELSE c.floor_number
            END AS commercial_floors
