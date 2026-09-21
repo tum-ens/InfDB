@@ -33,5 +33,4 @@ volumes:
   infdb-db-data:
     name: ${BASE_NAME}-db-data
   infdb-import-data:
-    external: true
     name: infdb-import-data
