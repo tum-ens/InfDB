@@ -343,7 +343,7 @@ BEGIN
                     WHEN '31001_3281' THEN RETURN 'Public'; -- Schutzhütte
                     WHEN '31001_3290' THEN RETURN 'Public'; -- Touristisches Informationszentrum
 
-                    WHEN '31001_9998' THEN RETURN 'Public'; -- Nach Quellenlage nicht zu spezifizieren
+                    WHEN '31001_9998' THEN RETURN 'Unknown'; -- Nach Quellenlage nicht zu spezifizieren
                     ELSE RAISE EXCEPTION 'Unknown building function code: %', funktion;
                     END CASE;
                 END;
@@ -500,9 +500,8 @@ BEGIN
                     building_type     text,
                     residential_floor_area    double precision,
                     nonresidential_floor_area double precision,
-                    mix_score         int,
-                    mix_rule          text,
-                    mix_confidence    text,
+                    mix_rule              text,
+                    mix_exclusion_reason  text,
                     occupants         int,
                     households        int,
                     construction_year text,

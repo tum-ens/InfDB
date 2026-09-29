@@ -245,7 +245,7 @@ infdb-import:
                 - 100m
             years:
                 - 2022
-                # - 2011
+                - 2011
             path:
                 base: "{infdb-import/path/opendata}/zensus/"
                 zip: "{infdb-import/sources/zensus_2022/path/base}/zip/"
@@ -519,6 +519,16 @@ infdb-import:
                     mfh_7bis12wohnungen: bigint
                     mfh_13undmehrwohnungen: bigint
                     anderergebaeudetyp: bigint
+
+                - name: Gebaeude nach Art (2011)
+                  # 2011 GWZ, GEBAEUDEART_SYS: whether a building's usable
+                  # floor area is mostly residential or mostly commercial.
+                  # No 2022 equivalent is published at grid-cell level (only
+                  # per municipality), so this stays on the 2011 census.
+                  status: active
+                  table_name: gebaeude_art
+                  year: 2011
+                  url: https://www.destatis.de/static/DE/zensus/2011_gitterdaten/Gebaeude_und_Wohnungen_im_100_Meter-Gitter.zip
 
 
                 - name: Heizungsart

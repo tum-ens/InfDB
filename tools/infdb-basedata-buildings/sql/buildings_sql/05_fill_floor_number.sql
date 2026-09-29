@@ -56,14 +56,14 @@ WHERE b.floor_number IS NULL
   AND afh.median_height_per_floor IS NOT NULL;
 
 -- Step 3: For remaining buildings, use overall median floor height by building use
--- Residential: ~3.0m, Commercial: ~3.5m, Public: ~3.5m
+-- Residential: ~3.0m, Commercial/Public/Unknown: ~3.5m
 UPDATE temp_buildings b
 SET floor_number = GREATEST(
     ROUND(
         b.height /
         CASE
             WHEN b.building_use = 'Residential' THEN 3.0
-            WHEN b.building_use IN ('Commercial', 'Public') THEN 3.5
+            WHEN b.building_use IN ('Commercial', 'Public', 'Unknown') THEN 3.5
             ELSE 3.0
         END
     ),

@@ -8,14 +8,24 @@
 --   usage attribute, so a building with shops on the ground floor and flats
 --   above is labelled either fully Residential or fully Commercial. Census
 --   occupants are then allocated to Residential buildings only, which
---   over-concentrates population in the residential-only stock and leaves
---   population in cells without a Residential building unassigned.
+--   leaves population in cells without a Residential building unassigned.
+--
+--   Ground truth (a municipal building registry compared against LOD2 for
+--   one town) shows that mislabelling runs in both directions, but the
+--   candidate pool here is deliberately narrow: LOD2's Residential and
+--   Commercial labels agree with ground truth well enough to leave alone.
+--   The mislabelling concentrates in one code, 31001_9998 ("function not
+--   specified"), the class LOD2 uses when a building does not fit any of
+--   its single-purpose categories. That code is classified 'Unknown' (see
+--   00_initalization.sql), and it is the only source of Mixed promotions.
 --
 -- WHAT THIS SCRIPT PRODUCES
 --   temp_buildings.residential_floor_area     residential component  [m2]
 --   temp_buildings.nonresidential_floor_area  commercial/public component [m2]
 --   temp_buildings.building_use = 'Mixed'     for promoted buildings
---   temp_buildings.mix_score / mix_rule / mix_confidence  provenance
+--   temp_buildings.mix_exclusion_reason       why a candidate was left
+--                                              Unknown, see STEP 3
+--   temp_buildings.mix_rule                   floor-area split rule, STEP 5
 --
 --   The two components always add up to the gross floor area
 --   (floor_area * floor_number). 07 and 08 allocate census occupants and
@@ -23,69 +33,76 @@
 --
 --   Only promoted buildings carry both components, so a building with a
 --   non-zero non-residential component is always labelled 'Mixed'. Buildings
---   LOD2 classifies as Residential are left untouched.
+--   LOD2 classifies as Residential or Commercial are left untouched.
 --
 -- ------------------------------------------------------------
 -- STEP 1 - EVIDENCE
---   No source states mixed use directly: OSM's building:use / building:flats
---   tags are effectively unused in Germany and LOD2 has no second function.
---   Mixed use is therefore inferred from independent indirect signals:
+--   A 31001_9998 building is, overwhelmingly, a building LOD2's source data
+--   simply failed to classify -- not a distinct architectural type. The
+--   population is therefore treated as Mixed by default, and demoted back to
+--   Unknown only when there is a specific, structural reason nobody could
+--   live there:
 --
---     osm_residential      OSM tags the footprint residential/apartments
---                          while LOD2 calls it non-residential. The two
---                          sources disagree, the strongest single signal.
---     has_address          The footprint carries a street address. Addresses
---                          mark buildings people live or work in; sheds,
---                          garages and barns do not get one (measured in
---                          Sonthofen: 94% of residential buildings have an
---                          address, 25% of commercial ones).
---     in_mixed_area        Inside an official basemap mixed-use settlement area
---                          (FlaecheGemischterNutzung). OSM has no equivalent.
---     in_residential_area  Inside a residential settlement area, weaker
---                          context-only evidence.
---     in_industrial_area   Inside an industrial/commercial settlement area.
---                          Negative evidence: a warehouse on an industrial
---                          estate is very unlikely to contain dwellings.
---     is_institutional     Inside a social/education/health/religious area.
---                          Such buildings (dormitories, care homes, staff
---                          housing) do contain dwellings but are not
---                          shop-below/flats-above buildings, so they get their
---                          own floor-area rule in step 5.
+--     in_industrial_area           Inside a basemap industrial/commercial
+--                                  settlement area (IndustrieUndGewerbeflaeche).
+--     in_cemetery                  Inside a basemap cemetery (Friedhof).
+--     in_sport_leisure_area        Inside a basemap sport/leisure area
+--                                  (SportFreizeitUndErholungsflaeche).
+--     in_mining_area               Inside a basemap open-pit mine, quarry or
+--                                  spoil heap (TagebauGrubeSteinbruch, Halde).
+--     institutional_strict         Inside a basemap functional area classed
+--                                  Kultur, Sicherheit und Ordnung, or
+--                                  Regierung und Verwaltung -- museums,
+--                                  fire/police stations, government offices.
+--     osm_nonresidential           OSM tags the footprint office, retail,
+--                                  commercial, industrial, warehouse, kiosk
+--                                  or supermarket.
+--     osm_institutional_technical  OSM tags the footprint a school, hospital,
+--                                  museum, government building, station or
+--                                  other structurally non-residential use --
+--                                  see the VALUES list in STEP 1 for the
+--                                  full set.
 --
 --   Every evidence source is optional. Where a source is not imported the
 --   corresponding flags stay false and the script degrades gracefully.
 --
--- STEP 2 - SCORE
---   The flags are combined into a single score with configurable weights.
---   Only Commercial and Public buildings with at least the configured number
---   of storeys can score; a mixed-use building needs more than one floor.
+-- STEP 2 - VALIDATION
+--   None of the flags above is trusted by assumption. Each is checked
+--   against the buildings LOD2 already calls Residential in this AGS
+--   (floor_number >= 2, the same population the split applies to): if the
+--   flag also fires on more than {mu_max_false_positive_rate} of confirmed
+--   housing stock here, it would throw away real residents and is dropped
+--   for this AGS. What is left is a set of flags proven, in this specific
+--   municipality, to essentially never coincide with a real dwelling.
 --
--- STEP 3 - QUOTA
---   Evidence says which buildings are plausible, not how many are real, and
---   OSM coverage is too uneven to trust a count. The census supplies the
---   count: zensus_2022_100m_gebaeude_typ_groesse.anderergebaeudetyp reports
---   per cell how many buildings contain dwellings without being classic one-,
---   two- or multi-family houses. Read directly from {input_schema} because
---   06_prepare_grid only fills the grid table at the configured
---   census_building_type_resolution, which may be 1km.
+-- STEP 3 - PROMOTION
+--   A candidate is left Unknown if it carries at least one validated flag,
+--   and promoted to Mixed otherwise. This is a deliberate change from an
+--   earlier design that scored candidates against both a Residential and a
+--   Commercial profile and promoted only above a joint threshold. That
+--   approach under-promoted -- genuinely mixed buildings rarely score
+--   strongly on both axes at once -- so the axis was dropped in favour of
+--   excluding only what specific evidence rules out.
 --
---   The quota is treated as an upper bound, not a target: it also covers
---   dormitories and care homes, and the census perturbs small counts with the
---   Cell-Key method, so component values do not necessarily sum to the total.
+-- STEP 4 - CELL QUOTA
+--   STEP 3 only ever promotes buildings LOD2 already left unclassified, so
+--   it cannot fix a building Residential or Commercial mislabelling ran the
+--   other way -- LOD2 calling a genuinely mixed building single-use. No
+--   Zensus source counts mixed-use buildings directly (see the source notes
+--   in STEP 4's queries below), but Zensus 2011's
+--   sonstige_gebaeude_mit_wohnraum -- buildings with both residential and
+--   non-residential floor space -- is a lower bound: a 100m cell cannot
+--   hold fewer mixed-use buildings than the census counted there in 2011.
 --
--- STEP 4 - PROMOTION
---   Quota rule    within a cell, take the highest scoring candidates above the
---                 score threshold, at most as many as the quota allows.
---   Rescue rule   a cell with census population but no residential building at
---                 all cannot have its population allocated anywhere. Those
---                 residents demonstrably live somewhere, so such cells promote
---                 candidates in score order until the combined residential
---                 capacity covers the population. The census publishes no
---                 building count for most of these cells, so the demand is
---                 derived from the population and a measured floor area per
---                 resident. Cells that reach the score threshold with no
---                 candidate stay unresolved rather than being filled with a
---                 guess.
+--   Where STEP 3 already met or exceeded that count in a cell, nothing more
+--   happens there. Where it fell short, additional Residential/Commercial
+--   buildings in the same cell (Public does not count) are promoted until
+--   the count is met, preferring buildings touching an already-Mixed
+--   building so growth reads as a contiguous block, then buildings nearest
+--   to one where nothing touches, then a random selection where the cell
+--   had no Mixed building from STEP 3 to grow from at all. A cell with a
+--   shortfall but no Residential/Commercial building left to promote stays
+--   short -- there is nothing left to spend the quota on.
 --
 -- STEP 5 - FLOOR-AREA SPLIT
 --   No source measures the split: OSM building:levels covers ~3% of buildings
@@ -93,8 +110,6 @@
 --   split therefore rests on a structural assumption, recorded per building in
 --   mix_rule so it can be replaced later:
 --
---     institutional      residential share 1.0, no commercial floor. These are
---                        residential buildings that LOD2 mislabelled.
 --     pedestrian         commercial ground floor plus first upper floor.
 --                        In prime retail locations (1a-Lage) retail extends
 --                        above the ground floor. Proximity to a basemap
@@ -126,17 +141,19 @@ DROP TABLE IF EXISTS temp_mix_evidence;
 CREATE TEMP TABLE temp_mix_evidence AS
 SELECT b.id,
        b.building_use,
+       b.building_use_id,
        b.floor_area,
        b.floor_number,
        b.height,
        b.geom,
        b.centroid,
-       false AS osm_residential,
-       false AS has_address,
-       false AS in_mixed_area,
-       false AS in_residential_area,
        false AS in_industrial_area,
-       false AS is_institutional,
+       false AS in_cemetery,
+       false AS in_sport_leisure_area,
+       false AS in_mining_area,
+       false AS institutional_strict,
+       false AS osm_nonresidential,
+       false AS osm_institutional_technical,
        false AS near_pedestrian_zone
 FROM temp_buildings b;
 
@@ -166,21 +183,25 @@ BEGIN
     DROP TABLE IF EXISTS temp_mix_osm;
     CREATE TEMP TABLE temp_mix_osm AS
     SELECT o.osm_subtype,
-           o.housenumber,
            ST_Transform(o.geom, {EPSG}) AS geom
     FROM {input_schema}.osm_building_polygon o
     WHERE o.geom && scope_geom;
     CREATE INDEX ON temp_mix_osm USING GIST (geom);
 
     UPDATE temp_mix_evidence e
-    SET osm_residential = (m.osm_subtype IN ('residential', 'apartments', 'house', 'detached',
-                                             'terrace', 'semidetached_house', 'dormitory')),
-        has_address     = (m.housenumber IS NOT NULL)
+    SET osm_nonresidential = (m.osm_subtype IN ('office', 'retail', 'commercial', 'industrial',
+                                                 'warehouse', 'kiosk', 'supermarket')),
+        osm_institutional_technical = (m.osm_subtype IN (
+            'hospital', 'school', 'kindergarten', 'government', 'train_station', 'fire_station',
+            'museum', 'university', 'college', 'storage_tank', 'hangar', 'barn', 'farm_auxiliary',
+            'sports_hall', 'sports_centre', 'stadium', 'gymnasium', 'greenhouse', 'silo',
+            'substation', 'transformer_tower', 'bunker', 'parking', 'parking_entrance',
+            'church', 'chapel', 'mosque', 'synagogue', 'temple', 'shrine', 'monastery'))
     FROM (
-        SELECT c.id, o.osm_subtype, o.housenumber
+        SELECT c.id, o.osm_subtype
         FROM temp_mix_evidence c
         CROSS JOIN LATERAL (
-            SELECT o.osm_subtype, o.housenumber
+            SELECT o.osm_subtype
             FROM temp_mix_osm o
             WHERE o.geom && c.geom
               -- half the LOD2 footprint: the two sources describe the same building
@@ -194,7 +215,7 @@ BEGIN
     DROP TABLE IF EXISTS temp_mix_osm;
 END $$;
 
--- basemap settlement areas: land-use context and the institutional flag.
+-- basemap settlement and functional areas.
 DO $$
 DECLARE
     src_srid   int;
@@ -222,12 +243,13 @@ BEGIN
     CREATE INDEX ON temp_mix_landuse USING GIST (geom);
 
     UPDATE temp_mix_evidence e
-    SET in_mixed_area       = (l.objektart = 'FlaecheGemischterNutzung'),
-        in_residential_area = (l.objektart = 'Wohnbauflaeche'),
-        in_industrial_area  = (l.objektart = 'IndustrieUndGewerbeflaeche'),
-        is_institutional    = (l.objektart = 'FlaecheBesondererFunktionalerPraegung'
-                               AND l.klasse IN ('Soziales', 'Bildung und Wissenschaft',
-                                                'Gesundheit, Kur', 'Religiöse Einrichtung'))
+    SET in_industrial_area    = (l.objektart = 'IndustrieUndGewerbeflaeche'),
+        in_cemetery           = (l.objektart = 'Friedhof'),
+        in_sport_leisure_area = (l.objektart = 'SportFreizeitUndErholungsflaeche'),
+        in_mining_area        = (l.objektart IN ('TagebauGrubeSteinbruch', 'Halde')),
+        institutional_strict  = (l.objektart = 'FlaecheBesondererFunktionalerPraegung'
+                                 AND l.klasse IN ('Kultur', 'Sicherheit und Ordnung',
+                                                   'Regierung und Verwaltung'))
     FROM (
         SELECT c.id, a.objektart, a.klasse
         FROM temp_mix_evidence c
@@ -243,7 +265,7 @@ BEGIN
     DROP TABLE IF EXISTS temp_mix_landuse;
 END $$;
 
--- Pedestrian zone proximity, used as the prime-retail-location proxy.
+-- Pedestrian zone proximity, used as the prime-retail-location proxy in STEP 4.
 DO $$
 DECLARE
     src_srid   int;
@@ -280,116 +302,171 @@ BEGIN
 END $$;
 
 -- ------------------------------------------------------------
--- STEP 2: score
+-- STEP 2: validation
 -- ------------------------------------------------------------
-DROP TABLE IF EXISTS temp_mix_candidates;
-CREATE TEMP TABLE temp_mix_candidates AS
-SELECT e.id,
-       e.floor_area,
-       e.floor_number,
-       e.height,
-       e.centroid,
-       e.is_institutional,
-         (CASE WHEN e.osm_residential     THEN {mu_w_osm_residential}  ELSE 0 END)
-       + (CASE WHEN e.in_mixed_area       THEN {mu_w_mixed_area}       ELSE 0 END)
-       + (CASE WHEN e.has_address         THEN {mu_w_address}          ELSE 0 END)
-       + (CASE WHEN e.in_residential_area THEN {mu_w_residential_area} ELSE 0 END)
-       + (CASE WHEN e.floor_number >= 3   THEN {mu_w_floors_3plus}     ELSE 0 END)
-       + (CASE WHEN e.in_industrial_area  THEN {mu_w_industrial_area}  ELSE 0 END) AS score
-FROM temp_mix_evidence e
-WHERE '{mu_status}' = 'active'
-  AND e.building_use IN ('Commercial', 'Public')
-  -- the split is vertical, so a single-storey building has no floor to keep residential
-  AND e.floor_number >= 2;
+-- False-positive rate of each candidate flag against this AGS's own
+-- confirmed housing stock (LOD2 Residential, floor_number >= 2 to match the
+-- population the flag will actually be applied to). A flag clears the bar
+-- only if it essentially never coincides with a real dwelling here.
+DROP TABLE IF EXISTS temp_mix_validation;
+CREATE TEMP TABLE temp_mix_validation AS
+WITH residential_pool AS (
+    SELECT e.*
+    FROM temp_mix_evidence e
+    WHERE e.building_use = 'Residential' AND e.floor_number >= 2
+), flags AS (
+    SELECT flag, fires
+    FROM residential_pool,
+    LATERAL (VALUES
+        ('in_industrial_area',          in_industrial_area),
+        ('in_cemetery',                 in_cemetery),
+        ('in_sport_leisure_area',       in_sport_leisure_area),
+        ('in_mining_area',              in_mining_area),
+        ('institutional_strict',        institutional_strict),
+        ('osm_nonresidential',          osm_nonresidential),
+        ('osm_institutional_technical', osm_institutional_technical)
+    ) AS v(flag, fires)
+)
+SELECT flag,
+       count(*) FILTER (WHERE fires)::double precision / GREATEST(count(*), 1) AS false_positive_rate,
+       count(*) FILTER (WHERE fires)::double precision / GREATEST(count(*), 1)
+           < {mu_max_false_positive_rate} AS trusted
+FROM flags
+GROUP BY flag;
 
-CREATE INDEX ON temp_mix_candidates (id);
-CREATE INDEX ON temp_mix_candidates USING GIST (centroid);
-
--- ------------------------------------------------------------
--- STEP 3: census quota per 100m cell
--- ------------------------------------------------------------
-DROP TABLE IF EXISTS temp_mix_cells;
-CREATE TEMP TABLE temp_mix_cells AS
-SELECT g.id                              AS cell_id,
-       g.geom,
-       COALESCE(g.einwohner, 0)          AS einwohner,
-       COALESCE(z.anderergebaeudetyp, 0) AS quota
-FROM temp_buildings_grid_100m g
-LEFT JOIN {input_schema}.zensus_2022_100m_gebaeude_typ_groesse z
-       ON z.x_mp_100m = g.x_mp AND z.y_mp_100m = g.y_mp;
-
-CREATE INDEX ON temp_mix_cells USING GIST (geom);
+CREATE INDEX ON temp_mix_validation (flag);
 
 -- ------------------------------------------------------------
--- STEP 4: promotion
+-- STEP 3: promotion
 -- ------------------------------------------------------------
-DROP TABLE IF EXISTS temp_mix_ranked;
-CREATE TEMP TABLE temp_mix_ranked AS
-SELECT c.id,
-       c.score,
-       c.is_institutional,
-       g.cell_id,
-       g.quota,
-       g.einwohner,
-       -- residential floor area the building could contribute, at the upper end of the band
-       c.floor_area * c.floor_number * {mu_max_residential_share} AS capacity_m2,
-       ROW_NUMBER() OVER (PARTITION BY g.cell_id
-                          ORDER BY c.score DESC, c.floor_area * c.height DESC) AS rank_in_cell
-FROM temp_mix_candidates c
-JOIN temp_mix_cells g
-  ON c.centroid && g.geom AND ST_Contains(g.geom, c.centroid);
+DROP TABLE IF EXISTS temp_mix_decision;
+CREATE TEMP TABLE temp_mix_decision AS
+WITH cand AS (
+    SELECT e.*
+    FROM temp_mix_evidence e
+    WHERE '{mu_status}' = 'active'
+      AND e.building_use = 'Unknown'
+      -- the split is vertical, so a single-storey building has no floor to keep residential
+      AND e.floor_number >= 2
+), unpivoted AS (
+    SELECT c.id, flag, fires
+    FROM cand c,
+    LATERAL (VALUES
+        ('in_industrial_area',          c.in_industrial_area),
+        ('in_cemetery',                 c.in_cemetery),
+        ('in_sport_leisure_area',       c.in_sport_leisure_area),
+        ('in_mining_area',              c.in_mining_area),
+        ('institutional_strict',        c.institutional_strict),
+        ('osm_nonresidential',          c.osm_nonresidential),
+        ('osm_institutional_technical', c.osm_institutional_technical)
+    ) AS v(flag, fires)
+), reasons AS (
+    SELECT u.id, string_agg(u.flag, ', ' ORDER BY u.flag) AS exclusion_reason
+    FROM unpivoted u
+    JOIN temp_mix_validation val ON val.flag = u.flag
+    WHERE u.fires AND val.trusted
+    GROUP BY u.id
+)
+SELECT c.id, r.exclusion_reason
+FROM cand c
+LEFT JOIN reasons r ON r.id = c.id;
 
-CREATE INDEX ON temp_mix_ranked (cell_id);
-
--- Cells holding census population but no residential building at all.
-DROP TABLE IF EXISTS temp_mix_unserved_cells;
-CREATE TEMP TABLE temp_mix_unserved_cells AS
-SELECT g.cell_id
-FROM temp_mix_cells g
-WHERE g.einwohner > 0
-  AND NOT EXISTS (
-      SELECT 1
-      FROM temp_buildings b
-      WHERE b.building_use = 'Residential'
-        AND b.centroid && g.geom
-        AND ST_Contains(g.geom, b.centroid)
-  );
+CREATE INDEX ON temp_mix_decision (id);
 
 DROP TABLE IF EXISTS temp_mix_promoted;
 CREATE TEMP TABLE temp_mix_promoted AS
-SELECT id, MIN(score) AS score, bool_or(is_institutional) AS is_institutional, MIN(rule) AS rule
-FROM (
-    SELECT r.id, r.score, r.is_institutional, 'quota' AS rule
-    FROM temp_mix_ranked r
-    WHERE r.score >= {mu_threshold}
-      AND r.rank_in_cell <= r.quota
-    UNION ALL
-    -- Unserved cells the census gives no count for: promote in score order until the
-    -- combined residential capacity covers the cell population.
-    SELECT r.id, r.score, r.is_institutional, 'rescue'
-    FROM (
-        SELECT r.*,
-               SUM(r.capacity_m2) OVER (PARTITION BY r.cell_id ORDER BY r.rank_in_cell)
-                 - r.capacity_m2 AS capacity_before
-        FROM temp_mix_ranked r
-        JOIN temp_mix_unserved_cells u ON u.cell_id = r.cell_id
-        WHERE r.score >= {mu_threshold}
-          AND COALESCE(r.quota, 0) = 0
-    ) r
-    WHERE r.capacity_before < r.einwohner * {mu_m2_per_person}
-) p
-GROUP BY id;
+SELECT id
+FROM temp_mix_decision
+WHERE exclusion_reason IS NULL;
 
 CREATE INDEX ON temp_mix_promoted (id);
 
 UPDATE temp_buildings b
-SET building_use   = 'Mixed',
-    mix_score      = p.score,
-    mix_confidence = CASE WHEN p.rule = 'rescue' THEN 'low'
-                          WHEN p.score >= {mu_threshold} + {mu_w_address} THEN 'high'
-                          ELSE 'medium' END
+SET building_use = 'Mixed'
 FROM temp_mix_promoted p
 WHERE b.id = p.id;
+
+-- Candidates left Unknown keep a record of which validated flag(s) stopped
+-- their promotion, for inspection.
+UPDATE temp_buildings b
+SET mix_exclusion_reason = d.exclusion_reason
+FROM temp_mix_decision d
+WHERE b.id = d.id AND d.exclusion_reason IS NOT NULL;
+
+-- ------------------------------------------------------------
+-- STEP 4: cell quota
+-- ------------------------------------------------------------
+-- Every 100m cell that STEP 3 left short of its Zensus 2011
+-- sonstige_gebaeude_mit_wohnraum count gets topped up from that cell's own
+-- Residential/Commercial stock (Public excluded, floor_number >= 2 to match
+-- the population STEP 3 draws from). Optional: where the source is not
+-- imported no cell has a quota and this step is a no-op.
+DO $$
+BEGIN
+    IF to_regclass('{input_schema}.zensus_2011_100m_gebaeude_art') IS NULL THEN
+        RAISE NOTICE '[MixedUse] zensus_2011_100m_gebaeude_art not present - cell quota skipped';
+        RETURN;
+    END IF;
+
+    -- Cells with a 2011 mixed-housing count and how many Mixed buildings
+    -- STEP 3 already produced there.
+    DROP TABLE IF EXISTS temp_mix_cell_state;
+    CREATE TEMP TABLE temp_mix_cell_state AS
+    SELECT g.id AS grid_id,
+           g.geom,
+           z.sonstige_gebaeude_mit_wohnraum AS quota,
+           (SELECT count(*) FROM temp_buildings b
+            WHERE b.building_use = 'Mixed' AND ST_Contains(g.geom, b.centroid)) AS mixed_count
+    FROM temp_buildings_grid_100m g
+    JOIN {input_schema}.zensus_2011_100m_gebaeude_art z
+      ON z.x_mp_100m = g.x_mp AND z.y_mp_100m = g.y_mp
+    WHERE z.sonstige_gebaeude_mit_wohnraum > 0;
+
+    CREATE INDEX ON temp_mix_cell_state USING GIST (geom);
+
+    -- Cells still short after STEP 3.
+    DROP TABLE IF EXISTS temp_mix_shortfall;
+    CREATE TEMP TABLE temp_mix_shortfall AS
+    SELECT grid_id, geom, mixed_count, quota - mixed_count AS deficit
+    FROM temp_mix_cell_state
+    WHERE quota > mixed_count;
+
+    CREATE INDEX ON temp_mix_shortfall USING GIST (geom);
+
+    -- Rank each shortfall cell's Residential/Commercial pool: buildings
+    -- touching an existing Mixed building first, then by distance to the
+    -- nearest one, so growth reads as a contiguous block; cells with no
+    -- Mixed seed at all rank purely at random, since there is nothing to
+    -- grow outward from.
+    DROP TABLE IF EXISTS temp_mix_rescue_ranked;
+    CREATE TEMP TABLE temp_mix_rescue_ranked AS
+    SELECT c.id,
+           s.deficit,
+           row_number() OVER (
+               PARTITION BY s.grid_id
+               ORDER BY CASE
+                   WHEN s.mixed_count = 0 THEN random()
+                   ELSE (SELECT min(CASE WHEN ST_Touches(c.geom, m.geom) THEN 0
+                                         ELSE ST_Distance(c.centroid, m.centroid) END)
+                         FROM temp_buildings m
+                         WHERE m.building_use = 'Mixed' AND ST_Contains(s.geom, m.centroid))
+               END
+           ) AS rescue_rank
+    FROM temp_mix_shortfall s
+    JOIN temp_buildings c
+      ON c.building_use IN ('Residential', 'Commercial')
+     AND c.floor_number >= 2
+     AND ST_Contains(s.geom, c.centroid);
+
+    UPDATE temp_buildings b
+    SET building_use = 'Mixed'
+    FROM temp_mix_rescue_ranked r
+    WHERE b.id = r.id AND r.rescue_rank <= r.deficit;
+
+    DROP TABLE IF EXISTS temp_mix_cell_state;
+    DROP TABLE IF EXISTS temp_mix_shortfall;
+    DROP TABLE IF EXISTS temp_mix_rescue_ranked;
+END $$;
 
 -- ------------------------------------------------------------
 -- STEP 5: floor-area split
@@ -402,7 +479,6 @@ WITH classified AS (
            b.floor_number,
            b.building_use,
            CASE
-               WHEN b.building_use = 'Mixed' AND p.is_institutional              THEN 'institutional'
                WHEN b.building_use = 'Mixed' AND e.near_pedestrian_zone          THEN 'pedestrian'
                WHEN b.building_use = 'Mixed'                                     THEN 'standard'
                WHEN b.building_use = 'Residential'                               THEN 'full_residential'
@@ -410,12 +486,10 @@ WITH classified AS (
            END AS rule
     FROM temp_buildings b
     JOIN temp_mix_evidence e ON e.id = b.id
-    LEFT JOIN temp_mix_promoted p ON p.id = b.id
 ),
 commercial_floors AS (
     SELECT c.*,
            CASE c.rule
-               WHEN 'institutional'      THEN 0
                WHEN 'pedestrian'         THEN {mu_commercial_floors_pedestrian}
                WHEN 'standard'           THEN {mu_commercial_floors_default}
                WHEN 'full_residential'   THEN 0
@@ -427,8 +501,8 @@ SELECT id,
        rule,
        floor_area * floor_number AS gross_floor_area,
        CASE
-           WHEN rule = 'full_residential' OR rule = 'institutional' THEN 1.0
-           WHEN rule = 'full_nonresidential'                        THEN 0.0
+           WHEN rule = 'full_residential'    THEN 1.0
+           WHEN rule = 'full_nonresidential' THEN 0.0
            ELSE LEAST(GREATEST((floor_number - commercial_floors)::double precision
                                / NULLIF(floor_number, 0),
                                {mu_min_residential_share}),
@@ -446,11 +520,8 @@ FROM temp_mix_share s
 WHERE b.id = s.id;
 
 -- release memory
-DROP TABLE IF EXISTS temp_mix_candidates;
-DROP TABLE IF EXISTS temp_mix_cells;
-DROP TABLE IF EXISTS temp_mix_ranked;
-DROP TABLE IF EXISTS temp_mix_unserved_cells;
+DROP TABLE IF EXISTS temp_mix_validation;
+DROP TABLE IF EXISTS temp_mix_decision;
 DROP TABLE IF EXISTS temp_mix_promoted;
 DROP TABLE IF EXISTS temp_mix_share;
 DROP TABLE IF EXISTS temp_mix_evidence;
-DROP TABLE IF EXISTS temp_mix_extent;

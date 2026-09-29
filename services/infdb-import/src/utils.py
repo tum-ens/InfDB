@@ -925,6 +925,159 @@ def fast_copy_points_csv(
         conn.close()
 
 
+def fast_copy_pivoted_grid_csv(
+    infdb: InfDB,
+    csv_path: str,
+    schema: str,
+    table_name: str,
+    x_col: str,
+    y_col: str,
+    id_col: str,
+    merkmal_col: str,
+    code_col: str,
+    value_col: str,
+    merkmal_filter: str,
+    pivot_codes: dict,
+    delimiter: str = ",",
+    srid_src: int = 3035,
+    epsg: int = None,
+    drop_existing: bool = True,
+    create_spatial_index: bool = True,
+    clip_to_scope: bool = True,
+):
+    """Loads a long-format Zensus grid CSV (one row per cell/attribute/code)
+    into a wide per-cell table, same staging-then-server-side-SELECT approach
+    as fast_copy_points_csv. Two differences from that source shape drive the
+    two extra steps below: there is no x/y column, only an INSPIRE grid id
+    (e.g. CRS3035RES100mN2686500E4335700) encoding the cell's lower-left
+    corner, and the value we want is spread across several rows instead of
+    several columns, so it has to be pivoted rather than cast.
+
+    pivot_codes maps output column name -> the Auspraegung_Code (as it
+    appears in the CSV) to sum into that column, restricted to rows where
+    merkmal_col equals merkmal_filter.
+    """
+    log = infdb.get_worker_logger()
+    params = infdb.get_db_parameters_dict()
+    epsg = (infdb.get_db_parameters_dict() or {}).get("epsg")
+
+    # Read CSV header
+    with open(csv_path, "r", encoding="utf-8", errors="replace", newline="") as f:
+        reader = csv.reader(f, delimiter=delimiter)
+        header = [h.strip().lower() for h in next(reader)]
+
+    id_l, merkmal_l, code_l, value_l = (c.lower() for c in (id_col, merkmal_col, code_col, value_col))
+    for required in (id_l, merkmal_l, code_l, value_l):
+        if required not in header:
+            raise ValueError(f"Missing column: {required}")
+
+    # Connect to database
+    conn = psycopg2.connect(
+        dbname=params["db"],
+        user=params["user"],
+        password=params["password"],
+        host=params["host"],
+        port=params["exposed_port"],
+    )
+    conn.autocommit = True
+    cur = conn.cursor()
+
+    staging = f"{table_name}__staging"
+
+    try:
+        # Step 1: Drop existing tables
+        if drop_existing:
+            cur.execute(f'DROP TABLE IF EXISTS "{schema}"."{table_name}" CASCADE;')
+        cur.execute(f'DROP TABLE IF EXISTS "{schema}"."{staging}" CASCADE;')
+
+        # Step 2: Create UNLOGGED staging table (all TEXT columns), one row
+        # per cell/attribute/code triple exactly as the source CSV has it
+        cols_sql = ", ".join(f'"{c}" text' for c in header)
+        cur.execute(f'CREATE UNLOGGED TABLE "{schema}"."{staging}" ({cols_sql});')
+
+        # Step 3: COPY data from CSV
+        log.info(f"Importing {csv_path} → staging table...")
+        with open(csv_path, "r", encoding="utf-8", errors="replace") as f:
+            cur.copy_expert(
+                f'COPY "{schema}"."{staging}" ({", ".join(f"""\"{c}\"""" for c in header)}) '
+                f"FROM STDIN WITH (FORMAT csv, DELIMITER '{delimiter}', HEADER true);",
+                f,
+            )
+
+        # Step 4: Build the pivot columns, one SUM(...) FILTER per requested code
+        pivot_cols_sql = ",\n                ".join(
+            f"""sum(NULLIF(regexp_replace("{value_l}", '[^0-9-]', '', 'g'), '')::bigint)
+                    FILTER (WHERE "{code_l}" = '{code}') AS "{column}\""""
+            for column, code in pivot_codes.items()
+        )
+
+        # Step 5: Get clipping WHERE clause
+        where_clause = ""
+        if clip_to_scope:
+            clip_wkt, clip_method, _ = get_clip_geometry(target_crs=epsg, infdb=infdb)
+
+            if clip_wkt:
+                where_clause = f"""
+                    WHERE ST_Intersects(
+                        ST_Transform(
+                            ST_SetSRID(
+                                ST_MakePoint("{x_col}", "{y_col}"),
+                                {srid_src}
+                            ),
+                            {epsg}
+                        ),
+                        ST_GeomFromText('{clip_wkt}', {epsg})
+                    )
+                """
+                log.info(f"Clipping enabled: {clip_method} method")
+
+        # Step 6: Pivot to one row per cell and create the final table with
+        # geometry + clipping in one SQL. The grid id's lower-left corner
+        # (…N<northing>E<easting>) plus 50m gives the cell centre, matching
+        # the +50 convention the wide Zensus tables already use for x_mp/y_mp,
+        # so the two line up in downstream joins.
+        log.info(f"Creating final table{' with clipping' if where_clause else ''}...")
+        cur.execute(f"""
+            CREATE TABLE "{schema}"."{table_name}" AS
+            WITH pivoted AS (
+                SELECT
+                    (substring("{id_l}" from 'E(\\d+)$')::double precision + 50) AS "{x_col}",
+                    (substring("{id_l}" from 'N(\\d+)E')::double precision + 50) AS "{y_col}",
+                    {pivot_cols_sql}
+                FROM "{schema}"."{staging}"
+                WHERE "{merkmal_l}" = '{merkmal_filter}'
+                GROUP BY "{id_l}"
+            )
+            SELECT
+                *,
+                ST_Transform(
+                    ST_SetSRID(
+                        ST_MakePoint("{x_col}", "{y_col}"),
+                        {srid_src}
+                    ),
+                    {epsg}
+                )::geometry(Point, {epsg}) AS geom
+            FROM pivoted
+            {where_clause};
+        """)
+
+        # Step 7: Create spatial index
+        if create_spatial_index:
+            log.info("Creating spatial index...")
+            cur.execute(f'CREATE INDEX "{table_name}_geom_gix" ON "{schema}"."{table_name}" USING GIST (geom);')
+
+        # Step 8: Index the grid coordinates, which is how downstream tools join these tables
+        cur.execute(
+            f'CREATE INDEX "{table_name}_mp_idx" ON "{schema}"."{table_name}" ("{x_col}", "{y_col}");'
+        )
+
+    finally:
+        # Cleanup: Drop staging table
+        cur.execute(f'DROP TABLE IF EXISTS "{schema}"."{staging}" CASCADE;')
+        cur.close()
+        conn.close()
+
+
 def get_clip_geometry(target_crs: int, infdb: InfDB, state_prefix: Optional[str] = None):
     """Gets clipping geometry for the configured scope.
 

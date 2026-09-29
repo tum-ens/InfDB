@@ -19,25 +19,28 @@ infdb-basedata-buildings:
     mixed_use:
         status: active          # set to anything else to disable mixed-use promotion
 
-        # 1) WHICH buildings are plausible. Evidence is scored; the census
-        #    statement about the cell acts as the second source, so the
-        #    threshold is a quality floor rather than a count control.
-        threshold: 2
-        # log2 of how much more often each signal fires in cells where the census reports
-        # anderergebaeudetyp buildings, measured across Bavaria, on one shared integer scale.
-        weights:
-            osm_residential: 3  # OSM tags the footprint residential while LOD2 says non-residential
-            address: 2          # the footprint carries a street address
-            floors_3plus: 1     # three or more storeys
-            mixed_area: 1       # inside a basemap FlaecheGemischterNutzung
-            residential_area: 0 # inside a basemap Wohnbauflaeche, measured uninformative
-            industrial_area: -4 # inside a basemap IndustrieUndGewerbeflaeche
+        # 1) WHICH signals mark a building as structurally unable to house
+        #    anyone. Every candidate is promoted to Mixed by default; only a
+        #    candidate that carries one of these is left Unknown. See
+        #    06_z_fill_mixed_use.sql STEP 1 for how each is computed.
+        non_residential_indicators:
+            - in_industrial_area          # inside a basemap IndustrieUndGewerbeflaeche
+            - in_cemetery                 # inside a basemap Friedhof
+            - in_sport_leisure_area       # inside a basemap SportFreizeitUndErholungsflaeche
+            - in_mining_area              # inside a basemap TagebauGrubeSteinbruch or Halde
+            - institutional_strict        # inside a basemap Kultur / Sicherheit und Ordnung /
+                                           # Regierung und Verwaltung area
+            - osm_nonresidential          # OSM tags the footprint office/retail/commercial/
+                                           # industrial/warehouse/kiosk/supermarket
+            - osm_institutional_technical # OSM tags the footprint a school, hospital, museum,
+                                           # government office or other technical/institutional use
 
-        # 2) HOW MANY are real. The census answers this per cell. Where it
-        #    publishes no building count, cells that hold population but no
-        #    residential building promote until the candidates can house it.
-        rescue:
-            m2_per_person: 97   # measured: gross residential floor area per resident
+        # 2) WHETHER an AGS trusts each indicator at all. An indicator is only
+        #    applied in an AGS if fewer than this share of that AGS's own
+        #    LOD2-Residential stock (floor_number >= 2) also carries it --
+        #    otherwise it would throw away real housing there and is skipped
+        #    for that AGS.
+        max_false_positive_rate: 0.01
 
         # 3) HOW the floor area is split. No source measures this, so the split
         #    rests on structural assumptions.
