@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `CHANGELOG.md` (this file)
 - JOSS paper citation in `README.md`, `CITATION.cff` (`preferred-citation`), and the documentation
 
+### Fixed
+- Fresh installs: pin SQLAlchemy `<2.1` and use the explicit `postgresql+psycopg2` driver. `uv.lock` is not
+  committed, and SQLAlchemy 2.1 defaults to psycopg (v3) and breaks `pandas.to_sql` in the bkg, osm, tabula and
+  openmeteo loaders.
+
 ## [4.1.4] - 2026-06-09
 
 - Release archived on Zenodo: https://doi.org/10.5281/zenodo.20609117

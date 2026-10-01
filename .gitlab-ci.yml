@@ -1,4 +1,5 @@
 # .gitlab-ci.yml
+# All jobs run on the Proxmox project runner (tag infdb-proxmox, shell executor).
 
 # Global variables
 variables:
@@ -8,14 +9,13 @@ variables:
 # Default tags for all jobs
 default:
   tags:
-    - infdb-feature
-    - docker
-    - python
+    - infdb-proxmox
 
 # Ensure uv is available on shell runners (installs to ~/.local/bin if missing)
 before_script:
-  - which uv || curl -LsSf https://astral.sh/uv/install.sh | sh
   - export PATH="$HOME/.local/bin:$PATH"
+  - command -v uv || curl -LsSf https://astral.sh/uv/install.sh | sh
+  - uv sync --group test
 
 
 # Cache configuration
@@ -23,7 +23,6 @@ cache:
   paths:
     - .cache/pip
     - .cache/uv
-    - .venv/
 
 # Stages
 stages:
@@ -32,27 +31,23 @@ stages:
   - lint
   - docs
 
-# Setup job
+# Verify the environment before running the checks. Each job recreates its own venv.
 setup:
   stage: setup
   script:
-    - uv sync --group=test
-  artifacts:
-    paths:
-      - .venv/
-    expire_in: 1 hour
+    - uv pip check
 
 ## Test job
 test:
   stage: test
-  dependencies:
-    - setup
   script:
     - source .venv/bin/activate
-    - pytest --cov=src --cov-report=xml --cov-report=html
+    - pytest --cov=src --cov-report=xml --cov-report=html --junitxml=junit.xml
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
   artifacts:
+    when: always
     reports:
+      junit: junit.xml
       coverage_report:
         coverage_format: cobertura
         path: coverage.xml
@@ -62,10 +57,8 @@ test:
 
 pre-commit-hook:
   stage: lint
-  dependencies:
-    - setup
   script:
-    - apt-get update && apt-get install -y git
+    - git --version  # Provision Git on the runner host, not from an unprivileged job.
     - source .venv/bin/activate
     - pre-commit run --all-files
   allow_failure: true
@@ -73,19 +66,18 @@ pre-commit-hook:
 # Linting job
 lint:
   stage: lint
-  dependencies:
-    - setup
   script:
     - source .venv/bin/activate
-    - ruff check .
-    - ruff format --check .
+    - |
+      result=0
+      ruff check . || result=$?
+      ruff format --check . || result=$?
+      exit "$result"
   allow_failure: true
 
 # Type checking
 type-check:
   stage: lint
-  dependencies:
-    - setup
   script:
     - source .venv/bin/activate
     - mypy src
@@ -93,7 +85,8 @@ type-check:
     - mypy services/infdb-api/fastapi
     - mypy services/infdb-api/postgrest
     - mypy services/infdb-api/pygeoapi
-    - mypy tools/infdb-basedata
+    - mypy tools/infdb-basedata-buildings
+    - mypy tools/infdb-basedata-ways
     #- mypy tools/infdb-import
     #- mypy tools/infdb-metadata
     #- mypy tools/buildings-to-street
@@ -104,34 +97,31 @@ type-check:
 
   allow_failure: true
 
-# Security check
-# Bandit:
-#  - Low level issues should not block but can  .
- # - Some options only exist in CLI, thus not stored in pyprojct.toml
+# Security checks remain advisory pending the documented baseline review.
 # B608: SQL strings in Python is used a lot, ideally should be refactored: https://bandit.readthedocs.io/en/latest/plugins/b608_hardcoded_sql_expressions.html
 
 security:
   stage: lint
-  dependencies:
-    - setup
   script:
     - source .venv/bin/activate
-    - bandit -r **/*.py --severity-level medium --exclude build --skip "B608"
-    - safety scan
+    # Scan this repository's tracked Python sources. Submodule repositories need separate scans.
+    - |
+      result=0
+      git ls-files -z -- '*.py' | xargs -0 bandit --severity-level medium --skip B608 -- || result=$?
+      safety scan || result=$?
+      exit "$result"
   allow_failure: true
 
 
 pages:
   stage: docs
-  dependencies:
-    - setup
   script:
     - source .venv/bin/activate
     - mkdocs build -f docs/mkdocs/mkdocs.yml --site-dir ../../public
   cache:
     key: ${CI_COMMIT_REF_SLUG}
     paths:
-      - ~/.cache/ 
+      - .cache/uv/
   artifacts:
     paths:
       - public
