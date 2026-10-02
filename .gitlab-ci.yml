@@ -15,7 +15,7 @@ default:
 before_script:
   - export PATH="$HOME/.local/bin:$PATH"
   - command -v uv || curl -LsSf https://astral.sh/uv/install.sh | sh
-  - uv sync --group test
+  - uv sync --locked --group test
 
 
 # Cache configuration
@@ -36,6 +36,17 @@ setup:
   stage: setup
   script:
     - uv pip check
+
+# services/infdb-import/uv.lock references pyinfdb by its container path, so it is checked inside the uv image.
+import-lock:
+  stage: setup
+  before_script: []
+  script:
+    - >-
+      docker run --rm -e UV_CACHE_DIR=/tmp/uv
+      -v "$CI_PROJECT_DIR/services/infdb-import:/workspaces/infdb-import:ro"
+      -v "$CI_PROJECT_DIR/src/infdb_package:/workspaces/infdb_package:ro"
+      -w /workspaces/infdb-import ghcr.io/astral-sh/uv:python3.12-trixie-slim uv lock --check
 
 ## Test job
 test:

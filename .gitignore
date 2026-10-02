@@ -154,9 +154,6 @@ cython_debug/
 *.zip
 .log
 
-# uv
-uv.lock
-
 # opendata
 *.log
 *.gpkg

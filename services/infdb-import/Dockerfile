@@ -33,7 +33,8 @@ RUN sh /uv-installer.sh && rm /uv-installer.sh
 ENV PATH="/root/.local/bin/:$PATH"
 
 # Project files in WORKDIR so uv and InfDB can see them
-COPY pyproject.toml pyproject.toml
+# uv.lock pins the resolved dependency versions; `uv run` keeps them unless pyproject.toml changes
+COPY pyproject.toml uv.lock ./
 
 # Source code in WORKDIR
 COPY src src
