@@ -39,7 +39,13 @@ infdb-basedata-buildings:
         #    applied in an AGS if fewer than this share of that AGS's own
         #    LOD2-Residential stock (floor_number >= 2) also carries it --
         #    otherwise it would throw away real housing there and is skipped
-        #    for that AGS.
+        #    for that AGS. 
+        
+        #    The 1% bound is a free assumption, not a derived
+        #    value: it reads as "essentially never coincides with a dwelling"
+        #    and can be calibrated.
+        #    Raising it trusts more indicators (more candidates stay Unknown),
+        #    lowering it trusts fewer (more candidates become Mixed).
         max_false_positive_rate: 0.01
 
         # 3) HOW the floor area is split. No source measures this, so the split
