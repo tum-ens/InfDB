@@ -99,7 +99,8 @@
 --   buildings in the same cell (Public does not count) are promoted until
 --   the count is met, preferring buildings touching an already-Mixed
 --   building so growth reads as a contiguous block, then buildings nearest
---   to one where nothing touches, then a random selection where the cell
+--   to one where nothing touches, then a fixed pseudo-random selection
+--   (ordered by a hash of the objectid, so it is repeatable) where the cell
 --   had no Mixed building from STEP 3 to grow from at all. A cell with a
 --   shortfall but no Residential/Commercial building left to promote stays
 --   short -- there is nothing left to spend the quota on.
@@ -436,8 +437,9 @@ BEGIN
     -- Rank each shortfall cell's Residential/Commercial pool: buildings
     -- touching an existing Mixed building first, then by distance to the
     -- nearest one, so growth reads as a contiguous block; cells with no
-    -- Mixed seed at all rank purely at random, since there is nothing to
-    -- grow outward from.
+    -- Mixed seed at all rank by a hash of the objectid, since there is
+    -- nothing to grow outward from. The hash gives an arbitrary but
+    -- repeatable order, so every regeneration picks the same buildings.
     DROP TABLE IF EXISTS temp_mix_rescue_ranked;
     CREATE TEMP TABLE temp_mix_rescue_ranked AS
     SELECT c.id,
@@ -445,12 +447,13 @@ BEGIN
            row_number() OVER (
                PARTITION BY s.grid_id
                ORDER BY CASE
-                   WHEN s.mixed_count = 0 THEN random()
+                   WHEN s.mixed_count = 0 THEN 0
                    ELSE (SELECT min(CASE WHEN ST_Touches(c.geom, m.geom) THEN 0
                                          ELSE ST_Distance(c.centroid, m.centroid) END)
                          FROM temp_buildings m
                          WHERE m.building_use = 'Mixed' AND ST_Contains(s.geom, m.centroid))
-               END
+               END,
+               md5(c.objectid)
            ) AS rescue_rank
     FROM temp_mix_shortfall s
     JOIN temp_buildings c
