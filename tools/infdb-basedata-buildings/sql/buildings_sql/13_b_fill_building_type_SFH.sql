@@ -6,7 +6,7 @@
 -- Typically have larger floor area, 1-2 floors, and few or no neighbors
 UPDATE temp_buildings
 SET building_type = 'SFH'
-WHERE building_use = 'Residential'
+WHERE building_use IN ('Residential', 'Mixed')
   AND building_type IS NULL
   AND ((floor_area < 350 AND floor_number <= 3 AND
         NOT EXISTS (SELECT 1
@@ -23,7 +23,7 @@ CREATE TEMP TABLE filtered_buildings AS (
     SELECT id, geom, height, gemeindeschluessel
     FROM temp_buildings
     WHERE
-        building_use = 'Residential'
+        building_use IN ('Residential', 'Mixed')
     AND (building_type = 'SFH'
         OR ( building_type IS NULL
             AND floor_area < 100

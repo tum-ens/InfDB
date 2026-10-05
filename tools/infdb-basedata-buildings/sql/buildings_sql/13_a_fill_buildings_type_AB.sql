@@ -12,7 +12,7 @@
 -- Typically have <4+ floors and many neighbors> or <3+ floors and 3+ neighbors> or <floor area > 1500>
 UPDATE temp_buildings b
 SET building_type = 'AB'
-WHERE b.building_use = 'Residential'
+WHERE b.building_use IN ('Residential', 'Mixed')
   AND b.building_type IS NULL
   AND (
         b.floor_number >= 4
@@ -37,7 +37,7 @@ DROP TABLE IF EXISTS filtered_buildings;
 CREATE TEMP TABLE filtered_buildings AS (
   SELECT id, geom, height, gemeindeschluessel
   FROM temp_buildings
-  WHERE building_use = 'Residential'
+  WHERE building_use IN ('Residential', 'Mixed')
     AND (building_type IS NULL OR building_type = 'AB')
   --AND b1.floor_number >= 3
 )

@@ -8,7 +8,7 @@
 -- Often have some neighbors but not as many as apartment buildings
 UPDATE temp_buildings
 SET building_type = 'MFH'
-WHERE building_use = 'Residential'
+WHERE building_use IN ('Residential', 'Mixed')
   AND building_type IS NULL
   AND ((floor_number BETWEEN 2 AND 3 OR
         (floor_area > 150 AND
@@ -22,7 +22,7 @@ WHERE building_use = 'Residential'
 CREATE TEMP TABLE filtered_buildings AS (
     SELECT id, geom, height, gemeindeschluessel
     FROM temp_buildings
-    WHERE building_use = 'Residential'
+    WHERE building_use IN ('Residential', 'Mixed')
     AND (building_type = 'MFH'
         OR( building_type IS NULL
     --AND floor_number BETWEEN 2 AND 3
