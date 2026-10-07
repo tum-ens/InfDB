@@ -6,18 +6,20 @@
 -- WHY THIS EXISTS
 --   LOD2 carries exactly one function code per building and no secondary
 --   usage attribute, so a building with shops on the ground floor and flats
---   above is labelled either fully Residential or fully Commercial. Census
---   occupants are then allocated to Residential buildings only, which
---   leaves population in cells without a Residential building unassigned.
+--   above is usually labelled as a single use, either Residential or
+--   Commercial. Census occupants are then allocated to Residential
+--   buildings only, which leaves population in cells without a Residential
+--   building unassigned.
 --
 --   Ground truth (a municipal building registry compared against LOD2 for
---   one town) shows that mislabelling runs in both directions, but the
---   candidate pool here is deliberately narrow: LOD2's Residential and
---   Commercial labels agree with ground truth well enough to leave alone.
---   The mislabelling concentrates in one code, 31001_9998 ("function not
---   specified"), the class LOD2 uses when a building does not fit any of
---   its single-purpose categories. That code is classified 'Unknown' (see
---   00_initalization.sql), and it is the only source of Mixed promotions.
+--   one town) shows that mislabelling runs in both directions, but LOD2's
+--   Residential and Commercial labels agree with it well enough that they
+--   are only reconsidered through the cell quota in STEP 4. The mislabelling
+--   concentrates in one code, 31001_9998 ("function not specified"). LOD2's
+--   code list does have mixed-use categories, but data providers use them
+--   unevenly: some regions label a mixed building as plain Residential or
+--   Commercial, others fall back to 31001_9998. The code therefore reflects
+--   data quality rather than a building type.
 --
 -- WHAT THIS SCRIPT PRODUCES
 --   temp_buildings.residential_floor_area     residential component  [m2]
@@ -33,7 +35,8 @@
 --
 --   Only promoted buildings carry both components, so a building with a
 --   non-zero non-residential component is always labelled 'Mixed'. Buildings
---   LOD2 classifies as Residential or Commercial are left untouched.
+--   LOD2 classifies as Residential or Commercial are left untouched, except
+--   for the cell quota promotions of STEP 4.
 --
 -- ------------------------------------------------------------
 -- STEP 1 - EVIDENCE
