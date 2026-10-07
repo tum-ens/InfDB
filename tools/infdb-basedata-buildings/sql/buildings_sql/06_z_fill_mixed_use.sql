@@ -54,6 +54,9 @@
 --                                  Kultur, Sicherheit und Ordnung, or
 --                                  Regierung und Verwaltung -- museums,
 --                                  fire/police stations, government offices.
+--     health_spa_area              Inside a basemap functional area classed
+--                                  Gesundheit, Kur or without a more specific
+--                                  class -- hospitals, clinics, spa sites.
 --     osm_nonresidential           OSM tags the footprint office, retail,
 --                                  commercial, industrial, warehouse, kiosk
 --                                  or supermarket.
@@ -62,6 +65,27 @@
 --                                  other structurally non-residential use --
 --                                  see the VALUES list in STEP 1 for the
 --                                  full set.
+--     osm_accommodation            OSM tags the footprint a hotel, or a hotel
+--                                  point lies inside it.
+--     osm_campus_amenity           Inside an OSM school, university, college,
+--                                  hospital or clinic area.
+--     osm_construction             OSM tags the footprint or its plot as under
+--                                  construction (building or landuse).
+--     osm_parking_transport        OSM tags the footprint a garage or bridge,
+--                                  it lies in a parking area or railway
+--                                  landuse, or a parking point lies inside it.
+--     osm_service_building         OSM tags the footprint an insurance or
+--                                  service building.
+--     osm_education_site           Inside an OSM education landuse, or a
+--                                  school, university, clinic, language school
+--                                  or music school point lies inside it.
+--     osm_culture_entertainment    A cinema, theatre, nightclub, event venue,
+--                                  arts centre, gambling or gaming point lies
+--                                  inside the footprint, or it is in a
+--                                  theatre area.
+--     osm_utility                  Inside an OSM substation, power plant or
+--                                  utility area, or such a point lies inside
+--                                  it.
 --
 --   Every evidence source is optional. Where a source is not imported the
 --   corresponding flags stay false and the script degrades gracefully.
@@ -153,8 +177,17 @@ SELECT b.id,
        false AS in_sport_leisure_area,
        false AS in_mining_area,
        false AS institutional_strict,
+       false AS health_spa_area,
        false AS osm_nonresidential,
        false AS osm_institutional_technical,
+       false AS osm_accommodation,
+       false AS osm_campus_amenity,
+       false AS osm_construction,
+       false AS osm_parking_transport,
+       false AS osm_service_building,
+       false AS osm_education_site,
+       false AS osm_culture_entertainment,
+       false AS osm_utility,
        false AS near_pedestrian_zone
 FROM temp_buildings b;
 
@@ -197,7 +230,11 @@ BEGIN
             'museum', 'university', 'college', 'storage_tank', 'hangar', 'barn', 'farm_auxiliary',
             'sports_hall', 'sports_centre', 'stadium', 'gymnasium', 'greenhouse', 'silo',
             'substation', 'transformer_tower', 'bunker', 'parking', 'parking_entrance',
-            'church', 'chapel', 'mosque', 'synagogue', 'temple', 'shrine', 'monastery'))
+            'church', 'chapel', 'mosque', 'synagogue', 'temple', 'shrine', 'monastery')),
+        osm_accommodation     = (m.osm_subtype = 'hotel'),
+        osm_construction      = (m.osm_subtype = 'construction'),
+        osm_parking_transport = (m.osm_subtype IN ('garage', 'bridge')),
+        osm_service_building  = (m.osm_subtype IN ('insurance', 'service'))
     FROM (
         SELECT c.id, o.osm_subtype
         FROM temp_mix_evidence c
@@ -214,6 +251,123 @@ BEGIN
     WHERE e.id = m.id;
 
     DROP TABLE IF EXISTS temp_mix_osm;
+END $$;
+
+-- OSM areas and points describing the function of the whole building or its
+-- plot. A polygon applies when it holds the footprint centroid, or, for
+-- polygons of building size, covers half the footprint; a point applies when
+-- it lies inside the footprint.
+DO $$
+DECLARE
+    src_srid   int;
+    scope_geom geometry;
+BEGIN
+    DROP TABLE IF EXISTS temp_mix_osm_feature;
+    CREATE TEMP TABLE temp_mix_osm_feature (flag text, is_area boolean, geom geometry);
+
+    IF to_regclass('{input_schema}.osm_amenity_polygon') IS NOT NULL THEN
+        SELECT ST_SRID(geom) INTO src_srid FROM {input_schema}.osm_amenity_polygon LIMIT 1;
+        scope_geom := ST_Transform((SELECT geom FROM temp_mix_extent), src_srid);
+        INSERT INTO temp_mix_osm_feature
+        SELECT CASE WHEN osm_type IN ('school', 'university', 'college', 'hospital', 'clinic')
+                         THEN 'osm_campus_amenity'
+                    WHEN osm_type = 'parking' THEN 'osm_parking_transport'
+                    ELSE 'osm_culture_entertainment' END,
+               true, ST_MakeValid(ST_Transform(geom, {EPSG}))
+        FROM {input_schema}.osm_amenity_polygon
+        WHERE geom && scope_geom
+          AND osm_type IN ('school', 'university', 'college', 'hospital', 'clinic', 'parking', 'theatre');
+    END IF;
+
+    IF to_regclass('{input_schema}.osm_landuse_polygon') IS NOT NULL THEN
+        SELECT ST_SRID(geom) INTO src_srid FROM {input_schema}.osm_landuse_polygon LIMIT 1;
+        scope_geom := ST_Transform((SELECT geom FROM temp_mix_extent), src_srid);
+        INSERT INTO temp_mix_osm_feature
+        SELECT CASE osm_type WHEN 'construction' THEN 'osm_construction'
+                             WHEN 'railway'      THEN 'osm_parking_transport'
+                             ELSE 'osm_education_site' END,
+               true, ST_MakeValid(ST_Transform(geom, {EPSG}))
+        FROM {input_schema}.osm_landuse_polygon
+        WHERE geom && scope_geom
+          AND osm_type IN ('construction', 'railway', 'education');
+    END IF;
+
+    IF to_regclass('{input_schema}.osm_infrastructure_polygon') IS NOT NULL THEN
+        SELECT ST_SRID(geom) INTO src_srid FROM {input_schema}.osm_infrastructure_polygon LIMIT 1;
+        scope_geom := ST_Transform((SELECT geom FROM temp_mix_extent), src_srid);
+        INSERT INTO temp_mix_osm_feature
+        SELECT 'osm_utility', true, ST_MakeValid(ST_Transform(geom, {EPSG}))
+        FROM {input_schema}.osm_infrastructure_polygon
+        WHERE geom && scope_geom
+          AND ((osm_type = 'power' AND osm_subtype IN ('substation', 'plant')) OR osm_type = 'utility');
+    END IF;
+
+    IF to_regclass('{input_schema}.osm_poi_point') IS NOT NULL THEN
+        SELECT ST_SRID(geom) INTO src_srid FROM {input_schema}.osm_poi_point LIMIT 1;
+        scope_geom := ST_Transform((SELECT geom FROM temp_mix_extent), src_srid);
+        INSERT INTO temp_mix_osm_feature
+        SELECT 'osm_accommodation', false, ST_Transform(geom, {EPSG})
+        FROM {input_schema}.osm_poi_point
+        WHERE geom && scope_geom AND osm_type = 'tourism' AND osm_subtype = 'hotel';
+    END IF;
+
+    IF to_regclass('{input_schema}.osm_amenity_point') IS NOT NULL THEN
+        SELECT ST_SRID(geom) INTO src_srid FROM {input_schema}.osm_amenity_point LIMIT 1;
+        scope_geom := ST_Transform((SELECT geom FROM temp_mix_extent), src_srid);
+        INSERT INTO temp_mix_osm_feature
+        SELECT CASE WHEN osm_type IN ('school', 'university', 'clinic', 'language_school', 'music_school')
+                         THEN 'osm_education_site'
+                    WHEN osm_type = 'parking' THEN 'osm_parking_transport'
+                    ELSE 'osm_culture_entertainment' END,
+               false, ST_Transform(geom, {EPSG})
+        FROM {input_schema}.osm_amenity_point
+        WHERE geom && scope_geom
+          AND osm_type IN ('school', 'university', 'clinic', 'language_school', 'music_school', 'parking',
+                           'cinema', 'theatre', 'nightclub', 'events_venue', 'arts_centre', 'gambling');
+    END IF;
+
+    IF to_regclass('{input_schema}.osm_leisure_point') IS NOT NULL THEN
+        SELECT ST_SRID(geom) INTO src_srid FROM {input_schema}.osm_leisure_point LIMIT 1;
+        scope_geom := ST_Transform((SELECT geom FROM temp_mix_extent), src_srid);
+        INSERT INTO temp_mix_osm_feature
+        SELECT 'osm_culture_entertainment', false, ST_Transform(geom, {EPSG})
+        FROM {input_schema}.osm_leisure_point
+        WHERE geom && scope_geom AND osm_type IN ('adult_gaming_centre', 'dance');
+    END IF;
+
+    IF to_regclass('{input_schema}.osm_infrastructure_point') IS NOT NULL THEN
+        SELECT ST_SRID(geom) INTO src_srid FROM {input_schema}.osm_infrastructure_point LIMIT 1;
+        scope_geom := ST_Transform((SELECT geom FROM temp_mix_extent), src_srid);
+        INSERT INTO temp_mix_osm_feature
+        SELECT 'osm_utility', false, ST_Transform(geom, {EPSG})
+        FROM {input_schema}.osm_infrastructure_point
+        WHERE geom && scope_geom
+          AND ((osm_type = 'power' AND osm_subtype IN ('substation', 'plant')) OR osm_type = 'utility');
+    END IF;
+
+    CREATE INDEX ON temp_mix_osm_feature USING GIST (geom);
+
+    UPDATE temp_mix_evidence e
+    SET osm_accommodation         = e.osm_accommodation         OR m.flags @> ARRAY['osm_accommodation'],
+        osm_campus_amenity        = e.osm_campus_amenity        OR m.flags @> ARRAY['osm_campus_amenity'],
+        osm_construction          = e.osm_construction          OR m.flags @> ARRAY['osm_construction'],
+        osm_parking_transport     = e.osm_parking_transport     OR m.flags @> ARRAY['osm_parking_transport'],
+        osm_education_site        = e.osm_education_site        OR m.flags @> ARRAY['osm_education_site'],
+        osm_culture_entertainment = e.osm_culture_entertainment OR m.flags @> ARRAY['osm_culture_entertainment'],
+        osm_utility               = e.osm_utility               OR m.flags @> ARRAY['osm_utility']
+    FROM (
+        SELECT c.id, array_agg(DISTINCT f.flag) AS flags
+        FROM temp_mix_evidence c
+        JOIN temp_mix_osm_feature f ON f.geom && c.geom
+        WHERE (f.is_area AND (ST_Contains(f.geom, c.centroid)
+                              OR (ST_Area(f.geom) < 5000
+                                  AND ST_Area(ST_Intersection(c.geom, f.geom)) >= 0.5 * ST_Area(c.geom))))
+           OR (NOT f.is_area AND ST_Contains(c.geom, f.geom))
+        GROUP BY c.id
+    ) m
+    WHERE e.id = m.id;
+
+    DROP TABLE IF EXISTS temp_mix_osm_feature;
 END $$;
 
 -- basemap settlement and functional areas.
@@ -250,7 +404,10 @@ BEGIN
         in_mining_area        = (l.objektart IN ('TagebauGrubeSteinbruch', 'Halde')),
         institutional_strict  = (l.objektart = 'FlaecheBesondererFunktionalerPraegung'
                                  AND l.klasse IN ('Kultur', 'Sicherheit und Ordnung',
-                                                   'Regierung und Verwaltung'))
+                                                   'Regierung und Verwaltung')),
+        health_spa_area       = (l.objektart = 'FlaecheBesondererFunktionalerPraegung'
+                                 AND l.klasse IN ('Gesundheit, Kur',
+                                                   'Fläche besonderer funktionaler Prägung'))
     FROM (
         SELECT c.id, a.objektart, a.klasse
         FROM temp_mix_evidence c
@@ -324,8 +481,17 @@ WITH residential_pool AS (
         ('in_sport_leisure_area',       in_sport_leisure_area),
         ('in_mining_area',              in_mining_area),
         ('institutional_strict',        institutional_strict),
+        ('health_spa_area',             health_spa_area),
         ('osm_nonresidential',          osm_nonresidential),
-        ('osm_institutional_technical', osm_institutional_technical)
+        ('osm_institutional_technical', osm_institutional_technical),
+        ('osm_accommodation',           osm_accommodation),
+        ('osm_campus_amenity',          osm_campus_amenity),
+        ('osm_construction',            osm_construction),
+        ('osm_parking_transport',       osm_parking_transport),
+        ('osm_service_building',        osm_service_building),
+        ('osm_education_site',          osm_education_site),
+        ('osm_culture_entertainment',   osm_culture_entertainment),
+        ('osm_utility',                 osm_utility)
     ) AS v(flag, fires)
 )
 SELECT flag,
@@ -358,8 +524,17 @@ WITH cand AS (
         ('in_sport_leisure_area',       c.in_sport_leisure_area),
         ('in_mining_area',              c.in_mining_area),
         ('institutional_strict',        c.institutional_strict),
+        ('health_spa_area',             c.health_spa_area),
         ('osm_nonresidential',          c.osm_nonresidential),
-        ('osm_institutional_technical', c.osm_institutional_technical)
+        ('osm_institutional_technical', c.osm_institutional_technical),
+        ('osm_accommodation',           c.osm_accommodation),
+        ('osm_campus_amenity',          c.osm_campus_amenity),
+        ('osm_construction',            c.osm_construction),
+        ('osm_parking_transport',       c.osm_parking_transport),
+        ('osm_service_building',        c.osm_service_building),
+        ('osm_education_site',          c.osm_education_site),
+        ('osm_culture_entertainment',   c.osm_culture_entertainment),
+        ('osm_utility',                 c.osm_utility)
     ) AS v(flag, fires)
 ), reasons AS (
     SELECT u.id, string_agg(u.flag, ', ' ORDER BY u.flag) AS exclusion_reason

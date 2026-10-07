@@ -30,10 +30,29 @@ infdb-basedata-buildings:
             - in_mining_area              # inside a basemap TagebauGrubeSteinbruch or Halde
             - institutional_strict        # inside a basemap Kultur / Sicherheit und Ordnung /
                                            # Regierung und Verwaltung area
+            - health_spa_area             # inside a basemap Gesundheit, Kur or unspecified
+                                           # functional area
             - osm_nonresidential          # OSM tags the footprint office/retail/commercial/
                                            # industrial/warehouse/kiosk/supermarket
             - osm_institutional_technical # OSM tags the footprint a school, hospital, museum,
                                            # government office or other technical/institutional use
+            - osm_accommodation           # OSM tags the footprint a hotel, or a hotel point lies
+                                           # inside it
+            - osm_campus_amenity          # inside an OSM school/university/college/hospital/
+                                           # clinic area
+            - osm_construction            # OSM tags the footprint or its plot as under
+                                           # construction
+            - osm_parking_transport       # OSM garage/bridge footprint, parking area or point,
+                                           # or railway landuse
+            - osm_service_building        # OSM tags the footprint an insurance or service building
+            - osm_education_site          # inside an OSM education landuse, or a school/
+                                           # university/clinic/language or music school point
+                                           # lies inside the footprint
+            - osm_culture_entertainment   # a cinema/theatre/nightclub/event venue/arts centre/
+                                           # gambling/gaming point lies inside the footprint, or
+                                           # the footprint is in a theatre area
+            - osm_utility                 # inside an OSM substation/power plant/utility area, or
+                                           # such a point lies inside the footprint
 
         # 2) WHETHER an AGS trusts each indicator at all. An indicator is only
         #    applied in an AGS if fewer than this share of that AGS's own
