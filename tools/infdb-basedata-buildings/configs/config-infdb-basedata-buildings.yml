@@ -18,21 +18,62 @@ infdb-basedata-buildings:
         random_seed: 0.98 # Seed value used for the random assignment of construction periods
     mixed_use:
         status: active          # set to anything else to disable mixed-use promotion
-        min_floors: 2           # a mixed-use building needs more than one storey
-        min_overlap: 0.5        # minimum share of the LOD2 footprint an OSM polygon must cover to be matched
-        threshold: 4            # minimum score to be promoted under the census quota
-        rescue_threshold: 3     # minimum score in cells with population but no residential building
-        rescue_max_per_cell: 3  # how many buildings such a cell may promote
-        weights:
-            osm_residential: 3  # OSM calls the footprint residential while LOD2 calls it commercial
-            mixed_area: 3       # inside an ATKIS FlaecheGemischterNutzung
-            address: 2          # the footprint carries a street address
-            residential_area: 1 # inside an ATKIS Wohnbauflaeche
-            floors_3plus: 1     # three or more storeys
-            industrial_area: -3 # inside an ATKIS IndustrieUndGewerbeflaeche
+
+        # 1) WHICH signals mark a building as structurally unable to house
+        #    anyone. Every candidate is promoted to Mixed by default; only a
+        #    candidate that carries one of these is left Unknown. See
+        #    06_z_fill_mixed_use.sql STEP 1 for how each is computed.
+        non_residential_indicators:
+            - in_industrial_area          # inside a basemap IndustrieUndGewerbeflaeche
+            - in_cemetery                 # inside a basemap Friedhof
+            - in_sport_leisure_area       # inside a basemap SportFreizeitUndErholungsflaeche
+            - in_mining_area              # inside a basemap TagebauGrubeSteinbruch or Halde
+            - institutional_strict        # inside a basemap Kultur / Sicherheit und Ordnung /
+                                           # Regierung und Verwaltung area
+            - health_spa_area             # inside a basemap Gesundheit, Kur or unspecified
+                                           # functional area
+            - osm_nonresidential          # OSM tags the footprint office/retail/commercial/
+                                           # industrial/warehouse/kiosk/supermarket
+            - osm_institutional_technical # OSM tags the footprint a school, hospital, museum,
+                                           # government office or other technical/institutional use
+            - osm_accommodation           # OSM tags the footprint a hotel, or a hotel point lies
+                                           # inside it
+            - osm_campus_amenity          # inside an OSM school/university/college/hospital/
+                                           # clinic area
+            - osm_construction            # OSM tags the footprint or its plot as under
+                                           # construction
+            - osm_parking_transport       # OSM garage/bridge footprint, parking area or point,
+                                           # or railway landuse
+            - osm_service_building        # OSM tags the footprint an insurance or service building
+            - osm_education_site          # inside an OSM education landuse, or a school/
+                                           # university/clinic/language or music school point
+                                           # lies inside the footprint
+            - osm_culture_entertainment   # a cinema/theatre/nightclub/event venue/arts centre/
+                                           # gambling/gaming point lies inside the footprint, or
+                                           # the footprint is in a theatre area
+            - osm_utility                 # inside an OSM substation/power plant/utility area, or
+                                           # such a point lies inside the footprint
+
+        # 2) WHETHER an AGS trusts each indicator at all. An indicator is only
+        #    applied in an AGS if fewer than this share of that AGS's own
+        #    LOD2-Residential stock (floor_number >= 2) also carries it --
+        #    otherwise it would throw away real housing there and is skipped
+        #    for that AGS. 
+        
+        #    The 1% bound is a free assumption, not a derived
+        #    value: it reads as "essentially never coincides with a dwelling"
+        #    and can be calibrated.
+        #    Raising it trusts more indicators (more candidates stay Unknown),
+        #    lowering it trusts fewer (more candidates become Mixed).
+        max_false_positive_rate: 0.01
+
+        # 3) HOW the floor area is split. No source measures this, so the split
+        #    rests on structural assumptions.
         share:
-            pedestrian_buffer_m: 25         # distance to a Fussgaengerzone that counts as prime retail location
-            commercial_floors_pedestrian: 2 # commercial storeys in prime retail locations
-            commercial_floors_default: 1    # commercial storeys elsewhere
-            min_residential_share: 0.2      # Wohn- und Geschaeftshaus band, lower bound
-            max_residential_share: 0.8      # Wohn- und Geschaeftshaus band, upper bound
+            commercial_floors_default: 1     # commercial ground floor, residential above
+            commercial_floors_pedestrian: 2  # 1a-Lage retail extends one floor up
+            pedestrian_buffer_m: 25          # distance to a basemap Fussgaengerzone that counts as 1a-Lage
+            # German real-estate practice calls a building a Wohn- und Geschaeftshaus only
+            # while both uses are substantial, so the share is clamped into that band.
+            min_residential_share: 0.2       # guard: keeps a two-storey pedestrian-zone building mixed, mixed building always keeps a residential part
+            max_residential_share: 0.8       # above this the building keeps a 0.8/0.2 split

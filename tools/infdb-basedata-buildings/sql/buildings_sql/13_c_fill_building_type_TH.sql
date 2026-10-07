@@ -5,7 +5,7 @@
 -- Identify buildings with medium floor area, 2-3 floors, 1-2 neighbors and a similar floor area to their neighbors (within 20%)
 UPDATE temp_buildings
 SET building_type = 'TH'
-WHERE building_use = 'Residential'
+WHERE building_use IN ('Residential', 'Mixed')
   AND building_type IS NULL
     AND ((floor_area BETWEEN 70 AND 150 AND floor_number BETWEEN 2 AND 3 AND
 
@@ -60,7 +60,7 @@ WHERE building_use = 'Residential'
 CREATE TEMP TABLE filtered_buildings AS (
     SELECT id, geom, floor_area, floor_number, height, gemeindeschluessel
     FROM temp_buildings
-    WHERE building_use = 'Residential'
+    WHERE building_use IN ('Residential', 'Mixed')
     AND (building_type = 'TH'
         OR( building_type IS NULL
             AND floor_area BETWEEN 70 AND 150

@@ -6,7 +6,7 @@
 -- Step 5: Set rest to AB
 UPDATE temp_buildings b
 SET building_type = 'AB'
-WHERE b.building_use = 'Residential'
+WHERE b.building_use IN ('Residential', 'Mixed')
   AND b.building_type IS NULL;
 
 
@@ -69,7 +69,7 @@ WITH grid_current AS (
         COUNT(*) as total_buildings
     FROM temp_buildings b
     JOIN temp_buildings_grid_{census_building_type_resolution} g ON ST_Contains(g.geom, b.centroid)
-    WHERE b.building_use = 'Residential' AND g.id IS NOT NULL
+    WHERE b.building_use IN ('Residential', 'Mixed') AND g.id IS NOT NULL
     GROUP BY g.id
 )
 SELECT * FROM grid_current;
@@ -157,7 +157,7 @@ WITH ab_to_mfh AS (
     JOIN temp_grid_comparisonab gc
       ON g.id = gc.grid_id
     WHERE
-        b.building_use = 'Residential'
+        b.building_use IN ('Residential', 'Mixed')
         AND gc.total_target > 0
         AND gc.ab_adjustment < 0
         AND b.building_type = 'AB'
@@ -185,7 +185,7 @@ mfh_to_ab AS (
     JOIN temp_grid_comparisonab gc
       ON g.id = gc.grid_id
     WHERE
-        b.building_use = 'Residential'
+        b.building_use IN ('Residential', 'Mixed')
         AND b.households > 1
         AND gc.total_target > 0
         AND gc.ab_adjustment > 0
@@ -214,7 +214,7 @@ th_to_ab AS (
     JOIN temp_grid_comparisonab gc
       ON g.id = gc.grid_id
     WHERE
-        b.building_use = 'Residential'
+        b.building_use IN ('Residential', 'Mixed')
         AND gc.total_target > 0
         AND gc.ab_adjustment > 0
         AND b.building_type = 'TH'
@@ -303,7 +303,7 @@ WITH grid_current AS (
         COUNT(*) as total_buildings
     FROM temp_buildings b
     JOIN temp_buildings_grid_{census_building_type_resolution} g ON ST_Contains(g.geom, b.centroid)
-    WHERE b.building_use = 'Residential' AND g.id IS NOT NULL
+    WHERE b.building_use IN ('Residential', 'Mixed') AND g.id IS NOT NULL
     GROUP BY g.id
 )
 SELECT * FROM grid_current;
@@ -349,7 +349,7 @@ WITH TH_to_MFH AS (
       ON ST_Contains(g.geom, b.centroid)
     JOIN temp_grid_comparisonmfh gc
       ON g.id = gc.grid_id
-    WHERE b.building_use = 'Residential'
+    WHERE b.building_use IN ('Residential', 'Mixed')
       AND gc.total_target > 0
       AND gc.mfh_adjustment > 0
       AND b.building_type = 'TH'
@@ -375,7 +375,7 @@ SFH_to_MFH AS (
       ON ST_Contains(g.geom, b.centroid)
     JOIN temp_grid_comparisonmfh gc
       ON g.id = gc.grid_id
-    WHERE b.building_use = 'Residential'
+    WHERE b.building_use IN ('Residential', 'Mixed')
       AND gc.total_target > 0
       AND gc.mfh_adjustment > 0
       AND b.building_type = 'SFH'
@@ -402,7 +402,7 @@ MFH_to_TH AS (
       ON ST_Contains(g.geom, b.centroid)
     JOIN temp_grid_comparisonmfh gc
       ON g.id = gc.grid_id
-    WHERE b.building_use = 'Residential'
+    WHERE b.building_use IN ('Residential', 'Mixed')
       AND gc.total_target > 0
       AND gc.mfh_adjustment < 0
       AND b.building_type = 'MFH'
@@ -481,7 +481,7 @@ WITH grid_current AS (
         COUNT(*) as total_buildings
     FROM temp_buildings b
     JOIN temp_buildings_grid_{census_building_type_resolution} g ON ST_Contains(g.geom, b.centroid)
-    WHERE b.building_use = 'Residential' AND g.id IS NOT NULL
+    WHERE b.building_use IN ('Residential', 'Mixed') AND g.id IS NOT NULL
     GROUP BY g.id
 )
 SELECT * FROM grid_current;
@@ -526,7 +526,7 @@ WITH SFH_to_TH AS (
       ON ST_Contains(g.geom, b.centroid)
     JOIN temp_grid_comparisonth gc
       ON g.id = gc.grid_id
-    WHERE b.building_use = 'Residential'
+    WHERE b.building_use IN ('Residential', 'Mixed')
       AND gc.total_target > 0
       AND gc.th_adjustment > 0
       AND b.building_type = 'SFH'
@@ -552,7 +552,7 @@ TH_to_SFH AS (
       ON ST_Contains(g.geom, b.centroid)
     JOIN temp_grid_comparisonth gc
       ON g.id = gc.grid_id
-    WHERE b.building_use = 'Residential'
+    WHERE b.building_use IN ('Residential', 'Mixed')
       AND gc.total_target > 0
       AND gc.th_adjustment < 0
       AND b.building_type = 'TH'

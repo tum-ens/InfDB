@@ -6,7 +6,7 @@ from pyinfdb import InfDB
 from src import (
     basemap,
     bkg,
-    census2022,
+    census2022_2011,
     dwd,
     gebaeude_neuburg,
     infdb_fdw_setup,
@@ -127,7 +127,7 @@ def main() -> None:
     processes.append(mp.Process(target=_run_loader, args=(tabula.load,), name="tabula"))
     processes.append(mp.Process(target=_run_loader, args=(plz.load,), name="plz"))
     processes.append(mp.Process(target=_run_loader, args=(basemap.load,), name="basemap"))
-    processes.append(mp.Process(target=_run_loader, args=(census2022.load,), name="census2022"))
+    processes.append(mp.Process(target=_run_loader, args=(census2022_2011.load,), name="census2022_2011"))
     processes.append(mp.Process(target=_run_loader, args=(openmeteo.load,), name="openmeteo"))
     processes.append(mp.Process(target=_run_loader, args=(kwp_nrw.load,), name="kwp_nrw"))
     processes.append(mp.Process(target=_run_loader, args=(kwp_nrw_oberhausen.load,), name="kwp_nrw_oberhausen"))

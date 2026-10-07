@@ -10,9 +10,24 @@ from . import utils
 # ============================== Constants ==============================
 CLIPPED_PREFIX: str = "zensus-2022"
 
+# The 2011 grid files ship long (one row per cell/attribute/code) rather than
+# wide, so they are pivoted instead of cast (see fast_copy_pivoted_grid_csv).
+# Keyed by dataset table_name; each entry names the source Merkmal and maps
+# output column -> Auspraegung_Code.
+CENSUS_2011_PIVOTS: Dict[str, Dict[str, Any]] = {
+    "gebaeude_art": {
+        "merkmal": "GEBAEUDEART_SYS",
+        "codes": {
+            "wohngebaeude_ohne_wohnheime": "111",   # Wohngebaeude, >= Haelfte Nutzflaeche Wohnzwecke, ohne Wohnheime
+            "wohnheime": "112",                     # Wohnheime (Studierende, Arbeiter, ...), eigene Haushaltsfuehrung
+            "sonstige_gebaeude_mit_wohnraum": "12",  # < Haelfte Nutzflaeche Wohnzwecke, z.B. ueberwiegend Laeden/Bueros
+        },
+    },
+}
+
 
 def load(infdb: InfDB) -> None:
-    """Entry point to download, validate, and process Zensus 2022 datasets.
+    """Entry point to download, validate, and process Zensus 2022 and 2011 datasets.
 
     Behavior preserved:
     - Respects `utils.if_active("zensus_2022", infdb)`.
@@ -159,25 +174,61 @@ def process_dataset(dataset: Dict[str, Any], tool_name: str) -> bool:
             y_col = f"y_mp_{resolution}"
             table_name = f"{prefix}_{dataset['year']}_{resolution}_{dataset['table_name']}"
 
-            # column types from config
-            column_types = dataset.get("types", {}) or {}
-            # normalize keys to lowercase (safe)
-            column_types = {k.strip().lower(): v.strip().lower() for k, v in column_types.items()}
+            pivot = CENSUS_2011_PIVOTS.get(dataset["table_name"])
+            if pivot:
+                # -------------------------
+                # PIVOTED LOAD: the 2011 grid files have no x/y columns and
+                # carry one row per cell/attribute/code, so they go through
+                # the pivoting sibling of fast_copy_points_csv instead of a
+                # straight column cast.
+                # -------------------------
+                utils.fast_copy_pivoted_grid_csv(
+                    infdb,
+                    csv_path=csv_path,
+                    schema=schema,
+                    table_name=table_name,
+                    x_col=x_col,
+                    y_col=y_col,
+                    id_col="Gitter_ID_100m_neu",  # e.g. CRS3035RES100mN2686500E4335700
+                    merkmal_col="Merkmal",
+                    code_col="Auspraegung_Code",
+                    value_col="Anzahl",
+                    merkmal_filter=pivot["merkmal"],
+                    pivot_codes=pivot["codes"],
+                    delimiter=",",  # 2011 grid files are comma-, not semicolon-delimited
+                    srid_src=3035,  # source coordinates are in EPSG:3035 in the Zensus grid id
+                    epsg=epsg,  # target SRID from DB config
+                    drop_existing=True,  # matches old 'replace' behavior
+                    create_spatial_index=True,  # gives you good query perf right away
+                    clip_to_scope=True,  # Explicit clipping (default anyway)
+                )
+            else:
+                # -------------------------
+                # FAST LOAD (NEW): COPY + server-side geometry creation
+                # This replaces: read CSV -> build GeoDataFrame -> gdf.to_postgis(...)
+                # Benefits:
+                #   * COPY is much faster than per-row inserts
+                #   * ST_MakePoint + ST_Transform happen inside PostGIS (C), not Python
+                # -------------------------
+                # column types from config
+                column_types = dataset.get("types", {}) or {}
+                # normalize keys to lowercase (safe)
+                column_types = {k.strip().lower(): v.strip().lower() for k, v in column_types.items()}
 
-            utils.fast_copy_points_csv(
-                infdb,
-                csv_path=csv_path,
-                schema=schema,
-                table_name=table_name,
-                x_col=x_col,
-                y_col=y_col,
-                srid_src=3035,  # source X/Y are in EPSG:3035 in the Zensus CSV
-                epsg=epsg,  # target SRID from DB config
-                drop_existing=True,  # matches old 'replace' behavior
-                create_spatial_index=True,  # gives you good query perf right away
-                clip_to_scope=True,  # Explicit clipping (default anyway)
-                column_types=column_types,  # custom column types from config
-            )
+                utils.fast_copy_points_csv(
+                    infdb,
+                    csv_path=csv_path,
+                    schema=schema,
+                    table_name=table_name,
+                    x_col=x_col,
+                    y_col=y_col,
+                    srid_src=3035,  # source X/Y are in EPSG:3035 in the Zensus CSV
+                    epsg=epsg,  # target SRID from DB config
+                    drop_existing=True,  # matches old 'replace' behavior
+                    create_spatial_index=True,  # gives you good query perf right away
+                    clip_to_scope=True,  # Explicit clipping (default anyway)
+                    column_types=column_types,  # custom column types from config
+                )
 
             log.info(f"Processed successfully {csv_path}")
 

@@ -31,7 +31,6 @@ def main() -> None:
 
     # Mixed-use parameters consumed by 06_z_fill_mixed_use.sql
     mixed_use = infdb.get_config_value([infdb.get_toolname(), "mixed_use"])
-    mu_weights = mixed_use["weights"]
     mu_share = mixed_use["share"]
 
     format_params: Dict[str, Any] = {
@@ -45,17 +44,7 @@ def main() -> None:
         "tool_name": infdb.get_toolname(),
         "process_id": os.getpid(),
         "mu_status": mixed_use["status"],
-        "mu_min_floors": mixed_use["min_floors"],
-        "mu_min_overlap": mixed_use["min_overlap"],
-        "mu_threshold": mixed_use["threshold"],
-        "mu_rescue_threshold": mixed_use["rescue_threshold"],
-        "mu_rescue_max_per_cell": mixed_use["rescue_max_per_cell"],
-        "mu_w_osm_residential": mu_weights["osm_residential"],
-        "mu_w_mixed_area": mu_weights["mixed_area"],
-        "mu_w_address": mu_weights["address"],
-        "mu_w_residential_area": mu_weights["residential_area"],
-        "mu_w_floors_3plus": mu_weights["floors_3plus"],
-        "mu_w_industrial_area": mu_weights["industrial_area"],
+        "mu_max_false_positive_rate": mixed_use["max_false_positive_rate"],
         "mu_pedestrian_buffer_m": mu_share["pedestrian_buffer_m"],
         "mu_commercial_floors_pedestrian": mu_share["commercial_floors_pedestrian"],
         "mu_commercial_floors_default": mu_share["commercial_floors_default"],

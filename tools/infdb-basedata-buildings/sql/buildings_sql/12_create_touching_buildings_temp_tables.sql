@@ -15,8 +15,8 @@ WITH pairs AS (
   FROM temp_buildings a
        JOIN temp_buildings b ON
       a.id < b.id AND
-      a.building_use = 'Residential' AND
-      b.building_use = 'Residential' AND
+      a.building_use IN ('Residential', 'Mixed') AND
+      b.building_use IN ('Residential', 'Mixed') AND
       b.geom && ST_Expand(a.geom, 0.01) AND
       ST_DWithin(a.geom, b.geom, 0.01)
 )
