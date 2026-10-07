@@ -7,6 +7,43 @@ from . import eureca_code
 
 
 def create_tabula_structure(tabula_rows: DataFrame) -> DataFrame:
+    """Build EUReCA constructions from TABULA material layers.
+
+    Column names and units follow the TABULA/TEASER format
+    (see https://github.com/RWTH-EBC/TEASER/blob/main/teaser/logic/buildingobjects/buildingphysics/material.py)
+    and are converted to the units expected by ``eureca_code.Material``:
+
+    ==============  ===========  ===============  ===========  ==========
+    TABULA column   TABULA unit  EUReCA argument  EUReCA unit  Conversion
+    ==============  ===========  ===============  ===========  ==========
+    material_name   -            name             -            none
+    thickness       m            thick            m            none
+    thermal_conduc  W/(m K)      cond             W/(m K)      none
+    heat_capac      kJ/(kg K)    spec_heat        J/(kg K)     x 1000
+    density         kg/m3        dens             kg/m3        none
+    ==============  ===========  ===============  ===========  ==========
+
+    Procedure:
+        1. Sort layers from outside to inside (descending layer_index) as EUReCA requires.
+        2. Create an EUReCA Material per layer, converting heat_capac to J/(kg K).
+        3. Group layers by building_type, element_name, construction_data, start_year and end_year into one material
+           list per construction.
+        4. Create an EUReCA Construction per group, mapping the TABULA element name to the EUReCA construction type.
+        5. Extract R and C per construction (missing Cs are set to 0).
+
+    Args:
+        tabula_rows: One row per material layer with the material columns from the table above plus layer_index,
+            building_type, element_name, construction_data, start_year and end_year. Sorted and extended with a
+            ``materials`` column in place.
+
+    Returns:
+        One row per construction with the grouping columns, ``materials`` (list of EUReCA Materials, outside to
+        inside), ``R`` (thermal resistance in m2 K/W) and ``C`` (heat capacity k_int in J/(m2 K)).
+
+    Raises:
+        KeyError: If element_name is not one of GroundFloor, OuterWall, Rooftop, Ceiling, Floor, InnerWall, Window.
+    """
+
     def _as_str(value: Any) -> str:
         return cast(str, value)
 
@@ -22,7 +59,7 @@ def create_tabula_structure(tabula_rows: DataFrame) -> DataFrame:
             _as_str(row.material_name),
             _as_float(row.thickness),
             _as_float(row.thermal_conduc),
-            _as_float(row.heat_capac),
+            _as_float(row.heat_capac) * 1000.0,  # Convert from kJ/(kg*K) used in TABULA to J/(kg*K) expected by EUReCA
             _as_float(row.density),
         )
         for row in tabula_rows.itertuples(index=False)
@@ -95,7 +132,7 @@ def calculate_rc_values(tabula: DataFrame, row: Series, area_ratio: float =1.0) 
         else:
             raise Exception(f"Unknown component: {component}")
 
-        # Only "OuterWall","GroundFloor", "Rooftop","Window" contribute to R value
+        # Only "OuterWall", "GroundFloor", "Rooftop", "Window" contribute to R value
         if component in ["OuterWall", "GroundFloor", "Rooftop", "Window"]:
             overall_r = overall_r + (area * area_ratio / match["R"])
         overall_c = overall_c + (match["C"] * area * area_ratio)
@@ -105,7 +142,7 @@ def calculate_rc_values(tabula: DataFrame, row: Series, area_ratio: float =1.0) 
 
 def resolve_construction(tabula: DataFrame, component: str, row: Series) -> Series:
     # Get the corresponding refurbishment year
-    # 'GroundFloor', 'Ceiling', 'Floor', 'InnerWall' are not refurbished, therefore,  refurb_year = construction_year
+    # 'GroundFloor', 'Ceiling', 'Floor', 'InnerWall' are not refurbished, therefore, refurb_year = construction_year
     if component in ["GroundFloor", "Ceiling", "Floor", "InnerWall"]:
         refurb_year = row["construction_year"]
     elif component == "Rooftop":
@@ -117,7 +154,7 @@ def resolve_construction(tabula: DataFrame, component: str, row: Series) -> Seri
     else:
         raise ValueError(f"Unknown construction type: {component}")
 
-    # 'Ceiling', 'Floor', 'InnerWall' are not building type specific and have no refurbishment options
+    # 'Ceiling', 'Floor', 'InnerWall' are not building type-specific and have no refurbishment options
     if component in ["Ceiling", "Floor", "InnerWall"]:
         building_type = "standard"
         construction_string = "tabula_de_standard"
