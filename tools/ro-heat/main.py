@@ -153,7 +153,7 @@ def main():
         # Start heat demand calculation
         infdblog.info(f"Running heat demand calculation with method {method}")
         start_time = f"{simulation_year}-01-01"
-        end_time = f"{simulation_year}-12-31"
+        end_time = f"{simulation_year + 1}-01-01"
 
         if method == "1R0C_internal":
             format_params = {
