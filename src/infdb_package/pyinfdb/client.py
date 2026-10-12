@@ -11,7 +11,7 @@ import pandas as pd
 from .config import InfdbConfig
 
 # ============================== Constants ==============================
-DB_URL_TEMPLATE: str = "postgresql://{user}:{password}@{host}:{port}/{db}"
+DB_URL_TEMPLATE: str = "postgresql+psycopg2://{user}:{password}@{host}:{port}/{db}"
 
 
 # ============================== Types ==================================
