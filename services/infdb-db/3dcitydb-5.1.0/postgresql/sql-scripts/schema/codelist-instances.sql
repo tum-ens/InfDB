@@ -10,11 +10,3 @@ VALUES (1, 'bldg:BuildingFunctionValue', 'http://www.sig3d.org/codelists/standar
 
 INSERT INTO codelist (ID, CODELIST_TYPE, URL, MIME_TYPE)
 VALUES (2, 'bldg:BuildingUsageValue', 'http://www.sig3d.org/codelists/standard/building/2.0/_AbstractBuilding_usage.xml', 'application/xml');
-
-
-
-
-
-
-
-

@@ -1,11 +1,12 @@
 """Integration tests for InfdbClient — skipped when PostgreSQL is not reachable."""
+
 import logging
 
 import pytest
 import sqlalchemy
+from psycopg2 import OperationalError
 from pyinfdb.client import InfdbClient
 from pyinfdb.config import InfdbConfig
-from psycopg2 import OperationalError
 
 pytestmark = pytest.mark.integration
 

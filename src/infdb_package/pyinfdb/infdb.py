@@ -13,7 +13,7 @@ class InfDB:
     class as the single entry point.
     """
 
-    def __init__(self, tool_name: str, config_path: str = None, host: str = None) -> None:
+    def __init__(self, tool_name: str, config_path: Optional[str] = None, host: Optional[str] = None) -> None:
         """Initializes the facade with configuration and logging.
 
         Args:
@@ -22,11 +22,13 @@ class InfDB:
             host: The host address for the database connection.
         """
         self.tool_name: str = tool_name
-        self.config_path: str = config_path
-        self.host: str = host
+        self.config_path: Optional[str] = config_path
+        self.host: Optional[str] = host
 
         # Load configuration
-        self.infdbconfig: InfdbConfig = InfdbConfig(tool_name=self.tool_name, config_path=self.config_path, host=self.host)
+        self.infdbconfig: InfdbConfig = InfdbConfig(
+            tool_name=self.tool_name, config_path=self.config_path, host=self.host
+        )
 
         # Initialize logging from config, with safe fallbacks
         DEFAULT_LOG_FILE: str = f"{self.tool_name}.log"

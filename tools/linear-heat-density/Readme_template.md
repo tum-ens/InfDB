@@ -79,13 +79,13 @@ Edit `configs/config-[tool-name].yml` with your settings:
   logging:
     path: "{[tool-name]/path/base}/[tool-name].log"
     level: "INFO"  # ERROR, WARNING, INFO, DEBUG
-  
+
   # Tool-specific settings
   [setting1]:
     status: active
     [parameter1]: [value1]
     [parameter2]: [value2]
-  
+
   [setting2]:
     [parameter1]: [value1]
 ```
@@ -207,18 +207,18 @@ If you encounter issues:
 
 ## License and Citation
 
-This tool is licensed under the **MIT License** (MIT).  
-See [LICENSE](LICENSE) for rights and obligations.  
+This tool is licensed under the **MIT License** (MIT).
+See [LICENSE](LICENSE) for rights and obligations.
 See the *Cite this repository* function or [CITATION.cff](CITATION.cff) for citation.
 
 Copyright: [Your Institution/Organization] | [MIT](LICENSE)
 
 ## Contact
 
-[Your Name]  
-[Your Position/Role]  
-[Your Institution]  
-Email: [your.email@domain.com]  
+[Your Name]
+[Your Position/Role]
+[Your Institution]
+Email: [your.email@domain.com]
 [Link to your profile or website]
 
 ---

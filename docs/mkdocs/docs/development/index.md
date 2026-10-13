@@ -22,4 +22,3 @@ If you are interested in contributing to the InfDB project, please refer to the 
 -   [**Documentation**](documentation.md): How to write and maintain documentation.
 -   [**Code of Conduct**](code-of-conduct.md): Community standards and expectations
 -   [**Tips & Tricks**](tips-and-tricks.md): Helpful hints and commands for development.
-

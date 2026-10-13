@@ -42,4 +42,3 @@ linear-heat-density:
         output:
             schema: linear_heat_density   # needs to be snake_case
             table: linear_heat_density
-

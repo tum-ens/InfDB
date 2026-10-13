@@ -1,13 +1,13 @@
 import json
 import logging
 import multiprocessing as mp
+import shlex
 import subprocess
-from pathlib import Path
 import sys
+from pathlib import Path
 
 from pyinfdb import InfDB
 from sqlalchemy import text
-import shlex
 
 from . import utils
 from .lod2 import _build_urls_for_region
@@ -35,18 +35,15 @@ def _get_gpkg_layers(gpkg: Path) -> list[str]:
         return [line.split(":", 1)[1].split("(")[0].strip() for line in out.splitlines() if ":" in line and "(" in line]
 
 
-
 def _write_file_list(file_paths: list[Path], list_path: Path) -> None:
     """Write one file path per line for GDAL input_file_list usage."""
     with open(list_path, "w", encoding="utf-8") as f:
         for path in file_paths:
             f.write(f"{path}\n")
 
+
 def _chunk_list(items: list, batch_size: int) -> list[list]:
-    return [
-        items[i:i + batch_size]
-        for i in range(0, len(items), batch_size)
-    ]
+    return [items[i : i + batch_size] for i in range(0, len(items), batch_size)]
 
 
 def _convert_dgm1_tile_to_cog_worker(
@@ -234,9 +231,7 @@ def _convert_dgm1_tiles_to_cogs_in_parallel(
                 errors.extend(batch_errors)
 
     if errors:
-        raise RuntimeError(
-            f"DGM1 COG: {len(errors)} tile(s) failed during conversion. First error: {errors[0]}"
-        )
+        raise RuntimeError(f"DGM1 COG: {len(errors)} tile(s) failed during conversion. First error: {errors[0]}")
 
     return sorted(set(cog_paths))
 
@@ -305,7 +300,15 @@ def _build_consolidated_overview(
             "-r",
             "average",
             str(output_path),
-            "2", "4", "8", "16", "32", "64", "128", "256", "512",
+            "2",
+            "4",
+            "8",
+            "16",
+            "32",
+            "64",
+            "128",
+            "256",
+            "512",
         ],
     )
 
@@ -379,8 +382,6 @@ def load(infdb: InfDB) -> bool:
 # DGM1 LOADER - Digital Terrain Model (Elevation Raster Data)
 # COG VERSION: download selected tiles, convert them to COGs, register them out-of-db
 # ====================================================================================
-
-
 
 
 def _load_dgm1(infdb: InfDB, base_path: Path, target_epsg: int):
@@ -563,10 +564,7 @@ def _load_dgm1(infdb: InfDB, base_path: Path, target_epsg: int):
             "use the full-resolution mosaic only below a scale threshold."
         )
     else:
-        log.warning(
-            "DGM1 COG OUTDB: no consolidated overview available; "
-            "zoomed-out QGIS rendering will be slow."
-        )
+        log.warning("DGM1 COG OUTDB: no consolidated overview available; zoomed-out QGIS rendering will be slow.")
 
     # ---------- 9. Drop the previous table and legacy overview tables ----------
     target_table = f"{schema}.{table_base}"
@@ -577,13 +575,12 @@ def _load_dgm1(infdb: InfDB, base_path: Path, target_epsg: int):
         # Remove overview tables left behind by the previous VRT-based implementation.
         # The new COG implementation does not create overview tables.
         for factor in (4, 8, 16):
-            db.execute_query(
-                f"DROP TABLE IF EXISTS {schema}.o_{factor}_{table_base} CASCADE;"
-            )
+            db.execute_query(f"DROP TABLE IF EXISTS {schema}.o_{factor}_{table_base} CASCADE;")
 
     # ---------- 10. Register selected COG files directly as out-of-db rasters ----------
     pgurl = utils._pg_connstring_for_psql(infdb)
-    psql_cmd = f'psql --no-psqlrc -q -v ON_ERROR_STOP=1 -X "{pgurl}"'
+    psql_args = ["psql", "--no-psqlrc", "-q", "-v", "ON_ERROR_STOP=1", "-X", pgurl]
+    psql_cmd = shlex.join(psql_args)
 
     # All paths cannot go on one command line: statewide Bavaria is ~70k tiles, which
     # is ~5.5 MB of arguments against an ARG_MAX of 2 MB. Register in chunks instead,
@@ -612,15 +609,14 @@ def _load_dgm1(infdb: InfDB, base_path: Path, target_epsg: int):
             f"-t auto "
             f"-N -9999 "
             f"{quoted_cog_paths} "
-            f"{target_table} | {psql_cmd}"
+            f"{shlex.quote(target_table)} | {psql_cmd}"
         )
 
-        rc = utils.do_cmd(infdb, import_pipeline, shell=True)
+        rc = utils.do_cmd(infdb, ["/bin/bash", "-o", "pipefail", "-c", import_pipeline])
 
         if rc != 0:
             raise RuntimeError(
-                f"DGM1 COG OUTDB: raster2pgsql -R import failed for chunk "
-                f"{chunk_idx}/{len(path_chunks)}."
+                f"DGM1 COG OUTDB: raster2pgsql -R import failed for chunk {chunk_idx}/{len(path_chunks)}."
             )
 
         if chunk_idx % 10 == 0 or chunk_idx == len(path_chunks):
@@ -640,7 +636,7 @@ def _load_dgm1(infdb: InfDB, base_path: Path, target_epsg: int):
         ANALYZE {target_table};
     """
 
-    rc = utils.do_cmd(infdb, f'{psql_cmd} -c "{finalize_sql}"', shell=True)
+    rc = utils.do_cmd(infdb, psql_args + ["-c", finalize_sql])
 
     if rc != 0:
         raise RuntimeError("DGM1 COG OUTDB: constraint/index creation failed.")
@@ -670,8 +666,7 @@ def _load_dgm1(infdb: InfDB, base_path: Path, target_epsg: int):
     log.info("DGM1 COG OUTDB: checking raster_columns metadata for the main table.")
     rc = utils.do_cmd(
         infdb,
-        f'{psql_cmd} -c "{metadata_sql}"',
-        shell=True,
+        psql_args + ["-c", metadata_sql],
     )
 
     if rc != 0:
@@ -696,8 +691,7 @@ def _load_dgm1(infdb: InfDB, base_path: Path, target_epsg: int):
     log.info("DGM1 COG OUTDB: validating that PostgreSQL can read the registered COG rasters.")
     rc = utils.do_cmd(
         infdb,
-        f'{psql_cmd} -c "{read_validation_sql}"',
-        shell=True,
+        psql_args + ["-c", read_validation_sql],
     )
 
     if rc != 0:
@@ -726,8 +720,7 @@ def _load_dgm1(infdb: InfDB, base_path: Path, target_epsg: int):
     log.info("DGM1 COG OUTDB: checking the first registered COG paths.")
     rc = utils.do_cmd(
         infdb,
-        f'{psql_cmd} -c "{path_check_sql}"',
-        shell=True,
+        psql_args + ["-c", path_check_sql],
     )
 
     if rc != 0:
@@ -816,7 +809,7 @@ def _load_tatsaechliche_nutzung(infdb: InfDB, cfg: dict, base_path: Path, pgurl:
     # ==================== 7. Create Views ====================
     # Create vies for each nutzart to simplify querying. Each view filters the main table for one nutzart.
     nutzart_name_dict = {"und ": "", " ": "_", "-": "", "/": "_", "ä": "ae", "ö": "oe", "ü": "ue", "ß": "ss", ",": ""}
-    
+
     with engine.connect() as conn:
         nutzarten = conn.execute(text(f"SELECT DISTINCT nutzart FROM {schema}.{table}")).scalars().all()
 
@@ -824,7 +817,7 @@ def _load_tatsaechliche_nutzung(infdb: InfDB, cfg: dict, base_path: Path, pgurl:
             nutzart_name = nutzart
             for o_word, n_word in nutzart_name_dict.items():
                 nutzart_name = nutzart_name.replace(o_word, n_word)
-            
+
             view_name = f"{table}_{nutzart_name}"
             conn.execute(
                 text(

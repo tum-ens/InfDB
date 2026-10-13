@@ -2,7 +2,7 @@
 # Original source: https://github.com/BETALAB-team/EUReCA
 # Licensed under the MIT License - see https://github.com/BETALAB-team/EUReCA/blob/main/LICENSE
 
-from typing import Dict, List
+from typing import Dict, List, cast
 
 import numpy as np
 import pandas as pd
@@ -585,7 +585,7 @@ class Construction(object):
             R1 = np.zeros((2,1))
             R2 = R1
             C1 = R1
-            C2 = R1 
+            C2 = R1
             """
             # r_ah = self.massless[i]
             Av = np.zeros((2, 2, 2), complex)
@@ -757,19 +757,19 @@ Construction: {self.name}
 
         # Hypothesis 30 cm
         thickness = 0.3
-        outside_ht_coef: float = float(cls.tot_heat_trans_coef.yt[construction_type]["Outside"])
-        inside_ht_coef: float = float(cls.tot_heat_trans_coef.loc[construction_type]["Inside"])
+        outside_ht_coef: float = float(cast(float, cls.tot_heat_trans_coef.at[construction_type, "Outside"]))
+        inside_ht_coef: float = float(cast(float, cls.tot_heat_trans_coef.at[construction_type, "Inside"]))
         resistance: float = 1 / u_value - 1 / outside_ht_coef - 1 / inside_ht_coef
         conductivity: float = 0.3 / resistance
 
         """
-	According to A.2.3 ISO 13786					
+	According to A.2.3 ISO 13786
 		Am [m²]	Cm [J/K]	k [J/(m² K)]	Depth penetration [m]	Spc heat [J/kg K]	rho [kg/m3]
 Very light	2.5	80000		32000		    0.1			            1000			    453
 Light		2.5	110000		44000		    0.1			            1000			    622
 Medium		2.5	165000		66000		    0.1			            1000			    933
 Heavy		3	260000		86666.66667	    0.1			            1000			    1226
-Very heavy	3.5	370000		105714.2857	    0.1			            1000	            1495           
+Very heavy	3.5	370000		105714.2857	    0.1			            1000	            1495
         """
 
         density = {

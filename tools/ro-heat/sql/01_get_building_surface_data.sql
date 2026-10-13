@@ -2,16 +2,16 @@ WITH wall_data AS (
         SELECT building_objectid,
                SUM(area) AS wall_surface_area
         FROM basedata.building_surface_area
-        WHERE 
+        WHERE
                 classname = 'WallSurface'
                 AND gemeindeschluessel LIKE '{ags}'
         GROUP BY building_objectid),
-     
+
      roof_data AS (
         SELECT building_objectid,
                SUM(area) AS roof_surface_area
         FROM basedata.building_surface_area
-        WHERE 
+        WHERE
                 classname = 'RoofSurface'
                 AND gemeindeschluessel LIKE '{ags}'
         GROUP BY building_objectid)
@@ -31,6 +31,6 @@ SELECT b.objectid                                                        AS buil
 FROM {input_schema}.buildings b
         LEFT JOIN wall_data wd ON b.objectid = wd.building_objectid
         LEFT JOIN roof_data rd ON b.objectid = rd.building_objectid
-WHERE b.building_type IS NOT NULL 
+WHERE b.building_type IS NOT NULL
   AND b.gemeindeschluessel LIKE '{ags}'
 ORDER BY b.objectid;

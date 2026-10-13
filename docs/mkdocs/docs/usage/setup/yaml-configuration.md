@@ -51,7 +51,7 @@ infdb-import:
         - "09185149" # Neuburg a. d. Donau (BY)
         # - "09%" # Bavaria (BY)
         # - "05%" # North Rhine-Westphalia (NRW)
-    multiproccesing: 
+    multiproccesing:
         status: active
         max_cores: 2    # max cores since of memory limitations to 2
     config-infdb: "config-infdb.yml" # only filename - change path in ".env" file "CONFIG_INFDB_PATH"
@@ -93,7 +93,7 @@ infdb-import:
             status: active
             schema: opendata
             prefix: bavaria
-            path: 
+            path:
                 base: "{infdb-import/path/opendata}/opendata_bavaria"
             datasets:
                 gelaendemodell_1m:
@@ -102,14 +102,14 @@ infdb-import:
                     table_name: gelaendemodell_1m
                     target_resolution: 10.0
                     srid: 25832
-                    
+
                     state_prefix: "09"
                     base_url: "https://download2.bayernwolke.de/a/dgm/dgm1/"
                     tile_size_m: 1000
                     filename_template: "{e_km}_{n_km}.tif"
                 tatsaechliche_nutzung:
                     status: not-active
-                    name: Tatsächliche Nutzung (TN) 
+                    name: Tatsächliche Nutzung (TN)
                     table_name: tatsaechliche_nutzung
                     url: "https://geodaten.bayern.de/odd/m/3/daten/tn/Nutzung_kreis.gpkg"
         lod2:
@@ -214,7 +214,7 @@ infdb-import:
                 # - versorgungspunkt
                 # - weitere_nutzung_flaeche
         plz:
-            status: active 
+            status: active
             url: "https://cloud.ocd.need.energy/remote.php/dav/spaces/1bb5c9f8-4002-4b43-a148-2489f970c921$6693aeaa-a1c3-4b08-8969-33ea8b9c6cc7/plz-5stellig.geojson"
             protocol: webdav
             username: "need"

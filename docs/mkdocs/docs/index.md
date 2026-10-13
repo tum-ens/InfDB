@@ -40,7 +40,7 @@ The architecture of InfDB as shown in figure below is composed of two main compo
 Check out the **[Usage Guide](usage/index.md)** to install, configure and run your instance.
 
 ## Demo
-The **[Linear Heat Density](linear-heat-density/index.md)** use case demonstrates the capabilities of InfDB in the context of municipal heat planning (KWP). 
+The **[Linear Heat Density](linear-heat-density/index.md)** use case demonstrates the capabilities of InfDB in the context of municipal heat planning (KWP).
 ![](linear-heat-density/liz-browser.png)
 
 ## Contribution

@@ -13,13 +13,13 @@ DO $$
 DECLARE
     -- Current way being processed (geometry, classification, AGS, id)
     way               RECORD;
-    
+
     -- Calculated intersection point geometry container
     interpolate_point RECORD;
-    
+
     -- Intersecting way selected for current way
     old_street        RECORD;
-    
+
 BEGIN
     -- Iterate through LINESTRING ways in the temporary table
     FOR way IN
@@ -37,8 +37,8 @@ BEGIN
         SELECT geom, klasse, ags, id
         INTO old_street
         FROM ways_tem AS w
-        WHERE ST_Intersects(ST_LineSubstring(way.geom, 0.01, 0.99), w.geom) 
-            AND w.id != way.id  
+        WHERE ST_Intersects(ST_LineSubstring(way.geom, 0.01, 0.99), w.geom)
+            AND w.id != way.id
             AND ST_GeometryType(w.geom) = 'ST_LineString'  -- restrict to LINESTRING geometries
         LIMIT 1;
 
@@ -68,7 +68,7 @@ BEGIN
             ST_LineSubstring(old_street.geom, 0, ST_LineLocatePoint(
                 old_street.geom, interpolate_point.geom))
         );
-        
+
         -- Insert old_street split segment 2: intersection point -> end
         PERFORM {output_schema}.insert_way_segment(
             old_street.ags,    -- AGS tag for inserted segment
@@ -97,6 +97,6 @@ BEGIN
         );
 
     END LOOP; -- end scan over ways_tem
-    
+
 END;
 $$;

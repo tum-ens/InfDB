@@ -19,11 +19,11 @@ The **ro-heat** tool is used to estimate the residential building heat demand on
 
 ## Key Features
 
-- **Extraction of building components**: Building components (external walls, roofs and ground floors) are extracted 
+- **Extraction of building components**: Building components (external walls, roofs and ground floors) are extracted
 - **Refurbishment simulation**: For each component refurbishment is simulated stochastically by sampling refurbishment intervals from a normal distribution parametrised by component-specific mean lifespans and standard deviations
 - **Assignment of building archetypes**: Based on the refurbishment status, each building component is assigned a TABULA archetype that specifies the used materials and their thermal properties
 - **Parameter estimation**: Based on the used materials, we estimate the required parameters for the RC model, e.g., resistance and capacitance, per component and aggregate it per building
-- **Demand estimation**: Lastly, the parameters are input into [EnTiSe](https://github.com/tum-ens/EnTiSe) with corresponding weather data and temperature set points to estimate heating and cooling demand 
+- **Demand estimation**: Lastly, the parameters are input into [EnTiSe](https://github.com/tum-ens/EnTiSe) with corresponding weather data and temperature set points to estimate heating and cooling demand
 
 
 
@@ -35,9 +35,9 @@ The output datasets are stored in the `ro_heat` schema (the output schema specif
 - `buildings_rc`: Contains parameters for the RC model per building.
 - `entise_summary`: Contains heating and cooling demand and load summaries per building.
 
-- 
+-
 
-# Configuration 
+# Configuration
 The configuration of the tool can be done via the configuration YAML file:
 ```bash title="configs/config-ro-heat.yml"
 ro-heat:
@@ -58,7 +58,7 @@ ro-heat:
             schema: basedata # (1)
             simulation_year: 2023 # (2)
             heating_setpoint: 20.0 # (3)
-            random_seed: 42 # (4) 
+            random_seed: 42 # (4)
             method: 1R1C # (5)
         refurbishment:
             outer_wall: # (6)

@@ -24,6 +24,6 @@ infdb-metadata:
             epsg: None
     data:
         input_schema: basedata
-        output_schema: infdb_metadata 
+        output_schema: infdb_metadata
     schemas:
         # List of specific schemas to include in metadata extraction, default is all schemas except those in exclude_schemas

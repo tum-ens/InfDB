@@ -9,7 +9,7 @@ Put a brief summary of the change here (max 5 sentences). Clearly state what was
 Link any relevant issues by writing `Closes #issue_number`.
 
 ### Description
-Summarize the context and motivations behind the change. Why was this change necessary? Include a high-level overview of the changes made.  
+Summarize the context and motivations behind the change. Why was this change necessary? Include a high-level overview of the changes made.
 Add screenshots or videos demonstrating the change or issue (if relevant).
 
 ### How to Test

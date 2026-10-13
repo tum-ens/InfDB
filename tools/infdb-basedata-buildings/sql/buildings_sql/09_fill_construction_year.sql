@@ -89,7 +89,7 @@ CROSS JOIN LATERAL (
            COALESCE(NULLIF(g.a2001bis2010, 'NaN'::double precision), 0) +
            COALESCE(NULLIF(g.a2011bis2019, 'NaN'::double precision), 0) +
            COALESCE(NULLIF(g.a2020undspaeter, 'NaN'::double precision), 0)) > 0
-    ORDER BY g.geom <-> b.centroid 
+    ORDER BY g.geom <-> b.centroid
     LIMIT 1
 ) nearest
 WHERE b.construction_year IS NULL;
