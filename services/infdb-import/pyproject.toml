@@ -9,7 +9,7 @@ dependencies = [
     "sqlalchemy>=2.0,<2.1",  # 2.1 breaks pandas.to_sql and defaults to psycopg3
     "requests",
     "beautifulsoup4",
-    "python-dotenv==1.0.1",
+    "python-dotenv>=1.2.2,<2",
     "geoalchemy2==0.17.1",
     "PyYAML",
     "chardet",
