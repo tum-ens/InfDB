@@ -108,7 +108,7 @@ cd infdb
 
 #### Clone InfDB
 ``` bash
-# Replace "infdb-demo" by name of instance 
+# Replace "infdb-demo" by name of instance
 git clone --recurse-submodules https://github.com/tum-ens/InfDB.git infdb-demo
 cd infdb-demo
 ```
@@ -154,8 +154,8 @@ You can also use pgAdmin or any other database client to connect to the database
 The changelog is maintained in the [CHANGELOG.md](CHANGELOG.md) file. It lists all changes made to the repository. Follow instructions there to document any updates.
 
 # License
-The code of this repository is licensed under the **Apache 2.0 License**.  
-See [LICENSE](LICENSE) for rights and obligations.  
+The code of this repository is licensed under the **Apache 2.0 License**.
+See [LICENSE](LICENSE) for rights and obligations.
 Copyright: [TU Munich - ENS](https://www.epe.ed.tum.de/en/ens/homepage/) | [Apache 2.0 License](LICENSE)
 
 # Citation
@@ -169,6 +169,6 @@ See [Citation](docs/mkdocs/docs/welcome/citation.md) for the BibTeX entry and fo
 Patrick Buchenberg
 
 Chair of Renewable and Sustainable Energy System
-Technical University of Munich (TUM) 
+Technical University of Munich (TUM)
 Email: patrick.buchenberg@tum.de
 [https://www.epe.ed.tum.de/ens/staff/ensteam/patrick-buchenberg/](https://www.epe.ed.tum.de/ens/staff/ensteam/patrick-buchenberg/)

@@ -52,7 +52,7 @@ def create_tabula_structure(tabula_rows: DataFrame) -> DataFrame:
 
     # Explicitly sort by layer_index according to EUReCA specification
     # EUReCA requires Materials sorted from outside (highest layer_index) to inside (lowest layer_index)
-    tabula_rows = tabula_rows.sort_values('layer_index', ascending=False)
+    tabula_rows = tabula_rows.sort_values("layer_index", ascending=False)
 
     materials = [
         eureca_code.Material(
@@ -109,7 +109,7 @@ def create_tabula_structure(tabula_rows: DataFrame) -> DataFrame:
     return constructions
 
 
-def calculate_rc_values(tabula: DataFrame, row: Series, area_ratio: float =1.0) -> tuple[float, float]:
+def calculate_rc_values(tabula: DataFrame, row: Series, area_ratio: float = 1.0) -> tuple[float, float]:
     overall_r = 0.0
     overall_c = 0.0
     components = tabula["element_name"].unique()

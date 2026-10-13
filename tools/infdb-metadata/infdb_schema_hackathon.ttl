@@ -104,7 +104,7 @@
     dataschema:table_catalog "infdb" ;
     dataschema:table_name "buildings" ;
     dataschema:table_schema "basedata" ;
-    dataschema:implements <https://id.need.energy/taxonomy/building/TabulaType> . # FIXME: temporary solution 
+    dataschema:implements <https://id.need.energy/taxonomy/building/TabulaType> . # FIXME: temporary solution
 
 <https://id.need.energy/dataschema/column/infdb/basedata/buildings/building_use> a dataschema:Column ;
     dataschema:column_name "building_use" ;
@@ -170,7 +170,7 @@
     dataschema:table_catalog "infdb" ;
     dataschema:table_name "buildings" ;
     dataschema:table_schema "basedata" ;
-    dataschema:implements <https://id.need.energy/taxonomy/building/FloorCount> . # FIXME: temporary solution   
+    dataschema:implements <https://id.need.energy/taxonomy/building/FloorCount> . # FIXME: temporary solution
 
 <https://id.need.energy/dataschema/column/infdb/basedata/buildings/geom> a dataschema:Column ;
     dataschema:column_name "geom" ;
@@ -15096,4 +15096,3 @@
     dataschema:table_catalog "infdb" ;
     dataschema:table_name "spatial_ref_sys" ;
     dataschema:table_schema "public" .
-

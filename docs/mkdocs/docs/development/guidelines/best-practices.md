@@ -71,22 +71,30 @@
 # Base exception for all application-specific errors
 class InfDBError(Exception):
     """Base exception for all InfDB-specific errors."""
+
     def __init__(self, message, details=None):
         super().__init__(message)
         self.details = details
 
+
 # Domain-specific exceptions
 class DatabaseConnectionError(InfDBError):
     """Raised when a database connection cannot be established."""
+
     pass
+
 
 class GeospatialError(InfDBError):
     """Base exception for geospatial-related errors."""
+
     pass
+
 
 class InvalidCoordinateError(GeospatialError):
     """Raised when invalid coordinates are provided."""
+
     pass
+
 
 # Usage example
 try:
@@ -95,7 +103,7 @@ try:
     if not result:
         raise InvalidCoordinateError(
             f"No raster found for building {building_id} at resolution {resolution}",
-            details={"building_id": building_id, "resolution": resolution}
+            details={"building_id": building_id, "resolution": resolution},
         )
 except InvalidCoordinateError as e:
     # Handle the specific error
@@ -122,7 +130,7 @@ except Exception as e:
   ```python
   {
       "error": "Invalid weather parameter",
-      "details": "Parameter 'temperature' is not available for the specified date range."
+      "details": "Parameter 'temperature' is not available for the specified date range.",
   }
   ```
 

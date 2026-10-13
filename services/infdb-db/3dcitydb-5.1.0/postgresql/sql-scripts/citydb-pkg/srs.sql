@@ -25,14 +25,14 @@ BEGIN
   schema_name := citydb_pkg.get_current_schema();
 
   -- check if a spatial index is defined for the column
-  SELECT 
+  SELECT
     pgc_i.relname,
     pgoc.opcname
   INTO
     idx_name,
     idx_param
   FROM pg_class pgc_t
-  JOIN pg_index pgi ON pgi.indrelid = pgc_t.oid  
+  JOIN pg_index pgi ON pgi.indrelid = pgc_t.oid
   JOIN pg_class pgc_i ON pgc_i.oid = pgi.indexrelid
   JOIN pg_opclass pgoc ON pgoc.oid = pgi.indclass[0]
   JOIN pg_am pgam ON pgam.oid = pgc_i.relam

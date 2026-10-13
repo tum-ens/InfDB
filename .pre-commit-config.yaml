@@ -9,7 +9,11 @@ repos:
         args: ["--maxkb=2048"]
       - id: check-yaml
         # mkdocs configs use custom YAML tags that check-yaml cannot parse
-        exclude: ^(docs/mkdocs/mkdocs\.yml|src/infdb_package/mkdocs\.yml)
+        exclude: ^(docs/mkdocs/mkdocs\.yml|src/infdb_package/mkdocs\.yml|tools/ro-heat/\.devcontainer/docker-compose\.yml)$
+      - id: check-yaml
+        name: check Compose YAML syntax
+        args: ["--unsafe"]
+        files: ^tools/ro-heat/\.devcontainer/docker-compose\.yml$
       - id: check-toml
       - id: detect-private-key
   - repo: local

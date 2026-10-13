@@ -16,7 +16,7 @@ These guidelines are not meant to be restrictive but rather to provide a framewo
 ## General
 
 - Use **Python 3.12+** for development
-- Follow **PEP 8** for Python code style 
+- Follow **PEP 8** for Python code style
 - Use **4 spaces** for indentation in Python files
 - Use **meaningful variable and function names** that describe their purpose
 - Keep functions and methods **small and focused** on a single responsibility

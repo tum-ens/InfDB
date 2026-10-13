@@ -88,8 +88,6 @@ def main() -> None:
         log.error(f"Database is not available: {str(e)}")
         raise
 
-    
-
     # Set up Foreign Data Wrapper (FDW) if active
     if utils.if_active("fdw", infdb):
         log.info("Setting up Foreign Data Wrapper (FDW)...")

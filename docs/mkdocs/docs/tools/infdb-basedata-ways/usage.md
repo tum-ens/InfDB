@@ -9,10 +9,10 @@ The tool can be configured via the configuration file `configs/config-infdb-base
 
 ```yaml title="configs/config-infdb-basedata-ways.yaml"
 infdb-basedata-ways:
-    config-infdb: "config-infdb.yml" 
+    config-infdb: "config-infdb.yml"
     logging:
         path: "infdb-basedata-ways.log"
-        level: "INFO" 
+        level: "INFO"
     hosts:
         postgres:
             user: None
@@ -36,7 +36,7 @@ infdb-basedata-ways:
         klasse_objektart_filter:                # (5)
             "Bundesstraße":
                 - "Strassenachse"
-                - "Fahrbahnachse"   
+                - "Fahrbahnachse"
             "Bundesautobahn":
                 - "Strassenachse"
         apply_length_filter: True               # (6)

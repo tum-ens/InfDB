@@ -3,7 +3,7 @@ icon: material/download
 ---
 
 !!! warning
-    All commands need to be executed on **macOS or Linux**. 
+    All commands need to be executed on **macOS or Linux**.
 
 ## Local Folder Structure
 The InfDB allows a modular folder structure to manage multiple database instances independently. Each instance represents a separate deployment with its own data, configuration, and services—ideal for handling different regions, projects, or environments.
@@ -39,12 +39,12 @@ Then, you can clone the repository into this new directory either with SSH or HT
 
 You can either use **SSH** or **HTTPS**:
 
-- **SSH** (Secure Shell) uses cryptographic key pairs for authentication. Once set up, you won't need to enter credentials for each operation. Recommended for frequent Git operations. 
+- **SSH** (Secure Shell) uses cryptographic key pairs for authentication. Once set up, you won't need to enter credentials for each operation. Recommended for frequent Git operations.
 - **HTTPS** uses username and password (or personal access token) for authentication. Simpler to set up initially but may require credentials for each operation unless you configure credential caching.
 
 === "SSH"
     ``` bash
-    # Replace "infdb-demo" by name of instance 
+    # Replace "infdb-demo" by name of instance
     git clone --recurse-submodules git@github.com:tum-ens/InfDB.git infdb-demo
     ```
 

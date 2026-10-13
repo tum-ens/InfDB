@@ -20,9 +20,9 @@ Describe what you expected to happen. This will help clarify the desired state o
 ### Steps to Reproduce or Example Use Case
 If applicable, describe the steps you took that led to this issue, or explain a relevant use case scenario.
 
-**Example**: 
-1. Set up a new event in the scheduler. 
-2. Assign it to a user in another time zone. 
+**Example**:
+1. Set up a new event in the scheduler.
+2. Assign it to a user in another time zone.
 3. The time doesn't adjust automatically.
 
 ### Additional Information

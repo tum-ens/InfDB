@@ -42,7 +42,7 @@ adduser username
 
 Set the default user:
 ```bash
-#ubuntu 
+#ubuntu
 config --default-user username
 ```
 
@@ -67,7 +67,7 @@ Docker Desktop → Settings → Resources → WSL Integration
 Enable integration with Ubuntu.
 After enabling, check via:
 ```bash
-#ubuntu 
+#ubuntu
 
 docker version
 ```
@@ -81,12 +81,11 @@ Logged in user was not part of the docker group.
 
 - Fix:
 ```bash
-#ubuntu 
+#ubuntu
 sudo usermod -aG docker username
 ```
 Restart WSL:
 ```bash
-#ubuntu 
+#ubuntu
 wsl –shutdown
 ```
-

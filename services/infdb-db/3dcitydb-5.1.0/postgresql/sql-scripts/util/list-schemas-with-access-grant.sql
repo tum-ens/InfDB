@@ -11,5 +11,5 @@ WITH schema_names AS (
 ) SELECT schema_name
     FROM schema_names
 	  WHERE pg_catalog.has_schema_privilege(:'USERNAME', schema_name, 'USAGE');
-	  
+
 \t off

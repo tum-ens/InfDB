@@ -8,6 +8,7 @@ import os
 
 from pyinfdb import InfDB
 
+
 def _sql_quote(s: str) -> str:
     # SQL single-quote escaping
     return "'" + str(s).replace("'", "''") + "'"
@@ -40,6 +41,7 @@ def _build_objektart_conditions(klasse_objektart_filter: dict) -> str:
         parts.append(f"(klasse={_sql_quote(klasse)} AND objektart IN {in_list})")
     return " OR ".join(parts)
 
+
 def main():
     """
     Initializes InfDB handler, sets up logging, connects to the database,
@@ -57,7 +59,6 @@ def main():
     log.info("AGS environment variable: %s", ags)
 
     try:
-        
         tool = infdb.get_toolname()
         # ===========================================================
         # Start your added sql scripts in folder "sql"
@@ -68,7 +69,7 @@ def main():
         output_schema = infdb.get_config_value([tool, "data", "output_schema"])
         epsg = infdb.get_config_value([tool, "hosts", "postgres", "epsg"])
         if epsg is None:
-        # fallback: many German datasets use EPSG:25832 (ETRS89 / UTM zone 32N)
+            # fallback: many German datasets use EPSG:25832 (ETRS89 / UTM zone 32N)
             epsg = 3035
 
         klasse_filter = infdb.get_config_value([tool, "data", "klasse_filter"]) or []
@@ -83,30 +84,20 @@ def main():
             "ags": ags,
             "input_schema": input_schema,
             "output_schema": output_schema,
-            "use_address_information": str(
-               infdb.get_config_value([tool, "data", "use_address_information"])
-            ).lower(),
-            "apply_length_filter": str(
-               infdb.get_config_value([tool, "data", "apply_length_filter"])
-            ).lower(),
-            "apply_loop_filter": str(
-               infdb.get_config_value([tool, "data", "apply_loop_filter"])
-            ).lower(),
-            "apply_isolated_filter": str(
-               infdb.get_config_value([tool, "data", "apply_isolated_filter"])
-            ).lower(),
+            "use_address_information": str(infdb.get_config_value([tool, "data", "use_address_information"])).lower(),
+            "apply_length_filter": str(infdb.get_config_value([tool, "data", "apply_length_filter"])).lower(),
+            "apply_loop_filter": str(infdb.get_config_value([tool, "data", "apply_loop_filter"])).lower(),
+            "apply_isolated_filter": str(infdb.get_config_value([tool, "data", "apply_isolated_filter"])).lower(),
             "min_length_meter": infdb.get_config_value([tool, "data", "min_length_meter"]),
             "epsg": epsg,
-
             # NEW: Step 1 filter params
             "klasse_filter_enabled": str(klasse_filter_enabled).lower(),  # 'true' / 'false'
             "klasse_filter_tuple": _sql_in_tuple(klasse_filter),
-
             "objektart_filter_enabled": str(objektart_filter_enabled).lower(),  # 'true' / 'false'
             "classes_with_obj_filter_tuple": _sql_in_tuple(classes_with_obj_filter),
             "objektart_filter_conditions": _build_objektart_conditions(klasse_objektart_filter),
             "tool_name": infdb.get_toolname(),
-            "process_id": os.getpid(),           
+            "process_id": os.getpid(),
         }
 
         log.info("Running SQL scripts ...")
@@ -116,7 +107,7 @@ def main():
         # ===========================================================
         # Demonstrate database querying - remove or comment out if not needed
         # ===========================================================
-        
+
         infdb.stop_logger()
 
     except Exception as e:

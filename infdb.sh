@@ -73,7 +73,7 @@ cmd_import() {
     generate_compose "${selected_profiles[@]}" "import"
 
     echo "=== Importing data ==="
-    docker compose --profile "import" up --remove-orphans "$@" 
+    docker compose --profile "import" up --remove-orphans "$@"
 
     generate_compose "${selected_profiles[@]}"
 }
@@ -154,7 +154,7 @@ EOF
 # Setup before initialization of services that require it.
 setup_services() {
     local profiles=("$@")
-    
+
     for profile in "${profiles[@]}"; do
         case "$profile" in
             lizmap)

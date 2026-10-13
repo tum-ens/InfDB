@@ -19,5 +19,3 @@ Refer to the linked files for full license and copyright details.
 | pygrouting | https://github.com/pgRouting/pgrouting/blob/develop/LICENSE |
 | QWC2 (QGIS Web Client) | https://github.com/qgis/qwc2/blob/master/LICENSE |
 | TimescaleDB | https://github.com/timescale/timescaledb/blob/main/LICENSE |
-
-

@@ -62,7 +62,7 @@ infdb-import:
     scope:
         - "09162000"  # Municipality Key (AGS)
     config-infdb: "config-infdb.yml"
-    
+
     # Database Connection (uses defaults if None)
     hosts:
         postgres:
@@ -71,8 +71,8 @@ infdb-import:
             db: None
             host: None
             exposed_port: None
-            epsg: None 
-            
+            epsg: None
+
     sources:
         zensus_2022:
             status: active

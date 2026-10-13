@@ -3,4 +3,4 @@ from .config import InfdbConfig
 from .infdb import InfDB
 from .logger import InfdbLogger
 
-__all__ = ["InfDB"]
+__all__ = ["InfDB", "InfdbClient", "InfdbConfig", "InfdbLogger"]

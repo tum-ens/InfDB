@@ -9,11 +9,11 @@ icon: material/map-search
 2. Lizmap web-instance is up and running. (lizmap profile in infdb.sh)
 
 # In order to host a map on the lizmap web-instance using infdb, we have prepared a guideline of the necessary steps:
-1. Download QGIS Desktop LTR (Long-Term-Release) from https://www.qgis.org/download/. 
+1. Download QGIS Desktop LTR (Long-Term-Release) from https://www.qgis.org/download/.
 2. In the QGIS Desktop app go into plugins and install the Lizmap plugin.
 3. Open the Lizmap plugin and connect to the web-instance using it's URL.
 4. Create a connection to infdb's PostgreSQL.
-5. Create and save your project with the .qgs file extension. 
+5. Create and save your project with the .qgs file extension.
 6. Open the Lizmap plugin and create the confgiiguration file for the web-instance.
 7. Create a subfolder for your project in the services/infdb-lizmap/lizmap/instances
 8. Place both your .qgs project and the .qgs.cfg in the subfolder you created.
@@ -26,7 +26,7 @@ icon: material/map-search
 3. In each layer's own Properties under Attributes Form, among other things, you can make fields uneditable, but visible. (useful for data collection)
 4. In the Lizmap Plugin -> Layers, you can allow users to be able to click on an object in the web-instance and get data about it with the Popup checkbox.
 5. In the Lizmap Plugin -> Attribute table & selection, you can also hide some fields from each layer.
-6. In the Lizmap Plugin -> Layer Editing, you can give edit rights for each layer to specific user groups 
+6. In the Lizmap Plugin -> Layer Editing, you can give edit rights for each layer to specific user groups
 7. The writes from the Lizmap web-instance happen directly into the database, so a logging mechanism was created for one of the tables for which we allow data editing - see NEED-infdb/tools/infdb-basedata-buildings/sql/buildings_sql/16_logging _and_constraints_for_lizmap.sql
 
 ## License

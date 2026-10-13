@@ -1,14 +1,14 @@
+import multiprocessing as mp
 import os
 import sys
 import xml.sax
-from zipfile import ZipFile, BadZipFile
+from datetime import datetime
 from urllib.parse import unquote
+from zipfile import BadZipFile, ZipFile
 
 from pyinfdb import InfDB
 from shapely import wkt as shapely_wkt
 from shapely.geometry import box
-import multiprocessing as mp
-from datetime import datetime
 
 from . import utils
 
@@ -32,7 +32,9 @@ def _urls_to_local_citygml_paths(urls: list[str], gml_path: str, log) -> list[st
         local_path = os.path.join(gml_path, filename)
 
         if not os.path.isfile(local_path):
-            local_path = os.path.join(gml_path, unquote(filename)) # E.g. to interpret %20 in url as space when downloading from Geoportal Hessen
+            local_path = os.path.join(
+                gml_path, unquote(filename)
+            )  # E.g. to interpret %20 in url as space when downloading from Geoportal Hessen
 
         if not os.path.isfile(local_path):
             missing_files.append(local_path)
@@ -56,11 +58,7 @@ def _urls_to_local_citygml_paths(urls: list[str], gml_path: str, log) -> list[st
                 zip_mtime = int(os.path.getmtime(local_path))
 
                 with ZipFile(local_path, "r") as zf:
-                    gml_members = [
-                        member
-                        for member in zf.namelist()
-                        if member.lower().endswith(".gml")
-                    ]
+                    gml_members = [member for member in zf.namelist() if member.lower().endswith(".gml")]
 
                     if not gml_members:
                         log.warning("LoD2 ZIP contains no GML files: %s", local_path)
@@ -112,7 +110,7 @@ def _chunk_list(items: list[str], chunk_size: int) -> list[list[str]]:
     if chunk_size <= 0:
         raise ValueError("chunk_size must be > 0")
 
-    return [items[i:i + chunk_size] for i in range(0, len(items), chunk_size)]
+    return [items[i : i + chunk_size] for i in range(0, len(items), chunk_size)]
 
 
 def _import_lod2_batch(
@@ -228,10 +226,7 @@ def _import_lod2_files_in_parallel(
     with mp.Pool(processes=processes) as pool:
         results = pool.starmap(
             _import_lod2_batch,
-            [
-                (batch, infdb.get_toolname(), i + 1, total_batches)
-                for i, batch in enumerate(batches)
-            ],
+            [(batch, infdb.get_toolname(), i + 1, total_batches) for i, batch in enumerate(batches)],
         )
 
     not_imported = [f for failed in results for f in failed]
@@ -339,6 +334,7 @@ def _build_urls_for_region(region_name: str, region_cfg: dict, infdb: InfDB, log
     log.info("%s: %d intersecting tiles resolved.", region_name, len(urls))
     return urls
 
+
 def _build_url_for_hesse_bergstrasse(config: dict, log) -> list[str]:
     """Build the URLs for the Hesse Bergstrasse LoD2 dataset.
 
@@ -354,23 +350,41 @@ def _build_url_for_hesse_bergstrasse(config: dict, log) -> list[str]:
     if not base_url:
         log.warning("Hesse Bergstrasse: incomplete dataset configuration, skipping.")
         return []
-    
-    
+
     today_str = datetime.today().strftime("%Y%m%d")
     base_url = base_url.replace("{date}", today_str)
-    
-    cities = ["Abtsteinach", "Bensheim", "Biblis", "Birkenau", "Buerstadt", "Einhausen", "Fuerth", 
-            "Gorxheimertal", "Grasellenbach", "Gross-Rohrheim", "Heppenheim%20(Bergstrasse)", 
-            "Hirschhorn%20(Neckar)", "Lampertheim", "Lautertal%20(Odenwald)", "Lindenfels", "Lorsch", "Moerlenbach", 
-            "Neckarsteinach", "Rimbach", "Viernheim", "Wald-Michelbach", "Zwingenberg"]
-    
+
+    cities = [
+        "Abtsteinach",
+        "Bensheim",
+        "Biblis",
+        "Birkenau",
+        "Buerstadt",
+        "Einhausen",
+        "Fuerth",
+        "Gorxheimertal",
+        "Grasellenbach",
+        "Gross-Rohrheim",
+        "Heppenheim%20(Bergstrasse)",
+        "Hirschhorn%20(Neckar)",
+        "Lampertheim",
+        "Lautertal%20(Odenwald)",
+        "Lindenfels",
+        "Lorsch",
+        "Moerlenbach",
+        "Neckarsteinach",
+        "Rimbach",
+        "Viernheim",
+        "Wald-Michelbach",
+        "Zwingenberg",
+    ]
+
     download_urls = []
     for city in cities:
         download_url = base_url.replace("{city_name}", city)
         download_urls.append(download_url)
-    
-    return download_urls
 
+    return download_urls
 
 
 def _build_urls_for_single_ags(
@@ -457,7 +471,7 @@ def load(infdb: InfDB) -> bool:
         # Download all unique tiles into one shared folder.
         # NRW / Bavaria download .gml files.
         # Baden-Württemberg and Hesse Bergstrasse download .zip files.
-        utils.download_aria2c_many(infdb, urls, output_dir=gml_path)    
+        utils.download_aria2c_many(infdb, urls, output_dir=gml_path)
         # Resolve only the files for the current run / current scope.
         # ZIP files are extracted into the same CityGML folder and their
         # extracted .gml files are returned.

@@ -9,8 +9,8 @@ This module orchestrates for multiple AGS processing runs by:
 - logging to console and logfile tools.log
 
 Software Prerequisites:
-The package manager uv must be installed to run this script, 
-as it relies on the Python dependencies defined in pyproject.toml. 
+The package manager uv must be installed to run this script,
+as it relies on the Python dependencies defined in pyproject.toml.
 You can install uv with:
 - Mac/Linux: curl -LsSf https://astral.sh/uv/install.sh | sh
 - Windows: powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
@@ -25,7 +25,7 @@ multiple municipalities while keeping logging and interruption handling in one
 place.
 """
 
-import logging
+import argparse
 import os
 import signal
 import subprocess
@@ -34,10 +34,9 @@ import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-import geopandas as gpd
-import argparse
-from pyinfdb import InfDB
+
 from dotenv import load_dotenv
+from pyinfdb import InfDB
 
 
 def parse_arguments():
@@ -54,35 +53,18 @@ def parse_arguments():
 
     parser = argparse.ArgumentParser(description="Run AGS processing with specified profile or tool")
     mode_group = parser.add_mutually_exclusive_group(required=True)
-    mode_group.add_argument(
-        "-p", "--profile",
-        type=str,
-        help="Profile name to use"
-    )
-    mode_group.add_argument(
-        "-t", "--tool",
-        type=str,
-        help="Tool name to use"
-    )
+    mode_group.add_argument("-p", "--profile", type=str, help="Profile name to use")
+    mode_group.add_argument("-t", "--tool", type=str, help="Tool name to use")
     parser.add_argument(
-        "-a", "--ags-list",
+        "-a",
+        "--ags-list",
         type=str,
         default=None,
         dest="ags_list",
-        help="Comma-separated AGS codes (optional, use this for manual AGS input)"
+        help="Comma-separated AGS codes (optional, use this for manual AGS input)",
     )
-    parser.add_argument(
-        "-c", "--clean",
-        action="store_true",
-        help="Clean schemas before running"
-    )
-    parser.add_argument(
-        "-n",
-        type=int,
-        default=5,
-        dest="num_workers",
-        help="Number of parallel workers (default: 5)"
-    )
+    parser.add_argument("-c", "--clean", action="store_true", help="Clean schemas before running")
+    parser.add_argument("-n", type=int, default=5, dest="num_workers", help="Number of parallel workers (default: 5)")
 
     args = parser.parse_args()
 
@@ -93,7 +75,7 @@ def parse_arguments():
 
 
 def run_ags(command, ags):
-    """Run the specified command for a given AGS code in a subprocess, while managing the process lifecycle and logging output.
+    """Run the command for an AGS code, managing its process lifecycle and logging output.
     Args:
         command (str): The command to run (e.g., profile or tool name)
         ags (str): The AGS code to process
@@ -149,7 +131,6 @@ def signal_handler(sig, frame):
 
 
 if __name__ == "__main__":
-
     # Determine the script directory for relative paths
     SCRIPT_DIR = Path(__file__).parent
 
@@ -164,9 +145,7 @@ if __name__ == "__main__":
     args = parse_arguments()
 
     # Terminate other connections and rollback any open transactions to avoid deadlocks
-    log.info(
-        "Terminating other connections to avoid deadlocks..."
-    )
+    log.info("Terminating other connections to avoid deadlocks...")
     with infdb.connect() as db:
         db.execute_query("""SELECT pg_terminate_backend(pid)
                         FROM pg_stat_activity
@@ -180,12 +159,8 @@ if __name__ == "__main__":
         with infdb.connect() as db:
             log.info("Dropping schemas for clean development run...")
             db.execute_query("DROP SCHEMA IF EXISTS basedata CASCADE;")
-            db.execute_query(
-                "DROP SCHEMA IF EXISTS buildings_to_street CASCADE;"
-            )
-            db.execute_query(
-                "DROP SCHEMA IF EXISTS linear_heat_density CASCADE;"
-            )
+            db.execute_query("DROP SCHEMA IF EXISTS buildings_to_street CASCADE;")
+            db.execute_query("DROP SCHEMA IF EXISTS linear_heat_density CASCADE;")
             db.execute_query("DROP SCHEMA IF EXISTS ro_heat CASCADE;")
 
     # Determine the command to run based on command-line arguments

@@ -53,27 +53,27 @@ affiliations:
       ror: 02kkvpp62
     - name: Siemens AG, Germany
       index: 2
-      ror: 
+      ror:
     - name: Technical University of Darmstadt, Germany
       index: 3
       ror: 05n911h24
     - name: Technical University of Dortmund, Germany
       index: 4
-      ror: 
+      ror:
     - name: Rosenheim Technical University of Applied Sciences, Germany
       index: 5
-      ror: 
+      ror:
 date: '31 January 2026'
 bibliography: paper.bib
 ---
 
 # Summary
-`InfDB - Energy and Infrastructure Database` is an open source, containerized data infrastructure for managing and providing access to heterogeneous energy and infrastructure datasets used in urban and regional energy system studies. 
+`InfDB - Energy and Infrastructure Database` is an open source, containerized data infrastructure for managing and providing access to heterogeneous energy and infrastructure datasets used in urban and regional energy system studies.
 
 It bundles a PostgreSQL [@stonebraker1986design] database extended for geospatial, time-series, and graph data as well as standardized REST [@fielding2000architectural] and OpenAPI standards by the Open Geospatial Consortium (OGC) [@ogc_wfs]. Finally, it offers a configurable import service transforming raw public data into structured, version-controlled schemas.
 
 By decoupling data ingestion, storage, and access from downstream analysis, modeling and planning tools, `InfDB` reduces data preprocessing effort and enables reproducible, transferable energy system modeling workflows across regions and projects. In this way, it can be used for many different applications in energy system modeling, such as district heating planning, electrical distribution network analysis, or urban energy demand estimation.
-  
+
 # Statement of need
 The transition to a climate-neutral energy system is a central pillar of energy policy, exemplified by Germany's aim for climate neutrality by 2045. New legislative frameworks, such as the requirement for municipal heat planning [@GesetzFurWarmeplanung] and the requirement for grid expansion plans based on regional transition pathway scenarios defined in the German Energy Industry Act ("Gesetz über die Elektrizitäts- und Gasversorgung") [@14dEnWGEinzelnorm], demand that municipalities and Distribution System Operators (DSOs) process vast amounts of energy and infrastructure data.
 
@@ -84,7 +84,7 @@ However, the current landscape of energy data is fragmented. While the Open Data
 3. **Lack of Reproducibility:** Planning results are often one-off studies that are difficult to update or audit.
 4. **Siloed Infrastructure:** DSOs and municipalities lack standardized tools to efficiently manage and share energy and infrastructure data, such as distribution network or building data.
 
-`InfDB` addresses these challenges by providing a reproducible, version-controlled, and automated ETL (Extract, Transform, Load) pipeline. It acts as a middleware between raw public data and high-level energy modeling and planning tools, ensuring that input data is transparent, traceable, and easily updatable. 
+`InfDB` addresses these challenges by providing a reproducible, version-controlled, and automated ETL (Extract, Transform, Load) pipeline. It acts as a middleware between raw public data and high-level energy modeling and planning tools, ensuring that input data is transparent, traceable, and easily updatable.
 While `InfDB` is developed in a German context addressing local regulatory requirements, the underlying architecture and methodology can also be applied to data across different regions and regulatory frameworks, making it applicable to municipal and regional energy planning efforts worldwide.
 
 # State of the field
@@ -106,7 +106,7 @@ The research relevance of `InfDB` lies in its role as a reusable data infrastruc
 * **Methodological Neutrality:** `InfDB` does not prescribe modeling approaches, optimization methods, or policy assumptions. Its role is limited to providing structured and accessible data, allowing a wide range of analytical methods to be applied without constraint.
 
 # Software Design
-`InfDB` is designed as a modular, containerized data infrastructure that decouples data ingestion, storage, and access from downstream analysis and modeling. It follows a service-oriented architecture orchestrated via Docker Compose, allowing individual components to be deployed, configured, and combined depending on the requirements of a specific workflow. The system is conceptually divided into **Services**, which provide the foundational infrastructure, and **Tools**, which consume and process the data. 
+`InfDB` is designed as a modular, containerized data infrastructure that decouples data ingestion, storage, and access from downstream analysis and modeling. It follows a service-oriented architecture orchestrated via Docker Compose, allowing individual components to be deployed, configured, and combined depending on the requirements of a specific workflow. The system is conceptually divided into **Services**, which provide the foundational infrastructure, and **Tools**, which consume and process the data.
 As opposed to a single binary or service, this separation allows for data portability between tools and configurability both in deciding which components are enabled and in easily expanding to new components or replacing components to meet different preferences or local needs.
 
 ![`InfDB` - Data Sources, Services and Tools \label{fig:infdb-overview}](../docs/mkdocs/docs/assets/img/infdb-overview.png)
@@ -150,4 +150,3 @@ Martin Stengel gratefully acknowledges financial support through the Bavarian St
 All other authors gratefully acknowledge financial support through the project executing agency Jülich (PTJ) with funds provided by the Federal Ministry for Economic Affairs and Energy (BMWE) due to an enactment of the German Bundestag under Grant No. 01256602/1.
 
 # References
-

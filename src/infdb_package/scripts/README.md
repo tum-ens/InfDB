@@ -2,8 +2,8 @@
 
 This directory contains a `Makefile` that automates:
 
-1) generating API markdown files  
-2) building the MkDocs site  
+1) generating API markdown files
+2) building the MkDocs site
 3) exporting the built HTML pages back into Markdown
 
 ## Libraries needed
@@ -46,6 +46,7 @@ Example:
 ```python
 from typing import Optional
 
+
 def add_user(name: str, age: int, nickname: Optional[str] = None) -> int:
     """Create a user record.
 
@@ -69,32 +70,32 @@ def add_user(name: str, age: int, nickname: Optional[str] = None) -> int:
 
 ### Variables
 
-- `PYTHON := python3`  
+- `PYTHON := python3`
   Python executable used by the Makefile.
 
-- `MKDOCS := $(PYTHON) -m mkdocs`  
+- `MKDOCS := $(PYTHON) -m mkdocs`
   Runs MkDocs using the selected Python interpreter.
 
 ### Targets
 
-- `all`  
+- `all`
   Default target. Runs: `gen`, `build`, then `export`.
 
-- `gen`  
+- `gen`
   Generates API reference markdown files under `../docs/api/` and writes
   `../docs/api/SUMMARY.md`.
 
-- `build`  
+- `build`
   Builds the MkDocs site using `../mkdocs.yml`. Output goes to `../site/`.
 
-- `serve`  
+- `serve`
   Runs the MkDocs using `../mkdocs.yml`. Serving on http://127.0.0.1:8000/.
 
 
-- `export`  
+- `export`
   Exports content from `../site/` (HTML) to Markdown under `../documentation/`.
 
-- `clean`  
+- `clean`
   Removes generated directories:
   - `../docs`
   - `../site`

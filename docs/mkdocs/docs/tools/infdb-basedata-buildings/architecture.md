@@ -13,35 +13,35 @@ Processing is carried out through a combination of Python-based orchestration an
 ## Processing Steps
 The SQL-based workflow is organized into a sequence of scripts. These scripts handle initialization, data assignment, processing and recalibration of variables, and the mapping of weather conditions to individual buildings.
 
-#### 1. `00_initialization.sql` 
-Responsible for creating all shared prerequisites (helper functions & tables) for basedata-buildings tool, as well as for creating the output schema (if it is already not created). 
+#### 1. `00_initialization.sql`
+Responsible for creating all shared prerequisites (helper functions & tables) for basedata-buildings tool, as well as for creating the output schema (if it is already not created).
 It additionally uses an advisory lock to coordinate the parallel processing of multiple AGS safely.
 
-#### 2. `01_create_temp_tables.sql` 
+#### 2. `01_create_temp_tables.sql`
 Creates temporary, per-session tables with the same structure as the global tables in the output schema, to isolate each run from the global tables during processing. These temporary tables are deleted at a later step.
 
-#### 3. `02_fill_id_object_id_building_use.sql` 
-This loads and sychronizes the temp buildings table, with buildings information and identifiers from the source building data (LOD2). 
+#### 3. `02_fill_id_object_id_building_use.sql`
+This loads and sychronizes the temp buildings table, with buildings information and identifiers from the source building data (LOD2).
 
-#### 4. `03_fill_height.sql` 
+#### 4. `03_fill_height.sql`
 Fills the building height column in the temp buildings table, using data from LOD2. It also removes buildings with invalid or improbable heights (very small buildings).
 
-#### 5. `04_fill_floor_area_geom.sql` 
+#### 5. `04_fill_floor_area_geom.sql`
 Populates the gemoetry, centroid and floor area fields in the buildings table from LOD2 data. Additionally, it removes invalid buildings with very small areas.
 
-#### 6. `05_fill_floor_number.sql` 
+#### 6. `05_fill_floor_number.sql`
 Assigns the floor numbers for buildings, using the storey values from LOD2 when available. If missing, values are derived using average floor heights and the total building height, or relying on standard fallback values.
 
-#### 7. `06_prepare_grid.sql` 
+#### 7. `06_prepare_grid.sql`
 Builds the buildings_grid tables by spatially joining the grid cells with the centroids of buildings. These building_grid tables are then enriched with respective information from Zensus on population, construction years, household sizes, and building types.
 
-#### 8. `07_fill_occupants.sql` 
+#### 8. `07_fill_occupants.sql`
 Estimates the residential occupants per building proportionally based on the building volumes. In case of insufficient grid cell data, buildings are assigned occupants based on information from the nearest populated grid cells.
 
-#### 9. `08_fill_households.sql` 
+#### 9. `08_fill_households.sql`
 Derives the number of households for each building, based on its number of occupants and the average household size for that grid cell. Utilizes information from neighbouring cells in case of missing data.
 
-#### 10. `09_fill_construction_year.sq` 
+#### 10. `09_fill_construction_year.sq`
 Assigns a construction year period for each building, using a random weighted assignment derived from the construction year information from Zensus.
 
 #### 11. `10_assign_postcode_to_buildings.sql`
@@ -61,4 +61,3 @@ Applies postprocessing to building types, assigning default types to remaining u
 
 #### 16. `15_flush_temp_tables.sql `
 Pushes the temp table data into the final output tables, either inserting or upserting the values in those tables. At the end, the temp tables are also deleted.
-

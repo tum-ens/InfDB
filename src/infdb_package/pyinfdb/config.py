@@ -17,7 +17,7 @@ FILE_ENCODING: str = "utf-8"
 class InfdbConfig:
     """Read and resolve tool-specific YAML config with optional InfDB base merge."""
 
-    def __init__(self, tool_name: str, config_path: str, host: str = None) -> None:
+    def __init__(self, tool_name: str, config_path: Optional[str], host: Optional[str] = None) -> None:
         """Initializes the configuration for a tool.
 
         Args:
@@ -37,7 +37,7 @@ class InfdbConfig:
 
     # ---------------- internal helpers ----------------
 
-    def _load_config(self, path: str) -> Dict[str, Any]:
+    def _load_config(self, path: Optional[str]) -> Dict[str, Any]:
         """Loads a YAML file. Raises FileNotFoundError if the file is missing."""
         if path:
             if os.path.exists(path):
@@ -51,7 +51,6 @@ class InfdbConfig:
             configs = {}
 
         return self._resolve_yaml_placeholders(configs)
-
 
     def _flatten_dict(self, data: Dict[str, Any], parent_key: str = "", sep: str = "/") -> Dict[str, Any]:
         """Flattens nested dictionaries into path-like keys."""
@@ -138,19 +137,19 @@ class InfdbConfig:
         """Returns the project root path (two levels up from this file)."""
         return os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-    def get_db_parameters(self, db_name: str = "postgres") -> Dict[str, str]:
+    def get_db_parameters(self, db_name: str = "postgres") -> Dict[str, Any]:
         """Retrieve database connection parameters for a specified service.
-        
+
         Reads database configuration from the config-choose-a-name.yml file and merges it with
         environment variables. Environment variables take precedence if set, otherwise config
         file values are used. The host defaults to "host.docker.internal" if not specified.
-        
+
         Environment variables are expected in the format: SERVICES_{DB_NAME}_{PARAMETER}
         (e.g., SERVICES_POSTGRES_PORT, SERVICES_POSTGRES_USER)
-        
+
             db_name: Name of the database service section in the config file.
                     Defaults to "postgres".
-        
+
             Dictionary containing database connection parameters with keys:
             - host: Database host address (defaults to "host.docker.internal")
             - port: Database port number
@@ -158,7 +157,7 @@ class InfdbConfig:
             - password: Password for authentication
             - dbname: Database name
             - epsg: EPSG code for the database spatial reference system
-        
+
         Note:
             - Config file values with "None" string are ignored in favor of environment variables
             - If neither environment variable nor config file value exists, key will be None

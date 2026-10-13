@@ -1,8 +1,9 @@
 import os
-import sys
 import shutil
+import sys
 import time
 from typing import Sequence
+from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 
 from pyinfdb import InfDB
@@ -30,10 +31,13 @@ def _download_file(url: str, file_path: str, log, attempts: int = 20, wait_secon
     While ArcGIS Hub regenerates an export it answers with a small JSON status
     ("status": "Pending") instead of data; saving that would poison the cache.
     """
+    if urlparse(url).scheme not in ("http", "https"):
+        raise ValueError("PLZ download requires HTTP or HTTPS")
     tmp_path = f"{file_path}.part"
     for attempt in range(1, attempts + 1):
         request = Request(url, headers={"User-Agent": "Mozilla/5.0"})
-        with urlopen(request) as response, open(tmp_path, "wb") as out_file:
+        # URL scheme validated above, custom/local protocols rejected.
+        with urlopen(request, timeout=60) as response, open(tmp_path, "wb") as out_file:  # nosec B310
             shutil.copyfileobj(response, out_file)
         if _is_feature_collection(tmp_path):
             os.replace(tmp_path, file_path)

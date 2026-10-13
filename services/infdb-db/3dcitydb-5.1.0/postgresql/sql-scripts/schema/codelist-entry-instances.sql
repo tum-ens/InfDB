@@ -1055,6 +1055,3 @@ VALUES (nextval('codelist_entry_seq'), 2, 2650, 'tourist information centre');
 
 INSERT INTO codelist_entry (ID, CODELIST_ID, CODE, DEFINITION)
 VALUES (nextval('codelist_entry_seq'), 2, 2700, 'others');
-
-
-

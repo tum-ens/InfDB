@@ -127,7 +127,7 @@ Docker Compose service definition:
 
 1. **Define tool name:**
    - Think of a tool name
-   - Use kebab-case naming convention as for example "buildings-to-street" 
+   - Use kebab-case naming convention as for example "buildings-to-street"
 
 2. **Create Dev Container:**
    ```bash

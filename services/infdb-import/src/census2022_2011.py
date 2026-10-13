@@ -18,8 +18,8 @@ CENSUS_2011_PIVOTS: Dict[str, Dict[str, Any]] = {
     "gebaeude_art": {
         "merkmal": "GEBAEUDEART_SYS",
         "codes": {
-            "wohngebaeude_ohne_wohnheime": "111",   # Wohngebaeude, >= Haelfte Nutzflaeche Wohnzwecke, ohne Wohnheime
-            "wohnheime": "112",                     # Wohnheime (Studierende, Arbeiter, ...), eigene Haushaltsfuehrung
+            "wohngebaeude_ohne_wohnheime": "111",  # Wohngebaeude, >= Haelfte Nutzflaeche Wohnzwecke, ohne Wohnheime
+            "wohnheime": "112",  # Wohnheime (Studierende, Arbeiter, ...), eigene Haushaltsfuehrung
             "sonstige_gebaeude_mit_wohnraum": "12",  # < Haelfte Nutzflaeche Wohnzwecke, z.B. ueberwiegend Laeden/Bueros
         },
     },

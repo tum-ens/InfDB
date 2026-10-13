@@ -127,7 +127,7 @@ Docker Compose service definition:
 
 1. **Define tool name:**
    - Think of a tool name
-   - Use kebab-case naming convention as for example "choose-a-name" 
+   - Use kebab-case naming convention as for example "choose-a-name"
 
 2. **Create Dev Container:**
    ```bash
@@ -151,4 +151,3 @@ Docker Compose service definition:
 ## Known issues
 
 - **Devcontainer Python interpreter not used:** If the venv from `.devcontainer/devcontainer.json` (`python defaultInterpreterPath`) isn’t active, check VS Code **User/Remote** settings for `python.defaultInterpreterPath` (may override). Reopen the devcontainer and run **Python: Select Interpreter**.
-

@@ -131,7 +131,7 @@ def _fetch_columns_infdb(infdb_client, schema: str, table: str) -> List[Dict[str
     """
     fetched = infdb_client.execute_query(
         """
-        SELECT table_catalog, table_schema, table_name, column_name, 
+        SELECT table_catalog, table_schema, table_name, column_name,
             data_type, is_nullable, column_default, ordinal_position
         FROM information_schema.columns
         WHERE table_schema = %s AND table_name = %s

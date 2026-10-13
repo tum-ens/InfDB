@@ -32,7 +32,7 @@ If you want to run the tool, first run the [basedata-buildings](infdb-basedata-b
 bash tools/pylovo-generation/run.sh
 ```
 
-### Configuration 
+### Configuration
 
 The available regions selection is taken from the imported regions listed in the scope table from opendata.
 Detailed generation configurations can be adjusted under 'tools/pylovo-generation/configs/config-pylovo-generation.yml'.

@@ -51,15 +51,15 @@ infdb-basedata-ways:
             #- "Ski-, Schlepplift"
             #- ["Personenverkehr", "Güterverkehr"]
 
-        
+
 
         klasse_objektart_filter:
             "Bundesstraße":
                 - "Strassenachse"
-                - "Fahrbahnachse"   
+                - "Fahrbahnachse"
             "Bundesautobahn":
                 - "Strassenachse"
-                #- "Fahrbahnachse" 
+                #- "Fahrbahnachse"
 
         apply_length_filter: True
         min_length_meter: 10

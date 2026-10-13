@@ -35,7 +35,7 @@ BEGIN
   LOOP
     bbox := ST_Collect(bbox,
       citydb_pkg.get_feature_envelope(rec.val_feature_id, compute_envelope, set_envelope));
-  END LOOP;    
+  END LOOP;
 
   SELECT ST_Collect(citydb_pkg.get_envelope(geom)) INTO bbox_tmp FROM (
     SELECT
@@ -55,13 +55,13 @@ BEGIN
       p.feature_id = fid
       AND p.val_implicitgeom_id IS NOT NULL
   ) g;
-  
+
   bbox := citydb_pkg.get_envelope(ST_Collect(bbox, bbox_tmp));
 
   IF set_envelope <> 0 THEN
     UPDATE feature SET envelope = bbox WHERE id = fid;
   END IF;
-  
+
   RETURN bbox;
 END;
 $body$

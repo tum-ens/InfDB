@@ -13,7 +13,7 @@ The workflow consists of **two main steps**:
 
 ### 1. Buildings-to-Street Assignment
 
-This step spatially assigns buildings to the nearest street segments to allow aggregation of building heat demands per street segment. 
+This step spatially assigns buildings to the nearest street segments to allow aggregation of building heat demands per street segment.
 
 **Configuration**
 
@@ -83,9 +83,9 @@ data:
 
 * `buildings-to-streets.schema`: Schema containing the mapping table from Step 1
 * `buildings-to-streets.table`: Mapping table linking buildings to street segments
-* `streets.schema`: Schema containing street geometries 
+* `streets.schema`: Schema containing street geometries
 * `streets.table`: Table with street segments
-* `streets.id-column`: Unique identifier for each street segment which have to match the IDs in the building-to-streets mapping table 
+* `streets.id-column`: Unique identifier for each street segment which have to match the IDs in the building-to-streets mapping table
 * `streets.geom-column`: Column containing the street geometries (lines)
 * `heat-demand.schema`: Schema containing building heat demand data
 * `heat-demand.table`: Table with building-level heat demand
@@ -99,4 +99,4 @@ data:
 !!! note "Under Development"
     This documentation section is currently being expanded.
 
-    **Maintainer**: Caro 
+    **Maintainer**: Caro

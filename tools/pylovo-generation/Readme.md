@@ -7,7 +7,7 @@
 - [Prerequisites](#prerequisites)
 - [Configuration](#configuration)
 - [License and Citation](#license-and-citation)
-- 
+-
 ## Overview
 
 This tool generates synthetic low-voltage grids based on the building and ways basedata schema in infdb.
@@ -39,8 +39,8 @@ If you encounter issues:
 
 ## License and Citation
 
-This tool is licensed under the **MIT License** (MIT).  
-See [LICENSE](LICENSE) for rights and obligations.  
+This tool is licensed under the **MIT License** (MIT).
+See [LICENSE](LICENSE) for rights and obligations.
 See the *Cite this repository* function or [CITATION.cff](CITATION.cff) for citation.
 
 Copyright (c) 2025 Technical University of Munich - Chair of Renewable and Sustainable Energy Systems

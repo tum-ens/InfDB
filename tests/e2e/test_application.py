@@ -1,10 +1,11 @@
 """End-to-end smoke tests for the InfDB facade — skipped when PostgreSQL is not reachable."""
+
 import logging
 
 import pytest
 import yaml
-from pyinfdb import InfDB
 from psycopg2 import OperationalError
+from pyinfdb import InfDB
 
 pytestmark = pytest.mark.e2e
 

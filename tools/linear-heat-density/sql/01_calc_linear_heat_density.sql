@@ -41,8 +41,8 @@ SELECT
     COALESCE(shd.total_heat_demand, 0),
     sl.street_length,
     -- Calculate linear heat density (heat demand per meter of street)
-    CASE WHEN sl.street_length > 0 
-        THEN COALESCE(shd.total_heat_demand, 0) / sl.street_length 
+    CASE WHEN sl.street_length > 0
+        THEN COALESCE(shd.total_heat_demand, 0) / sl.street_length
         ELSE 0 END,
     '{ags}',
     v_changelog_id

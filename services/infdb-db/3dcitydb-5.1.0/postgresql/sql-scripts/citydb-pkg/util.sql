@@ -7,13 +7,13 @@
 *   minor_version - minor version number of 3DCityDB instance
 *   minor_revision - minor revision number of 3DCityDB instance
 ******************************************************************/
-CREATE OR REPLACE FUNCTION citydb_pkg.citydb_version( 
-  OUT version TEXT, 
-  OUT major_version INTEGER, 
-  OUT minor_version INTEGER, 
+CREATE OR REPLACE FUNCTION citydb_pkg.citydb_version(
+  OUT version TEXT,
+  OUT major_version INTEGER,
+  OUT minor_version INTEGER,
   OUT minor_revision INTEGER) RETURNS RECORD AS
 $body$
-SELECT 
+SELECT
   '5.1.0'::text AS version,
   5::int AS major_version,
   1::int AS minor_version,
@@ -31,7 +31,7 @@ LANGUAGE sql IMMUTABLE;
 CREATE OR REPLACE FUNCTION citydb_pkg.db_metadata(
   OUT srid INTEGER,
   OUT srs_name TEXT,
-  OUT coord_ref_sys_name TEXT, 
+  OUT coord_ref_sys_name TEXT,
   OUT coord_ref_sys_kind TEXT,
   OUT wktext TEXT) RETURNS RECORD AS
 $body$
@@ -141,7 +141,7 @@ BEGIN
   IF skip_abstract <> 0 THEN
     where_clause = 'WHERE h.is_abstract <> 1';
   END IF;
-  
+
   RETURN QUERY EXECUTE format('
     WITH RECURSIVE class_hierarchy AS (
       SELECT

@@ -5,7 +5,7 @@ prefixes:
   schema: http://schema.org/
   linkml: https://w3id.org/linkml/
   dataschema: https://id.need.energy/dataschema/
-default_curi_maps: 
+default_curi_maps:
   - semweb_context
 default_prefix: dataschema
 default_range: string

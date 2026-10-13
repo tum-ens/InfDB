@@ -5,7 +5,6 @@ import os
 import random
 import shlex
 import subprocess
-import sys
 import tempfile
 import time
 from pathlib import Path
@@ -270,7 +269,7 @@ def download_files(
         if not access_token:
             access_token = os.getenv("WEBDAV_NEED_INTERNAL_ACCESS_TOKEN")
             log.debug("Using access token from environment: %s", access_token)
-        
+
         if not username or not access_token:
             log.error("WebDAV protocol requires username and access_token for authentication.")
 
@@ -875,9 +874,7 @@ def fast_copy_points_csv(
             cur.execute(f'CREATE INDEX "{table_name}_geom_gix" ON "{schema}"."{table_name}" USING GIST (geom);')
 
         # Step 9: Index the grid coordinates, which is how downstream tools join these tables
-        cur.execute(
-            f'CREATE INDEX "{table_name}_mp_idx" ON "{schema}"."{table_name}" ("{x_col}", "{y_col}");'
-        )
+        cur.execute(f'CREATE INDEX "{table_name}_mp_idx" ON "{schema}"."{table_name}" ("{x_col}", "{y_col}");')
 
     finally:
         # Cleanup: Drop staging table
@@ -1028,9 +1025,7 @@ def fast_copy_pivoted_grid_csv(
             cur.execute(f'CREATE INDEX "{table_name}_geom_gix" ON "{schema}"."{table_name}" USING GIST (geom);')
 
         # Step 8: Index the grid coordinates, which is how downstream tools join these tables
-        cur.execute(
-            f'CREATE INDEX "{table_name}_mp_idx" ON "{schema}"."{table_name}" ("{x_col}", "{y_col}");'
-        )
+        cur.execute(f'CREATE INDEX "{table_name}_mp_idx" ON "{schema}"."{table_name}" ("{x_col}", "{y_col}");')
 
     finally:
         # Cleanup: Drop staging table
@@ -1167,6 +1162,7 @@ def create_building_tables(infdb: InfDB) -> None:
     except Exception:
         infdb.get_logger().exception(f"{output_schema}.building_view / building_surface failed")
 
+
 # ============================== Shell helper ==============================
 
 
@@ -1187,7 +1183,7 @@ def infdb_do_cmd(infdb: InfDB, cmd: str | List[str], is_shell_interpreted: bool 
         ValueError: If `cmd` is empty.
         OSError: If the process cannot be started (e.g., command not found).
     """
-    
+
     log = infdb.get_worker_logger()
 
     if not cmd:

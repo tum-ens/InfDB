@@ -68,7 +68,7 @@ Import `pyinfdb` and initialize the `InfDB` class. You must provide a `tool_name
 ```python
 from pyinfdb import InfDB
 
-infdb = InfDB(tool_name="choose-a-name") #(1)
+infdb = InfDB(tool_name="choose-a-name")  # (1)
 log = infdb.get_logger()
 ```
 
@@ -80,13 +80,12 @@ Here are some examples of how to use the `InfDB` instance to get a database conn
 ```python
 log.info("Starting processing...")
 try:
-    with infdb.connect() as client: #(1)
-        
-        rows = client.execute_query("SELECT * FROM my_table LIMIT 5") #(2)
+    with infdb.connect() as client:  # (1)
+        rows = client.execute_query("SELECT * FROM my_table LIMIT 5")  # (2)
         for row in rows:
             log.debug(row)
-            
-        client.execute_file("scripts/setup_schema.sql") # (3)
+
+        client.execute_file("scripts/setup_schema.sql")  # (3)
 except Exception as e:
     log.error(f"An error occurred: {e}")
 ```

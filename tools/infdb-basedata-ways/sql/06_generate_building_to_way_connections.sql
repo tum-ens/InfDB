@@ -27,7 +27,7 @@ BEGIN
         c.old_way_ags,                                    -- AGS tag for inserted segment
         'connection_line',                                -- class routes insert into connection_lines_tem
         ST_MakeLine(c.center, ST_StartPoint(c.old_geom)),   -- connect building center to way start endpoint
-        c.old_way_id -- id of the connected way 
+        c.old_way_id -- id of the connected way
     )
     FROM temp_building_connection_candidates c
     WHERE ST_Distance(ST_StartPoint(c.old_geom), c.connection_point) < 0.15; -- near-start threshold
@@ -41,7 +41,7 @@ BEGIN
         c.old_way_ags,                                  -- AGS tag for inserted segment
         'connection_line',                              -- class routes insert into connection_lines_tem
         ST_MakeLine(c.center, ST_EndPoint(c.old_geom)),   -- connect building center to way end endpoint
-        c.old_way_id -- id of the connected way 
+        c.old_way_id -- id of the connected way
     )
     FROM temp_building_connection_candidates c
     WHERE ST_Distance(ST_EndPoint(c.old_geom), c.connection_point) < 0.15; -- near-end threshold
@@ -55,7 +55,7 @@ BEGIN
         c.old_way_ags,          -- AGS tag for inserted segment
         'connection_line',      -- class routes insert into connection_lines_tem
         c.new_geom,              -- precomputed shortest connection line
-        c.old_way_id -- id of the connected way 
+        c.old_way_id -- id of the connected way
     )
     FROM temp_building_connection_candidates c;
 

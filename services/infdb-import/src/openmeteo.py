@@ -3,9 +3,9 @@ import os
 import sys
 from typing import Any, Dict
 
-import pyinfdb as InfDB
 import openmeteo_requests
 import pandas as pd
+import pyinfdb as InfDB
 import requests_cache
 from retry_requests import retry
 

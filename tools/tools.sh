@@ -4,12 +4,12 @@
 # InfDB Tools User Interface for Single AGS
 # Purpose:
 #   Runs InfDB tools defined in tools/compose.yml either linked by Docker
-#   Compose profile or as a single named service for single AGS. This gives 
-#   users a single entrypoint for executing processing tools against in the 
+#   Compose profile or as a single named service for single AGS. This gives
+#   users a single entrypoint for executing processing tools against in the
 #   InfDB tool framework without needing to know the underlying infrastructure behind.
 #
 # Usage:
-#   bash tools.sh -p <profile> <ags> 
+#   bash tools.sh -p <profile> <ags>
 #   bash tools.sh -t <tool> <ags>
 #
 # Examples:
@@ -50,12 +50,12 @@ OPTIONS="$4"
 # Use the shared infdb network for all tool runs
 export INFDB_NETWORK="${INFDB_NETWORK:-infdb-${BASE_NAME}_network}"
 
-# Get 
+# Get
 PROJECT="infdb_${AGS}"
 export AGS="$AGS"
 
 case "$1" in
-    -p)        
+    -p)
         echo "Running profile: $NAME"
 
         # Start the specified profile
@@ -63,7 +63,7 @@ case "$1" in
             -p "$PROJECT" \
             --profile "$NAME" up\
             --remove-orphans
-        
+
         # Stop and remove containers, networks, images, and volumes created by up
         docker compose -f "$(dirname "$0")/compose.yml" \
             -p "$PROJECT" \
@@ -72,7 +72,7 @@ case "$1" in
         ;;
     -t)
         echo "Running tool: $NAME"
-        
+
         # Start the specified tool without dependencies
         docker compose -f "$(dirname "$0")/compose.yml" -p "$PROJECT" up --no-deps --remove-orphans $OPTIONS "$NAME"
 

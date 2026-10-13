@@ -26,8 +26,8 @@ BEGIN
     SET postcode = final_pc.plz::int -- assign postcode as integer
     FROM (
         -- Select the postcode with the maximum intersection length for each road
-        SELECT DISTINCT ON (rid) 
-            rid, 
+        SELECT DISTINCT ON (rid)
+            rid,
             plz
         FROM (
             SELECT
@@ -51,8 +51,8 @@ BEGIN
     SET postcode = final_pc.plz::int -- assign postcode as integer
     FROM (
         -- Select the postcode with the maximum intersection length for each road
-        SELECT DISTINCT ON (rid) 
-            rid, 
+        SELECT DISTINCT ON (rid)
+            rid,
             plz
         FROM (
             SELECT

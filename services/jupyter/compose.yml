@@ -3,10 +3,10 @@ services:
     profiles:
       - notebook
     image: quay.io/jupyter/base-notebook:python-3.11
-    
+
     # Change this to linux/amd64 if you are on a Windows/Intel machine.
-    # platform: linux/arm64 
-    
+    # platform: linux/arm64
+
     restart: unless-stopped
     ports:
       - "${SERVICES_JUPYTER_EXPOSED_PORT:-8888}:8888"
@@ -19,9 +19,9 @@ services:
       - infdb-jupyter-data:/home/jovyan/work
       - ./notebooks/:/home/jovyan/demo
       - ./README.md:/home/jovyan/Readme.md
-    
+
     command: start-notebook.py --ServerApp.allow_origin='*' --ServerApp.ip='0.0.0.0'
-    
+
     networks:
       - infdb_network
     extra_hosts:

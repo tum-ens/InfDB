@@ -65,31 +65,31 @@ Updates `buildings.assigned_way_id` based on a mapping table or nearest suitable
 
 The SQL-based processing is organized into multiple sequential scripts. These scripts cover initialization, filtering, assignment, merging, segmentation, connection generation, and final insertion into output tables.
 
-#### 1. `create_temp_table.sql` 
+#### 1. `create_temp_table.sql`
   Creates the temporary working tables `ways_tem` and `connection_lines_tem` from the input ways data restricted to the selected AGS. It keeps one valid `LINESTRING` per source feature, adds additional columns needed in later processing steps, and creates indexes for efficient spatial and key-based operations.
-#### 2. `initialization.sql`  
+#### 2. `initialization.sql`
   Creates shared database functions and global output tables required for the processing workflow. It also ensures that parallel workers can initialize these resources safely without conflicts.
-#### 3. `filter_by_class.sql`  
+#### 3. `filter_by_class.sql`
   Applies optional filtering rules to `ways_tem` based on configured `klasse` and `objektart` values. Rows that do not match the allowed filter conditions are removed from further processing.
-#### 4. `building_address.sql`  
+#### 4. `building_address.sql`
   Matches buildings to nearby named ways based on their parsed street address and stores the result in `buildings.address_street_id`. If multiple matching ways exist, the nearest one is selected.
-#### 5. `assign_buildings_to_ways.sql`  
+#### 5. `assign_buildings_to_ways.sql`
   Assigns each building to a suitable way and writes the result to `buildings.assigned_way_id`. Depending on the configuration, it prefers a more efficient direct match via the address information added in the last step or otherwise falls back to the nearest suitable way using postgis distance operators.
-#### 6. `merge_candidates.sql`  
+#### 6. `merge_candidates.sql`
   Creates temporary merge candidate data for `ways_tem` by analyzing neighbouring line endpoints within a distance tolerance. It identifies adjacent way segments and stores the required information for later way-merging steps.
-#### 7. `merge_chain.sql`  
+#### 7. `merge_chain.sql`
   Builds connected chains of mergeable ways based on the previously identified merge candidates. It groups linked way segments into connected components so they can be merged in later processing steps.
-#### 8. `merge_ways.sql`  
+#### 8. `merge_ways.sql`
   Merges connected way segments in `ways_tem` into single way geometries based on the previously generated chain candidates. It uses `update_assigned_way_id_after_merge` to update affected building-to-way assignments after the merge.
-#### 9. `filter_isolated_loop_short.sql`  
+#### 9. `filter_isolated_loop_short.sql`
   Filters selected ways from `ways_tem` by removing loops, isolated ways, and short segments depending on the configured rules. After filtering, it uses `update_assigned_way_id` to update affected building-to-way assignments to be connected to the adjacent street of the filtered street and, where applicable, adds the filtered way’s length to the adjacent street that takes over its connections, so the total length from filtered ways can be tracked.
-#### 10. `segment_intersecting_ways.sql`  
+#### 10. `segment_intersecting_ways.sql`
   Splits intersecting ways in `ways_tem` at their intersection points and reinserts the resulting segments. This step ensures that crossings are represented as separate connected way segments for later network generation.
-#### 11. `generate_building_to_way_connection.sql`  
+#### 11. `generate_building_to_way_connection.sql`
   Generates building-to-way connection lines and updates the related way attributes in `ways_tem`. It then creates `ways_tem_connection` as a copy of `ways_tem` and splits the affected ways at the building-to-way connection points only in `ways_tem_connection`.
-#### 12. `assign_postcodes.sql`  
+#### 12. `assign_postcodes.sql`
   Assigns postcode values to the generated temporary way and connection tables based on postcode polygon intersections. This ensures that the processed geometries can be linked to postcode-based downstream analyses.
-#### 13. `insert_temp_tables.sql`  
+#### 13. `insert_temp_tables.sql`
   Inserts the final processed temporary way and connection data into the global output tables for the current AGS. Existing rows for the same AGS are replaced to keep the results idempotent.
-#### 14. `insert_nodes.sql`  
+#### 14. `insert_nodes.sql`
   Creates node tables by clustering way endpoints and inserting the resulting junction points together with their related way IDs. It generates nodes for both `ways_per_junction` and `ways_per_connection`.

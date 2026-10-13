@@ -1,7 +1,7 @@
 -- ============================================================
 -- 00_initalization.sql
 -- Creates shared functions and tables for parallel AGS processing
--- 
+--
 -- Purpose:
 --   - Creates shared functions used across all workers
 --   - Uses advisory lock to prevent race conditions
@@ -38,8 +38,8 @@ BEGIN
         -- predate newly added helper functions, so a buildings table alone is not
         -- sufficient evidence that initialization is complete.
         IF NOT EXISTS (
-            SELECT 1 FROM pg_tables 
-            WHERE schemaname = '{output_schema}' 
+            SELECT 1 FROM pg_tables
+            WHERE schemaname = '{output_schema}'
               AND tablename = 'buildings'
         ) OR NOT EXISTS (
             SELECT 1
@@ -692,8 +692,8 @@ BEGIN
 
         -- Double-check if resources are ready
         IF NOT EXISTS (
-            SELECT 1 FROM pg_tables 
-            WHERE schemaname = '{output_schema}' 
+            SELECT 1 FROM pg_tables
+            WHERE schemaname = '{output_schema}'
               AND tablename = 'buildings'
         ) THEN
             RAISE NOTICE '[Init] Resources not ready yet, waiting 2 more seconds...';

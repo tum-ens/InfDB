@@ -2,7 +2,7 @@
 
 1. **Define tool name:**
     - Think of a tool name
-    - Use kebab-case naming convention as for example "choose-a-name" 
+    - Use kebab-case naming convention as for example "choose-a-name"
 
 2. **Create Dev Container:**
    ```bash
