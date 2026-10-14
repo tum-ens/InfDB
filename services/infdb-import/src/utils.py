@@ -323,60 +323,6 @@ def unzip(zip_files, unzip_dir: str, infdb: InfDB) -> None:
             log.error("Error unzipping %s: %s", zip_file, e)
 
 
-def download_aria2c(
-    infdb: InfDB,
-    url: str,
-    output_dir: str | Path,
-    output_filename: str = None,
-    connections: int = 4,
-    max_connection_per_server: int = 4,
-    continue_download: bool = True,
-    allow_overwrite: bool = False,
-    auto_file_renaming: bool = False,
-    quiet: bool = True,
-) -> None:
-    """Downloads files using aria2c with configurable options."""
-
-    output_dir = Path(output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    # Build command
-    cmd_parts: list[str] = ["aria2c"]
-
-    # Connection settings
-    if continue_download:
-        cmd_parts.append("-c")
-
-    if connections > 1:
-        cmd_parts.extend(["-x", str(connections)])
-
-    if max_connection_per_server > 1:
-        cmd_parts.extend(["-s", str(max_connection_per_server)])
-
-    # Overwrite behavior
-    if not allow_overwrite:
-        cmd_parts.append("--allow-overwrite=false")
-
-    if not auto_file_renaming:
-        cmd_parts.append("--auto-file-renaming=false")
-
-    # Logging
-    if quiet:
-        cmd_parts.extend(["--summary-interval=60", "--console-log-level=warn"])
-
-    # Output location
-    cmd_parts.extend(["-d", str(output_dir)])
-
-    if output_filename:
-        cmd_parts.extend(["-o", output_filename])
-
-    # URL (last argument) – no quotes here, just a normal arg
-    cmd_parts.append(url)
-
-    # Execute: pass argv list so subprocess can find `aria2c`
-    do_cmd(infdb, cmd_parts)
-
-
 def download_aria2c_many(
     infdb: InfDB,
     urls: List[str],
@@ -385,10 +331,10 @@ def download_aria2c_many(
     max_connection_per_server: int = 8,
     continue_download: bool = True,
     quiet: bool = True,
-) -> None:
+) -> int:
     """Downloads many URLs using aria2c in one shot (-i input_file).
 
-    Much faster than calling aria2c once per file.
+    Much faster than calling aria2c once per file. Returns the aria2c exit code.
     """
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -402,7 +348,20 @@ def download_aria2c_many(
     cmd_parts: list[str] = ["aria2c"]
 
     if continue_download:
-        cmd_parts.append("-c")
+        # Plain -c treats an older local file as a partial download and appends the
+        # server's tail to it (corrupted hybrid) or saves the new version as X.1.gml.
+        # Instead, re-download a file only when the server copy changed:
+        #   --remote-time     sets the local mtime to the server's Last-Modified
+        #   --conditional-get sends If-Modified-Since (304 -> skipped, 200 -> replaced)
+        # Interrupted downloads still resume through aria2's .aria2 control file.
+        cmd_parts.extend(
+            [
+                "--conditional-get=true",
+                "--remote-time=true",
+                "--allow-overwrite=true",
+                "--auto-file-renaming=false",
+            ]
+        )
     cmd_parts.extend(["-x", str(connections), "-s", str(max_connection_per_server)])
 
     if quiet:
@@ -410,7 +369,9 @@ def download_aria2c_many(
 
     cmd_parts.extend(["-d", str(output_dir), "-i", str(url_file)])
 
-    do_cmd(infdb, cmd_parts)
+    # Non-zero is expected when some tiles do not exist on the server (e.g. grid cells
+    # without data), so it is returned instead of raised. do_cmd already logs it.
+    return do_cmd(infdb, cmd_parts)
 
 
 def do_cmd(infdb: InfDB, cmd: str | List[str], shell: bool = False) -> int:
