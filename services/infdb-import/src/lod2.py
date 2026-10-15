@@ -120,15 +120,15 @@ def _import_lod2_batch(
     tool_name: str,
     batch_index: int,
     total_batches: int,
-) -> bool:
-    """Import one batch of GML files directly with citydb."""
+) -> list[str]:
+    """Import one batch of GML files directly with citydb. Returns the files that were not imported."""
     try:
         infdb = InfDB(tool_name=tool_name, config_path="../configs/config-infdb-import.yml")
         log = infdb.get_worker_logger()
 
         if not batch_files:
             log.info("LoD2 batch %d/%d: empty batch, skipping.", batch_index, total_batches)
-            return True
+            return []
 
         source_cfg = [infdb.get_toolname(), "sources", "lod2"]
         params = infdb.get_db_parameters_dict()
@@ -185,15 +185,16 @@ def _import_lod2_batch(
                     total_batches,
                     return_code,
                 )
-            return False
+                return batch_files
+            return sorted(bad_files)
 
         log.info("LoD2 batch %d/%d imported successfully.", batch_index, total_batches)
-        return True
+        return []
 
     except Exception:
         if "log" in locals():
             log.exception("LoD2 batch %d/%d failed unexpectedly.", batch_index, total_batches)
-        return False
+        return batch_files
 
 
 def _import_lod2_files_in_parallel(
@@ -233,7 +234,16 @@ def _import_lod2_files_in_parallel(
             ],
         )
 
-    return all(results)
+    not_imported = [f for failed in results for f in failed]
+    if not_imported:
+        log.error(
+            "LoD2: %d of %d files imported, %d NOT imported (check them at the data provider): %s",
+            len(gml_files) - len(not_imported),
+            len(gml_files),
+            len(not_imported),
+            ", ".join(os.path.basename(f) for f in sorted(not_imported)),
+        )
+    return not not_imported
 
 
 def _iter_tile_origins_for_geom(
