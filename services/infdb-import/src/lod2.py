@@ -1,5 +1,6 @@
 import os
 import sys
+import xml.sax
 from zipfile import ZipFile, BadZipFile
 from urllib.parse import unquote
 
@@ -37,12 +38,23 @@ def _urls_to_local_citygml_paths(urls: list[str], gml_path: str, log) -> list[st
             missing_files.append(local_path)
             continue
 
+        # An aria2 control file next to the file means the download did not finish
+        # (e.g. interrupted while replacing an older version): never import it.
+        if os.path.exists(local_path + ".aria2"):
+            log.warning("LoD2: incomplete download, skipping: %s", local_path)
+            continue
+
         if filename.lower().endswith(".gml"):
             local_files.append(local_path)
             continue
 
         if filename.lower().endswith(".zip"):
             try:
+                # An extracted file is stamped with its zip's mtime (the server's Last-Modified,
+                # set by aria2 --remote-time). A re-released zip therefore never reuses an
+                # older extraction.
+                zip_mtime = int(os.path.getmtime(local_path))
+
                 with ZipFile(local_path, "r") as zf:
                     gml_members = [
                         member
@@ -62,9 +74,10 @@ def _urls_to_local_citygml_paths(urls: list[str], gml_path: str, log) -> list[st
 
                         extracted_path = os.path.join(gml_path, extracted_filename)
 
-                        if not os.path.isfile(extracted_path):
+                        if not os.path.isfile(extracted_path) or int(os.path.getmtime(extracted_path)) != zip_mtime:
                             with zf.open(member) as src, open(extracted_path, "wb") as dst:
                                 dst.write(src.read())
+                            os.utime(extracted_path, (zip_mtime, zip_mtime))
 
                         local_files.append(extracted_path)
 
@@ -85,6 +98,15 @@ def _urls_to_local_citygml_paths(urls: list[str], gml_path: str, log) -> list[st
     return sorted(set(local_files))
 
 
+def _is_valid_xml(path: str) -> bool:
+    """Return True if the file is well-formed XML (streamed, so large GML files are fine)."""
+    try:
+        xml.sax.parse(path, xml.sax.ContentHandler())
+        return True
+    except Exception:
+        return False
+
+
 def _chunk_list(items: list[str], chunk_size: int) -> list[list[str]]:
     """Split items into fixed-size chunks."""
     if chunk_size <= 0:
@@ -98,15 +120,15 @@ def _import_lod2_batch(
     tool_name: str,
     batch_index: int,
     total_batches: int,
-) -> bool:
-    """Import one batch of GML files directly with citydb."""
+) -> list[str]:
+    """Import one batch of GML files directly with citydb. Returns the files that were not imported."""
     try:
         infdb = InfDB(tool_name=tool_name, config_path="../configs/config-infdb-import.yml")
         log = infdb.get_worker_logger()
 
         if not batch_files:
             log.info("LoD2 batch %d/%d: empty batch, skipping.", batch_index, total_batches)
-            return True
+            return []
 
         source_cfg = [infdb.get_toolname(), "sources", "lod2"]
         params = infdb.get_db_parameters_dict()
@@ -119,42 +141,60 @@ def _import_lod2_batch(
             len(batch_files),
         )
 
-        cmd_parts = [
-            "citydb",
-            "import",
-            "citygml",
-            "-H",
-            params["host"],
-            "-d",
-            params["db"],
-            "-u",
-            params["user"],
-            "-p",
-            params["password"],
-            "-P",
-            str(params["exposed_port"]),
-            f"--import-mode={import_mode}",
-            *batch_files,
-        ]
+        def run_citydb(files: list[str], mode: str) -> int:
+            return utils.do_cmd(
+                infdb,
+                [
+                    "citydb",
+                    "import",
+                    "citygml",
+                    "-H",
+                    params["host"],
+                    "-d",
+                    params["db"],
+                    "-u",
+                    params["user"],
+                    "-p",
+                    params["password"],
+                    "-P",
+                    str(params["exposed_port"]),
+                    f"--import-mode={mode}",
+                    *files,
+                ],
+            )
 
-        return_code = utils.do_cmd(infdb, cmd_parts)
+        return_code = run_citydb(batch_files, import_mode)
 
         if return_code != 0:
-            log.error(
-                "LoD2 batch %d/%d failed with return code %d.",
-                batch_index,
-                total_batches,
-                return_code,
-            )
-            return False
+            # citydb aborts the batch at the first unreadable file, so all files after it
+            # are not imported. Log the broken files and import the remaining ones.
+            # The batch still counts as failed.
+            bad_files = {f for f in batch_files if not _is_valid_xml(f)}
+            for f in sorted(bad_files):
+                log.error("LoD2 batch %d/%d: invalid XML, not imported: %s", batch_index, total_batches, f)
+
+            good_files = [f for f in batch_files if f not in bad_files]
+            if bad_files and good_files:
+                # import_all would duplicate the files the failed run already imported
+                return_code = run_citydb(good_files, "skip" if import_mode == "import_all" else import_mode)
+
+            if return_code != 0:
+                log.error(
+                    "LoD2 batch %d/%d failed with return code %d.",
+                    batch_index,
+                    total_batches,
+                    return_code,
+                )
+                return batch_files
+            return sorted(bad_files)
 
         log.info("LoD2 batch %d/%d imported successfully.", batch_index, total_batches)
-        return True
+        return []
 
     except Exception:
         if "log" in locals():
             log.exception("LoD2 batch %d/%d failed unexpectedly.", batch_index, total_batches)
-        return False
+        return batch_files
 
 
 def _import_lod2_files_in_parallel(
@@ -194,7 +234,16 @@ def _import_lod2_files_in_parallel(
             ],
         )
 
-    return all(results)
+    not_imported = [f for failed in results for f in failed]
+    if not_imported:
+        log.error(
+            "LoD2: %d of %d files imported, %d NOT imported (check them at the data provider): %s",
+            len(gml_files) - len(not_imported),
+            len(gml_files),
+            len(not_imported),
+            ", ".join(os.path.basename(f) for f in sorted(not_imported)),
+        )
+    return not not_imported
 
 
 def _iter_tile_origins_for_geom(

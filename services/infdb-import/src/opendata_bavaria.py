@@ -758,11 +758,10 @@ def _load_tatsaechliche_nutzung(infdb: InfDB, cfg: dict, base_path: Path, pgurl:
         log.info(f"TN: using existing {gpkg_path.stat().st_size / 1e9:.1f} GB GPKG")
     else:
         log.info(f"TN: downloading TN dataset from {url}")
-        utils.download_aria2c(
+        utils.download_aria2c_many(
             infdb=infdb,
-            url=url,
+            urls=[url],
             output_dir=tn_dir,
-            output_filename="Nutzung_kreis.gpkg",
             connections=4,
             max_connection_per_server=4,
         )
