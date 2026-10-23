@@ -521,6 +521,7 @@ BEGIN
                 CREATE INDEX IF NOT EXISTS idx_buildings_building_use ON {output_schema}.buildings (building_use);
                 CREATE INDEX IF NOT EXISTS idx_buildings_building_type ON {output_schema}.buildings (building_type);
                 CREATE INDEX IF NOT EXISTS idx_buildings_gemeindeschluessel ON {output_schema}.buildings (gemeindeschluessel);
+                CREATE INDEX IF NOT EXISTS idx_buildings_postcode ON {output_schema}.buildings (postcode);
                 CREATE INDEX IF NOT EXISTS idx_buildings_feature_id ON {output_schema}.buildings (feature_id);
                 CREATE INDEX IF NOT EXISTS idx_buildings_height ON {output_schema}.buildings (height);
 
