@@ -7,6 +7,7 @@
 -- - Computes an intersection point (midpoint of the buffered intersection segment)
 -- - Deletes both original ways and reinserts split segments via {output_schema}.insert_way_segment
 -- - Continues until all candidate intersections encountered in the scan are processed
+-- - Reassigns buildings of split ways to the nearest new part via {output_schema}.update_assigned_way_id_after_segmentation
 -- ============================================================
 
 DO $$
@@ -21,6 +22,12 @@ DECLARE
     old_street        RECORD;
     
 BEGIN
+    -- Snapshot of the ways before segmentation (id and geometry)
+    DROP TABLE IF EXISTS ways_before_segmentation;
+    CREATE TEMP TABLE ways_before_segmentation AS
+    SELECT id, geom
+    FROM ways_tem;
+
     -- Iterate through LINESTRING ways in the temporary table
     FOR way IN
         SELECT geom, klasse, ags, id
@@ -97,6 +104,8 @@ BEGIN
         );
 
     END LOOP; -- end scan over ways_tem
+    
+    PERFORM {output_schema}.update_assigned_way_id_after_segmentation('{ags}'); -- reassign building connections based on ways_before_segmentation
     
 END;
 $$;

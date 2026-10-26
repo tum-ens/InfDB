@@ -299,6 +299,51 @@ BEGIN
             $func$;
             
             -- --------------------------------------------------------
+            -- Function 6: update_assigned_way_id_after_segmentation
+            -- --------------------------------------------------------
+            -- Updates buildings.assigned_way_id for buildings whose way was split into parts
+            -- A part belongs to the original way when it lies within a small tolerance of its geometry
+            -- (ways_before_segmentation); the nearest of these parts is assigned
+
+
+            CREATE OR REPLACE FUNCTION {output_schema}.update_assigned_way_id_after_segmentation(
+                p_ags text
+            )
+            RETURNS bigint
+            LANGUAGE plpgsql
+            AS $func$
+            DECLARE
+                v_updated bigint := 0;
+            BEGIN
+                WITH buildings_to_reassign AS (
+                    SELECT
+                        b.id,
+                        b.centroid,
+                        ST_Buffer(o.geom, 0.5) AS old_area
+                    FROM {output_schema}.buildings AS b
+                    JOIN ways_before_segmentation o ON b.assigned_way_id = o.id
+                    WHERE b.centroid IS NOT NULL
+                      AND b.gemeindeschluessel = p_ags
+                      AND NOT EXISTS (SELECT 1 FROM ways_tem w WHERE w.id = b.assigned_way_id)
+                )
+                UPDATE {output_schema}.buildings AS b
+                SET assigned_way_id = nearest.id
+                FROM buildings_to_reassign btr
+                CROSS JOIN LATERAL (
+                    SELECT w.id
+                    FROM ways_tem w
+                    WHERE ST_Covers(btr.old_area, w.geom)
+                    ORDER BY btr.centroid <-> w.geom
+                    LIMIT 1
+                ) nearest
+                WHERE b.id = btr.id;
+
+                GET DIAGNOSTICS v_updated = ROW_COUNT;
+                RETURN v_updated;
+            END;
+            $func$;
+
+            -- --------------------------------------------------------
             -- Table: ways_per_junction (global output table)
             -- --------------------------------------------------------
             -- Create empty table with the same column layout as ways_tem
