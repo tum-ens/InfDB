@@ -59,7 +59,6 @@ def main():
             "buildings_to_streets_ways_id_column": infdb.get_config_value(
                 [infdb.get_toolname(), "data", "input", "buildings-to-streets", "id-ways-column"]
             ),
-
             "streets_schema": infdb.get_config_value([infdb.get_toolname(), "data", "input", "streets", "schema"]),
             "streets_table": infdb.get_config_value([infdb.get_toolname(), "data", "input", "streets", "table"]),
             "streets_id_expr": streets_id_expr,
@@ -78,10 +77,9 @@ def main():
                 infdb.get_config_value([infdb.get_toolname(), "data", "input", "heat-demand", "heat-demand-column"])
             }"',
             "output_schema": infdb.get_config_value([infdb.get_toolname(), "data", "output", "schema"]),
-            "output_table": infdb.get_config_value([infdb.get_toolname(), "data", "output", "table"]), 
+            "output_table": infdb.get_config_value([infdb.get_toolname(), "data", "output", "table"]),
             "tool_name": infdb.get_toolname(),
             "process_id": os.getpid(),
-            
         }
         SQL_DIR = os.path.join("sql")  # add subfolders here if needed ("sql/subfolder")
         infdb.connect().execute_sql_files(SQL_DIR, format_params=format_params)

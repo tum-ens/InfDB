@@ -9,10 +9,10 @@ Describe the problem here. Include any relevant details about the issue you are 
 Provide any suggestions you have for solving the problem.
 
 ### Location
-- gemeindeschluessel: 
-- objectid: 
-- street: 
-- hous_number: 
+- gemeindeschluessel:
+- objectid:
+- street:
+- hous_number:
 - QWC-URL: https://by.demo.need.energy/ ...
 
 ### Screenshots

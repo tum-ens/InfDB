@@ -20,4 +20,3 @@ More details can be found in the [Data Pipeline](data-pipeline.md) section.
 - Creates connection lines between buildings and their assigned way segments
 - Creates network nodes from junction points
 - Outputs the processed way network for downstream tools
-

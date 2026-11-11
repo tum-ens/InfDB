@@ -6,10 +6,10 @@ from datetime import datetime, timezone
 from typing import Iterable
 
 import psycopg
-from pyinfdb import InfDB
 import utils
 from psycopg import Connection
 from psycopg.rows import dict_row
+from pyinfdb import InfDB
 
 infdb = InfDB(tool_name="infdb-postgrest", config_path="config-infdb-postgrest.yml")
 # ============================== Logging ==============================

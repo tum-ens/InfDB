@@ -75,7 +75,7 @@ infdb-metadata/
 ### Key Files
 
 #### `main.py`
-Bootstraps the InfDB helper, then runs `src/infdb_metadata.py`. 
+Bootstraps the InfDB helper, then runs `src/infdb_metadata.py`.
 
 #### `src/infdb_metadata.py`
 Core generator that:
@@ -116,17 +116,17 @@ With infdb package, you will configure the database connection in ./configs/conf
 
 ## License and Citation
 
-This tool is licensed under the **MIT License** (MIT).  
-See [LICENSE](LICENSE) for rights and obligations.  
+This tool is licensed under the **MIT License** (MIT).
+See [LICENSE](LICENSE) for rights and obligations.
 See the *Cite this repository* function or [CITATION.cff](CITATION.cff) for citation.
 
 Copyright: [Institute of Energy Efficiency and Sustainable Building e3D, RWTH Aachen] | [MIT](LICENSE)
 
 ## Contact
 
-Minsheng Xu  
-Research Assosiate 
-Institute of Energy Efficiency and Sustainable Building e3D, RWTH Aachen  
+Minsheng Xu
+Research Assosiate
+Institute of Energy Efficiency and Sustainable Building e3D, RWTH Aachen
 Email: xu@e3d.rwth-aachen.de
 
 ---

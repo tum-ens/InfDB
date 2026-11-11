@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `SECURITY.md` with private vulnerability reporting instructions
 - `CHANGELOG.md` (this file)
 - JOSS paper citation in `README.md`, `CITATION.cff` (`preferred-citation`), and the documentation
+- `uv.lock` is committed for the root project (CI, tests) and `services/infdb-import`, so fresh installs and CI
+  resolve the same dependency versions. CI runs `uv sync --locked` and fails when the lock file is out of date.
+
+### Fixed
+- Fresh installs: pin SQLAlchemy `<2.1` and use the explicit `postgresql+psycopg2` driver.
+  SQLAlchemy 2.1 defaults to psycopg (v3) and breaks `pandas.to_sql` in the bkg, osm, tabula and openmeteo loaders.
 
 ## [4.1.4] - 2026-06-09
 

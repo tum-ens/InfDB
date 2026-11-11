@@ -1,8 +1,9 @@
 import logging
 import os
+
 # import subprocess  # nosec B404
 import tempfile
-from typing import Any, Optional, cast, Iterable #, List,
+from typing import Any, Iterable, Optional, cast  # , List,
 
 # import yaml
 
@@ -97,6 +98,7 @@ def atomic_write_text(text: str, output_path: str, file_mode: str | None = None,
     """
     return _atomic_write(binary=False, data=text, output_path=output_path, file_mode=file_mode, dir_mode=dir_mode)
 
+
 # ============================== Env helpers ==============================
 
 
@@ -149,6 +151,7 @@ def build_dsn_from_env(
             `postgresql://<user>:<password>@<host>:<port>/<db>`.
     """
     return f"postgresql://{user_var}:{pwd_var}@{host_var}:{port_var}/{db_var}"
+
 
 # ============================== Misc helpers ==============================
 

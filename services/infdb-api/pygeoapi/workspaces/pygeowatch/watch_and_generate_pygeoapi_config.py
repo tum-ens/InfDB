@@ -5,12 +5,13 @@ from collections import defaultdict
 from typing import Any, Dict, List, Optional, Tuple
 
 import psycopg
-import yaml
-from pyinfdb import InfDB
+
 # from infdb.utils import atomic_write_yaml, build_dsn_from_env, read_env
-import utils # import atomic_write_yaml, build_dsn_from_env, read_env
+import utils  # import atomic_write_yaml, build_dsn_from_env, read_env
+import yaml
 from psycopg import sql
 from psycopg.rows import dict_row
+from pyinfdb import InfDB
 
 # =========================
 # ===== Module Constants ===
@@ -111,6 +112,7 @@ DB_DSN: str = utils.build_dsn_from_env(
 # ======= IO helpers ======
 # =========================
 
+
 def atomic_write_yaml(data: Any, output_path: str, file_mode: str | None = None, dir_mode: str | None = None) -> str:
     """
     Atomically serializes a Python object to YAML and writes to a file.
@@ -189,7 +191,7 @@ def get_schema_signature(connection: psycopg.Connection[Any]) -> str:
                 AND t.typname IN ('geometry','geography')
             )
             SELECT COALESCE(
-              string_agg(schema_name||'.'||table_name||'.'||geom_col||':'||COALESCE(srid::text,''),'|' 
+              string_agg(schema_name||'.'||table_name||'.'||geom_col||':'||COALESCE(srid::text,''),'|'
                 ORDER BY schema_name,table_name,geom_col),''
             ) AS sig
             FROM geomcols;

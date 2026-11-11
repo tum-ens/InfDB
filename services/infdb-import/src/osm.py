@@ -77,16 +77,27 @@ def _run_pgosm_import(infdb: InfDB, cfg: dict) -> None:
     # POSTGRES_HOST != localhost => pgosm-flex will NOT drop/create the DB; it writes
     # into the already-running infdb database.
     run_cmd = [
-        "docker", "run", "-d", "--name", _PGOSM_CONTAINER,
+        "docker",
+        "run",
+        "-d",
+        "--name",
+        _PGOSM_CONTAINER,
         # Let the container reach a host-published database via
         # 'host.docker.internal'; ignored when POSTGRES_HOST is a real IP.
-        "--add-host", "host.docker.internal:host-gateway",
-        "-e", f"POSTGRES_HOST={p['host']}",
-        "-e", f"POSTGRES_PORT={p['exposed_port']}",
-        "-e", f"POSTGRES_DB={p['db']}",
-        "-e", f"POSTGRES_USER={p['user']}",
-        "-e", f"POSTGRES_PASSWORD={p['password']}",
-        "-v", f"{_PGOSM_VOLUME}:/app/output",
+        "--add-host",
+        "host.docker.internal:host-gateway",
+        "-e",
+        f"POSTGRES_HOST={p['host']}",
+        "-e",
+        f"POSTGRES_PORT={p['exposed_port']}",
+        "-e",
+        f"POSTGRES_DB={p['db']}",
+        "-e",
+        f"POSTGRES_USER={p['user']}",
+        "-e",
+        f"POSTGRES_PASSWORD={p['password']}",
+        "-v",
+        f"{_PGOSM_VOLUME}:/app/output",
         _PGOSM_IMAGE,
     ]
     if utils.do_cmd(infdb, run_cmd) != 0:
@@ -97,8 +108,11 @@ def _run_pgosm_import(infdb: InfDB, cfg: dict) -> None:
 
         # Step 2: run the import (downloads the whole subregion, imports into staging).
         exec_cmd = [
-            "docker", "exec", _PGOSM_CONTAINER,
-            "python3", "docker/pgosm_flex.py",
+            "docker",
+            "exec",
+            _PGOSM_CONTAINER,
+            "python3",
+            "docker/pgosm_flex.py",
             f"--ram={cfg['ram']}",
             f"--region={cfg['region']}",
             f"--subregion={cfg['subregion']}",
@@ -214,14 +228,9 @@ def load(infdb: InfDB) -> bool:
         with engine.connect() as conn:
             conn.execute(text(f"CREATE SCHEMA IF NOT EXISTS {target_schema};"))
             conn.execute(text(f"DROP TABLE IF EXISTS {target_schema}.{scope_table};"))
+            conn.execute(text(f"CREATE TABLE {target_schema}.{scope_table} (geom geometry(Geometry, {srid}));"))
             conn.execute(
-                text(f"CREATE TABLE {target_schema}.{scope_table} (geom geometry(Geometry, {srid}));")
-            )
-            conn.execute(
-                text(
-                    f"INSERT INTO {target_schema}.{scope_table} (geom) "
-                    f"VALUES (ST_GeomFromText(:wkt, {srid}));"
-                ),
+                text(f"INSERT INTO {target_schema}.{scope_table} (geom) VALUES (ST_GeomFromText(:wkt, {srid}));"),
                 {"wkt": clip_wkt},
             )
             conn.execute(text(f"CREATE INDEX ON {target_schema}.{scope_table} USING GIST (geom);"))
@@ -263,21 +272,16 @@ def load(infdb: InfDB) -> bool:
                         text(
                             f'CREATE TABLE {target_schema}."{dest}" AS '
                             f'SELECT t.* FROM {staging_schema}."{tbl}" t '
-                            f'JOIN {target_schema}.{scope_table} s '
+                            f"JOIN {target_schema}.{scope_table} s "
                             f"ON ST_Intersects({t_geom}, {s_geom});"
                         )
                     )
-                    conn.execute(
-                        text(f'CREATE INDEX ON {target_schema}."{dest}" USING GIST ("{geom_col}");')
-                    )
+                    conn.execute(text(f'CREATE INDEX ON {target_schema}."{dest}" USING GIST ("{geom_col}");'))
                     clipped += 1
                 else:
                     # Non-spatial metadata / lookup tables: copy in full.
                     conn.execute(
-                        text(
-                            f'CREATE TABLE {target_schema}."{dest}" AS '
-                            f'SELECT * FROM {staging_schema}."{tbl}";'
-                        )
+                        text(f'CREATE TABLE {target_schema}."{dest}" AS SELECT * FROM {staging_schema}."{tbl}";')
                     )
                     copied += 1
                 conn.commit()

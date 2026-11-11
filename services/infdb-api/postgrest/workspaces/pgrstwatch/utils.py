@@ -1,7 +1,7 @@
-import os
 import logging
+import os
 import tempfile
-from typing import Optional, cast, Iterable, Any #, List,
+from typing import Any, Iterable, Optional, cast  # , List,
 
 # ============================== Constants ==============================
 
@@ -12,7 +12,8 @@ FILE_ENCODING: str = "utf-8"
 # Module-level logger
 log = logging.getLogger(LOGGER_NAME)
 
-def read_text(input_path: str) -> str:
+
+def read_text(input_path: str | os.PathLike[str]) -> str:
     """
     Reads a text file; returns empty string if it does not exist.
 
@@ -33,7 +34,7 @@ def read_text(input_path: str) -> str:
     except FileNotFoundError:
         return ""
 
-   
+
 def read_env(var_name: str, default: Optional[str] = None, required: bool = False) -> str:
     """
     Reads an environment variable with optional default and required check.
@@ -83,6 +84,7 @@ def build_dsn_from_env(
             `postgresql://<user>:<password>@<host>:<port>/<db>`.
     """
     return f"postgresql://{user_var}:{pwd_var}@{host_var}:{port_var}/{db_var}"
+
 
 # ============================== Misc helpers ==============================
 
@@ -156,7 +158,9 @@ def _atomic_write(
     return path
 
 
-def atomic_write_text(text: str, output_path: str, file_mode: str | None = None, dir_mode: str | None = None) -> str:
+def atomic_write_text(
+    text: str, output_path: str | os.PathLike[str], file_mode: str | None = None, dir_mode: str | None = None
+) -> str:
     """
     Atomically writes text to a file. Optionally apply chmod to file/dir.
 
@@ -176,4 +180,6 @@ def atomic_write_text(text: str, output_path: str, file_mode: str | None = None,
         OSError: If writing, syncing, or replacing the file fails (and potentially
             if applying `file_mode` fails).
     """
-    return _atomic_write(binary=False, data=text, output_path=output_path, file_mode=file_mode, dir_mode=dir_mode)
+    return _atomic_write(
+        binary=False, data=text, output_path=os.fspath(output_path), file_mode=file_mode, dir_mode=dir_mode
+    )

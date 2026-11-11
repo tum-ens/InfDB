@@ -17,7 +17,7 @@ choose-a-name:
         postgres:
             user: None
             password: None
-            db: None 
+            db: None
             host: None
             exposed_port: None
             epsg: None

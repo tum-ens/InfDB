@@ -41,8 +41,9 @@ def load(infdb: InfDB) -> bool:
         # access_token = None
         # if protocol == "webdav":
         #     username = infdb.get_config_value([infdb.get_toolname(), "sources", "nrw-opencloud", "username"])
-        #     access_token = infdb.get_config_value([infdb.get_toolname(), "sources", "nrw-opencloud","WEBDAV_NEED_INTERNAL_ACCESS_TOKEN"])
-            
+        #     access_token = infdb.get_config_value(
+        #         [infdb.get_toolname(), "sources", "nrw-opencloud", "WEBDAV_NEED_INTERNAL_ACCESS_TOKEN"]
+        #     )
 
         filename, *_ = utils.get_file_from_url(url)
 

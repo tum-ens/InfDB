@@ -31,10 +31,10 @@ infdb-basedata-buildings:
 
 1. Input Schema - Opendata: Contains preloaded data from Zensus, LOD2, openmeteo that is required for processing basedata-buildings and generating the basedata schema.
 2. Output Scehma - Basedata: Contains the post processed buildings-related data from base-data buildings.
-3. The original Zensus 2022 data is defined for a 100m by 100m and a 1km by 1km scale. This option allows the user to recalibrate or choose the base-data processing based on either the 100m or 1km scale.  
-The **1km scale offers data that is more complete** as less information is hidden due to privacy concerns. The **100m scale could enable better accuracy for processed building information**, provided that only minimal data is obscured or hidden.  
+3. The original Zensus 2022 data is defined for a 100m by 100m and a 1km by 1km scale. This option allows the user to recalibrate or choose the base-data processing based on either the 100m or 1km scale.
+The **1km scale offers data that is more complete** as less information is hidden due to privacy concerns. The **100m scale could enable better accuracy for processed building information**, provided that only minimal data is obscured or hidden.
 1km scale is more suitable for rural or less densely populated cities, whereas a 100m scale would make more sense for urban/densely populated cities, as less information will be hidden due to privacy concerns.
-4. Set a random seed for reproducibility.   
+4. Set a random seed for reproducibility.
 Since some of the functions of base-data buildings involve stochastic assignment of certain variables (e.g. Fill construction year), this seed assignment allows users to reproduce identical results for multiple runs of base-data buildings.
 
 ## Run Single AGS

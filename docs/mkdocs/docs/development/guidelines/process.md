@@ -91,7 +91,7 @@ class ExampleClass:
 
 Standardize PR descriptions by using the provided template.
 
-### Code Review Standards 
+### Code Review Standards
   - At least one approval required before merging
   - Code author cannot approve their own PR
   - Automated tests must pass

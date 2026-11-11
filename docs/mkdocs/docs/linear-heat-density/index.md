@@ -24,7 +24,3 @@ SELECT * FROM linear_heat_density.linear_heat_density LIMIT 10;
 ```
 
 You can also use pgAdmin or any other database client to connect to the database using the credentials and port specified in the configuration.
-
-
-
-

@@ -1,7 +1,8 @@
 import os
-import sys
 import shutil
+import sys
 from typing import Sequence
+from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 
 from pyinfdb import InfDB
@@ -10,8 +11,11 @@ from . import utils
 
 
 def _download_file(url: str, file_path: str) -> None:
+    if urlparse(url).scheme not in ("http", "https"):
+        raise ValueError("PLZ download requires HTTP or HTTPS")
     request = Request(url, headers={"User-Agent": "Mozilla/5.0"})
-    with urlopen(request) as response, open(file_path, "wb") as out_file:
+    # Scheme validated above; reject local files and custom protocols.
+    with urlopen(request, timeout=60) as response, open(file_path, "wb") as out_file:  # nosec B310
         shutil.copyfileobj(response, out_file)
 
 

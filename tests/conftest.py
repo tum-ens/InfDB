@@ -1,4 +1,5 @@
 """Shared pytest configuration and fixtures for the repository."""
+
 import pytest
 
 # Default connection parameters matching a locally running InfDB PostgreSQL instance.

@@ -67,5 +67,3 @@ The following tools are currently integrated with InfDB:
 - **[InfDB-basedata-ways](infdb-basedata-ways/index.md)**: Containerized pipeline to generate fundamental way data
 - **[pylovo-generation](https://github.com/tum-ens/pylovo)**: Python tool for generating synthetic low-voltage distribution grids
 - **[EnTiSe](https://github.com/tum-ens/EnTiSe)**: Python tool for energy time series generation and management
-
-

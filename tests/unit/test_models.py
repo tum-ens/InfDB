@@ -1,4 +1,5 @@
 """Unit tests for InfdbConfig and InfdbLogger — no database required."""
+
 import logging
 import os
 
@@ -6,7 +7,6 @@ import pytest
 import yaml
 from pyinfdb.config import InfdbConfig
 from pyinfdb.logger import InfdbLogger
-
 
 # ── InfdbConfig: no config file ───────────────────────────────────────────────
 

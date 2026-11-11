@@ -2,6 +2,7 @@ import os
 
 import numpy as np
 import pandas as pd
+
 # entise package has to type stubs
 from entise.core.generator import Generator  # type: ignore
 from entise.io.storage import PostgresTimescaleStorage, StorageConfig  # type: ignore
@@ -65,7 +66,6 @@ def main():
             buildings = buildings[buildings["postcode"].isin(plz_set)].reset_index(drop=True)
             infdblog.info(f"Filtered to {len(buildings)} buildings in PLZ {sorted(plz_set)}")
 
-
         if len(buildings) == 0:
             infdblog.warning(f"No buildings found for AGS {ags}. Returning without result")
             return
@@ -109,7 +109,11 @@ def main():
 
         infdblog.info("Writing harmonized refurbishment data to database")
         harmonized_df.to_sql(
-            f"temp_buildings_refurbished_status_{ags}", engine, if_exists="replace", schema=output_schema, method="multi",
+            f"temp_buildings_refurbished_status_{ags}",
+            engine,
+            if_exists="replace",
+            schema=output_schema,
+            method="multi",
             index=False,
             index_label="building_objectid",
         )
@@ -119,20 +123,23 @@ def main():
             "tool_name": infdbhandler.get_toolname(),
             "process_id": os.getpid(),
         }
-        infdbclient_citydb.execute_sql_file(os.path.join("sql", "upsert_buildings_refurbished_status.sql"),
-                                            format_params_output_schema)
+        infdbclient_citydb.execute_sql_file(
+            os.path.join("sql", "upsert_buildings_refurbished_status.sql"), format_params_output_schema
+        )
 
         # Calculate R & C values by constructing building elements
         infdblog.info("Starting construction of building elements")
-        
+
         full_path = os.path.join("sql", "02_get_tabula_elements.sql")
         tabula_elements = infdbclient_citydb.get_pandas_sqlfile(full_path, format_params=format_params_output_schema)
         infdblog.debug(f"Loaded {len(tabula_elements)} building elements from the database.")
         tabula_structure = tabula_handling.create_tabula_structure(tabula_elements)
         infdblog.debug("Tabula structure created")
-        
+
         harmonized_df[["resistance", "capacitance"]] = harmonized_df.apply(
-            lambda row: tabula_handling.calculate_rc_values(tabula_structure, row, heated_area_ratio), axis=1, result_type="expand"
+            lambda row: tabula_handling.calculate_rc_values(tabula_structure, row, heated_area_ratio),
+            axis=1,
+            result_type="expand",
         )
         infdblog.debug("Done with construction of building elements")
 
@@ -249,8 +256,9 @@ def main():
                 index=True,
                 method="multi",
             )
-            infdbclient_citydb.execute_sql_file(os.path.join("sql", "upsert_entise_summary.sql"),
-                                                format_params_output_schema)
+            infdbclient_citydb.execute_sql_file(
+                os.path.join("sql", "upsert_entise_summary.sql"), format_params_output_schema
+            )
 
             infdblog.info(summary.head())
         else:

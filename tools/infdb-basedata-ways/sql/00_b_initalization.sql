@@ -1,6 +1,6 @@
 -- ============================================================
 -- Creates shared functions and tables for parallel AGS processing
--- 
+--
 -- Purpose:
 --   - Creates shared functions used across all workers
 --   - Creates global output tables used by all AGS workers
@@ -18,7 +18,7 @@ DECLARE
     -- Unique lock key for initialization coordination
     -- All workers compete for this same lock
     lock_key bigint := 999999999;
-    
+
     -- Flag indicating if this worker acquired the lock
     got_lock boolean;
 BEGIN
@@ -29,22 +29,22 @@ BEGIN
     --   TRUE  = lock acquired, this worker will create resources
     --   FALSE = lock held by another worker, wait for them to finish
     got_lock := pg_try_advisory_lock(lock_key);
-    
+
     IF got_lock THEN
         -- ============================================================
         -- PATH A: This worker won the lock race
         -- ============================================================
-        
+
         -- Idempotency check: only create shared resources if missing
         IF NOT EXISTS (
-            SELECT 1 FROM pg_tables 
-            WHERE schemaname = '{output_schema}' 
+            SELECT 1 FROM pg_tables
+            WHERE schemaname = '{output_schema}'
               AND tablename = 'ways_per_junction'
         ) THEN
             -- ========================================================
             -- Resources don't exist - create them now
             -- ========================================================
-            
+
             -- --------------------------------------------------------
             -- Function 1: update_assigned_way_id
             -- --------------------------------------------------------
@@ -107,11 +107,11 @@ BEGIN
 
                 EXECUTE v_sql; -- execute reassignment update for this AGS
                 GET DIAGNOSTICS v_updated = ROW_COUNT; -- capture affected row count
-                
+
                 RETURN v_updated; -- return updated building count
             END;
             $func$;
-            
+
             -- --------------------------------------------------------
             -- Function 2: insert_way_segment
             -- --------------------------------------------------------
@@ -157,7 +157,7 @@ BEGIN
                 END IF;
             END;
             $func$;
-            
+
             -- --------------------------------------------------------
             -- Function 3: split_way_at_connection_points
             -- --------------------------------------------------------
@@ -166,7 +166,7 @@ BEGIN
                 line geometry,         -- input line geometry to split
                 points geometry[]      -- array of split points along the line
             )
-            RETURNS TABLE(part geometry) 
+            RETURNS TABLE(part geometry)
             LANGUAGE plpgsql
             AS $func$
             DECLARE
@@ -179,13 +179,13 @@ BEGIN
                 LOOP
                     -- Calculate fractional position of current point along line
                     end_fraction := ST_LineLocatePoint(line, points[i]);
-                    
+
                     -- Extract segment if valid (end > start)
                     IF end_fraction > start_fraction THEN
                         RETURN QUERY
                         SELECT ST_LineSubstring(line, start_fraction, end_fraction);
                     END IF;
-                    
+
                     -- Update start position for next iteration
                     start_fraction := end_fraction;
                 END LOOP;
@@ -197,7 +197,7 @@ BEGIN
                 END IF;
             END;
             $func$;
-            
+
             -- --------------------------------------------------------
             -- Function 4: generate_building_way_connection_candidates
             -- --------------------------------------------------------
@@ -297,7 +297,7 @@ BEGIN
                 RETURN v_updated;
             END;
             $func$;
-            
+
             -- --------------------------------------------------------
             -- Function 6: update_assigned_way_id_after_segmentation
             -- --------------------------------------------------------
@@ -418,7 +418,7 @@ BEGIN
             -- Prevent duplicates per AGS+id
             CREATE UNIQUE INDEX ways_per_connection_ags_id_ux
                 ON {output_schema}.ways_per_connection (ags, id);
-            
+
             -- --------------------------------------------------------
             -- Table: connection_lines (global output table)
             -- --------------------------------------------------------
@@ -460,7 +460,7 @@ BEGIN
             -- Prevent duplicates per AGS+id
             CREATE UNIQUE INDEX connection_lines_ags_id_ux
                 ON {output_schema}.connection_lines (ags, id);
-            
+
             -- --------------------------------------------------------
             -- Table: nodes_per_connection (global output table)
             -- Nodes are street connection points
@@ -506,11 +506,11 @@ BEGIN
             CREATE INDEX nodes_per_connection_way_ids_gin
                 ON {output_schema}.nodes_per_connection USING GIN (way_ids); -- array membership queries
 
-            
+
             -- Prevent duplicates per AGS+id
             CREATE UNIQUE INDEX nodes_per_connection_ags_id_ux
                 ON {output_schema}.nodes_per_connection (ags, id);
-            
+
             -- --------------------------------------------------------
             -- Table: nodes_per_junction (global output table)
             -- Nodes are street connection points
@@ -563,56 +563,56 @@ BEGIN
 
 
 
-            
+
             -- --------------------------------------------------------
             -- Column: buildings.assigned_way_id
             -- --------------------------------------------------------
             -- Ensure the column exists (idempotent)
             ALTER TABLE {output_schema}.buildings
                 ADD COLUMN IF NOT EXISTS assigned_way_id text; -- assigned way id as text
-            
+
         ELSE
             -- ========================================================
             -- Resources already exist - skip creation
             -- ========================================================
         END IF;
-        
+
         -- Release the lock so other workers can proceed
         PERFORM pg_advisory_unlock(lock_key); -- unlock initialization key
-        
+
     ELSE
         -- ============================================================
         -- PATH B: Another worker is creating resources
         -- ============================================================
-        
+
         -- Wait for the other worker to finish
         PERFORM pg_sleep(3); -- allow initializer to finish creating shared resources
-        
+
     END IF;
-    
+
     -- ================================================================
     -- STEP 2: Verify resources exist (safety check for all workers)
     -- ================================================================
     -- Ensure initialization succeeded before any worker proceeds
     IF NOT EXISTS (
-        SELECT 1 FROM pg_tables 
-        WHERE schemaname = '{output_schema}' 
+        SELECT 1 FROM pg_tables
+        WHERE schemaname = '{output_schema}'
           AND tablename = 'ways_per_junction'
     ) THEN
         RAISE EXCEPTION '[Init] FATAL ERROR: ways_per_junction table does not exist after initialization. Check logs for errors.';
     END IF;
-    
+
     -- Verify critical functions exist
     IF NOT EXISTS (
-        SELECT 1 FROM pg_proc 
-        WHERE proname = 'split_way_at_connection_points' 
+        SELECT 1 FROM pg_proc
+        WHERE proname = 'split_way_at_connection_points'
           AND pronamespace = '{output_schema}'::regnamespace
     ) THEN
         RAISE EXCEPTION '[Init] FATAL ERROR: split_way_at_connection_points function does not exist after initialization. Check logs for errors.';
     END IF;
-    
+
     -- ================================================================
     -- STEP 3: All clear - ready to proceed
     -- ================================================================
-    
+
 END $$;
