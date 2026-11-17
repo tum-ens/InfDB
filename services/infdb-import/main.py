@@ -19,6 +19,7 @@ from src import (
     openmeteo,
     osm,
     plz,
+    solarkataster_nrw,
     tabula,
     utils,
     waermeatlas_hessen_bensheim,
@@ -129,6 +130,7 @@ def main() -> None:
     processes.append(mp.Process(target=_run_loader, args=(openmeteo.load,), name="openmeteo"))
     processes.append(mp.Process(target=_run_loader, args=(kwp_nrw.load,), name="kwp_nrw"))
     processes.append(mp.Process(target=_run_loader, args=(kwp_nrw_oberhausen.load,), name="kwp_nrw_oberhausen"))
+    processes.append(mp.Process(target=_run_loader, args=(solarkataster_nrw.load,), name="solarkataster_nrw"))
     processes.append(mp.Process(target=_run_loader, args=(gebaeude_neuburg.load,), name="gebaeude-neuburg"))
     processes.append(
         mp.Process(target=_run_loader, args=(waermeatlas_hessen_bensheim.load,), name="waermeatlas_hessen_bensheim")
