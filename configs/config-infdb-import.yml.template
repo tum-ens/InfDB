@@ -219,15 +219,16 @@ infdb-import:
                 # - weitere_nutzung_flaeche
         plz:
             status: active
-            url: "https://hub.arcgis.com/api/download/v1/items/5b203df4357844c8a6715d7d411a8341/geojson?layers=0"
-            filename: "plz-5stellig.geojson"
+            # Layer 0 (plz-5stellig) was retired in Sep 2026; layer 4 has no einwohner/qkm/note.
+            url: "https://hub.arcgis.com/api/download/v1/items/5b203df4357844c8a6715d7d411a8341/geojson?layers=4"
+            filename: "plz-gemeinde-kreis.geojson"
             path:
                 base: "{infdb-import/path/opendata}/plz/"
                 processed: "{infdb-import/path/processed}/plz/"
             schema: opendata
             prefix: postcodes
             layer:
-                - plz-5stellig
+                - plz-gemeinde-kreis
         tabula:
             status: active
             url:
