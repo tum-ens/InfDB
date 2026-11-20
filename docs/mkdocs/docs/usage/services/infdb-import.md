@@ -53,6 +53,7 @@ Available data sources include (for North Rhine-Westphalia and Bavaria):
 - Weather and time series data (Openmeteo)
 - Administrative areas (BKG)
 - Postcodes (OpenStreetMap)
+- Rooftop PV potential (Solarkataster NRW)
 
 Example configuration structure:
 
@@ -83,6 +84,31 @@ infdb-import:
                   table_name: bevoelkerungszahl
                   year: 2022
                   url: https://www.destatis.de/static/DE/zensus/gitterdaten/Zensus2022_Bevoelkerungszahl.zip
+```
+
+### Solarkataster NRW
+
+The source `solarkataster-nrw` imports the rooftop PV potential of the Solarkataster NRW (state agency LANUK) for every NRW municipality (AGS `05...`) in `scope`. It is not active by default.
+
+- **Data**: One record per roof surface with installable capacity (`kw`, kWp), module count, azimuth, tilt, specific yield and annual yield. LANUK derives it from an airborne laser scan surface model (0.5 m) and accounts for shading and roof structures.
+- **Source**: [Open.NRW dataset "Solarkataster NRW: Potenzialdaten Dachflächen-Photovoltaik"](https://ckan.open.nrw/dataset/6b1af6af-cd03-4206-a323-894eae1aaf08), files per municipality on [opengeodata.nrw.de](https://www.opengeodata.nrw.de/produkte/umwelt_klima/energie/solarkataster/photovoltaik/) (`index.json`, dataset `Solarkataster-Potentiale-Photovoltaik_Shape`).
+- **License**: [Datenlizenz Deutschland – Zero – Version 2.0](https://www.govdata.de/dl-de/zero-2-0) (dl-de/zero-2.0); no attribution required.
+
+Tables (with the default `schema: opendata`, `prefix: solarkataster_nrw`):
+
+| Table | Content |
+|---|---|
+| `opendata.solarkataster_nrw_pv_dach` | One row per roof surface. `objectid` is the ALKIS building ID (Shape field `name`) and equals `objectid` of the LoD2 buildings, e.g. `basedata.buildings.objectid`; `gemeindeschluessel` is the AGS (Shape field `gem_kn`). The other columns keep the Shape field names; see the column comments. |
+| `opendata.solarkataster_nrw_import` | One row per imported municipality (`ags`, source file and its timestamp, import time, number of roof surfaces, total kWp). A building of a listed municipality without roof surface has no roof suited for PV. |
+
+Each municipality is replaced in one transaction, so a rerun does not duplicate rows. Example: rooftop PV potential per building
+
+```sql
+SELECT b.objectid, COALESCE(SUM(p.kw), 0) AS pv_potential_kwp
+FROM basedata.buildings b
+JOIN opendata.solarkataster_nrw_import i ON i.ags = b.gemeindeschluessel
+LEFT JOIN opendata.solarkataster_nrw_pv_dach p ON p.objectid = b.objectid
+GROUP BY b.objectid;
 ```
 
 ## Data Storage

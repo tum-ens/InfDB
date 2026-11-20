@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - JOSS paper citation in `README.md`, `CITATION.cff` (`preferred-citation`), and the documentation
 - `uv.lock` is committed for the root project (CI, tests) and `services/infdb-import`, so fresh installs and CI
   resolve the same dependency versions. CI runs `uv sync --locked` and fails when the lock file is out of date.
+- infdb-import source `solarkataster-nrw`: rooftop PV potential per roof surface from the Solarkataster NRW
+  (LANUK, dl-de/zero-2.0) for the NRW municipalities in scope, joinable to buildings via `objectid`.
 
 ### Fixed
 - Fresh installs: pin SQLAlchemy `<2.1` and use the explicit `postgresql+psycopg2` driver.

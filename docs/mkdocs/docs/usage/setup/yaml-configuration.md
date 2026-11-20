@@ -750,6 +750,20 @@ infdb-import:
             - "Potenzial-ONG-MTG-Baublock"
             - "Potenzial-FF-Solarthermie-Flur"
 
+        solarkataster-nrw:
+          # Rooftop PV potential per roof surface (LANUK, licence dl-de/zero-2.0), one Shape file
+          # per municipality. Imports the NRW municipalities (AGS 05...) in scope.
+          status: not-active
+          schema: opendata
+          prefix: solarkataster_nrw
+          url: https://www.opengeodata.nrw.de/produkte/umwelt_klima/energie/solarkataster/photovoltaik/
+          dataset: Solarkataster-Potentiale-Photovoltaik_Shape
+          path:
+              base: "{infdb-import/path/opendata}/solarkataster-nrw/"
+              zip: "{infdb-import/sources/solarkataster-nrw/path/base}/zip/"
+              unzip: "{infdb-import/sources/solarkataster-nrw/path/base}/unzip/"
+
+
         gebaeude-neuburg:
             status: not-active
             url: "https://cloud.ocd.need.energy/remote.php/dav/spaces/1bb5c9f8-4002-4b43-a148-2489f970c921$5720d11a-72a9-4e88-abe1-3291e0711805/gebaeudedaten-neuburg.gpkg"
